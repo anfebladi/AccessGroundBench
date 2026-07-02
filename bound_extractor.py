@@ -1,0 +1,179 @@
+"""
+bound_extractor.py
+------------------
+Structural parsing layer that converts raw Android UI hierarchy XML files
+into deterministic, machine-readable JSON datasets for AI evaluation.
+
+Pipeline:
+  [Raw .xml] -> DOM Traversal -> Regex Bounds Parse -> Filter & Normalize -> [Cleaned .json]
+"""
+
+import json
+import re
+import sys
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+
+# Regex pattern to extract four integer coordinates from "[x1,y1][x2,y2]"
+BOUNDS_PATTERN = re.compile(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]")
+
+
+def parse_bounds(bounds_str: str) -> tuple[int, int, int, int] | None:
+    """
+    Phase 2 — Extract pixel bounding box coordinates from the Android
+    bounds attribute string format "[x1,y1][x2,y2]".
+
+    Returns (x1, y1, x2, y2) as integers, or None if the string
+    does not match the expected pattern.
+    """
+    match = BOUNDS_PATTERN.match(bounds_str)
+    if not match:
+        return None
+    return tuple(int(v) for v in match.groups())
+
+
+def trim_class_name(full_class: str) -> str:
+    """
+    Phase 3 — Truncate verbose Android Java package names to the
+    short component type.
+
+    Example: "android.widget.Button" -> "Button"
+    """
+    if not full_class:
+        return ""
+    return full_class.rsplit(".", 1)[-1]
+
+
+def trim_resource_id(full_id: str) -> str:
+    """
+    Phase 3 — Strip the package prefix from resource IDs to keep
+    only the unique element tag.
+
+    Example: "com.android.launcher3:id/icon_shape" -> "icon_shape"
+    """
+    if not full_id:
+        return ""
+    if ":id/" in full_id:
+        return full_id.split(":id/", 1)[-1]
+    return full_id
+
+
+def is_valid_node(bounds: tuple[int, int, int, int], screen_w: int, screen_h: int) -> bool:
+    """
+    Phase 3 — Reject invisible layout containers and full-screen wrappers.
+
+    Filters out:
+      - Zero-area nodes (e.g. [0,0][0,0])
+      - Nodes whose bounds exactly span the full screen dimensions
+    """
+    x1, y1, x2, y2 = bounds
+    width = x2 - x1
+    height = y2 - y1
+
+    # Reject zero-area nodes
+    if width <= 0 or height <= 0:
+        return False
+
+    # Reject full-screen layout containers
+    if x1 == 0 and y1 == 0 and x2 == screen_w and y2 == screen_h:
+        return False
+
+    return True
+
+
+def extract(xml_path: str | Path) -> list[dict]:
+    """
+    Execute the full extraction pipeline on a single XML layout file.
+
+    Phase 1: Parse the XML DOM and iterate all <node> elements.
+    Phase 2: Extract and convert bounds strings to integer tuples.
+    Phase 3: Filter invisible containers and normalize identifiers.
+
+    Returns a list of cleaned node dictionaries.
+    """
+    xml_path = Path(xml_path)
+    tree = ET.parse(xml_path)
+    root = tree.getroot()
+
+    # Determine screen dimensions from the root-level hierarchy node
+    # (first child is typically the full-screen FrameLayout)
+    all_nodes = list(root.iter("node"))
+    screen_w, screen_h = 1080, 2424  # fallback defaults
+
+    if all_nodes:
+        root_bounds = parse_bounds(all_nodes[0].get("bounds", ""))
+        if root_bounds:
+            screen_w = root_bounds[2]
+            screen_h = root_bounds[3]
+
+    results = []
+
+    for node in all_nodes:
+        bounds_str = node.get("bounds", "")
+        bounds = parse_bounds(bounds_str)
+
+        if bounds is None:
+            continue
+
+        if not is_valid_node(bounds, screen_w, screen_h):
+            continue
+
+        # Extract raw attributes
+        raw_class = node.get("class", "")
+        raw_text = node.get("text", "")
+        raw_id = node.get("resource-id", "")
+        content_desc = node.get("content-desc", "")
+
+        record = {
+            "class": trim_class_name(raw_class),
+            "text": raw_text if raw_text else None,
+            "content_desc": content_desc if content_desc else None,
+            "resource_id": trim_resource_id(raw_id) if raw_id else None,
+            "box": list(bounds),
+        }
+
+        results.append(record)
+
+    return results
+
+
+def save_json(records: list[dict], output_path: str | Path) -> None:
+    """
+    Phase 4 — Serialize the filtered dataset to a UTF-8 encoded JSON file.
+    """
+    output_path = Path(output_path)
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(records, f, indent=2, ensure_ascii=False)
+    print(f"[SAVED] {len(records)} nodes -> {output_path}")
+
+
+def run(xml_path: str) -> None:
+    """
+    Entry point: extract bounds from an XML file and save a matching JSON.
+
+    The output JSON shares the same base filename as the input XML.
+    Example: capture_20260702.xml -> capture_20260702.json
+    """
+    xml_path = Path(xml_path)
+
+    if not xml_path.is_file():
+        print(f"[ERROR] File not found: {xml_path}")
+        sys.exit(1)
+
+    print(f"[INPUT] {xml_path}")
+
+    # Extract and filter
+    records = extract(xml_path)
+    print(f"[EXTRACTED] {len(records)} interactive nodes from layout tree")
+
+    # Save with same stem
+    json_path = xml_path.with_suffix(".json")
+    save_json(records, json_path)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python bound_extractor.py <path_to_xml>")
+        sys.exit(1)
+    run(sys.argv[1])
