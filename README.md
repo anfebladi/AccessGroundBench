@@ -12,3 +12,6 @@ To run this project, your computer needs to interface with an Android environmen
 * **For Mac or Linux Terminals:**
   ```bash
   adb devices
+  ```
+
+![Screenshot](screenshot.png)
