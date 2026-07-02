@@ -15,9 +15,6 @@ from datetime import datetime
 from pathlib import Path
 
 
-# ---------------------------------------------------------------------------
-# Configuration
-# ---------------------------------------------------------------------------
 
 # Remote paths on the emulator's sdcard (temporary staging area)
 REMOTE_XML = "/sdcard/ui_layout.xml"
@@ -26,10 +23,6 @@ REMOTE_PNG = "/sdcard/ui_screen.png"
 # Output directory: root of this script's project folder
 OUTPUT_DIR = Path(__file__).parent
 
-
-# ---------------------------------------------------------------------------
-# Phase 0: ADB Path Resolution
-# ---------------------------------------------------------------------------
 
 def resolve_adb() -> str:
     """
@@ -100,9 +93,6 @@ def verify_device(adb: str) -> str:
     return serial
 
 
-# ---------------------------------------------------------------------------
-# Phase 2: On-Device Capture (Synchronous, XML first)
-# ---------------------------------------------------------------------------
 
 def capture_on_device(adb: str, serial: str) -> None:
     """
@@ -134,9 +124,6 @@ def capture_on_device(adb: str, serial: str) -> None:
     print("  [OK]  Screenshot capture complete.")
 
 
-# ---------------------------------------------------------------------------
-# Phase 3: Data Transfer (Pull from device to local disk)
-# ---------------------------------------------------------------------------
 
 def pull_files(adb: str, serial: str, output_name: str) -> tuple[Path, Path]:
     """
@@ -173,9 +160,6 @@ def pull_files(adb: str, serial: str, output_name: str) -> tuple[Path, Path]:
     return local_xml, local_png
 
 
-# ---------------------------------------------------------------------------
-# Phase 4: On-Device Cleanup
-# ---------------------------------------------------------------------------
 
 def cleanup_device(adb: str, serial: str) -> None:
     """
@@ -194,9 +178,6 @@ def cleanup_device(adb: str, serial: str) -> None:
         print(f"  [OK]  Deleted {remote_path}")
 
 
-# ---------------------------------------------------------------------------
-# Entry Point
-# ---------------------------------------------------------------------------
 
 def run_pipeline(output_name: str | None = None) -> None:
     """
