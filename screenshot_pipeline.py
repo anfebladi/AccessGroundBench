@@ -126,17 +126,31 @@ def capture_on_device(adb: str, serial: str) -> None:
 
 
 
-def pull_files(adb: str, serial: str, output_name: str) -> tuple[Path, Path]:
+def pull_files(
+    adb: str,
+    serial: str,
+    output_name: str,
+    image_dir: Path | None = None,
+    xml_dir: Path | None = None,
+) -> tuple[Path, Path]:
     """
-    Pull the captured XML and PNG from the emulator sdcard to the local
-    project output directory using the provided output_name stem.
+    Pull the captured XML and PNG from the emulator sdcard to local disk.
+
+    Args:
+        image_dir: Directory to save the .png into. Defaults to OUTPUT_DIR.
+        xml_dir:   Directory to save the .xml into. Defaults to OUTPUT_DIR.
 
     Returns the local (xml_path, png_path) as Path objects.
     """
+    png_dir = image_dir or OUTPUT_DIR
+    xdir = xml_dir or OUTPUT_DIR
+    png_dir.mkdir(parents=True, exist_ok=True)
+    xdir.mkdir(parents=True, exist_ok=True)
+
     print(f"\n[PHASE 3] Transferring files to local disk (stem='{output_name}')...")
 
-    local_xml = OUTPUT_DIR / f"{output_name}.xml"
-    local_png = OUTPUT_DIR / f"{output_name}.png"
+    local_xml = xdir / f"{output_name}.xml"
+    local_png = png_dir / f"{output_name}.png"
 
     # Pull XML
     print(f"  [3a] Pulling {REMOTE_XML} -> {local_xml}")
@@ -180,21 +194,31 @@ def cleanup_device(adb: str, serial: str) -> None:
 
 
 
-def run_pipeline(output_name: str | None = None) -> None:
+def run_pipeline(
+    output_name: str | None = None,
+    image_dir: Path | None = None,
+    xml_dir: Path | None = None,
+) -> tuple[Path, Path]:
     """
     Execute the full four-phase capture pipeline.
 
     Args:
         output_name: File stem for saved assets. Defaults to a UTC timestamp
                      (e.g. 'capture_20260702_184055') for automatic uniqueness.
+        image_dir:   Directory to save the .png into. Defaults to OUTPUT_DIR.
+        xml_dir:     Directory to save the .xml into. Defaults to OUTPUT_DIR.
+
+    Returns:
+        (xml_path, png_path) — the local paths of the saved files.
     """
     if output_name is None:
         output_name = "capture_" + datetime.utcnow().strftime("%Y%m%d_%H%M%S")
 
+    save_info = image_dir or OUTPUT_DIR
     print("=" * 60)
     print("  AccessGroundBench — Screenshot Pipeline")
     print(f"  Output stem : {output_name}")
-    print(f"  Save dir    : {OUTPUT_DIR}")
+    print(f"  Save dir    : {save_info}")
     print("=" * 60)
 
     # Resolve ADB binary
@@ -208,7 +232,10 @@ def run_pipeline(output_name: str | None = None) -> None:
         capture_on_device(adb, serial)
 
         # Phase 3 — pull to local disk
-        local_xml, local_png = pull_files(adb, serial, output_name)
+        local_xml, local_png = pull_files(
+            adb, serial, output_name,
+            image_dir=image_dir, xml_dir=xml_dir,
+        )
 
         # Phase 4 — clean up sdcard
         cleanup_device(adb, serial)
@@ -222,6 +249,8 @@ def run_pipeline(output_name: str | None = None) -> None:
     print(f"  XML  -> {local_xml}")
     print(f"  PNG  -> {local_png}")
     print("=" * 60)
+
+    return local_xml, local_png
 
 
 if __name__ == "__main__":
