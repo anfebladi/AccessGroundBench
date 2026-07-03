@@ -1,0 +1,44 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments and local env files
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.*
+
+# Build and packaging output
+build/
+dist/
+*.egg-info/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# macOS filesystem metadata
+.DS_Store
+._*
+
+# Generated capture/extraction outputs
+outputs/*
+!outputs/.gitkeep
+
+# Generated JSON from committed sample inputs
+sample_input/capture_*.json
+
+# Android/local tooling logs
+*.log
+adb*.txt

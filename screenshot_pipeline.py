@@ -20,8 +20,8 @@ from pathlib import Path
 REMOTE_XML = "/sdcard/ui_layout.xml"
 REMOTE_PNG = "/sdcard/ui_screen.png"
 
-# Output directory: data/ subfolder inside the project root
-OUTPUT_DIR = Path(__file__).parent / "data"
+# Output directory: outputs/ subfolder inside the project root
+OUTPUT_DIR = Path(__file__).parent / "outputs"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 
