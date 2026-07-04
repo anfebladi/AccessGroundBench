@@ -21,6 +21,8 @@ AccessGroundBench/
 ├── orchestrator.py          # Phase 1 — master data-collection driver
 ├── vlm_evaluator.py         # Phase 2 — VLM grounding + hit-test scoring
 ├── mcnemar_analysis.py      # Phase 3 — McNemar's statistical analysis
+├── app_navigator.py         # ADB app launcher/foreground validator
+├── adb_utils.py             # Shared ADB path/device/command helpers
 ├── screenshot_pipeline.py   # ADB capture utility (used by orchestrator)
 ├── layout_modifier.py       # Accessibility profile injector (used by orchestrator)
 ├── bound_extractor.py       # XML → JSON bounding-box extractor (used by orchestrator)
@@ -37,6 +39,10 @@ AccessGroundBench/
 
 - `orchestrator.py` — Master driver that iterates through target screens and
   accessibility profiles, automating the capture/extraction loop.
+- `app_navigator.py` — Launches each target Android app/screen through ADB and
+  validates the foreground package before capture.
+- `adb_utils.py` — Shared helper functions for resolving ADB, selecting the
+  active emulator, and running device-scoped ADB commands.
 - `vlm_evaluator.py` — Offline evaluation engine that harvests targets from
   baseline labels, calls Gemini with grounding prompts, parses coordinates,
   and logs hit-test scores to CSV.
@@ -120,9 +126,10 @@ python orchestrator.py
 
 The script will:
 - Iterate through the predefined screen list
-- Prompt you to navigate the emulator to each target screen
 - Apply all 5 accessibility profiles
+- Automatically launch and validate each target app before capture
 - Capture screenshots and UI hierarchies
+- Abort if the captured XML belongs to the wrong app
 - Extract bounding-box labels
 - Reset the emulator after each screen
 

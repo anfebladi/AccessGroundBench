@@ -8,12 +8,12 @@ Pipeline Phases:
   [1. Verification] -> [2. Device Capture] -> [3. Data Transfer] -> [4. Cleanup]
 """
 
-import os
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
 
+from adb_utils import get_device_serial, resolve_adb, run_adb
 
 
 # Remote paths on the emulator's sdcard (temporary staging area)
@@ -23,26 +23,6 @@ REMOTE_PNG = "/sdcard/ui_screen.png"
 # Output directory: outputs/ subfolder inside the project root
 OUTPUT_DIR = Path(__file__).parent / "outputs"
 OUTPUT_DIR.mkdir(exist_ok=True)
-
-
-def resolve_adb() -> str:
-    """
-    Dynamically resolve the adb binary path from the Android SDK installed
-    under %LOCALAPPDATA%, ensuring cross-machine compatibility.
-
-    Returns the absolute path string to adb.exe, or falls back to bare 'adb'
-    if the SDK cannot be located (relies on PATH then).
-    """
-    local_app_data = os.environ.get("LOCALAPPDATA", "")
-    sdk_adb = Path(local_app_data) / "Android" / "Sdk" / "platform-tools" / "adb.exe"
-
-    if sdk_adb.is_file():
-        print(f"[PATH]  ADB found: {sdk_adb}")
-        return str(sdk_adb)
-
-    # Fallback: hope adb is on the system PATH
-    print("[PATH]  SDK path not found under LOCALAPPDATA — falling back to 'adb' on PATH.")
-    return "adb"
 
 
 # ---------------------------------------------------------------------------
@@ -59,37 +39,7 @@ def verify_device(adb: str) -> str:
     """
     print("\n[PHASE 1] Verifying ADB device connection...")
 
-    result = subprocess.run(
-        [adb, "devices"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-
-    lines = result.stdout.strip().splitlines()
-    # First line is always "List of devices attached"
-    device_lines = [l for l in lines[1:] if l.strip()]
-
-    if not device_lines:
-        print("[ERROR]  No devices found. Start the emulator and re-run.")
-        sys.exit(1)
-
-    devices = []
-    for line in device_lines:
-        parts = line.split()
-        serial, status = parts[0], parts[1]
-        if status == "device":
-            devices.append(serial)
-        elif status in ("unauthorized", "offline"):
-            print(f"[ERROR]  Device '{serial}' is {status}. "
-                  "Check USB debugging / emulator state.")
-            sys.exit(1)
-
-    if not devices:
-        print("[ERROR]  No authorized device available.")
-        sys.exit(1)
-
-    serial = devices[0]
+    serial = get_device_serial(adb)
     print(f"[OK]     Device ready: {serial}")
     return serial
 
@@ -106,22 +56,12 @@ def capture_on_device(adb: str, serial: str) -> None:
 
     # 2a — Structural snapshot (XML) first
     print("  [2a] Dumping UI layout tree -> /sdcard/ui_layout.xml")
-    subprocess.run(
-        [adb, "-s", serial, "shell", "uiautomator", "dump", REMOTE_XML],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    run_adb(adb, serial, "shell", "uiautomator", "dump", REMOTE_XML)
     print("  [OK]  UI layout dump complete.")
 
     # 2b — Visual snapshot (PNG) immediately after
     print("  [2b] Capturing screen -> /sdcard/ui_screen.png")
-    subprocess.run(
-        [adb, "-s", serial, "shell", "screencap", "-p", REMOTE_PNG],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    run_adb(adb, serial, "shell", "screencap", "-p", REMOTE_PNG)
     print("  [OK]  Screenshot capture complete.")
 
 
@@ -154,22 +94,12 @@ def pull_files(
 
     # Pull XML
     print(f"  [3a] Pulling {REMOTE_XML} -> {local_xml}")
-    subprocess.run(
-        [adb, "-s", serial, "pull", REMOTE_XML, str(local_xml)],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    run_adb(adb, serial, "pull", REMOTE_XML, str(local_xml))
     print("  [OK]  XML transferred.")
 
     # Pull PNG
     print(f"  [3b] Pulling {REMOTE_PNG} -> {local_png}")
-    subprocess.run(
-        [adb, "-s", serial, "pull", REMOTE_PNG, str(local_png)],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    run_adb(adb, serial, "pull", REMOTE_PNG, str(local_png))
     print("  [OK]  PNG transferred.")
 
     return local_xml, local_png
@@ -184,12 +114,7 @@ def cleanup_device(adb: str, serial: str) -> None:
     print("\n[PHASE 4] Cleaning up temporary files on device...")
 
     for remote_path in (REMOTE_XML, REMOTE_PNG):
-        subprocess.run(
-            [adb, "-s", serial, "shell", "rm", "-f", remote_path],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
+        run_adb(adb, serial, "shell", "rm", "-f", remote_path)
         print(f"  [OK]  Deleted {remote_path}")
 
 
@@ -222,7 +147,7 @@ def run_pipeline(
     print("=" * 60)
 
     # Resolve ADB binary
-    adb = resolve_adb()
+    adb = resolve_adb(verbose=True)
 
     try:
         # Phase 1 — verify device

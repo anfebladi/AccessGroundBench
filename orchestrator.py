@@ -5,11 +5,12 @@ Master data-collection driver for AccessGroundBench.
 
 Automates the full Phase 1 pipeline:
   For each target screen x each accessibility profile ->
-    1. Prompt developer to navigate the emulator
-    2. Apply the accessibility profile via layout_modifier
+    1. Apply the accessibility profile via layout_modifier
+    2. Launch and validate the target app via app_navigator
     3. Capture screenshot + UI hierarchy via screenshot_pipeline
-    4. Extract bounding-box labels via bound_extractor
-    5. Reset the emulator to baseline
+    4. Validate the captured XML belongs to the requested screen
+    5. Extract bounding-box labels via bound_extractor
+    6. Reset the emulator to baseline
 
 All assets are routed into the deterministic dataset/ directory structure:
   dataset/images/{screen}_{profile}.png
@@ -49,6 +50,7 @@ SCREENS: list[str] = [
 # Imports from sibling scripts (used as libraries)
 # ---------------------------------------------------------------------------
 import layout_modifier
+import app_navigator
 import screenshot_pipeline
 import bound_extractor
 
@@ -60,28 +62,16 @@ def ensure_dirs() -> None:
         print(f"  [DIR] {d}")
 
 
-def prompt_navigation(screen_name: str) -> None:
-    """
-    Human-in-the-loop synchronization point.
-    Pauses execution and waits for the developer to manually navigate
-    the emulator to the target screen.
-    """
-    print("\n" + "=" * 60)
-    print(f"  >>> Navigate the emulator to: {screen_name.upper()}")
-    print("=" * 60)
-    input("  Press ENTER when the screen is ready... ")
-    print()
-
-
 def run_screen(screen_name: str, dry_run: bool = False) -> None:
     """
     Run all accessibility profile captures for a single target screen.
 
     Steps:
       1. Iterate through every profile in ELDER_PROFILES
-      2. Apply profile -> capture -> extract labels
+      2. Apply profile -> navigate -> capture -> validate -> extract labels
       3. Reset emulator to baseline when all profiles are done
     """
+    app_navigator.get_screen_target(screen_name)
     profiles = layout_modifier.ELDER_PROFILES
 
     for profile_name in profiles:
@@ -93,25 +83,32 @@ def run_screen(screen_name: str, dry_run: bool = False) -> None:
 
         if dry_run:
             print(f"  [DRY-RUN] Would apply profile: {profile_name}")
+            print(f"  [DRY-RUN] Would navigate to screen: {screen_name}")
             print(f"  [DRY-RUN] Would capture -> {IMAGES_DIR / f'{stem}.png'}")
             print(f"  [DRY-RUN] Would dump XML -> {RAW_XML_DIR / f'{stem}.xml'}")
+            print(f"  [DRY-RUN] Would validate XML package for: {screen_name}")
             print(f"  [DRY-RUN] Would extract  -> {LABELS_DIR / f'{stem}.json'}")
             continue
 
         # Step 1: Apply the accessibility profile
-        print(f"\n  [1/3] Applying profile: {profile_name}")
+        print(f"\n  [1/4] Applying profile: {profile_name}")
         layout_modifier.apply_profile(profile_name)
 
-        # Step 2: Capture screenshot + UI hierarchy
-        print(f"\n  [2/3] Capturing screen assets...")
+        # Step 2: Navigate to the requested screen after profile reflow
+        print(f"\n  [2/4] Navigating to target screen...")
+        app_navigator.navigate_to_screen(screen_name)
+
+        # Step 3: Capture screenshot + UI hierarchy
+        print(f"\n  [3/4] Capturing screen assets...")
         xml_path, png_path = screenshot_pipeline.run_pipeline(
             output_name=stem,
             image_dir=IMAGES_DIR,
             xml_dir=RAW_XML_DIR,
         )
+        app_navigator.validate_xml_package(xml_path, screen_name)
 
-        # Step 3: Extract bounding-box labels from the XML
-        print(f"\n  [3/3] Extracting bounding-box labels...")
+        # Step 4: Extract bounding-box labels from the XML
+        print(f"\n  [4/4] Extracting bounding-box labels...")
         label_path = LABELS_DIR / f"{stem}.json"
         bound_extractor.run(str(xml_path), output_path=str(label_path))
 
@@ -157,9 +154,6 @@ def main() -> None:
     ensure_dirs()
 
     for screen_name in screens:
-        if not dry_run:
-            prompt_navigation(screen_name)
-
         run_screen(screen_name, dry_run=dry_run)
 
     print("\n" + "=" * 60)
