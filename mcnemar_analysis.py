@@ -4,9 +4,14 @@ mcnemar_analysis.py
 Phase 4: Statistical Testing via McNemar's Test.
 
 Evaluates whether accessibility layout distortions cause a statistically
-significant degradation in VLM spatial grounding capabilities.
+significant degradation in VLM spatial grounding capabilities -- and whether
+supplying the accessibility tree recovers it.
 
-For each experimental profile vs. baseline:
+Comparisons are auto-selected from the profiles present in the CSV:
+  A vs B: baseline vs each elder profile            (layout effect)
+  B vs C: each elder profile vs its _tree variant   (a11y tree effect)
+
+For each comparison:
   1. Constructs paired samples keyed by (screen, target_text)
   2. Builds a 2x2 contingency matrix of discordant pairs
   3. Selects asymptotic (Edwards' correction) or exact binomial test
@@ -41,6 +46,12 @@ ALPHA = 0.05
 
 # Discordant pair threshold for test selection
 ASYMPTOTIC_THRESHOLD = 25
+
+# Baseline (condition A) profile name
+BASELINE_PROFILE = "baseline"
+
+# Suffix marking condition-C rows written by vlm_evaluator.py (--with-tree)
+TREE_SUFFIX = "_tree"
 
 # Experimental profiles to compare against baseline
 EXPERIMENTAL_PROFILES = [
@@ -102,36 +113,76 @@ def build_pairs(rows: list[dict]) -> dict[str, dict[str, dict[str, int]]]:
 def compute_contingency(
     pairs: dict[str, dict[str, int]],
     experimental_profile: str,
+    base_profile: str = BASELINE_PROFILE,
 ) -> tuple[int, int, int, int]:
     """
-    Compile the 2x2 contingency matrix for baseline vs. one experimental profile.
+    Compile the 2x2 contingency matrix for base_profile vs. experimental_profile.
+
+    base_profile defaults to "baseline" so existing baseline-vs-elder calls are
+    unchanged; pass an elder profile as base_profile to run B-vs-C comparisons
+    (e.g. elder_combo_max vs elder_combo_max_tree).
 
     Returns (a, b, c, d) where:
-      a = Both Pass      (baseline=1, experimental=1)
-      b = Broke It       (baseline=1, experimental=0) -- degradation
-      c = Fluke Recovery  (baseline=0, experimental=1)
-      d = Both Fail      (baseline=0, experimental=0)
+      a = Both Pass    (base=1, exp=1)
+      b = Broke It     (base=1, exp=0) -- exp did worse than base
+      c = Recovered    (base=0, exp=1) -- exp did better than base
+      d = Both Fail    (base=0, exp=0)
     """
     a = b = c = d = 0
 
     for key, scores in pairs.items():
-        baseline_score = scores.get("baseline")
+        base_score = scores.get(base_profile)
         experimental_score = scores.get(experimental_profile)
 
         # Skip elements without both scores
-        if baseline_score is None or experimental_score is None:
+        if base_score is None or experimental_score is None:
             continue
 
-        if baseline_score == 1 and experimental_score == 1:
+        if base_score == 1 and experimental_score == 1:
             a += 1
-        elif baseline_score == 1 and experimental_score == 0:
+        elif base_score == 1 and experimental_score == 0:
             b += 1
-        elif baseline_score == 0 and experimental_score == 1:
+        elif base_score == 0 and experimental_score == 1:
             c += 1
         else:
             d += 1
 
     return a, b, c, d
+
+
+def present_profiles(pairs: dict[str, dict[str, int]]) -> set[str]:
+    """Return the set of profile names that appear anywhere in the paired data."""
+    seen: set[str] = set()
+    for scores in pairs.values():
+        seen.update(scores.keys())
+    return seen
+
+
+def build_comparisons(pairs: dict[str, dict[str, int]]) -> list[tuple[str, str, str]]:
+    """
+    Decide which McNemar comparisons to run based on the profiles present.
+
+    Returns a list of (base_profile, exp_profile, label) tuples:
+      - baseline vs each elder profile present     -> "layout effect" (A vs B)
+      - each elder profile vs its _tree variant     -> "a11y tree effect" (B vs C)
+    Only comparisons whose BOTH profiles exist in the data are included.
+    """
+    seen = present_profiles(pairs)
+    comparisons: list[tuple[str, str, str]] = []
+
+    # A vs B: baseline vs each elder profile
+    if BASELINE_PROFILE in seen:
+        for profile in EXPERIMENTAL_PROFILES:
+            if profile in seen:
+                comparisons.append((BASELINE_PROFILE, profile, "layout effect"))
+
+    # B vs C: each elder profile vs its tree-augmented variant
+    for profile in EXPERIMENTAL_PROFILES:
+        tree_profile = profile + TREE_SUFFIX
+        if profile in seen and tree_profile in seen:
+            comparisons.append((profile, tree_profile, "a11y tree effect"))
+
+    return comparisons
 
 
 # ---------------------------------------------------------------------------
@@ -222,24 +273,27 @@ def run_mcnemar(b: int, c: int) -> dict:
 # ---------------------------------------------------------------------------
 
 def format_report(
-    profile: str,
+    base_profile: str,
+    exp_profile: str,
     a: int, b: int, c: int, d: int,
     result: dict,
+    label: str = "",
 ) -> str:
-    """Format a single profile's McNemar test results as a readable block."""
+    """Format a single base-vs-exp McNemar test result as a readable block."""
     total = a + b + c + d
+    tag = f"  [{label}]" if label else ""
     lines = [
         f"",
         f"{'=' * 60}",
-        f"  Profile: {profile}  vs.  baseline",
+        f"  {exp_profile}  vs.  {base_profile}{tag}",
         f"{'=' * 60}",
         f"",
         f"  2x2 Contingency Matrix (n={total} paired elements):",
         f"  +---------------------+--------------+--------------+",
         f"  |                     | Exp. PASS    | Exp. FAIL    |",
         f"  +---------------------+--------------+--------------+",
-        f"  | Baseline PASS       |  a = {a:<7} |  b = {b:<7} |",
-        f"  | Baseline FAIL       |  c = {c:<7} |  d = {d:<7} |",
+        f"  | Base PASS           |  a = {a:<7} |  b = {b:<7} |",
+        f"  | Base FAIL           |  c = {c:<7} |  d = {d:<7} |",
         f"  +---------------------+--------------+--------------+",
         f"",
         f"  Discordant pairs: b + c = {b + c}",
@@ -254,15 +308,14 @@ def format_report(
 
     if result["p_value"] < ALPHA:
         lines.append(
-            f"  >> REJECT H0 (p < {ALPHA}): The accessibility layout modifications "
-            f"caused a STATISTICALLY SIGNIFICANT alteration in VLM grounding "
-            f"performance for profile '{profile}'."
+            f"  >> REJECT H0 (p < {ALPHA}): STATISTICALLY SIGNIFICANT difference in "
+            f"VLM grounding between '{base_profile}' and '{exp_profile}'."
         )
     else:
         lines.append(
-            f"  >> FAIL TO REJECT H0 (p >= {ALPHA}): The model demonstrated "
-            f"spatial localization RESILIENCE. Performance differences fall within "
-            f"random statistical noise for profile '{profile}'."
+            f"  >> FAIL TO REJECT H0 (p >= {ALPHA}): no significant difference in "
+            f"VLM grounding between '{base_profile}' and '{exp_profile}'; "
+            f"differences fall within random statistical noise."
         )
 
     lines.append("")
@@ -303,31 +356,36 @@ def main() -> None:
     pairs = build_pairs(rows)
     print(f"[PAIRS] {len(pairs)} unique (screen, target_text) tracking keys")
 
-    # Run McNemar for each experimental profile
-    all_reports = []
+    # Decide which comparisons the data supports (A-vs-B, and B-vs-C if tree data present)
+    comparisons = build_comparisons(pairs)
+    if not comparisons:
+        print("[ERROR] No runnable comparisons found. Need a 'baseline' profile plus "
+              "at least one elder profile in the CSV.")
+        sys.exit(1)
 
-    for profile in EXPERIMENTAL_PROFILES:
-        a, b, c, d = compute_contingency(pairs, profile)
+    # Run McNemar for each comparison, caching results for the summary table
+    computed: list[tuple[str, str, str, tuple[int, int, int, int], dict]] = []
+
+    for base_profile, exp_profile, label in comparisons:
+        a, b, c, d = compute_contingency(pairs, exp_profile, base_profile)
         result = run_mcnemar(b, c)
-        report = format_report(profile, a, b, c, d, result)
-        all_reports.append(report)
-        print(report)
+        computed.append((base_profile, exp_profile, label, (a, b, c, d), result))
+        print(format_report(base_profile, exp_profile, a, b, c, d, result, label))
 
     # Summary table
-    print("\n" + "=" * 60)
+    print("\n" + "=" * 72)
     print("  Summary")
-    print("=" * 60)
-    print(f"  {'Profile':<25} {'b+c':>5}  {'Test':<22}  {'p-value':>10}  {'Result'}")
-    print(f"  {'-' * 25} {'-' * 5}  {'-' * 22}  {'-' * 10}  {'-' * 12}")
+    print("=" * 72)
+    print(f"  {'Comparison':<38} {'b+c':>5}  {'Test':<12}  {'p-value':>10}  {'Result'}")
+    print(f"  {'-' * 38} {'-' * 5}  {'-' * 12}  {'-' * 10}  {'-' * 12}")
 
-    for profile in EXPERIMENTAL_PROFILES:
-        a, b, c, d = compute_contingency(pairs, profile)
-        result = run_mcnemar(b, c)
+    for base_profile, exp_profile, label, (a, b, c, d), result in computed:
         verdict = "SIGNIFICANT" if result["p_value"] < ALPHA else "Not Sig."
         test_short = "Asymptotic" if b + c >= ASYMPTOTIC_THRESHOLD else "Exact Binom."
         if b + c == 0:
             test_short = "N/A"
-        print(f"  {profile:<25} {b + c:>5}  {test_short:<22}  "
+        name = f"{exp_profile} vs {base_profile}"
+        print(f"  {name:<38} {b + c:>5}  {test_short:<12}  "
               f"{result['p_value']:>10.6f}  {verdict}")
 
     print()
