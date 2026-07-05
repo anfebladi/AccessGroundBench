@@ -7,7 +7,7 @@ Runs fully offline against the saved dataset (no emulator required).
 For each screen x profile x target text element:
   1. Dynamically harvests evaluation targets from the baseline label JSON
   2. Checks if the target element is still visible in the modified profile
-  3. Sends the image + grounding prompt to Gemini API
+  3. Sends the image + grounding prompt through LiteLLM
   4. Parses the predicted (x, y) coordinates via regex
   5. Hit-tests against the ground-truth bounding box
   6. Logs every result to dataset/evaluation_results.csv
@@ -15,7 +15,7 @@ For each screen x profile x target text element:
 Usage:
   python vlm_evaluator.py                          # run full evaluation
   python vlm_evaluator.py --screens settings_main   # evaluate specific screens
-  python vlm_evaluator.py --model gemini-2.5-pro     # override model
+  python vlm_evaluator.py --model openai/gpt-4o-mini # override model
 """
 
 import argparse
@@ -27,12 +27,7 @@ import sys
 import time
 from pathlib import Path
 
-try:
-    from google import genai
-except ImportError:
-    print("[ERROR] google-genai package not installed.")
-    print("        Run: pip install google-genai")
-    sys.exit(1)
+from vlm_provider import call_vlm
 
 try:
     from dotenv import load_dotenv
@@ -49,11 +44,8 @@ IMAGES_DIR = DATASET_DIR / "images"
 LABELS_DIR = DATASET_DIR / "labels"
 RESULTS_CSV = DATASET_DIR / "evaluation_results.csv"
 
-# ---------------------------------------------------------------------------
-# Evaluation constants
-# ---------------------------------------------------------------------------
-API_PACE_SECONDS: float = 12.0  # 5 calls/minute rate cap
-DEFAULT_MODEL: str = "gemini-2.5-flash"
+MODEL_ENV_VAR: str = "VLM_MODEL"
+PACE_ENV_VAR: str = "VLM_PACE_SECONDS"
 
 # Regex to extract (x, y) integer coordinates from model response
 COORD_REGEX = re.compile(r"(\d+)\s*,\s*(\d+)")
@@ -74,6 +66,53 @@ ALL_PROFILES = [
     "elder_combo_max",
     "elder_combo_rtl",
 ]
+
+
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
+
+def resolve_model(cli_model: str | None) -> str:
+    """Resolve model precedence: CLI override, then VLM_MODEL env."""
+    if cli_model:
+        return cli_model
+
+    env_model = os.environ.get(MODEL_ENV_VAR, "").strip()
+    if env_model:
+        return env_model
+
+    print(f"[ERROR] {MODEL_ENV_VAR} is not set.")
+    print("")
+    print("  To fix this, set a LiteLLM model string in .env, for example:")
+    print("  VLM_MODEL=openai/gpt-4o-mini")
+    print("")
+    print("  Or pass a temporary override:")
+    print("  python vlm_evaluator.py --model openai/gpt-4o-mini")
+    raise SystemExit(1)
+
+
+def resolve_pace_seconds(cli_pace_seconds: str | None) -> float:
+    """Resolve optional per-call pacing: CLI override, env, then 0 seconds."""
+    raw_value = cli_pace_seconds
+    source = "--pace-seconds"
+    if raw_value is None:
+        raw_value = os.environ.get(PACE_ENV_VAR, "").strip()
+        source = PACE_ENV_VAR
+
+    if raw_value in (None, ""):
+        return 0.0
+
+    try:
+        pace_seconds = float(raw_value)
+    except ValueError:
+        print(f"[ERROR] {source} must be a number of seconds, got: {raw_value}")
+        raise SystemExit(1)
+
+    if pace_seconds < 0:
+        print(f"[ERROR] {source} must be >= 0, got: {raw_value}")
+        raise SystemExit(1)
+
+    return pace_seconds
 
 
 # ---------------------------------------------------------------------------
@@ -177,35 +216,13 @@ def append_result(row: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
-# VLM API Interface
-# ---------------------------------------------------------------------------
-
-def call_vlm(client: genai.Client, model: str, image_path: Path, target_text: str) -> str:
-    """
-    Send an image + grounding prompt to the Gemini API.
-    Returns the raw text response from the model.
-    """
-    prompt = PROMPT_TEMPLATE.format(target_text=target_text)
-
-    # Upload the image file
-    uploaded_file = client.files.upload(file=image_path)
-
-    response = client.models.generate_content(
-        model=model,
-        contents=[uploaded_file, prompt],
-    )
-
-    return response.text if response.text else ""
-
-
-# ---------------------------------------------------------------------------
 # Main Evaluation Loop
 # ---------------------------------------------------------------------------
 
 def evaluate_screen(
-    client: genai.Client,
     model: str,
     screen_name: str,
+    pace_seconds: float,
 ) -> int:
     """
     Evaluate all profiles for a single screen.
@@ -261,10 +278,12 @@ def evaluate_screen(
 
             # Call the VLM
             try:
-                raw_response = call_vlm(client, model, image_path, target_text)
+                prompt = PROMPT_TEMPLATE.format(target_text=target_text)
+                raw_response = call_vlm(model, image_path, prompt)
             except Exception as exc:
                 print(f"    [API-ERROR] '{target_text}': {exc}")
-                raw_response = ""
+                print("    [ABORT] Provider/API error; no CSV row written for this target.")
+                raise SystemExit(1) from exc
 
             # Parse coordinates
             x_pred, y_pred = parse_coordinates(raw_response)
@@ -290,9 +309,9 @@ def evaluate_screen(
             print(f"    [{status}] '{target_text}' -> pred=({x_pred},{y_pred}) "
                   f"box={box}")
 
-            # Rate limiting: 12-second blocking delay
-            print(f"    [PACE] Sleeping {API_PACE_SECONDS}s...")
-            time.sleep(API_PACE_SECONDS)
+            if pace_seconds > 0:
+                print(f"    [PACE] Sleeping {pace_seconds}s...")
+                time.sleep(pace_seconds)
 
     return count
 
@@ -306,25 +325,22 @@ def main() -> None:
         help="Override the screen list (e.g., --screens settings_main dialer)",
     )
     parser.add_argument(
-        "--model", default=DEFAULT_MODEL,
-        help=f"Gemini model to use (default: {DEFAULT_MODEL})",
+        "--model", default=None,
+        help=(
+            "LiteLLM model string to use. Overrides VLM_MODEL. "
+            "Required if VLM_MODEL is not set."
+        ),
+    )
+    parser.add_argument(
+        "--pace-seconds", default=None,
+        help=(
+            "Optional delay after successful API calls. Overrides "
+            "VLM_PACE_SECONDS. Default: 0"
+        ),
     )
     args = parser.parse_args()
-
-    # Resolve API key — checks .env first (via dotenv), then system env vars
-    api_key = os.environ.get("GOOGLE_API_KEY")
-    if not api_key or api_key == "your-api-key-here":
-        print("[ERROR] GOOGLE_API_KEY is not set.")
-        print("")
-        print("  To fix this:")
-        print("  1. Get a free key at: https://aistudio.google.com/apikey")
-        print("  2. Open the .env file in the project root")
-        print("  3. Replace 'your-api-key-here' with your actual key")
-        print("  4. Save the file and re-run this script")
-        sys.exit(1)
-
-    # Initialize Gemini client
-    client = genai.Client(api_key=api_key)
+    model = resolve_model(args.model)
+    pace_seconds = resolve_pace_seconds(args.pace_seconds)
 
     # Auto-discover screens from baseline label files if none specified
     if args.screens:
@@ -342,7 +358,8 @@ def main() -> None:
 
     print("=" * 60)
     print("  AccessGroundBench -- VLM Grounding Evaluator")
-    print(f"  Model   : {args.model}")
+    print(f"  Model   : {model}")
+    print(f"  Pace    : {pace_seconds}s")
     print(f"  Screens : {', '.join(screens)}")
     print(f"  CSV     : {RESULTS_CSV}")
     print("=" * 60)
@@ -354,7 +371,7 @@ def main() -> None:
         print(f"\n{'=' * 60}")
         print(f"  Evaluating screen: {screen_name}")
         print(f"{'=' * 60}")
-        rows = evaluate_screen(client, args.model, screen_name)
+        rows = evaluate_screen(model, screen_name, pace_seconds)
         total_rows += rows
 
     print("\n" + "=" * 60)

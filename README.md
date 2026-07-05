@@ -8,8 +8,8 @@ The pipeline has four phases:
 
 1. **Data Collection** (`orchestrator.py`): Capture screenshots and UI
    hierarchies across multiple accessibility profiles via an Android emulator.
-2. **VLM Evaluation** (`vlm_evaluator.py`): Send images to Gemini and
-   evaluate grounding accuracy via bounding-box hit-testing.
+2. **VLM Evaluation** (`vlm_evaluator.py`): Send images to LiteLLM-supported
+   vision models and evaluate grounding accuracy via bounding-box hit-testing.
 3. **Statistical Analysis** (`mcnemar_analysis.py`): Run McNemar's test to
    determine whether layout distortions cause statistically significant
    performance degradation.
@@ -44,8 +44,8 @@ AccessGroundBench/
 - `adb_utils.py` — Shared helper functions for resolving ADB, selecting the
   active emulator, and running device-scoped ADB commands.
 - `vlm_evaluator.py` — Offline evaluation engine that harvests targets from
-  baseline labels, calls Gemini with grounding prompts, parses coordinates,
-  and logs hit-test scores to CSV.
+  baseline labels, calls LiteLLM-supported vision models with grounding
+  prompts, parses coordinates, and logs hit-test scores to CSV.
 - `mcnemar_analysis.py` — Statistical analysis that builds paired contingency
   matrices and runs McNemar's test (asymptotic or exact binomial).
 - `screenshot_pipeline.py` — Captures the active emulator screen as a `.png`
@@ -70,13 +70,13 @@ AccessGroundBench/
 - Python 3.10+
 - Android Studio with an Android Virtual Device (AVD)
 - Android SDK Platform Tools (`adb`)
-- `google-genai` Python package (for VLM evaluation)
+- `litellm` Python package (for VLM evaluation)
 - `scipy` Python package (for statistical analysis, optional but recommended)
 
 Install dependencies:
 
 ```bash
-pip install google-genai scipy
+pip install litellm scipy
 ```
 
 ## Set up ADB on Windows
@@ -147,10 +147,15 @@ python orchestrator.py --screens settings_main contacts
 
 ### Phase 2: VLM evaluation
 
-Set your Gemini API key:
+Set the model and API key for the direct provider model you want to run:
 
 ```bash
-set GOOGLE_API_KEY=your-key-here
+export VLM_MODEL=openai/gpt-4o-mini
+export VLM_PACE_SECONDS=0.5
+export VLM_MAX_RETRIES=3
+export GOOGLE_API_KEY=your-key-here
+export OPENAI_API_KEY=your-key-here
+export ANTHROPIC_API_KEY=your-key-here
 ```
 
 Run the evaluator:
@@ -162,14 +167,18 @@ python vlm_evaluator.py
 Options:
 
 ```bash
-python vlm_evaluator.py --model gemini-2.5-pro
+# Temporary model overrides if VLM_MODEL is not set or you want to switch models
+python vlm_evaluator.py --model openai/gpt-4o-mini
+python vlm_evaluator.py --model gemini/gemini-2.5-pro
+python vlm_evaluator.py --model anthropic/claude-3-5-sonnet-latest
+python vlm_evaluator.py --pace-seconds 0.5
 python vlm_evaluator.py --screens settings_main
 ```
 
 The evaluator automatically:
 - Harvests text targets from baseline labels
 - Detects off-screen elements (immediate failure)
-- Rate-limits API calls to 5/minute (12s delay)
+- Retries provider rate limits, with optional pacing via `VLM_PACE_SECONDS`
 - Hit-tests predictions against ground-truth bounding boxes
 - Logs all results to `dataset/evaluation_results.csv`
 
@@ -208,16 +217,39 @@ python bound_extractor.py outputs/my_capture.xml
 
 No emulator is connected. Start one from Android Studio `Tools > Device Manager`.
 
-### `google-genai not installed`
+### `litellm not installed`
 
 ```bash
-pip install google-genai
+pip install litellm
 ```
 
-### `GOOGLE_API_KEY not set`
+### Provider API key not set
 
 ```bash
-set GOOGLE_API_KEY=your-key-here
+export VLM_MODEL=openai/gpt-4o-mini
+export VLM_PACE_SECONDS=0.5
+export VLM_MAX_RETRIES=3
+export GOOGLE_API_KEY=your-key-here
+export OPENAI_API_KEY=your-key-here
+export ANTHROPIC_API_KEY=your-key-here
+```
+
+### `VLM_MODEL not set`
+
+Set a LiteLLM model string in `.env` or pass `--model`:
+
+```bash
+export VLM_MODEL=openai/gpt-4o-mini
+python vlm_evaluator.py --model openai/gpt-4o-mini
+```
+
+### OpenAI rate limit errors
+
+Use a small optional delay between successful calls:
+
+```bash
+export VLM_PACE_SECONDS=0.5
+python vlm_evaluator.py --pace-seconds 0.5
 ```
 
 ### `scipy not installed`
