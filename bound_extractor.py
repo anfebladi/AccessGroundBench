@@ -148,12 +148,17 @@ def save_json(records: list[dict], output_path: str | Path) -> None:
     print(f"[SAVED] {len(records)} nodes -> {output_path}")
 
 
-def run(xml_path: str) -> None:
+def run(xml_path: str, output_path: str | Path | None = None) -> Path:
     """
     Entry point: extract bounds from an XML file and save a matching JSON.
 
-    The output JSON shares the same base filename as the input XML.
-    Example: capture_20260702.xml -> capture_20260702.json
+    Args:
+        xml_path:    Path to the source XML layout hierarchy.
+        output_path: Optional explicit path for the output JSON file.
+                     Defaults to the same directory/stem as the XML input.
+
+    Returns:
+        The Path of the saved JSON file.
     """
     xml_path = Path(xml_path)
 
@@ -167,9 +172,15 @@ def run(xml_path: str) -> None:
     records = extract(xml_path)
     print(f"[EXTRACTED] {len(records)} interactive nodes from layout tree")
 
-    # Save with same stem
-    json_path = xml_path.with_suffix(".json")
+    # Determine output path
+    if output_path is not None:
+        json_path = Path(output_path)
+        json_path.parent.mkdir(parents=True, exist_ok=True)
+    else:
+        json_path = xml_path.with_suffix(".json")
+
     save_json(records, json_path)
+    return json_path
 
 
 if __name__ == "__main__":

@@ -1,0 +1,112 @@
+"""Evaluation loop for VLM grounding benchmark runs."""
+
+import json
+import time
+from pathlib import Path
+
+from vlm_provider import call_vlm
+
+from .config import ALL_PROFILES, IMAGES_DIR, LABELS_DIR, RESULTS_CSV
+from .results import append_result
+from .scoring import hit_test, parse_coordinates
+from .targets import find_element_in_profile, harvest_targets
+
+PROMPT_TEMPLATE = (
+    "You are an autonomous mobile agent navigating an Android user interface. "
+    "Look closely at this image. Provide the exact central (x, y) pixel "
+    "coordinates needed to click on the text element: '{target_text}'. "
+    "Return your response strictly in the bracket format: [x, y]"
+)
+
+
+def evaluate_screen(
+    model: str,
+    screen_name: str,
+    pace_seconds: float,
+    images_dir: Path = IMAGES_DIR,
+    labels_dir: Path = LABELS_DIR,
+    results_csv: Path = RESULTS_CSV,
+    profiles: list[str] | None = None,
+) -> int:
+    """
+    Evaluate all profiles for a single screen.
+
+    Returns the total number of evaluation rows generated.
+    """
+    targets = harvest_targets(screen_name, labels_dir)
+    if not targets:
+        print(f"  [SKIP] No targets for screen: {screen_name}")
+        return 0
+
+    count = 0
+    profiles_to_run = profiles if profiles is not None else ALL_PROFILES
+
+    for profile_name in profiles_to_run:
+        image_path = images_dir / f"{screen_name}_{profile_name}.png"
+        label_path = labels_dir / f"{screen_name}_{profile_name}.json"
+
+        if not image_path.is_file():
+            print(f"  [SKIP] Missing image: {image_path.name}")
+            continue
+        if not label_path.is_file():
+            print(f"  [SKIP] Missing labels: {label_path.name}")
+            continue
+
+        with open(label_path, "r", encoding="utf-8") as f:
+            profile_labels = json.load(f)
+
+        print(f"\n  -- {screen_name} / {profile_name} "
+              f"({len(targets)} targets) --")
+
+        for target in targets:
+            target_text = target["text"]
+            box = find_element_in_profile(profile_labels, target_text)
+
+            if box is None:
+                row = {
+                    "screen": screen_name,
+                    "target_text": target_text,
+                    "profile": profile_name,
+                    "raw_response": "[OFF-SCREEN]",
+                    "x_pred": -1, "y_pred": -1,
+                    "x_min": "", "y_min": "", "x_max": "", "y_max": "",
+                    "score": 0,
+                }
+                append_result(results_csv, row)
+                count += 1
+                print(f"    [OFF-SCREEN] '{target_text}' -> score=0")
+                continue
+
+            try:
+                prompt = PROMPT_TEMPLATE.format(target_text=target_text)
+                raw_response = call_vlm(model, image_path, prompt)
+            except Exception as exc:
+                print(f"    [API-ERROR] '{target_text}': {exc}")
+                print("    [ABORT] Provider/API error; no CSV row written for this target.")
+                raise SystemExit(1) from exc
+
+            x_pred, y_pred = parse_coordinates(raw_response)
+            score = hit_test(x_pred, y_pred, box)
+
+            row = {
+                "screen": screen_name,
+                "target_text": target_text,
+                "profile": profile_name,
+                "raw_response": raw_response.replace("\n", " ").strip(),
+                "x_pred": x_pred, "y_pred": y_pred,
+                "x_min": box[0], "y_min": box[1],
+                "x_max": box[2], "y_max": box[3],
+                "score": score,
+            }
+            append_result(results_csv, row)
+            count += 1
+
+            status = "HIT" if score == 1 else "MISS"
+            print(f"    [{status}] '{target_text}' -> pred=({x_pred},{y_pred}) "
+                  f"box={box}")
+
+            if pace_seconds > 0:
+                print(f"    [PACE] Sleeping {pace_seconds}s...")
+                time.sleep(pace_seconds)
+
+    return count

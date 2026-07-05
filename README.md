@@ -1,37 +1,85 @@
 # AccessGroundBench
 
-AccessGroundBench is a small Android UI data-collection toolkit. It captures
-synchronized screenshots and accessibility/layout XML from an Android emulator,
-then converts the XML into JSON bounding-box records for later evaluation.
+AccessGroundBench is an Android UI evaluation framework that measures how
+accessibility layout modifications affect Vision Language Model (VLM) spatial
+grounding accuracy.
+
+The pipeline has four phases:
+
+1. **Data Collection** (`orchestrator.py`): Capture screenshots and UI
+   hierarchies across multiple accessibility profiles via an Android emulator.
+2. **VLM Evaluation** (`vlm_evaluator.py`): Send images to LiteLLM-supported
+   vision models and evaluate grounding accuracy via bounding-box hit-testing.
+3. **Statistical Analysis** (`mcnemar_analysis.py`): Run McNemar's test to
+   determine whether layout distortions cause statistically significant
+   performance degradation.
+
+## Directory structure
+
+```text
+AccessGroundBench/
+├── orchestrator.py          # Phase 1 — master data-collection driver
+├── vlm_evaluator.py         # Phase 2 — VLM grounding + hit-test scoring
+├── mcnemar_analysis.py      # Phase 3 — McNemar's statistical analysis
+├── app_navigator.py         # ADB app launcher/foreground validator
+├── adb_utils.py             # Shared ADB path/device/command helpers
+├── screenshot_pipeline.py   # ADB capture utility (used by orchestrator)
+├── layout_modifier.py       # Accessibility profile injector (used by orchestrator)
+├── bound_extractor.py       # XML → JSON bounding-box extractor (used by orchestrator)
+├── dataset/
+│   ├── images/              # Finalized screenshots ({screen}_{profile}.png)
+│   ├── raw_xml/             # Raw UI hierarchy dumps ({screen}_{profile}.xml)
+│   ├── labels/              # Parsed JSON bounding boxes ({screen}_{profile}.json)
+│   └── evaluation_results.csv  # Master evaluation ledger
+├── outputs/                 # Legacy capture output directory
+└── sample_input/            # Committed sample/reference inputs
+```
 
 ## What each script does
 
-- `screenshot_pipeline.py` captures the active emulator screen as a `.png` and
-  dumps the Android UI hierarchy as a matching `.xml` file.
-- `layout_modifier.py` applies accessibility stress profiles to the emulator,
+- `orchestrator.py` — Master driver that iterates through target screens and
+  accessibility profiles, automating the capture/extraction loop.
+- `app_navigator.py` — Launches each target Android app/screen through ADB and
+  validates the foreground package before capture.
+- `adb_utils.py` — Shared helper functions for resolving ADB, selecting the
+  active emulator, and running device-scoped ADB commands.
+- `vlm_evaluator.py` — Offline evaluation engine that harvests targets from
+  baseline labels, calls LiteLLM-supported vision models with grounding
+  prompts, parses coordinates, and logs hit-test scores to CSV.
+- `mcnemar_analysis.py` — Statistical analysis that builds paired contingency
+  matrices and runs McNemar's test (asymptotic or exact binomial).
+- `screenshot_pipeline.py` — Captures the active emulator screen as a `.png`
+  and dumps the Android UI hierarchy as a matching `.xml` file.
+- `layout_modifier.py` — Applies accessibility stress profiles to the emulator,
   including larger text, density changes, and RTL layout.
-- `bound_extractor.py` converts one captured XML hierarchy into cleaned JSON
+- `bound_extractor.py` — Converts one captured XML hierarchy into cleaned JSON
   bounding-box records.
 
-Generated captures and extracted JSON are written to `outputs/`. Existing
-files in `sample_input/` are committed sample/reference inputs.
+## Accessibility profiles
+
+| Profile            | Font Scale | Density | RTL |
+|--------------------|-----------|---------|-----|
+| `baseline`         | 1.0       | reset   | off |
+| `elder_text_heavy` | 1.4       | reset   | off |
+| `elder_zoom_heavy` | 1.0       | 480     | off |
+| `elder_combo_max`  | 1.6       | 520     | off |
+| `elder_combo_rtl`  | 1.5       | 480     | on  |
 
 ## Prerequisites
 
-This project currently expects a local Android emulator.
+- Python 3.10+
+- Android Studio with an Android Virtual Device (AVD)
+- Android SDK Platform Tools (`adb`)
+- `litellm` Python package (for VLM evaluation)
+- `scipy` Python package (for statistical analysis, optional but recommended)
 
-You need:
+Install dependencies:
 
-- Python 3
-- Android Studio
-- Android SDK Platform Tools, especially `adb`
-- An Android virtual device from Android Studio Device Manager
+```bash
+pip install litellm scipy
+```
 
-Install Android Studio from:
-
-https://developer.android.com/studio
-
-## Set up ADB on macOS
+## Set up ADB on Windows
 
 First, check whether `adb` is already available:
 
@@ -39,26 +87,13 @@ First, check whether `adb` is already available:
 adb devices
 ```
 
-If you see `zsh: command not found: adb`, add Android SDK Platform Tools to
-your shell path.
+The scripts automatically resolve `adb.exe` from `%LOCALAPPDATA%\Android\Sdk\platform-tools\`.
+If that path doesn't exist, ensure `adb` is on your system `PATH`.
 
-For the current terminal only:
+For macOS:
 
 ```bash
 export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
-```
-
-To make it permanent:
-
-```bash
-echo 'export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"' >> ~/.zshrc
-source ~/.zshrc
-```
-
-Then verify again:
-
-```bash
-adb devices
 ```
 
 ## Start an emulator
@@ -68,189 +103,160 @@ adb devices
 3. Create a virtual device if you do not already have one.
 4. Start the virtual device.
 5. Wait until Android fully boots to the home screen.
-6. In this project directory, run:
+6. Verify:
 
 ```bash
 adb devices
 ```
 
-Expected output should include a device with status `device`:
+Expected output:
 
 ```text
 List of devices attached
 emulator-5554    device
 ```
 
-If `adb devices` only prints `List of devices attached` with no device rows,
-the emulator is not running or has not finished booting yet.
+## Full end-to-end workflow
 
-## Run a basic capture
-
-From the project root:
+### Phase 1: Data collection
 
 ```bash
-python3 screenshot_pipeline.py
+python orchestrator.py
 ```
 
-This writes a timestamped `.xml` and `.png` pair into `outputs/`, for example:
+The script will:
+- Iterate through the predefined screen list
+- Apply all 5 accessibility profiles
+- Automatically launch and validate each target app before capture
+- Capture screenshots and UI hierarchies
+- Abort if the captured XML belongs to the wrong app
+- Extract bounding-box labels
+- Reset the emulator after each screen
 
-```text
-outputs/capture_20260703_185059.xml
-outputs/capture_20260703_185059.png
-```
-
-You can also provide a custom output name:
+To validate the pipeline without an emulator:
 
 ```bash
-python3 screenshot_pipeline.py my_capture_name
+python orchestrator.py --dry-run
 ```
 
-That writes:
-
-```text
-outputs/my_capture_name.xml
-outputs/my_capture_name.png
-```
-
-## Apply layout stress profiles
-
-Use `layout_modifier.py` to change the emulator display configuration before a
-capture.
-
-Choose one profile and pass it to `layout_modifier.py`:
+To run specific screens:
 
 ```bash
-python3 layout_modifier.py <profile_name>
+python orchestrator.py --screens settings_main contacts
 ```
 
-Available stress profiles:
+### Phase 2: VLM evaluation
 
-- `baseline`
-- `elder_text_heavy`
-- `elder_zoom_heavy`
-- `elder_combo_max`
-- `elder_combo_rtl`
-
-`reset` is the restore command, not a stress profile:
+Set the model and API key for the direct provider model you want to run:
 
 ```bash
-python3 layout_modifier.py reset
+export VLM_MODEL=openai/gpt-4o-mini
+export VLM_PACE_SECONDS=0.5
+export VLM_MAX_RETRIES=3
+export GOOGLE_API_KEY=your-key-here
+export OPENAI_API_KEY=your-key-here
+export ANTHROPIC_API_KEY=your-key-here
 ```
 
-Example selectable profile commands:
+Run the evaluator:
 
 ```bash
-python3 layout_modifier.py elder_text_heavy
-python3 layout_modifier.py elder_zoom_heavy
-python3 layout_modifier.py elder_combo_max
-python3 layout_modifier.py elder_combo_rtl
+python vlm_evaluator.py
 ```
 
-For example, `elder_combo_max` can be swapped for any other profile:
+Options:
 
 ```bash
-python3 layout_modifier.py elder_combo_max
-python3 screenshot_pipeline.py
-python3 layout_modifier.py reset
+# Temporary model overrides if VLM_MODEL is not set or you want to switch models
+python vlm_evaluator.py --model openai/gpt-4o-mini
+python vlm_evaluator.py --model gemini/gemini-2.5-pro
+python vlm_evaluator.py --model anthropic/claude-3-5-sonnet-latest
+python vlm_evaluator.py --pace-seconds 0.5
+python vlm_evaluator.py --screens settings_main
 ```
 
-Always reset the emulator after stress-profile captures:
+The evaluator automatically:
+- Harvests text targets from baseline labels
+- Detects off-screen elements (immediate failure)
+- Retries provider rate limits, with optional pacing via `VLM_PACE_SECONDS`
+- Hit-tests predictions against ground-truth bounding boxes
+- Logs all results to `dataset/evaluation_results.csv`
+
+### Phase 3: Statistical analysis
 
 ```bash
-python3 layout_modifier.py reset
+python mcnemar_analysis.py
 ```
 
-## Extract JSON bounds from XML
-
-After you have a captured XML file, convert it to JSON:
+Options:
 
 ```bash
-python3 bound_extractor.py outputs/capture_20260703_185059.xml
+python mcnemar_analysis.py --csv path/to/results.csv
 ```
 
-The JSON file is written next to the XML with the same base name:
+The analysis:
+- Pairs each element's baseline and experimental scores
+- Builds 2×2 contingency matrices per profile
+- Selects asymptotic McNemar (b+c ≥ 25) or exact binomial (b+c < 25)
+- Reports p-values against α=0.05
 
-```text
-outputs/capture_20260703_185059.json
-```
+## Legacy workflow
 
-To test the extractor with a committed sample input, run:
+The individual utility scripts still work standalone:
 
 ```bash
-python3 bound_extractor.py sample_input/capture_20260702_191657.xml
-```
-
-That creates a local JSON file next to the sample XML:
-
-```text
-sample_input/capture_20260702_191657.json
+python layout_modifier.py elder_combo_max
+python screenshot_pipeline.py my_capture
+python layout_modifier.py reset
+python bound_extractor.py outputs/my_capture.xml
 ```
 
 ## Troubleshooting
 
-### `zsh: command not found: adb`
+### `No devices found`
 
-Your terminal cannot find Android SDK Platform Tools. Run:
+No emulator is connected. Start one from Android Studio `Tools > Device Manager`.
 
-```bash
-export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
-```
-
-For a permanent fix, add the same export to `~/.zshrc`:
+### `litellm not installed`
 
 ```bash
-echo 'export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"' >> ~/.zshrc
-source ~/.zshrc
+pip install litellm
 ```
 
-### `adb devices` shows no devices
-
-If the output looks like this:
-
-```text
-List of devices attached
-```
-
-then no emulator is connected. Start an emulator from Android Studio
-`Tools > Device Manager`, wait for Android to fully boot, and run:
+### Provider API key not set
 
 ```bash
-adb devices
+export VLM_MODEL=openai/gpt-4o-mini
+export VLM_PACE_SECONDS=0.5
+export VLM_MAX_RETRIES=3
+export GOOGLE_API_KEY=your-key-here
+export OPENAI_API_KEY=your-key-here
+export ANTHROPIC_API_KEY=your-key-here
 ```
 
-again.
+### `VLM_MODEL not set`
 
-### `No authorized device found`
-
-The scripts could not find an emulator with status `device`. Confirm:
+Set a LiteLLM model string in `.env` or pass `--model`:
 
 ```bash
-adb devices
+export VLM_MODEL=openai/gpt-4o-mini
+python vlm_evaluator.py --model openai/gpt-4o-mini
 ```
 
-You need at least one row like:
+### OpenAI rate limit errors
 
-```text
-emulator-5554    device
-```
-
-### `DeprecationWarning: datetime.datetime.utcnow()`
-
-This warning can appear when running `screenshot_pipeline.py` on newer Python
-versions. It is harmless for now; the capture script still runs.
-
-## Typical full workflow
-
-From the project root, run:
+Use a small optional delay between successful calls:
 
 ```bash
-export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
-adb devices
-python3 layout_modifier.py elder_combo_max
-python3 screenshot_pipeline.py
-python3 layout_modifier.py reset
-python3 bound_extractor.py outputs/<captured_file_name>.xml
+export VLM_PACE_SECONDS=0.5
+python vlm_evaluator.py --pace-seconds 0.5
 ```
 
-Replace `<captured_file_name>` with the actual XML file stem created in
-`outputs/`.
+### `scipy not installed`
+
+McNemar's analysis works without scipy (using fallback calculations) but
+precise p-values require it:
+
+```bash
+pip install scipy
+```

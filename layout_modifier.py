@@ -11,8 +11,8 @@ direction simultaneously to simulate real-world elder-user UI conditions.
 import subprocess
 import sys
 import time
-from pathlib import Path
 
+from adb_utils import get_device_serial, resolve_adb, run_adb
 
 # ---------------------------------------------------------------------------
 # Profile Matrix
@@ -53,42 +53,12 @@ SETTLE_DELAY: float = 2.5
 
 
 # ---------------------------------------------------------------------------
-# ADB Path Resolution (mirrors screenshot_pipeline.py)
-# ---------------------------------------------------------------------------
-
-def resolve_adb() -> str:
-    """Locate adb.exe via LOCALAPPDATA, falling back to system PATH."""
-    import os
-    local_app_data = os.environ.get("LOCALAPPDATA", "")
-    sdk_adb = Path(local_app_data) / "Android" / "Sdk" / "platform-tools" / "adb.exe"
-    if sdk_adb.is_file():
-        return str(sdk_adb)
-    return "adb"
-
-
-def get_device_serial(adb: str) -> str:
-    """Return the first authorized device serial, or exit on failure."""
-    result = subprocess.run(
-        [adb, "devices"],
-        capture_output=True, text=True, check=True,
-    )
-    lines = result.stdout.strip().splitlines()[1:]
-    for line in lines:
-        parts = line.split()
-        if len(parts) >= 2 and parts[1] == "device":
-            return parts[0]
-    print("[ERROR] No authorized device found. Start the emulator and retry.")
-    sys.exit(1)
-
-
-# ---------------------------------------------------------------------------
 # Vector Applicators
 # ---------------------------------------------------------------------------
 
 def _run(adb: str, serial: str, *args: str) -> None:
     """Fire a single ADB command with check=True error enforcement."""
-    cmd = [adb, "-s", serial] + list(args)
-    subprocess.run(cmd, check=True, capture_output=True, text=True)
+    run_adb(adb, serial, *args)
 
 
 def apply_font_scale(adb: str, serial: str, value: str) -> None:
