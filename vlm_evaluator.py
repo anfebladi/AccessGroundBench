@@ -20,7 +20,8 @@ try:
 except ImportError:
     pass  # python-dotenv optional; fall back to system env vars
 
-from vlm_eval.config import LABELS_DIR, RESULTS_CSV, resolve_model, resolve_pace_seconds
+import os
+from vlm_eval.config import LABELS_DIR, get_results_csv, resolve_pace_seconds
 from vlm_eval.results import init_csv
 from vlm_eval.runner import evaluate_screen
 
@@ -45,11 +46,13 @@ def parse_args() -> argparse.Namespace:
         help="Override the screen list (e.g., --screens settings_main dialer)",
     )
     parser.add_argument(
-        "--model", default=None,
-        help=(
-            "LiteLLM model string to use. Overrides VLM_MODEL. "
-            "Required if VLM_MODEL is not set."
-        ),
+        "--models", nargs="+", 
+        default=[
+            "openai/gpt-4o-mini", 
+            "gemini/gemini-2.5-flash", 
+            "anthropic/claude-4.6-sonnet"
+        ],
+        help="List of LiteLLM models to run.",
     )
     parser.add_argument(
         "--pace-seconds", default=None,
@@ -61,9 +64,27 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def _is_valid_key(key: str | None) -> bool:
+    if not key:
+        return False
+    key_lower = key.lower()
+    if "your-" in key_lower and "-here" in key_lower:
+        return False
+    return True
+
+
+def api_key_exists(model_name: str) -> bool:
+    if model_name.startswith("openai/"):
+        return _is_valid_key(os.environ.get("OPENAI_API_KEY"))
+    elif model_name.startswith("gemini/"):
+        return _is_valid_key(os.environ.get("GEMINI_API_KEY")) or _is_valid_key(os.environ.get("GOOGLE_API_KEY"))
+    elif model_name.startswith("anthropic/"):
+        return _is_valid_key(os.environ.get("ANTHROPIC_API_KEY"))
+    return True
+
+
 def main() -> None:
     args = parse_args()
-    model = resolve_model(args.model)
     pace_seconds = resolve_pace_seconds(args.pace_seconds)
 
     screens = args.screens if args.screens else discover_screens()
@@ -73,26 +94,33 @@ def main() -> None:
 
     print("=" * 60)
     print("  AccessGroundBench -- VLM Grounding Evaluator")
-    print(f"  Model   : {model}")
+    print(f"  Models  : {', '.join(args.models)}")
     print(f"  Pace    : {pace_seconds}s")
     print(f"  Screens : {', '.join(screens)}")
-    print(f"  CSV     : {RESULTS_CSV}")
     print("=" * 60)
 
-    init_csv(RESULTS_CSV)
-
     total_rows = 0
-    for screen_name in screens:
-        print(f"\n{'=' * 60}")
-        print(f"  Evaluating screen: {screen_name}")
-        print(f"{'=' * 60}")
-        rows = evaluate_screen(model, screen_name, pace_seconds)
-        total_rows += rows
+    for model in args.models:
+        if not api_key_exists(model):
+            print(f"\n[SKIP] Missing API key for model: {model}")
+            continue
+
+        results_csv = get_results_csv(model)
+        init_csv(results_csv)
+        
+        print(f"\n" + "=" * 60)
+        print(f"  Evaluating Model: {model}")
+        print(f"  Output CSV:       {results_csv}")
+        print("=" * 60)
+
+        for screen_name in screens:
+            print(f"\n  -- Screen: {screen_name} --")
+            rows = evaluate_screen(model, screen_name, pace_seconds, results_csv)
+            total_rows += rows
 
     print("\n" + "=" * 60)
     print("  Evaluation complete!")
     print(f"  Total rows logged: {total_rows}")
-    print(f"  Results CSV: {RESULTS_CSV}")
     print("=" * 60)
 
 

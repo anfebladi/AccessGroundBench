@@ -228,11 +228,18 @@ def format_report(
 ) -> str:
     """Format a single profile's McNemar test results as a readable block."""
     total = a + b + c + d
+    base_acc = ((a + b) / total * 100) if total > 0 else 0
+    exp_acc = ((a + c) / total * 100) if total > 0 else 0
+
     lines = [
         f"",
         f"{'=' * 60}",
         f"  Profile: {profile}  vs.  baseline",
         f"{'=' * 60}",
+        f"",
+        f"  Accuracies:",
+        f"    Baseline Accuracy:     {base_acc:.1f}% ({a+b}/{total})",
+        f"    Experimental Accuracy: {exp_acc:.1f}% ({a+c}/{total})",
         f"",
         f"  2x2 Contingency Matrix (n={total} paired elements):",
         f"  +---------------------+--------------+--------------+",
@@ -280,8 +287,8 @@ def main() -> None:
     parser.add_argument(
         "--csv",
         type=Path,
-        default=DEFAULT_CSV,
-        help=f"Path to evaluation_results.csv (default: {DEFAULT_CSV})",
+        default=None,
+        help="Path to a specific evaluation_results_*.csv file. If omitted, runs on all in dataset/",
     )
     args = parser.parse_args()
 
@@ -292,43 +299,90 @@ def main() -> None:
 
     print("=" * 60)
     print("  AccessGroundBench -- McNemar's Test Analysis")
-    print(f"  CSV: {args.csv}")
     print(f"  alpha: {ALPHA}")
     print("=" * 60)
 
-    # Load data
-    rows = load_results(args.csv)
+    dataset_dir = PROJECT_ROOT / "dataset"
+    if args.csv:
+        csv_files = [args.csv]
+    else:
+        csv_files = list(dataset_dir.glob("evaluation_results_*.csv"))
+        if not csv_files:
+            # Fallback to the original default if no specific files found
+            if DEFAULT_CSV.is_file():
+                csv_files = [DEFAULT_CSV]
+            else:
+                print(f"[ERROR] No evaluation_results_*.csv files found in {dataset_dir}")
+                sys.exit(1)
 
-    # Build paired samples
-    pairs = build_pairs(rows)
-    print(f"[PAIRS] {len(pairs)} unique (screen, target_text) tracking keys")
+    for csv_file in csv_files:
+        print(f"\n{'=' * 60}")
+        print(f"  Analyzing: {csv_file.name}")
+        print(f"{'=' * 60}")
 
-    # Run McNemar for each experimental profile
-    all_reports = []
+        # Extract model name from filename: evaluation_results_model_name.csv
+        model_name = csv_file.stem.replace("evaluation_results_", "")
+        if model_name == "evaluation_results":
+            model_name = "default"
 
-    for profile in EXPERIMENTAL_PROFILES:
-        a, b, c, d = compute_contingency(pairs, profile)
-        result = run_mcnemar(b, c)
-        report = format_report(profile, a, b, c, d, result)
-        all_reports.append(report)
-        print(report)
+        # Load data
+        rows = load_results(csv_file)
 
-    # Summary table
-    print("\n" + "=" * 60)
-    print("  Summary")
-    print("=" * 60)
-    print(f"  {'Profile':<25} {'b+c':>5}  {'Test':<22}  {'p-value':>10}  {'Result'}")
-    print(f"  {'-' * 25} {'-' * 5}  {'-' * 22}  {'-' * 10}  {'-' * 12}")
+        # Build paired samples
+        pairs = build_pairs(rows)
+        print(f"[PAIRS] {len(pairs)} unique (screen, target_text) tracking keys")
 
-    for profile in EXPERIMENTAL_PROFILES:
-        a, b, c, d = compute_contingency(pairs, profile)
-        result = run_mcnemar(b, c)
-        verdict = "SIGNIFICANT" if result["p_value"] < ALPHA else "Not Sig."
-        test_short = "Asymptotic" if b + c >= ASYMPTOTIC_THRESHOLD else "Exact Binom."
-        if b + c == 0:
-            test_short = "N/A"
-        print(f"  {profile:<25} {b + c:>5}  {test_short:<22}  "
-              f"{result['p_value']:>10.6f}  {verdict}")
+        out_csv_path = dataset_dir / f"mcnemar_results_{model_name}.csv"
+        print(f"[INFO] Writing statistical results to: {out_csv_path}")
+
+        with open(out_csv_path, "w", newline="", encoding="utf-8") as out_f:
+            writer = csv.writer(out_f)
+            writer.writerow([
+                "Profile", "Total_Pairs", "Both_Pass_a", "Broke_It_b", 
+                "Fluke_Recovery_c", "Both_Fail_d", "Discordant_Pairs", 
+                "Baseline_Acc", "Exp_Acc", "Test_Used", "Statistic", "P_Value", "Significant"
+            ])
+
+            for profile in EXPERIMENTAL_PROFILES:
+                a, b, c, d = compute_contingency(pairs, profile)
+                result = run_mcnemar(b, c)
+                report = format_report(profile, a, b, c, d, result)
+                print(report)
+                
+                verdict = "Yes" if result["p_value"] < ALPHA else "No"
+                total = a + b + c + d
+                base_acc = f"{((a + b) / total * 100):.1f}%" if total > 0 else "0%"
+                exp_acc = f"{((a + c) / total * 100):.1f}%" if total > 0 else "0%"
+
+                writer.writerow([
+                    profile, total, a, b, c, d, b + c,
+                    base_acc, exp_acc,
+                    result["test"],
+                    result["statistic"] if result["statistic"] is not None else "",
+                    result["p_value"], verdict
+                ])
+
+        # Summary table
+        print("\n" + "=" * 80)
+        print(f"  Summary for {model_name}")
+        print("=" * 80)
+        print(f"  {'Profile':<20} {'Base Acc':>9} {'Exp Acc':>9} {'b+c':>5}  {'Test':<15}  {'p-value':>10}  {'Result'}")
+        print(f"  {'-' * 20} {'-' * 9} {'-' * 9} {'-' * 5}  {'-' * 15}  {'-' * 10}  {'-' * 12}")
+
+        for profile in EXPERIMENTAL_PROFILES:
+            a, b, c, d = compute_contingency(pairs, profile)
+            result = run_mcnemar(b, c)
+            verdict = "SIGNIFICANT" if result["p_value"] < ALPHA else "Not Sig."
+            test_short = "Asymptotic" if b + c >= ASYMPTOTIC_THRESHOLD else "Exact Binom."
+            if b + c == 0:
+                test_short = "N/A"
+            
+            total = a + b + c + d
+            base_acc = f"{((a + b) / total * 100):.1f}%" if total > 0 else "0%"
+            exp_acc = f"{((a + c) / total * 100):.1f}%" if total > 0 else "0%"
+
+            print(f"  {profile:<20} {base_acc:>9} {exp_acc:>9} {b + c:>5}  {test_short:<15}  "
+                  f"{result['p_value']:>10.6f}  {verdict}")
 
     print()
 

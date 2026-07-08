@@ -86,11 +86,11 @@ def _retry_delay_seconds(exc: Exception, fallback: float) -> float:
             pass
 
     message = str(exc)
-    ms_match = re.search(r"try again in\s+(\d+(?:\.\d+)?)\s*ms", message, re.I)
+    ms_match = re.search(r"(?:try again|retry) in\s+(\d+(?:\.\d+)?)\s*ms", message, re.I)
     if ms_match:
         return max(float(ms_match.group(1)) / 1000.0, 0.0)
 
-    seconds_match = re.search(r"try again in\s+(\d+(?:\.\d+)?)\s*s", message, re.I)
+    seconds_match = re.search(r"(?:try again|retry) in\s+(\d+(?:\.\d+)?)\s*s", message, re.I)
     if seconds_match:
         return max(float(seconds_match.group(1)), 0.0)
 

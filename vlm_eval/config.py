@@ -7,7 +7,6 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATASET_DIR = PROJECT_ROOT / "dataset"
 IMAGES_DIR = DATASET_DIR / "images"
 LABELS_DIR = DATASET_DIR / "labels"
-RESULTS_CSV = DATASET_DIR / "evaluation_results.csv"
 
 MODEL_ENV_VAR: str = "VLM_MODEL"
 PACE_ENV_VAR: str = "VLM_PACE_SECONDS"
@@ -62,3 +61,9 @@ def resolve_pace_seconds(cli_pace_seconds: str | None) -> float:
         raise SystemExit(1)
 
     return pace_seconds
+
+
+def get_results_csv(model: str) -> Path:
+    """Generate a dynamic CSV path based on the model name."""
+    clean_model = model.replace("/", "_")
+    return DATASET_DIR / f"evaluation_results_{clean_model}.csv"
