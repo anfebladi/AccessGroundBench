@@ -6,7 +6,7 @@ from pathlib import Path
 
 from vlm_provider import call_vlm
 
-from .config import ALL_PROFILES, IMAGES_DIR, LABELS_DIR, RESULTS_CSV
+from .config import ALL_PROFILES, IMAGES_DIR, LABELS_DIR
 from .results import append_result
 from .scoring import hit_test, parse_coordinates
 from .targets import find_element_in_profile, harvest_targets
@@ -23,9 +23,9 @@ def evaluate_screen(
     model: str,
     screen_name: str,
     pace_seconds: float,
+    results_csv: Path,
     images_dir: Path = IMAGES_DIR,
     labels_dir: Path = LABELS_DIR,
-    results_csv: Path = RESULTS_CSV,
     profiles: list[str] | None = None,
 ) -> int:
     """
