@@ -125,6 +125,7 @@ def call_vlm(
     image_path: Path,
     prompt: str,
     max_retries: int | None = None,
+    max_tokens: int | None = None,
 ) -> str:
     """
     Send image + prompt to a LiteLLM vision model and return raw text.
@@ -140,7 +141,7 @@ def call_vlm(
 
     for attempt in range(retries + 1):
         try:
-            response = _completion(
+            kwargs = dict(
                 model=model,
                 messages=[
                     {
@@ -155,6 +156,9 @@ def call_vlm(
                     }
                 ],
             )
+            if max_tokens is not None:
+                kwargs["max_tokens"] = max_tokens
+            response = _completion(**kwargs)
             return _extract_response_text(response)
         except Exception as exc:
             if not _is_rate_limit_error(exc) or attempt >= retries:

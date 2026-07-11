@@ -1,6 +1,7 @@
 """Target harvesting and profile label lookup for VLM evaluation."""
 
 import json
+from collections import Counter
 from pathlib import Path
 
 
@@ -18,13 +19,21 @@ def harvest_targets(screen_name: str, labels_dir: Path) -> list[dict]:
     with open(baseline_path, "r", encoding="utf-8") as f:
         records = json.load(f)
 
+    text_counts = Counter()
+    for rec in records:
+        text = rec.get("text")
+        if text and text.strip():
+            text_counts[text.strip()] += 1
+
     targets = []
     for rec in records:
         text = rec.get("text")
         if text and text.strip():
-            targets.append({"text": text.strip(), "box": rec["box"]})
+            clean_text = text.strip()
+            if text_counts[clean_text] == 1:
+                targets.append({"text": clean_text, "baseline_box": rec["box"]})
 
-    print(f"  [HARVEST] {len(targets)} text targets from {baseline_path.name}")
+    print(f"  [HARVEST] {len(targets)} unambiguous text targets from {baseline_path.name}")
     return targets
 
 

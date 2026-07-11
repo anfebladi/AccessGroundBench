@@ -82,13 +82,23 @@ def is_valid_node(bounds: tuple[int, int, int, int], screen_w: int, screen_h: in
     return True
 
 
-def extract(xml_path: str | Path) -> list[dict]:
+def extract(
+    xml_path: str | Path,
+    y_offset: int = 0,
+    bottom_crop: int = 0,
+) -> list[dict]:
     """
     Execute the full extraction pipeline on a single XML layout file.
 
     Phase 1: Parse the XML DOM and iterate all <node> elements.
     Phase 2: Extract and convert bounds strings to integer tuples.
     Phase 3: Filter invisible containers and normalize identifiers.
+    Phase 3.5: Apply y_offset to shift bounds into cropped-image space
+               and discard elements outside the visible content area.
+
+    Args:
+        y_offset:    Pixels to subtract from all Y coordinates (status bar height).
+        bottom_crop: Pixels removed from the bottom (nav bar height).
 
     Returns a list of cleaned node dictionaries.
     """
@@ -107,6 +117,10 @@ def extract(xml_path: str | Path) -> list[dict]:
             screen_w = root_bounds[2]
             screen_h = root_bounds[3]
 
+    # The visible content area after cropping
+    content_top = y_offset
+    content_bottom = screen_h - bottom_crop
+
     results = []
 
     for node in all_nodes:
@@ -119,6 +133,15 @@ def extract(xml_path: str | Path) -> list[dict]:
         if not is_valid_node(bounds, screen_w, screen_h):
             continue
 
+        x1, y1, x2, y2 = bounds
+
+        # Skip elements entirely outside the cropped content area
+        if y2 <= content_top or y1 >= content_bottom:
+            continue
+
+        # Shift Y coordinates into the cropped image's coordinate space
+        adjusted_bounds = (x1, y1 - y_offset, x2, y2 - y_offset)
+
         # Extract raw attributes
         raw_class = node.get("class", "")
         raw_text = node.get("text", "")
@@ -130,7 +153,7 @@ def extract(xml_path: str | Path) -> list[dict]:
             "text": raw_text if raw_text else None,
             "content_desc": content_desc if content_desc else None,
             "resource_id": trim_resource_id(raw_id) if raw_id else None,
-            "box": list(bounds),
+            "box": list(adjusted_bounds),
         }
 
         results.append(record)
@@ -148,7 +171,12 @@ def save_json(records: list[dict], output_path: str | Path) -> None:
     print(f"[SAVED] {len(records)} nodes -> {output_path}")
 
 
-def run(xml_path: str, output_path: str | Path | None = None) -> Path:
+def run(
+    xml_path: str,
+    output_path: str | Path | None = None,
+    y_offset: int = 0,
+    bottom_crop: int = 0,
+) -> Path:
     """
     Entry point: extract bounds from an XML file and save a matching JSON.
 
@@ -156,6 +184,8 @@ def run(xml_path: str, output_path: str | Path | None = None) -> Path:
         xml_path:    Path to the source XML layout hierarchy.
         output_path: Optional explicit path for the output JSON file.
                      Defaults to the same directory/stem as the XML input.
+        y_offset:    Pixels to subtract from Y coordinates (status bar height).
+        bottom_crop: Pixels removed from the bottom (nav bar height).
 
     Returns:
         The Path of the saved JSON file.
@@ -169,7 +199,7 @@ def run(xml_path: str, output_path: str | Path | None = None) -> Path:
     print(f"[INPUT] {xml_path}")
 
     # Extract and filter
-    records = extract(xml_path)
+    records = extract(xml_path, y_offset=y_offset, bottom_crop=bottom_crop)
     print(f"[EXTRACTED] {len(records)} interactive nodes from layout tree")
 
     # Determine output path

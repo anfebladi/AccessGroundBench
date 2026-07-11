@@ -70,3 +70,42 @@ def run_adb(adb: str, serial: str, *args: str) -> subprocess.CompletedProcess[st
 def capture_adb(adb: str, serial: str, *args: str) -> str:
     """Run an ADB command and return stdout."""
     return run_adb(adb, serial, *args).stdout
+
+
+def get_system_bar_heights(adb: str, serial: str) -> tuple[int, int]:
+    """
+    Query the device for the status bar and navigation bar heights in pixels.
+
+    Parses `dumpsys window displays` output to find the frame rectangles for
+    statusBars and navigationBars InsetsSources.
+    """
+    import re
+
+    result = run_adb(adb, serial, "shell", "dumpsys", "window", "displays")
+    stdout = result.stdout
+    lines = stdout.splitlines()
+
+    status_height = 0
+    nav_height = 0
+
+    for line in lines:
+        if "InsetsSource" in line and "type=statusBars" in line:
+            m = re.search(r"frame=\[(\d+),(\d+)\]\[(\d+),(\d+)\]", line)
+            if m:
+                status_height = int(m.group(4)) - int(m.group(2))
+        elif "InsetsSource" in line and "type=navigationBars" in line:
+            m = re.search(r"frame=\[(\d+),(\d+)\]\[(\d+),(\d+)\]", line)
+            if m:
+                nav_height = int(m.group(4)) - int(m.group(2))
+
+    if status_height:
+        print(f"  [BARS] Status bar: {status_height}px")
+    else:
+        print("  [BARS] Could not detect status bar height (defaulting to 0)")
+
+    if nav_height:
+        print(f"  [BARS] Navigation bar: {nav_height}px")
+    else:
+        print("  [BARS] Could not detect navigation bar height (defaulting to 0)")
+
+    return status_height, nav_height

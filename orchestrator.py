@@ -100,7 +100,7 @@ def run_screen(screen_name: str, dry_run: bool = False) -> None:
 
         # Step 3: Capture screenshot + UI hierarchy
         print(f"\n  [3/4] Capturing screen assets...")
-        xml_path, png_path = screenshot_pipeline.run_pipeline(
+        xml_path, png_path, status_bar_h, nav_bar_h = screenshot_pipeline.run_pipeline(
             output_name=stem,
             image_dir=IMAGES_DIR,
             xml_dir=RAW_XML_DIR,
@@ -110,7 +110,12 @@ def run_screen(screen_name: str, dry_run: bool = False) -> None:
         # Step 4: Extract bounding-box labels from the XML
         print(f"\n  [4/4] Extracting bounding-box labels...")
         label_path = LABELS_DIR / f"{stem}.json"
-        bound_extractor.run(str(xml_path), output_path=str(label_path))
+        bound_extractor.run(
+            str(xml_path),
+            output_path=str(label_path),
+            y_offset=status_bar_h,
+            bottom_crop=nav_bar_h,
+        )
 
         print(f"\n  [DONE] {stem}")
         print(f"    PNG   -> {png_path}")
