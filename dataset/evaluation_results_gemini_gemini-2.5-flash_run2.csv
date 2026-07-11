@@ -1,0 +1,64 @@
+screen,target_text,profile,raw_response,x_pred,y_pred,x_min,y_min,x_max,y_max,score
+settings_main,Search Settings,baseline,"[536, 140]",536,140,189,222,578,293,0
+settings_main,Google,baseline,"[307, 213]",307,213,221,431,354,488,0
+settings_main,Services & preferences,baseline,"[445, 242]",445,242,221,488,600,539,0
+settings_main,Network & internet,baseline,"[463, 434]",463,434,221,665,566,722,0
+settings_main,"Mobile, Wi‑Fi, hotspot",baseline,"[420, 360]",420,360,221,722,572,773,0
+settings_main,Connected devices,baseline,"[449, 401]",449,401,221,862,574,919,0
+settings_main,"Bluetooth, pairing",baseline,"[376, 426]",376,426,221,919,508,970,0
+settings_main,Apps,baseline,"[257, 463]",257,463,221,1096,318,1153,0
+settings_main,"Assistant, recent apps, default apps",baseline,"[559, 523]",559,523,221,1153,806,1204,0
+settings_main,Notifications,baseline,"[385, 538]",385,538,221,1293,460,1350,0
+settings_main,"Notification history, conversations",baseline,"[525, 715]",525,715,221,1350,777,1401,0
+settings_main,Sound & vibration,baseline,"[399, 649]",399,649,221,1490,548,1547,0
+settings_main,Volume and haptics,baseline,"[383, 948]",383,948,221,1547,546,1598,0
+settings_main,Modes,baseline,"[263, 744]",263,744,221,1687,350,1744,0
+settings_main,"Do Not Disturb, Bedtime, Driving",baseline,"[485, 730]",485,730,221,1744,744,1795,0
+settings_main,Display & touch,baseline,"[540, 1217]",540,1217,221,1884,510,1941,0
+settings_main,"Dark theme, font size, touch",baseline,"[489, 1226]",489,1226,221,1941,675,1992,0
+settings_main,Wallpaper & style,baseline,"[391, 851]",391,851,221,2081,542,2138,0
+settings_main,"Colors, themed icons, app grid",baseline,"[416, 858]",416,858,221,2138,717,2189,0
+settings_main,Storage,baseline,"[339, 1460]",339,1460,221,2315,366,2361,0
+settings_main,Search Settings,elder_text_heavy,"[447, 121]",447,121,189,222,578,293,0
+settings_main,Google,elder_text_heavy,"[322, 252]",322,252,221,431,354,488,0
+settings_main,Services & preferences,elder_text_heavy,"[430, 290]",430,290,221,488,600,539,0
+settings_main,Network & internet,elder_text_heavy,"[511, 376]",511,376,221,665,566,722,0
+settings_main,"Mobile, Wi‑Fi, hotspot",elder_text_heavy,"[485, 375]",485,375,221,722,572,773,0
+settings_main,Connected devices,elder_text_heavy,"[435, 403]",435,403,221,862,574,919,0
+settings_main,"Bluetooth, pairing",elder_text_heavy,"[389, 450]",389,450,221,919,508,970,0
+settings_main,Apps,elder_text_heavy,"[270, 605]",270,605,221,1096,318,1153,0
+settings_main,"Assistant, recent apps, default apps",elder_text_heavy,"[553, 500]",553,500,221,1153,806,1204,0
+settings_main,Notifications,elder_text_heavy,"[384, 652]",384,652,221,1293,460,1350,0
+settings_main,"Notification history, conversations",elder_text_heavy,"[528, 595]",528,595,221,1350,777,1401,0
+settings_main,Sound & vibration,elder_text_heavy,"[440, 833]",440,833,221,1490,548,1547,0
+settings_main,Volume and haptics,elder_text_heavy,"[399, 1260]",399,1260,221,1547,546,1598,0
+settings_main,Modes,elder_text_heavy,"[283, 719]",283,719,221,1687,350,1744,0
+settings_main,"Do Not Disturb, Bedtime, Driving",elder_text_heavy,"[456, 931]",456,931,221,1744,744,1795,0
+settings_main,Display & touch,elder_text_heavy,"[540, 1270]",540,1270,221,1884,510,1941,0
+settings_main,"Dark theme, font size, touch",elder_text_heavy,"[485, 880]",485,880,221,1941,675,1992,0
+settings_main,Wallpaper & style,elder_text_heavy,"[448, 1038]",448,1038,221,2081,542,2138,0
+settings_main,"Colors, themed icons, app grid",elder_text_heavy,"[493, 859]",493,859,221,2138,717,2189,0
+settings_main,Storage,elder_text_heavy,"[310, 1351]",310,1351,221,2315,366,2361,0
+settings_main,Search Settings,elder_zoom_heavy,"[430, 125]",430,125,189,222,578,293,0
+settings_main,Google,elder_zoom_heavy,"[320, 255]",320,255,221,431,354,488,0
+settings_main,Services & preferences,elder_zoom_heavy,"[449, 250]",449,250,221,488,600,539,0
+settings_main,Network & internet,elder_zoom_heavy,"[445, 399]",445,399,221,665,566,722,0
+settings_main,"Mobile, Wi‑Fi, hotspot",elder_zoom_heavy,"[461, 435]",461,435,221,722,572,773,0
+settings_main,Connected devices,elder_zoom_heavy,"[484, 396]",484,396,221,862,574,919,0
+settings_main,"Bluetooth, pairing",elder_zoom_heavy,"[360, 415]",360,415,221,919,508,970,0
+settings_main,Apps,elder_zoom_heavy,"[237, 490]",237,490,221,1096,318,1153,0
+settings_main,"Assistant, recent apps, default apps",elder_zoom_heavy,"[550, 713]",550,713,221,1153,806,1204,0
+settings_main,Notifications,elder_zoom_heavy,"[335, 475]",335,475,221,1293,460,1350,0
+settings_main,"Notification history, conversations",elder_zoom_heavy,"[519, 685]",519,685,221,1350,777,1401,0
+settings_main,Sound & vibration,elder_zoom_heavy,"[445, 1103]",445,1103,221,1490,548,1547,0
+settings_main,Volume and haptics,elder_zoom_heavy,"[408, 679]",408,679,221,1547,546,1598,0
+settings_main,Modes,elder_zoom_heavy,"[278, 714]",278,714,221,1687,350,1744,0
+settings_main,"Do Not Disturb, Bedtime, Driving",elder_zoom_heavy,"[541, 864]",541,864,221,1744,744,1795,0
+settings_main,Display & touch,elder_zoom_heavy,"[442, 815]",442,815,221,1884,510,1941,0
+settings_main,"Dark theme, font size, touch",elder_zoom_heavy,"[525, 1014]",525,1014,221,1941,675,1992,0
+settings_main,Wallpaper & style,elder_zoom_heavy,"[423, 1615]",423,1615,221,2081,542,2138,0
+settings_main,"Colors, themed icons, app grid",elder_zoom_heavy,"[444, 1480]",444,1480,221,2138,717,2189,0
+settings_main,Storage,elder_zoom_heavy,"[279, 913]",279,913,221,2315,366,2361,0
+settings_main,Search Settings,elder_combo_max,"[530, 140]",530,140,189,222,578,293,0
+settings_main,Google,elder_combo_max,"[270, 220]",270,220,221,431,354,488,0
+settings_main,Services & preferences,elder_combo_max,"[458, 309]",458,309,221,488,600,539,0

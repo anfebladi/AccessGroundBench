@@ -1,0 +1,6 @@
+profile,screen,total_elements,hits,misses,accuracy_pct
+baseline,settings_main,20,0,20,0.0
+elder_combo_max,settings_main,20,0,20,0.0
+elder_combo_rtl,settings_main,20,0,20,0.0
+elder_text_heavy,settings_main,20,0,20,0.0
+elder_zoom_heavy,settings_main,20,0,20,0.0
