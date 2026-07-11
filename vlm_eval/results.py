@@ -12,13 +12,12 @@ CSV_COLUMNS = [
 
 
 def init_csv(results_csv: Path) -> None:
-    """Create the CSV file with headers if it doesn't exist."""
-    if not results_csv.is_file():
-        results_csv.parent.mkdir(parents=True, exist_ok=True)
-        with open(results_csv, "w", newline="", encoding="utf-8") as f:
-            writer = csv.writer(f)
-            writer.writerow(CSV_COLUMNS)
-        print(f"  [CSV] Created {results_csv}")
+    """Create the CSV file with headers, overwriting if it exists."""
+    results_csv.parent.mkdir(parents=True, exist_ok=True)
+    with open(results_csv, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(CSV_COLUMNS)
+    print(f"  [CSV] Initialized {results_csv}")
 
 
 def append_result(results_csv: Path, row: dict) -> None:

@@ -13,7 +13,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from adb_utils import get_device_serial, resolve_adb, run_adb
+from adb_utils import get_device_serial, get_system_bar_heights, resolve_adb, run_adb
 
 
 # Remote paths on the emulator's sdcard (temporary staging area)
@@ -105,6 +105,37 @@ def pull_files(
     return local_xml, local_png
 
 
+def crop_screenshot(
+    png_path: Path,
+    top_crop: int,
+    bottom_crop: int,
+) -> None:
+    """
+    Phase 3.5 — Crop the status bar and navigation/gesture bar from a
+    screenshot in-place using Pillow.
+
+    Args:
+        png_path:    Path to the PNG file to crop.
+        top_crop:    Number of pixels to remove from the top (status bar).
+        bottom_crop: Number of pixels to remove from the bottom (nav bar).
+    """
+    from PIL import Image
+
+    if top_crop == 0 and bottom_crop == 0:
+        print("  [3.5] No crop needed (bar heights = 0).")
+        return
+
+    print(f"  [3.5] Cropping screenshot: top={top_crop}px, bottom={bottom_crop}px")
+
+    with Image.open(png_path) as img:
+        width, height = img.size
+        crop_box = (0, top_crop, width, height - bottom_crop)
+        cropped = img.crop(crop_box)
+        cropped.save(png_path)
+
+    print(f"  [OK]  Cropped {png_path.name}: {width}x{height} -> {width}x{height - top_crop - bottom_crop}")
+
+
 
 def cleanup_device(adb: str, serial: str) -> None:
     """
@@ -123,7 +154,7 @@ def run_pipeline(
     output_name: str | None = None,
     image_dir: Path | None = None,
     xml_dir: Path | None = None,
-) -> tuple[Path, Path]:
+) -> tuple[Path, Path, int, int]:
     """
     Execute the full four-phase capture pipeline.
 
@@ -134,7 +165,8 @@ def run_pipeline(
         xml_dir:     Directory to save the .xml into. Defaults to OUTPUT_DIR.
 
     Returns:
-        (xml_path, png_path) — the local paths of the saved files.
+        (xml_path, png_path, status_bar_h, nav_bar_h) — local paths of the
+        saved files plus the pixel heights of the cropped system bars.
     """
     if output_name is None:
         output_name = "capture_" + datetime.utcnow().strftime("%Y%m%d_%H%M%S")
@@ -149,6 +181,12 @@ def run_pipeline(
     # Resolve ADB binary
     adb = resolve_adb(verbose=True)
 
+    # Initialise return variables so they're always defined
+    local_xml: Path
+    local_png: Path
+    status_bar_h: int = 0
+    nav_bar_h: int = 0
+
     try:
         # Phase 1 — verify device
         serial = verify_device(adb)
@@ -156,11 +194,17 @@ def run_pipeline(
         # Phase 2 — capture on device
         capture_on_device(adb, serial)
 
+        # Query system bar heights for cropping
+        status_bar_h, nav_bar_h = get_system_bar_heights(adb, serial)
+
         # Phase 3 — pull to local disk
         local_xml, local_png = pull_files(
             adb, serial, output_name,
             image_dir=image_dir, xml_dir=xml_dir,
         )
+
+        # Phase 3.5 — crop out status bar and navigation bar
+        crop_screenshot(local_png, status_bar_h, nav_bar_h)
 
         # Phase 4 — clean up sdcard
         cleanup_device(adb, serial)
@@ -175,7 +219,7 @@ def run_pipeline(
     print(f"  PNG  -> {local_png}")
     print("=" * 60)
 
-    return local_xml, local_png
+    return local_xml, local_png, status_bar_h, nav_bar_h
 
 
 if __name__ == "__main__":

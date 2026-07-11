@@ -1,6 +1,7 @@
 """Evaluation loop for VLM grounding benchmark runs."""
 
 import json
+import struct
 import time
 from pathlib import Path
 
@@ -13,10 +14,18 @@ from .targets import find_element_in_profile, harvest_targets
 
 PROMPT_TEMPLATE = (
     "You are an autonomous mobile agent navigating an Android user interface. "
-    "Look closely at this image. Provide the exact central (x, y) pixel "
-    "coordinates needed to click on the text element: '{target_text}'. "
-    "Return your response strictly in the bracket format: [x, y]"
+    "Look closely at this image. Provide the exact central (x, y) coordinates "
+    "needed to click on the text element: '{target_text}'. "
+    "Normalize the coordinates to a 0-1000 scale, where (0,0) is top-left and "
+    "(1000,1000) is bottom-right. Return your response strictly in the bracket format: [x, y]"
 )
+
+def get_png_dimensions(image_path: Path) -> tuple[int, int]:
+    """Extract width and height from a PNG file without external libraries."""
+    with open(image_path, "rb") as f:
+        f.read(16)
+        width, height = struct.unpack(">II", f.read(8))
+        return width, height
 
 
 def evaluate_screen(
@@ -52,6 +61,12 @@ def evaluate_screen(
             print(f"  [SKIP] Missing labels: {label_path.name}")
             continue
 
+        try:
+            img_width, img_height = get_png_dimensions(image_path)
+        except Exception as e:
+            print(f"  [SKIP] Failed to read image dimensions for {image_path.name}: {e}")
+            continue
+
         with open(label_path, "r", encoding="utf-8") as f:
             profile_labels = json.load(f)
 
@@ -60,6 +75,7 @@ def evaluate_screen(
 
         for target in targets:
             target_text = target["text"]
+            baseline_box = target["baseline_box"]
             box = find_element_in_profile(profile_labels, target_text)
 
             if box is None:
@@ -85,8 +101,15 @@ def evaluate_screen(
                 print("    [ABORT] Provider/API error; no CSV row written for this target.")
                 raise SystemExit(1) from exc
 
-            x_pred, y_pred = parse_coordinates(raw_response)
-            score = hit_test(x_pred, y_pred, box)
+            x_pred_norm, y_pred_norm = parse_coordinates(raw_response)
+            
+            if x_pred_norm != -1 and y_pred_norm != -1:
+                x_pred = int((x_pred_norm / 1000.0) * img_width)
+                y_pred = int((y_pred_norm / 1000.0) * img_height)
+            else:
+                x_pred, y_pred = -1, -1
+
+            score = hit_test(x_pred, y_pred, box, baseline_box)
 
             row = {
                 "screen": screen_name,
