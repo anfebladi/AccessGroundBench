@@ -14,10 +14,10 @@ from .targets import find_element_in_profile, harvest_targets
 
 PROMPT_TEMPLATE = (
     "You are an autonomous mobile agent navigating an Android user interface. "
-    "Look closely at this image. Provide the exact central (x, y) coordinates "
+    "Look closely at this image. This image is {img_width} x {img_height} pixels. "
+    "Provide the exact central pixel (x, y) coordinates "
     "needed to click on the text element: '{target_text}'. "
-    "Normalize the coordinates to a 0-1000 scale, where (0,0) is top-left and "
-    "(1000,1000) is bottom-right. Return your response strictly in the bracket format: [x, y]"
+    "Return your response strictly in the bracket format: [x, y]"
 )
 
 def get_png_dimensions(image_path: Path) -> tuple[int, int]:
@@ -94,22 +94,30 @@ def evaluate_screen(
                 continue
 
             try:
-                prompt = PROMPT_TEMPLATE.format(target_text=target_text)
+                prompt = PROMPT_TEMPLATE.format(
+                    img_width=img_width,
+                    img_height=img_height,
+                    target_text=target_text,
+                )
                 raw_response = call_vlm(model, image_path, prompt)
             except Exception as exc:
                 print(f"    [API-ERROR] '{target_text}': {exc}")
                 print("    [ABORT] Provider/API error; no CSV row written for this target.")
                 raise SystemExit(1) from exc
 
-            x_pred_norm, y_pred_norm = parse_coordinates(raw_response)
-            
-            if x_pred_norm != -1 and y_pred_norm != -1:
-                x_pred = int((x_pred_norm / 1000.0) * img_width)
-                y_pred = int((y_pred_norm / 1000.0) * img_height)
-            else:
-                x_pred, y_pred = -1, -1
+            x_coord, y_coord = parse_coordinates(raw_response)
 
-            score = hit_test(x_pred, y_pred, box, baseline_box)
+            if (
+                x_coord < 0
+                or y_coord < 0
+                or x_coord > img_width
+                or y_coord > img_height
+            ):
+                x_pred, y_pred = -1, -1
+                score = 0
+            else:
+                x_pred, y_pred = int(x_coord), int(y_coord)
+                score = hit_test(x_pred, y_pred, box, baseline_box)
 
             row = {
                 "screen": screen_name,

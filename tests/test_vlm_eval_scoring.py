@@ -8,6 +8,9 @@ class VlmEvalScoringTests(unittest.TestCase):
         self.assertEqual((123, 456), parse_coordinates("[123, 456]"))
         self.assertEqual((12, 34), parse_coordinates("click at 12,34 please"))
 
+    def test_parse_coordinates_preserves_negative_values(self):
+        self.assertEqual((-5, 34), parse_coordinates("[-5, 34]"))
+
     def test_parse_coordinates_returns_negative_sentinel_on_failure(self):
         self.assertEqual((-1, -1), parse_coordinates("no coordinate here"))
 

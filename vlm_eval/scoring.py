@@ -2,7 +2,7 @@
 
 import re
 
-COORD_REGEX = re.compile(r"(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)")
+COORD_REGEX = re.compile(r"(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)")
 
 
 def parse_coordinates(response_text: str) -> tuple[float, float]:
