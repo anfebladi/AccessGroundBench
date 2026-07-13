@@ -50,7 +50,8 @@ def parse_args() -> argparse.Namespace:
         default=[
             "openai/gpt-4o-mini", 
             "gemini/gemini-2.5-flash", 
-            "anthropic/claude-4.6-sonnet"
+            "anthropic/claude-4.6-sonnet",
+            "local/ferret-ui-llama8b"
         ],
         help="List of LiteLLM models to run.",
     )
