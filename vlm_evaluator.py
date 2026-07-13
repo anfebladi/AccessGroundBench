@@ -36,6 +36,7 @@ def discover_screens() -> list[str]:
     return screens
 
 
+
 def _is_valid_key(key: str | None) -> bool:
     if not key:
         return False
@@ -56,6 +57,9 @@ def api_key_exists(model_name: str) -> bool:
 
 
 def main() -> None:
+    import sys
+    sys.stdout.reconfigure(encoding='utf-8')
+    
     model = resolve_model(None)
     models = [model]
     pace_seconds = resolve_pace_seconds(None)

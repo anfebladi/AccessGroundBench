@@ -1,0 +1,3 @@
+screen,target_text,profile,raw_response,x_pred,y_pred,x_min,y_min,x_max,y_max,score
+clock,"Mon, Tue, Wed, Thu, Fri",baseline,"[214.4, 695.7]",214,695,84,450,493,505,0
+clock,8:30 AM,baseline,"[246.8, 329.5]",246,329,84,231,429,414,1
