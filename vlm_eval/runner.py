@@ -133,7 +133,8 @@ def evaluate_screen(
             count += 1
 
             status = "HIT" if score == 1 else "MISS"
-            print(f"    [{status}] '{target_text}' -> pred=({x_pred},{y_pred}) "
+            safe_text = target_text.encode('ascii', 'replace').decode('ascii')
+            print(f"    [{status}] '{safe_text}' -> pred=({x_pred},{y_pred}) "
                   f"box={box}")
 
             if pace_seconds > 0:

@@ -135,6 +135,66 @@ def call_vlm(
       - gemini/gemini-2.5-flash
       - anthropic/claude-3-5-sonnet-latest
     """
+    if model == "local/ferret-ui-llama8b":
+        import subprocess
+        python_exe = r"c:\Users\anfeb\Desktop\ferret_ui_llama\venv\Scripts\python.exe"
+        cli_runner = r"c:\Users\anfeb\Desktop\ferret_ui_llama\cli_runner.py"
+        
+        import re
+        
+        # Rewrite prompt for Ferret-UI to trigger bounding box grounding.
+        # The generic zero-shot prompt confuses Ferret, causing it to just repeat the text.
+        target_match = re.search(r"click on the text element:\s*'([^']+)'", prompt)
+        ferret_prompt = prompt
+        if target_match:
+            target_text = target_match.group(1)
+            ferret_prompt = f"What is the bounding box of {target_text}?"
+        
+        import os
+        env = os.environ.copy()
+        env["PYTHONIOENCODING"] = "utf-8"
+        
+        try:
+            result = subprocess.run(
+                [python_exe, cli_runner, "--image", str(image_path), "--prompt", ferret_prompt],
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                check=True,
+                cwd=r"c:\Users\anfeb\Desktop\ferret_ui_llama",
+                env=env
+            )
+            
+            output = result.stdout
+            if "---FERRET_OUTPUT_START---" in output and "---FERRET_OUTPUT_END---" in output:
+                ferret_text = output.split("---FERRET_OUTPUT_START---")[1].split("---FERRET_OUTPUT_END---")[0].strip()
+                
+                import re
+                from PIL import Image
+                
+                bbox_match = re.search(r'\[\[(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\]\]', ferret_text)
+                if bbox_match:
+                    try:
+                        with Image.open(image_path) as img:
+                            w, h = img.size
+                    except:
+                        w, h = 1000, 1000 # Fallback
+                        
+                    x1, y1, x2, y2 = map(float, bbox_match.groups())
+                    
+                    # Convert from 1000-scale to absolute pixels and find center
+                    cx = ((x1 + x2) / 2.0 / 1000.0) * w
+                    cy = ((y1 + y2) / 2.0 / 1000.0) * h
+                    
+                    return f"[{cx:.1f}, {cy:.1f}]"
+                
+                return ferret_text
+            return output.strip()
+            
+        except subprocess.CalledProcessError as e:
+            print(f"Error running local ferret model: {e.stderr}")
+            raise e
+
     data_url = image_to_data_url(image_path)
     retries = _resolve_max_retries(max_retries)
     delay = DEFAULT_RATE_LIMIT_BACKOFF_SECONDS
