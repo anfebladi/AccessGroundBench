@@ -7,23 +7,23 @@ Runs fully offline against the saved dataset (no emulator required).
 
 Usage:
   python vlm_evaluator.py                           # run full evaluation
-  python vlm_evaluator.py --screens settings_main   # evaluate specific screens
-  python vlm_evaluator.py --model openai/gpt-4o-mini # override model
 """
 
-import argparse
+import os
 import sys
 
-try:
-    from dotenv import load_dotenv
-    load_dotenv()  # loads .env from the project root into os.environ
-except ImportError:
-    pass  # python-dotenv optional; fall back to system env vars
+from dotenv import load_dotenv
 
-import os
-from vlm_eval.config import LABELS_DIR, get_results_csv, resolve_pace_seconds
+from vlm_eval.config import (
+    LABELS_DIR,
+    get_results_csv,
+    resolve_model,
+    resolve_pace_seconds,
+)
 from vlm_eval.results import init_csv
 from vlm_eval.runner import evaluate_screen
+
+load_dotenv()
 
 
 def discover_screens() -> list[str]:
@@ -35,34 +35,6 @@ def discover_screens() -> list[str]:
             screens.append(screen_name)
     return screens
 
-
-def parse_args() -> argparse.Namespace:
-    """Parse command-line arguments."""
-    parser = argparse.ArgumentParser(
-        description="AccessGroundBench -- VLM Grounding Evaluator"
-    )
-    parser.add_argument(
-        "--screens", nargs="+", default=None,
-        help="Override the screen list (e.g., --screens settings_main dialer)",
-    )
-    parser.add_argument(
-        "--models", nargs="+", 
-        default=[
-            "openai/gpt-4o-mini", 
-            "gemini/gemini-2.5-flash", 
-            "anthropic/claude-4.6-sonnet",
-            "local/ferret-ui-llama8b"
-        ],
-        help="List of LiteLLM models to run.",
-    )
-    parser.add_argument(
-        "--pace-seconds", default=None,
-        help=(
-            "Optional delay after successful API calls. Overrides "
-            "VLM_PACE_SECONDS. Default: 0"
-        ),
-    )
-    return parser.parse_args()
 
 
 def _is_valid_key(key: str | None) -> bool:
@@ -85,23 +57,26 @@ def api_key_exists(model_name: str) -> bool:
 
 
 def main() -> None:
-    args = parse_args()
-    pace_seconds = resolve_pace_seconds(args.pace_seconds)
+    model = resolve_model(None)
+    models = [model]
+    pace_seconds = resolve_pace_seconds(None)
 
-    screens = args.screens if args.screens else discover_screens()
+    screens = discover_screens()
     if not screens:
         print("[ERROR] No screens found. Run orchestrator.py first to collect data.")
         sys.exit(1)
 
     print("=" * 60)
     print("  AccessGroundBench -- VLM Grounding Evaluator")
-    print(f"  Models  : {', '.join(args.models)}")
+    print("  Mode    : OFFLINE evaluation from dataset/images + dataset/labels")
+    print("  Note    : Does not navigate or capture the emulator")
+    print(f"  Models  : {', '.join(models)}")
     print(f"  Pace    : {pace_seconds}s")
     print(f"  Screens : {', '.join(screens)}")
     print("=" * 60)
 
     total_rows = 0
-    for model in args.models:
+    for model in models:
         if not api_key_exists(model):
             print(f"\n[SKIP] Missing API key for model: {model}")
             continue

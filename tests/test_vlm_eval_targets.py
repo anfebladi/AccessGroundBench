@@ -25,8 +25,8 @@ class VlmEvalTargetsTests(unittest.TestCase):
 
         self.assertEqual(
             [
-                {"text": "Settings", "box": [1, 2, 3, 4]},
-                {"text": "Network", "box": [13, 14, 15, 16]},
+                {"text": "Settings", "baseline_box": [1, 2, 3, 4]},
+                {"text": "Network", "baseline_box": [13, 14, 15, 16]},
             ],
             targets,
         )

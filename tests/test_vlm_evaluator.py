@@ -1,6 +1,8 @@
+import io
 import unittest
 from unittest import mock
 
+import vlm_evaluator
 from vlm_eval import config
 
 
@@ -51,6 +53,41 @@ class VlmEvaluatorConfigTests(unittest.TestCase):
             config.resolve_pace_seconds(None)
 
         self.assertEqual(1, exc.exception.code)
+
+
+class VlmEvaluatorMainTests(unittest.TestCase):
+    @mock.patch("vlm_evaluator.evaluate_screen", return_value=1)
+    @mock.patch("vlm_evaluator.init_csv")
+    @mock.patch("vlm_evaluator.api_key_exists", return_value=True)
+    @mock.patch("vlm_evaluator.discover_screens", return_value=["clock", "settings_main"])
+    @mock.patch.dict(
+        "vlm_eval.config.os.environ",
+        {"VLM_MODEL": "openai/gpt-5.4-nano", "VLM_PACE_SECONDS": "1.5"},
+    )
+    def test_main_uses_env_model_env_pace_and_discovered_screens(
+        self,
+        discover_screens_mock,
+        api_key_exists_mock,
+        init_csv_mock,
+        evaluate_screen_mock,
+    ):
+        with mock.patch("sys.stdout", new_callable=io.StringIO) as stdout:
+            vlm_evaluator.main()
+
+        self.assertEqual(2, evaluate_screen_mock.call_count)
+        output = stdout.getvalue()
+        self.assertIn("Mode    : OFFLINE evaluation from dataset/images + dataset/labels", output)
+        self.assertIn("Note    : Does not navigate or capture the emulator", output)
+        self.assertEqual(
+            [
+                ("openai/gpt-5.4-nano", "clock", 1.5),
+                ("openai/gpt-5.4-nano", "settings_main", 1.5),
+            ],
+            [
+                (call.args[0], call.args[1], call.args[2])
+                for call in evaluate_screen_mock.call_args_list
+            ],
+        )
 
 
 if __name__ == "__main__":

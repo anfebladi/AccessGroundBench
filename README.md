@@ -1,262 +1,256 @@
 # AccessGroundBench
 
-AccessGroundBench is an Android UI evaluation framework that measures how
-accessibility layout modifications affect Vision Language Model (VLM) spatial
-grounding accuracy.
+AccessGroundBench evaluates how Android accessibility-layout changes affect a
+vision-language model's ability to locate UI elements. It has three stages:
 
-The pipeline has four phases:
+1. Capture a target Android screen under a baseline and accessibility-stress
+   profiles.
+2. Evaluate saved screenshots and labels with a LiteLLM-supported vision model.
+3. Compare each experimental profile with baseline accuracy using McNemar's
+   test.
 
-1. **Data Collection** (`orchestrator.py`): Capture screenshots and UI
-   hierarchies across multiple accessibility profiles via an Android emulator.
-2. **VLM Evaluation** (`vlm_evaluator.py`): Send images to LiteLLM-supported
-   vision models and evaluate grounding accuracy via bounding-box hit-testing.
-3. **Statistical Analysis** (`mcnemar_analysis.py`): Run McNemar's test to
-   determine whether layout distortions cause statistically significant
-   performance degradation.
+## Requirements
 
-## Directory structure
+- Python 3.11 or later
+- An Android emulator (AVD) running a supported target app
+- Android SDK Platform Tools (`adb`) available on `PATH`
+- A provider API key for the model used during VLM evaluation
+
+The project dependencies are declared in `pyproject.toml`:
+
+- `litellm`
+- `Pillow`
+- `python-dotenv`
+
+Install them with your preferred environment manager. For example:
+
+```bash
+uv sync
+# or
+python -m pip install .
+```
+
+SciPy is optional. The analysis script works without it using fallback
+calculations, but SciPy provides the precise McNemar p-values:
+
+```bash
+python -m pip install scipy
+```
+
+## Project layout
 
 ```text
 AccessGroundBench/
-├── orchestrator.py          # Phase 1 — master data-collection driver
-├── vlm_evaluator.py         # Phase 2 — VLM grounding + hit-test scoring
-├── mcnemar_analysis.py      # Phase 3 — McNemar's statistical analysis
-├── app_navigator.py         # ADB app launcher/foreground validator
-├── adb_utils.py             # Shared ADB path/device/command helpers
-├── screenshot_pipeline.py   # ADB capture utility (used by orchestrator)
-├── layout_modifier.py       # Accessibility profile injector (used by orchestrator)
-├── bound_extractor.py       # XML → JSON bounding-box extractor (used by orchestrator)
-├── dataset/
-│   ├── images/              # Finalized screenshots ({screen}_{profile}.png)
-│   ├── raw_xml/             # Raw UI hierarchy dumps ({screen}_{profile}.xml)
-│   ├── labels/              # Parsed JSON bounding boxes ({screen}_{profile}.json)
-│   └── evaluation_results.csv  # Master evaluation ledger
-├── outputs/                 # Legacy capture output directory
-└── sample_input/            # Committed sample/reference inputs
+├── .env.example             # Model configuration and provider-key template
+├── .python-version          # Project Python version pin
+├── pyproject.toml           # Project metadata and dependencies
+├── uv.lock                  # Locked dependency set
+├── main.py                  # Minimal package entry point
+├── orchestrator.py          # Android data-collection driver
+├── app_navigator.py         # Android screen launch and validation
+├── adb_utils.py             # Shared ADB helpers
+├── layout_modifier.py       # Accessibility-profile applicator
+├── screenshot_pipeline.py   # Screenshot and UI-hierarchy capture
+├── bound_extractor.py       # XML-to-JSON bounding-box extraction
+├── vlm_evaluator.py         # Offline VLM evaluation entry point
+├── vlm_provider.py          # LiteLLM calls and retry handling
+├── vlm_eval/                # Evaluation config, targets, scoring, results, runner
+├── mcnemar_analysis.py      # Paired statistical analysis
+├── tests/                   # Unit tests
+├── sample_input/            # Committed PNG/XML sample captures
+├── outputs/                 # Ignored standalone-capture output directory
+└── dataset/
+    ├── images/              # Ignored collected PNGs; .gitkeep is committed
+    ├── raw_xml/             # Ignored collected XML; .gitkeep is committed
+    ├── labels/              # Ignored extracted labels; .gitkeep is committed
+    ├── evaluation_results_*.csv  # Evaluation ledgers
+    └── mcnemar_results_*.csv     # Analysis reports
 ```
 
-## What each script does
-
-- `orchestrator.py` — Master driver that iterates through target screens and
-  accessibility profiles, automating the capture/extraction loop.
-- `app_navigator.py` — Launches each target Android app/screen through ADB and
-  validates the foreground package before capture.
-- `adb_utils.py` — Shared helper functions for resolving ADB, selecting the
-  active emulator, and running device-scoped ADB commands.
-- `vlm_evaluator.py` — Offline evaluation engine that harvests targets from
-  baseline labels, calls LiteLLM-supported vision models with grounding
-  prompts, parses coordinates, and logs hit-test scores to CSV.
-- `mcnemar_analysis.py` — Statistical analysis that builds paired contingency
-  matrices and runs McNemar's test (asymptotic or exact binomial).
-- `screenshot_pipeline.py` — Captures the active emulator screen as a `.png`
-  and dumps the Android UI hierarchy as a matching `.xml` file.
-- `layout_modifier.py` — Applies accessibility stress profiles to the emulator,
-  including larger text, density changes, and RTL layout.
-- `bound_extractor.py` — Converts one captured XML hierarchy into cleaned JSON
-  bounding-box records.
+The collection pipeline writes screenshots, XML, and labels under `dataset/`.
+Those capture artifacts are intentionally ignored by Git (apart from the
+directory placeholders). Evaluation reads them from disk and does not control
+the emulator.
 
 ## Accessibility profiles
 
-| Profile            | Font Scale | Density | RTL |
-|--------------------|-----------|---------|-----|
-| `baseline`         | 1.0       | reset   | off |
-| `elder_text_heavy` | 1.4       | reset   | off |
-| `elder_zoom_heavy` | 1.0       | 480     | off |
-| `elder_combo_max`  | 1.6       | 520     | off |
-| `elder_combo_rtl`  | 1.5       | 480     | on  |
+| Profile | Font scale | Density | Force RTL |
+| --- | ---: | --- | --- |
+| `baseline` | 1.0 | reset | off |
+| `elder_text_heavy` | 1.4 | reset | off |
+| `elder_zoom_heavy` | 1.0 | 480 | off |
+| `elder_combo_max` | 1.6 | 520 | off |
+| `elder_combo_rtl` | 1.5 | 480 | on |
 
-## Prerequisites
+## Setup
 
-- Python 3.10+
-- Android Studio with an Android Virtual Device (AVD)
-- Android SDK Platform Tools (`adb`)
-- `litellm` Python package (for VLM evaluation)
-- `scipy` Python package (for statistical analysis, optional but recommended)
+### Connect an emulator
 
-Install dependencies:
-
-```bash
-pip install litellm scipy
-```
-
-## Set up ADB on Windows
-
-First, check whether `adb` is already available:
+Start an AVD from Android Studio's Device Manager, wait for it to boot, then
+confirm that ADB sees exactly one usable device:
 
 ```bash
 adb devices
 ```
 
-The scripts automatically resolve `adb.exe` from `%LOCALAPPDATA%\Android\Sdk\platform-tools\`.
-If that path doesn't exist, ensure `adb` is on your system `PATH`.
-
-For macOS:
+On macOS, a typical SDK Platform Tools location is
+`$HOME/Library/Android/sdk/platform-tools`. Add it to `PATH` if needed:
 
 ```bash
 export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
 ```
 
-## Start an emulator
+### Configure a VLM provider
 
-1. Open Android Studio.
-2. Go to `Tools > Device Manager`.
-3. Create a virtual device if you do not already have one.
-4. Start the virtual device.
-5. Wait until Android fully boots to the home screen.
-6. Verify:
+Copy `.env.example` to `.env` and replace the placeholder key for the selected
+provider. `vlm_evaluator.py` loads `.env` automatically.
 
 ```bash
-adb devices
+cp .env.example .env
 ```
 
-Expected output:
+At minimum, configure `VLM_MODEL` and the matching key. The evaluator supports
+these variables:
 
-```text
-List of devices attached
-emulator-5554    device
+```dotenv
+VLM_MODEL=openai/gpt-4o-mini
+VLM_PACE_SECONDS=0
+VLM_MAX_RETRIES=3
+
+OPENAI_API_KEY=your-openai-api-key
+GOOGLE_API_KEY=your-google-api-key
+GEMINI_API_KEY=your-gemini-api-key
+ANTHROPIC_API_KEY=your-anthropic-api-key
 ```
 
-## Full end-to-end workflow
+`VLM_PACE_SECONDS` is an optional non-negative delay between successful model
+calls. `VLM_MAX_RETRIES` controls retries for provider failures. Use the key
+for the selected LiteLLM model: `openai/` models require `OPENAI_API_KEY`,
+`gemini/` models accept `GEMINI_API_KEY` or `GOOGLE_API_KEY`, and `anthropic/`
+models require `ANTHROPIC_API_KEY`.
 
-### Phase 1: Data collection
+## End-to-end workflow
+
+### 1. Collect Android screenshots and labels
+
+Run all built-in target screens and profiles:
 
 ```bash
 python orchestrator.py
 ```
 
-The script will:
-- Iterate through the predefined screen list
-- Apply all 5 accessibility profiles
-- Automatically launch and validate each target app before capture
-- Capture screenshots and UI hierarchies
-- Abort if the captured XML belongs to the wrong app
-- Extract bounding-box labels
-- Reset the emulator after each screen
+The configured screen list is `settings_main`, `contacts`, `dialer`,
+`messages`, and `clock`. For every screen/profile pair, the orchestrator
+applies the profile, navigates to the target screen, captures a PNG and XML,
+checks that the XML belongs to the expected app, extracts JSON bounds, and
+resets the emulator after that screen.
 
-To validate the pipeline without an emulator:
+Validate the collection flow without ADB or an emulator:
 
 ```bash
 python orchestrator.py --dry-run
 ```
 
-To run specific screens:
+Collect only selected screens:
 
 ```bash
-python orchestrator.py --screens settings_main contacts
+python orchestrator.py --screens settings_main dialer
 ```
 
-### Phase 2: VLM evaluation
+### 2. Run offline VLM evaluation
 
-Set the model and API key for the direct provider model you want to run:
-
-```bash
-export VLM_MODEL=openai/gpt-4o-mini
-export VLM_PACE_SECONDS=0.5
-export VLM_MAX_RETRIES=3
-export GOOGLE_API_KEY=your-key-here
-export OPENAI_API_KEY=your-key-here
-export ANTHROPIC_API_KEY=your-key-here
-```
-
-Run the evaluator:
+After collection, run:
 
 ```bash
 python vlm_evaluator.py
 ```
 
-Options:
+The evaluator discovers screen names from `dataset/labels/*_baseline.json`,
+uses baseline labels to select unambiguous text targets, evaluates every
+configured profile, and logs hit-test results to:
 
-```bash
-# Temporary model overrides if VLM_MODEL is not set or you want to switch models
-python vlm_evaluator.py --model openai/gpt-4o-mini
-python vlm_evaluator.py --model gemini/gemini-2.5-pro
-python vlm_evaluator.py --model anthropic/claude-3-5-sonnet-latest
-python vlm_evaluator.py --pace-seconds 0.5
-python vlm_evaluator.py --screens settings_main
+```text
+dataset/evaluation_results_{model}.csv
 ```
 
-The evaluator automatically:
-- Harvests text targets from baseline labels
-- Detects off-screen elements (immediate failure)
-- Retries provider rate limits, with optional pacing via `VLM_PACE_SECONDS`
-- Hit-tests predictions against ground-truth bounding boxes
-- Logs all results to `dataset/evaluation_results.csv`
+Here `{model}` is the `VLM_MODEL` value with `/` replaced by `_`; for example,
+`openai/gpt-4o-mini` produces
+`dataset/evaluation_results_openai_gpt-4o-mini.csv`.
 
-### Phase 3: Statistical analysis
+The evaluator has no command-line flags. Set `VLM_MODEL` and optional pacing
+or retry settings in `.env` (or the process environment) before running it.
+
+### 3. Run McNemar analysis
+
+Analyze every `evaluation_results_*.csv` file in `dataset/`:
 
 ```bash
 python mcnemar_analysis.py
 ```
 
-Options:
+To analyze one results file:
 
 ```bash
-python mcnemar_analysis.py --csv path/to/results.csv
+python mcnemar_analysis.py --csv dataset/evaluation_results_openai_gpt-4o-mini.csv
 ```
 
-The analysis:
-- Pairs each element's baseline and experimental scores
-- Builds 2×2 contingency matrices per profile
-- Selects asymptotic McNemar (b+c ≥ 25) or exact binomial (b+c < 25)
-- Reports p-values against α=0.05
+For each input, the script compares each experimental profile with baseline,
+uses asymptotic McNemar when there are at least 25 discordant pairs and an
+exact binomial test otherwise, and writes:
 
-## Legacy workflow
+```text
+dataset/mcnemar_results_{model}.csv
+```
 
-The individual utility scripts still work standalone:
+## Standalone utilities
+
+The collection helpers can also be run directly when an emulator is connected:
 
 ```bash
 python layout_modifier.py elder_combo_max
-python screenshot_pipeline.py my_capture
 python layout_modifier.py reset
+python screenshot_pipeline.py my_capture
 python bound_extractor.py outputs/my_capture.xml
 ```
 
+The standalone screenshot pipeline writes to `outputs/` by default. In the
+normal workflow, `orchestrator.py` instead routes captures to `dataset/`.
+
 ## Troubleshooting
 
-### `No devices found`
+### ADB or emulator is unavailable
 
-No emulator is connected. Start one from Android Studio `Tools > Device Manager`.
+Start an AVD, wait for Android to finish booting, and run `adb devices`. Ensure
+the Platform Tools directory is on `PATH`. The collection and standalone
+utilities require a connected device; `python orchestrator.py --dry-run` does
+not.
 
-### `litellm not installed`
+### The evaluator reports no screens found
 
-```bash
-pip install litellm
-```
+No baseline label files were found in `dataset/labels`. Run the collection
+pipeline first, or ensure the directory contains files named
+`{screen}_baseline.json` alongside the matching profile assets.
 
-### Provider API key not set
+### The evaluator skips a model for a missing key
 
-```bash
-export VLM_MODEL=openai/gpt-4o-mini
-export VLM_PACE_SECONDS=0.5
-export VLM_MAX_RETRIES=3
-export GOOGLE_API_KEY=your-key-here
-export OPENAI_API_KEY=your-key-here
-export ANTHROPIC_API_KEY=your-key-here
-```
+Add a non-placeholder provider key to `.env` or the process environment. Values
+that still use the `your-...-here` placeholder are deliberately treated as
+missing. Confirm the `VLM_MODEL` prefix and key match the provider.
 
-### `VLM_MODEL not set`
+### `VLM_MODEL` is not set
 
-Set a LiteLLM model string in `.env` or pass `--model`:
+Set it in `.env` or export it before running the evaluator:
 
 ```bash
 export VLM_MODEL=openai/gpt-4o-mini
-python vlm_evaluator.py --model openai/gpt-4o-mini
+python vlm_evaluator.py
 ```
 
-### OpenAI rate limit errors
+### SciPy is not installed
 
-Use a small optional delay between successful calls:
-
-```bash
-export VLM_PACE_SECONDS=0.5
-python vlm_evaluator.py --pace-seconds 0.5
-```
-
-### `scipy not installed`
-
-McNemar's analysis works without scipy (using fallback calculations) but
-precise p-values require it:
+Analysis continues with fallback calculations. Install SciPy when precise
+p-values are required:
 
 ```bash
-pip install scipy
+python -m pip install scipy
 ```
