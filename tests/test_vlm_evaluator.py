@@ -71,12 +71,14 @@ class VlmEvaluatorMainTests(unittest.TestCase):
         init_csv_mock,
         evaluate_screen_mock,
     ):
-        with mock.patch("sys.stdout", new_callable=io.StringIO) as stdout:
+        fake_stdout = io.StringIO()
+        fake_stdout.reconfigure = lambda **kwargs: None
+        with mock.patch("sys.stdout", fake_stdout):
             vlm_evaluator.main()
 
         self.assertEqual(2, evaluate_screen_mock.call_count)
-        output = stdout.getvalue()
-        self.assertIn("Mode    : OFFLINE evaluation from dataset/images + dataset/labels", output)
+        output = fake_stdout.getvalue()
+        self.assertIn("Mode    : Vision-only", output)
         self.assertIn("Note    : Does not navigate or capture the emulator", output)
         self.assertEqual(
             [
@@ -88,7 +90,11 @@ class VlmEvaluatorMainTests(unittest.TestCase):
                 for call in evaluate_screen_mock.call_args_list
             ],
         )
+        # Verify use_a11y_tree defaults to False
+        for call in evaluate_screen_mock.call_args_list:
+            self.assertFalse(call.kwargs.get("use_a11y_tree", False))
 
 
 if __name__ == "__main__":
     unittest.main()
+

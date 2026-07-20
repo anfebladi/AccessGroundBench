@@ -10,6 +10,7 @@ LABELS_DIR = DATASET_DIR / "labels"
 
 MODEL_ENV_VAR: str = "VLM_MODEL"
 PACE_ENV_VAR: str = "VLM_PACE_SECONDS"
+A11Y_TREE_ENV_VAR: str = "USE_A11Y_TREE"
 
 ALL_PROFILES = [
     "baseline",
@@ -39,6 +40,16 @@ def resolve_model(cli_model: str | None) -> str:
     raise SystemExit(1)
 
 
+def resolve_use_a11y_tree() -> bool:
+    """Resolve the accessibility tree toggle from USE_A11Y_TREE env var.
+
+    Returns True when the env var is set to a truthy value (true/1/yes).
+    Defaults to False when unset or empty.
+    """
+    raw = os.environ.get(A11Y_TREE_ENV_VAR, "").strip().lower()
+    return raw in ("true", "1", "yes")
+
+
 def resolve_pace_seconds(cli_pace_seconds: str | None) -> float:
     """Resolve optional per-call pacing: CLI override, env, then 0 seconds."""
     raw_value = cli_pace_seconds
@@ -63,7 +74,12 @@ def resolve_pace_seconds(cli_pace_seconds: str | None) -> float:
     return pace_seconds
 
 
-def get_results_csv(model: str) -> Path:
-    """Generate a dynamic CSV path based on the model name."""
+def get_results_csv(model: str, use_a11y_tree: bool = False) -> Path:
+    """Generate a dynamic CSV path based on the model name.
+
+    When use_a11y_tree is True, appends '_with_tree' to distinguish
+    tree-injected results from vision-only results.
+    """
     clean_model = model.replace("/", "_")
-    return DATASET_DIR / f"evaluation_results_{clean_model}.csv"
+    suffix = "_with_tree" if use_a11y_tree else ""
+    return DATASET_DIR / f"evaluation_results_{clean_model}{suffix}.csv"

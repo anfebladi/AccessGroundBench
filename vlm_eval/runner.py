@@ -20,6 +20,41 @@ PROMPT_TEMPLATE = (
     "Return your response strictly in the bracket format: [x, y]"
 )
 
+PROMPT_TEMPLATE_WITH_TREE = (
+    "You are an autonomous mobile agent navigating an Android user interface. "
+    "Look closely at this image. This image is {img_width} x {img_height} pixels. "
+    "You are also given the screen's accessibility tree, listing on-screen "
+    "elements with their pixel bounds in the format [x1,y1][x2,y2]:\n"
+    "{tree_text}\n"
+    "Using both the image and the accessibility tree, provide the exact central "
+    "(x, y) pixel coordinates needed to click on the text element: '{target_text}'. "
+    "Return your response strictly in the bracket format: [x, y]"
+)
+
+
+def build_tree_text(profile_labels: list[dict]) -> str:
+    """Render a profile's label records into a compact accessibility-tree string.
+
+    Each line represents one UI element with its best available label and
+    pixel bounding box. Falls back through: text -> content_desc ->
+    resource_id -> class.
+    """
+    lines = []
+    for rec in profile_labels:
+        box = rec.get("box")
+        if not box:
+            continue
+        x1, y1, x2, y2 = box
+        label = (
+            rec.get("text")
+            or rec.get("content_desc")
+            or rec.get("resource_id")
+            or rec.get("class")
+            or "?"
+        )
+        lines.append(f'- "{label}" [{x1},{y1}][{x2},{y2}]')
+    return "\n".join(lines)
+
 def get_png_dimensions(image_path: Path) -> tuple[int, int]:
     """Extract width and height from a PNG file without external libraries."""
     with open(image_path, "rb") as f:
@@ -36,9 +71,13 @@ def evaluate_screen(
     images_dir: Path = IMAGES_DIR,
     labels_dir: Path = LABELS_DIR,
     profiles: list[str] | None = None,
+    use_a11y_tree: bool = False,
 ) -> int:
     """
     Evaluate all profiles for a single screen.
+
+    When use_a11y_tree is True, injects the accessibility tree into the
+    prompt alongside the screenshot. When False, runs vision-only (unchanged).
 
     Returns the total number of evaluation rows generated.
     """
@@ -70,7 +109,13 @@ def evaluate_screen(
         with open(label_path, "r", encoding="utf-8") as f:
             profile_labels = json.load(f)
 
-        print(f"\n  -- {screen_name} / {profile_name} "
+        # Build tree text if a11y tree injection is enabled
+        tree_text = None
+        if use_a11y_tree:
+            tree_text = build_tree_text(profile_labels)
+
+        mode_tag = " +tree" if use_a11y_tree else ""
+        print(f"\n  -- {screen_name} / {profile_name}{mode_tag} "
               f"({len(targets)} targets) --")
 
         for target in targets:
@@ -94,11 +139,19 @@ def evaluate_screen(
                 continue
 
             try:
-                prompt = PROMPT_TEMPLATE.format(
-                    img_width=img_width,
-                    img_height=img_height,
-                    target_text=target_text,
-                )
+                if use_a11y_tree and tree_text is not None:
+                    prompt = PROMPT_TEMPLATE_WITH_TREE.format(
+                        img_width=img_width,
+                        img_height=img_height,
+                        tree_text=tree_text,
+                        target_text=target_text,
+                    )
+                else:
+                    prompt = PROMPT_TEMPLATE.format(
+                        img_width=img_width,
+                        img_height=img_height,
+                        target_text=target_text,
+                    )
                 raw_response = call_vlm(model, image_path, prompt)
             except Exception as exc:
                 print(f"    [API-ERROR] '{target_text}': {exc}")
@@ -142,3 +195,4 @@ def evaluate_screen(
                 time.sleep(pace_seconds)
 
     return count
+

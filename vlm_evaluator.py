@@ -19,6 +19,7 @@ from vlm_eval.config import (
     get_results_csv,
     resolve_model,
     resolve_pace_seconds,
+    resolve_use_a11y_tree,
 )
 from vlm_eval.results import init_csv
 from vlm_eval.runner import evaluate_screen
@@ -63,15 +64,18 @@ def main() -> None:
     model = resolve_model(None)
     models = [model]
     pace_seconds = resolve_pace_seconds(None)
+    use_a11y_tree = resolve_use_a11y_tree()
 
     screens = discover_screens()
     if not screens:
         print("[ERROR] No screens found. Run orchestrator.py first to collect data.")
         sys.exit(1)
 
+    mode_label = "Vision + A11y Tree" if use_a11y_tree else "Vision-only"
+
     print("=" * 60)
     print("  AccessGroundBench -- VLM Grounding Evaluator")
-    print("  Mode    : OFFLINE evaluation from dataset/images + dataset/labels")
+    print(f"  Mode    : {mode_label}")
     print("  Note    : Does not navigate or capture the emulator")
     print(f"  Models  : {', '.join(models)}")
     print(f"  Pace    : {pace_seconds}s")
@@ -84,7 +88,7 @@ def main() -> None:
             print(f"\n[SKIP] Missing API key for model: {model}")
             continue
 
-        results_csv = get_results_csv(model)
+        results_csv = get_results_csv(model, use_a11y_tree)
         init_csv(results_csv)
         
         print(f"\n" + "=" * 60)
@@ -94,7 +98,10 @@ def main() -> None:
 
         for screen_name in screens:
             print(f"\n  -- Screen: {screen_name} --")
-            rows = evaluate_screen(model, screen_name, pace_seconds, results_csv)
+            rows = evaluate_screen(
+                model, screen_name, pace_seconds, results_csv,
+                use_a11y_tree=use_a11y_tree,
+            )
             total_rows += rows
 
     print("\n" + "=" * 60)
