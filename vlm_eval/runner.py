@@ -23,30 +23,48 @@ PROMPT_TEMPLATE = (
 PROMPT_TEMPLATE_WITH_TREE = (
     "You are an autonomous mobile agent navigating an Android user interface. "
     "Look closely at this image. This image is {img_width} x {img_height} pixels. "
-    "You are also given the screen's accessibility tree, listing on-screen "
+    "You are also given a partial accessibility tree listing some on-screen "
     "elements with their pixel bounds in the format [x1,y1][x2,y2]:\n"
     "{tree_text}\n"
-    "Using both the image and the accessibility tree, provide the exact central "
-    "(x, y) pixel coordinates needed to click on the text element: '{target_text}'. "
+    "The target element may not appear in this tree; use the surrounding "
+    "elements' positions as spatial reference and the image to locate it. "
+    "Provide the exact central (x, y) pixel coordinates needed to click on the "
+    "text element: '{target_text}'. "
     "Return your response strictly in the bracket format: [x, y]"
 )
 
 
-def build_tree_text(profile_labels: list[dict]) -> str:
+def build_tree_text(
+    profile_labels: list[dict],
+    exclude_text: str | None = None,
+) -> str:
     """Render a profile's label records into a compact accessibility-tree string.
 
     Each line represents one UI element with its best available label and
     pixel bounding box. Falls back through: text -> content_desc ->
     resource_id -> class.
+
+    When exclude_text is provided, any element whose text matches it is
+    withheld from the tree. This prevents the tree from leaking the target's
+    exact pixel bounds (which would reduce grounding to a parsing task): the
+    model still gets the surrounding elements' positions as spatial context,
+    but must locate the target itself from the image.
     """
     lines = []
     for rec in profile_labels:
         box = rec.get("box")
         if not box:
             continue
+        text = rec.get("text")
+        if (
+            exclude_text is not None
+            and text
+            and text.strip() == exclude_text
+        ):
+            continue
         x1, y1, x2, y2 = box
         label = (
-            rec.get("text")
+            text
             or rec.get("content_desc")
             or rec.get("resource_id")
             or rec.get("class")
@@ -109,11 +127,6 @@ def evaluate_screen(
         with open(label_path, "r", encoding="utf-8") as f:
             profile_labels = json.load(f)
 
-        # Build tree text if a11y tree injection is enabled
-        tree_text = None
-        if use_a11y_tree:
-            tree_text = build_tree_text(profile_labels)
-
         mode_tag = " +tree" if use_a11y_tree else ""
         print(f"\n  -- {screen_name} / {profile_name}{mode_tag} "
               f"({len(targets)} targets) --")
@@ -139,7 +152,12 @@ def evaluate_screen(
                 continue
 
             try:
-                if use_a11y_tree and tree_text is not None:
+                if use_a11y_tree:
+                    # Withhold the target's own row so the tree provides
+                    # spatial context without leaking the answer's bounds.
+                    tree_text = build_tree_text(
+                        profile_labels, exclude_text=target_text
+                    )
                     prompt = PROMPT_TEMPLATE_WITH_TREE.format(
                         img_width=img_width,
                         img_height=img_height,
