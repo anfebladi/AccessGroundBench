@@ -136,11 +136,11 @@ def call_vlm(
       - anthropic/claude-3-5-sonnet-latest
     """
     if model == "local/ferret-ui-llama8b":
-        import subprocess
-        python_exe = r"c:\Users\anfeb\Desktop\ferret_ui_llama\venv\Scripts\python.exe"
-        cli_runner = r"c:\Users\anfeb\Desktop\ferret_ui_llama\cli_runner.py"
-        
+        import urllib.request
+        import urllib.error
+        import json
         import re
+        from PIL import Image
         
         # Rewrite prompt for Ferret-UI to trigger bounding box grounding.
         # The generic zero-shot prompt confuses Ferret, causing it to just repeat the text.
@@ -149,28 +149,23 @@ def call_vlm(
         if target_match:
             target_text = target_match.group(1)
             ferret_prompt = f"What is the bounding box of {target_text}?"
+            
+        data = {
+            "image_path": str(image_path),
+            "prompt": ferret_prompt
+        }
         
-        import os
-        env = os.environ.copy()
-        env["PYTHONIOENCODING"] = "utf-8"
+        req = urllib.request.Request(
+            "http://localhost:8000/", 
+            data=json.dumps(data).encode('utf-8'), 
+            headers={'Content-Type': 'application/json'},
+            method='POST'
+        )
         
         try:
-            result = subprocess.run(
-                [python_exe, cli_runner, "--image", str(image_path), "--prompt", ferret_prompt],
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-                check=True,
-                cwd=r"c:\Users\anfeb\Desktop\ferret_ui_llama",
-                env=env
-            )
-            
-            output = result.stdout
-            if "---FERRET_OUTPUT_START---" in output and "---FERRET_OUTPUT_END---" in output:
-                ferret_text = output.split("---FERRET_OUTPUT_START---")[1].split("---FERRET_OUTPUT_END---")[0].strip()
-                
-                import re
-                from PIL import Image
+            with urllib.request.urlopen(req) as response:
+                result = json.loads(response.read().decode('utf-8'))
+                ferret_text = result.get('text', '')
                 
                 bbox_match = re.search(r'\[\[(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\]\]', ferret_text)
                 if bbox_match:
@@ -189,11 +184,19 @@ def call_vlm(
                     return f"[{cx:.1f}, {cy:.1f}]"
                 
                 return ferret_text
-            return output.strip()
-            
-        except subprocess.CalledProcessError as e:
-            print(f"Error running local ferret model: {e.stderr}")
-            raise e
+                
+        except urllib.error.URLError as e:
+            if isinstance(e.reason, ConnectionRefusedError):
+                print("\n[ERROR] Could not connect to the Ferret-UI inference server!")
+                print("Please start the server in a separate terminal:")
+                print("  cd ferret_ui")
+                print("  .\\venv\\Scripts\\activate")
+                print("  python ferret_server.py")
+                print("Wait for 'Model loaded successfully!' before running the evaluator.\n")
+                raise SystemExit(1)
+            else:
+                print(f"Error communicating with local ferret model: {e}")
+                raise e
 
     data_url = image_to_data_url(image_path)
     retries = _resolve_max_retries(max_retries)

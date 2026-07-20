@@ -277,6 +277,218 @@ def format_report(
 
 
 # ---------------------------------------------------------------------------
+# Cross-File Comparison (Vision-only vs. Tree-injected)
+# ---------------------------------------------------------------------------
+
+def build_cross_file_pairs(
+    rows_a: list[dict],
+    rows_b: list[dict],
+) -> dict[str, dict[str, tuple[int, int]]]:
+    """
+    Build paired samples across two CSV files for the same profiles.
+
+    Returns {tracking_key: {profile: (score_a, score_b)}} where
+    tracking_key = "{screen}_{target_text}".
+    """
+    # Index file A by (screen, target_text, profile) -> score
+    index_a: dict[tuple[str, str, str], int] = {}
+    for row in rows_a:
+        key = (row.get("screen", ""), row.get("target_text", ""), row.get("profile", ""))
+        index_a[key] = int(row.get("score", 0))
+
+    # Index file B by (screen, target_text, profile) -> score
+    index_b: dict[tuple[str, str, str], int] = {}
+    for row in rows_b:
+        key = (row.get("screen", ""), row.get("target_text", ""), row.get("profile", ""))
+        index_b[key] = int(row.get("score", 0))
+
+    # Build paired structure keyed by tracking_key, grouped by profile
+    pairs: dict[str, dict[str, tuple[int, int]]] = defaultdict(dict)
+    all_keys = set(index_a.keys()) | set(index_b.keys())
+
+    for screen, target_text, profile in all_keys:
+        tracking_key = f"{screen}_{target_text}"
+        score_a = index_a.get((screen, target_text, profile))
+        score_b = index_b.get((screen, target_text, profile))
+        if score_a is not None and score_b is not None:
+            pairs[tracking_key][profile] = (score_a, score_b)
+
+    return dict(pairs)
+
+
+def compute_cross_contingency(
+    pairs: dict[str, dict[str, tuple[int, int]]],
+    profile: str,
+) -> tuple[int, int, int, int]:
+    """
+    Compute the 2x2 contingency matrix comparing file A vs file B
+    for a specific profile.
+
+    Returns (a, b, c, d) where:
+      a = Both hit   (A=1, B=1)
+      b = Tree hurt  (A=1, B=0) -- regression
+      c = Tree helped (A=0, B=1) -- improvement
+      d = Both miss  (A=0, B=0)
+    """
+    a = b = c = d = 0
+
+    for key, profile_scores in pairs.items():
+        scores = profile_scores.get(profile)
+        if scores is None:
+            continue
+        score_a, score_b = scores
+
+        if score_a == 1 and score_b == 1:
+            a += 1
+        elif score_a == 1 and score_b == 0:
+            b += 1
+        elif score_a == 0 and score_b == 1:
+            c += 1
+        else:
+            d += 1
+
+    return a, b, c, d
+
+
+def format_cross_report(
+    profile: str,
+    a: int, b: int, c: int, d: int,
+    result: dict,
+) -> str:
+    """Format a cross-file comparison result as a readable block."""
+    total = a + b + c + d
+    acc_a = ((a + b) / total * 100) if total > 0 else 0
+    acc_b = ((a + c) / total * 100) if total > 0 else 0
+
+    lines = [
+        f"",
+        f"{'=' * 60}",
+        f"  Profile: {profile}",
+        f"  Vision-only vs. Vision + A11y Tree",
+        f"{'=' * 60}",
+        f"",
+        f"  Accuracies:",
+        f"    Vision-only Accuracy:  {acc_a:.1f}% ({a+b}/{total})",
+        f"    With Tree Accuracy:    {acc_b:.1f}% ({a+c}/{total})",
+        f"",
+        f"  2x2 Contingency Matrix (n={total} paired elements):",
+        f"  +---------------------+--------------+--------------+",
+        f"  |                     | Tree PASS    | Tree FAIL    |",
+        f"  +---------------------+--------------+--------------+",
+        f"  | Vision-only PASS    |  a = {a:<7} |  b = {b:<7} |",
+        f"  | Vision-only FAIL    |  c = {c:<7} |  d = {d:<7} |",
+        f"  +---------------------+--------------+--------------+",
+        f"",
+        f"  Discordant pairs: b + c = {b + c}",
+        f"  Test selected:    {result['test']}",
+    ]
+
+    if result["statistic"] is not None:
+        lines.append(f"  chi2 statistic:   {result['statistic']:.4f}")
+
+    lines.append(f"  p-value:          {result['p_value']:.6f}")
+    lines.append(f"")
+
+    if result["p_value"] < ALPHA:
+        lines.append(
+            f"  >> REJECT H0 (p < {ALPHA}): Tree injection caused a "
+            f"STATISTICALLY SIGNIFICANT change in VLM grounding "
+            f"performance for profile '{profile}'."
+        )
+    else:
+        lines.append(
+            f"  >> FAIL TO REJECT H0 (p >= {ALPHA}): Tree injection did NOT "
+            f"significantly alter VLM grounding performance for "
+            f"profile '{profile}'. Differences fall within random noise."
+        )
+
+    lines.append("")
+    return "\n".join(lines)
+
+
+def run_cross_comparison(csv_a: Path, csv_b: Path) -> None:
+    """Run cross-file McNemar comparison between vision-only and tree-injected results."""
+    print(f"\n{'=' * 60}")
+    print(f"  Cross-File Comparison")
+    print(f"  File A (Vision-only): {csv_a.name}")
+    print(f"  File B (With Tree):   {csv_b.name}")
+    print(f"{'=' * 60}")
+
+    rows_a = load_results(csv_a)
+    rows_b = load_results(csv_b)
+
+    pairs = build_cross_file_pairs(rows_a, rows_b)
+    print(f"[PAIRS] {len(pairs)} unique (screen, target_text) tracking keys")
+
+    # Detect profiles present in the paired data
+    profiles_present = set()
+    for profile_scores in pairs.values():
+        profiles_present.update(profile_scores.keys())
+
+    profiles_to_compare = [p for p in EXPERIMENTAL_PROFILES if p in profiles_present]
+    if not profiles_to_compare:
+        print("[ERROR] No matching experimental profiles found across both files.")
+        sys.exit(1)
+
+    # Derive output filename
+    stem_a = csv_a.stem.replace("evaluation_results_", "")
+    out_csv_path = PROJECT_ROOT / "dataset" / f"mcnemar_compare_{stem_a}.csv"
+    print(f"[INFO] Writing comparison results to: {out_csv_path}")
+
+    with open(out_csv_path, "w", newline="", encoding="utf-8") as out_f:
+        writer = csv.writer(out_f)
+        writer.writerow([
+            "Profile", "Total_Pairs", "Both_Pass_a", "Tree_Hurt_b",
+            "Tree_Helped_c", "Both_Fail_d", "Discordant_Pairs",
+            "VisionOnly_Acc", "WithTree_Acc", "Test_Used", "Statistic",
+            "P_Value", "Significant",
+        ])
+
+        for profile in profiles_to_compare:
+            a, b, c, d = compute_cross_contingency(pairs, profile)
+            result = run_mcnemar(b, c)
+            report = format_cross_report(profile, a, b, c, d, result)
+            print(report)
+
+            verdict = "Yes" if result["p_value"] < ALPHA else "No"
+            total = a + b + c + d
+            acc_a = f"{((a + b) / total * 100):.1f}%" if total > 0 else "0%"
+            acc_b = f"{((a + c) / total * 100):.1f}%" if total > 0 else "0%"
+
+            writer.writerow([
+                profile, total, a, b, c, d, b + c,
+                acc_a, acc_b,
+                result["test"],
+                result["statistic"] if result["statistic"] is not None else "",
+                result["p_value"], verdict,
+            ])
+
+    # Summary table
+    print("\n" + "=" * 80)
+    print(f"  Cross-File Summary: Vision-only vs. Vision + A11y Tree")
+    print("=" * 80)
+    print(f"  {'Profile':<20} {'Vis Acc':>9} {'Tree Acc':>9} {'b+c':>5}  {'Test':<15}  {'p-value':>10}  {'Result'}")
+    print(f"  {'-' * 20} {'-' * 9} {'-' * 9} {'-' * 5}  {'-' * 15}  {'-' * 10}  {'-' * 12}")
+
+    for profile in profiles_to_compare:
+        a, b, c, d = compute_cross_contingency(pairs, profile)
+        result = run_mcnemar(b, c)
+        verdict = "SIGNIFICANT" if result["p_value"] < ALPHA else "Not Sig."
+        test_short = "Asymptotic" if b + c >= ASYMPTOTIC_THRESHOLD else "Exact Binom."
+        if b + c == 0:
+            test_short = "N/A"
+
+        total = a + b + c + d
+        acc_a = f"{((a + b) / total * 100):.1f}%" if total > 0 else "0%"
+        acc_b = f"{((a + c) / total * 100):.1f}%" if total > 0 else "0%"
+
+        print(f"  {profile:<20} {acc_a:>9} {acc_b:>9} {b + c:>5}  {test_short:<15}  "
+              f"{result['p_value']:>10.6f}  {verdict}")
+
+    print()
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -290,6 +502,18 @@ def main() -> None:
         default=None,
         help="Path to a specific evaluation_results_*.csv file. If omitted, runs on all in dataset/",
     )
+    parser.add_argument(
+        "--compare-a",
+        type=Path,
+        default=None,
+        help="Vision-only results CSV for cross-file comparison",
+    )
+    parser.add_argument(
+        "--compare-b",
+        type=Path,
+        default=None,
+        help="Tree-injected results CSV for cross-file comparison",
+    )
     args = parser.parse_args()
 
     if not HAS_SCIPY:
@@ -297,6 +521,20 @@ def main() -> None:
         print("       For precise p-values: pip install scipy")
         print()
 
+    # Cross-file comparison mode
+    if args.compare_a and args.compare_b:
+        print("=" * 60)
+        print("  AccessGroundBench -- McNemar's Cross-File Comparison")
+        print(f"  alpha: {ALPHA}")
+        print("=" * 60)
+        run_cross_comparison(args.compare_a, args.compare_b)
+        return
+
+    if args.compare_a or args.compare_b:
+        print("[ERROR] Both --compare-a and --compare-b are required for cross-file comparison.")
+        sys.exit(1)
+
+    # Standard single-file analysis (unchanged)
     print("=" * 60)
     print("  AccessGroundBench -- McNemar's Test Analysis")
     print(f"  alpha: {ALPHA}")
@@ -389,3 +627,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
