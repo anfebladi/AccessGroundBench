@@ -24,27 +24,50 @@ ELDER_PROFILES: dict[str, dict[str, str]] = {
         "font_scale": "1.0",
         "density":    "reset",
         "rtl":        "0",
+        "daltonizer": "off",
     },
     "elder_text_heavy": {
         "font_scale": "1.4",
         "density":    "reset",
         "rtl":        "0",
+        "daltonizer": "off",
     },
     "elder_zoom_heavy": {
         "font_scale": "1.0",
         "density":    "480",
         "rtl":        "0",
+        "daltonizer": "off",
     },
     "elder_combo_max": {
         "font_scale": "1.6",
         "density":    "520",
         "rtl":        "0",
+        "daltonizer": "off",
     },
     "elder_combo_rtl": {
         "font_scale": "1.5",
         "density":    "480",
         "rtl":        "1",
+        "daltonizer": "off",
     },
+    # Color vector only: geometry stays at baseline so the color remap is
+    # the single isolated variable versus baseline. Deuteranomaly (green-weak)
+    # is the most common form of color-vision deficiency.
+    "colorblind_deuteranomaly": {
+        "font_scale": "1.0",
+        "density":    "reset",
+        "rtl":        "0",
+        "daltonizer": "deuteranomaly",
+    },
+}
+
+# Android on-device color-correction (daltonizer) modes, mapped to the numeric
+# values the accessibility_display_daltonizer secure setting expects.
+DALTONIZER_MODES: dict[str, str] = {
+    "monochromacy": "0",   # grayscale / total color blindness
+    "protanomaly":  "11",  # red-weak
+    "deuteranomaly": "12",  # green-weak (most common)
+    "tritanomaly":  "13",  # blue-weak
 }
 
 # Settling delay (seconds) — allows Android rendering loop to finish
@@ -95,6 +118,47 @@ def apply_rtl(adb: str, serial: str, value: str) -> None:
     )
 
 
+def apply_daltonizer(adb: str, serial: str, value: str) -> None:
+    """
+    Vector 4 — Color Remap (color-blindness correction filter).
+
+    Toggles Android's on-device daltonizer, a display-level color transform.
+    `value` is "off" or a key of DALTONIZER_MODES (e.g. "deuteranomaly").
+
+    NOTE: The daltonizer is applied by the display composition pipeline, not
+    baked into individual app surfaces. On some Android/emulator versions
+    `adb screencap` captures buffers BEFORE this transform, so the saved PNG
+    may not show the color change. Always visually confirm a captured
+    colorblind screenshot differs from baseline before trusting a run.
+    """
+    if value == "off":
+        print("  [V4] color      -> OFF")
+        _run(
+            adb, serial,
+            "shell", "settings", "put", "secure",
+            "accessibility_display_daltonizer_enabled", "0",
+        )
+        return
+
+    mode = DALTONIZER_MODES.get(value)
+    if mode is None:
+        valid = ", ".join(["off", *DALTONIZER_MODES])
+        print(f"[ERROR] Unknown daltonizer mode '{value}'. Valid: {valid}")
+        sys.exit(1)
+
+    print(f"  [V4] color      -> {value} (daltonizer mode {mode})")
+    _run(
+        adb, serial,
+        "shell", "settings", "put", "secure",
+        "accessibility_display_daltonizer_enabled", "1",
+    )
+    _run(
+        adb, serial,
+        "shell", "settings", "put", "secure",
+        "accessibility_display_daltonizer", mode,
+    )
+
+
 # ---------------------------------------------------------------------------
 # Global Failsafe Reset
 # ---------------------------------------------------------------------------
@@ -116,6 +180,7 @@ def reset_all(adb: str | None = None, serial: str | None = None) -> None:
     apply_font_scale(adb, serial, "1.0")
     apply_density(adb, serial, "reset")
     apply_rtl(adb, serial, "0")
+    apply_daltonizer(adb, serial, "off")
     print("[RESET] Complete. Emulator is back to baseline.")
 
 
@@ -150,7 +215,8 @@ def apply_profile(profile_name: str) -> None:
     print(f"  Profile : {profile_name}")
     print(f"  Vectors : font={profile['font_scale']}  "
           f"density={profile['density']}  "
-          f"rtl={profile['rtl']}")
+          f"rtl={profile['rtl']}  "
+          f"color={profile['daltonizer']}")
     print("=" * 60)
 
     adb = resolve_adb()
@@ -161,6 +227,7 @@ def apply_profile(profile_name: str) -> None:
         apply_font_scale(adb, serial, profile["font_scale"])
         apply_density(adb, serial, profile["density"])
         apply_rtl(adb, serial, profile["rtl"])
+        apply_daltonizer(adb, serial, profile["daltonizer"])
 
     except subprocess.CalledProcessError as exc:
         print(f"\n[FATAL] ADB command failed:\n  {exc.cmd}\n  {exc.stderr}")
@@ -188,8 +255,9 @@ if __name__ == "__main__":
         print()
         print("Available profiles:")
         for name, cfg in ELDER_PROFILES.items():
-            print(f"  {name:<22} font={cfg['font_scale']}  "
-                  f"density={cfg['density']:<6}  rtl={cfg['rtl']}")
+            print(f"  {name:<26} font={cfg['font_scale']}  "
+                  f"density={cfg['density']:<6}  rtl={cfg['rtl']}  "
+                  f"color={cfg['daltonizer']}")
         sys.exit(0)
 
     arg = sys.argv[1].strip().lower()

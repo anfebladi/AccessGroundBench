@@ -62,6 +62,40 @@ class AdbUtilsTests(unittest.TestCase):
             check=True,
         )
 
+    @mock.patch("adb_utils.time.sleep", return_value=None)
+    @mock.patch("adb_utils.run_adb")
+    def test_run_adb_with_retries_succeeds_after_transient_failure(
+        self, run_adb_mock, _sleep
+    ):
+        ok = subprocess.CompletedProcess(args=[], returncode=0, stdout="", stderr="")
+        run_adb_mock.side_effect = [
+            subprocess.CalledProcessError(1, ["adb", "pull"]),
+            ok,
+        ]
+
+        with contextlib.redirect_stdout(io.StringIO()):
+            result = adb_utils.run_adb_with_retries(
+                "adb", "emulator-5554", "pull", "a", "b", retries=2
+            )
+
+        self.assertIs(ok, result)
+        self.assertEqual(2, run_adb_mock.call_count)
+
+    @mock.patch("adb_utils.time.sleep", return_value=None)
+    @mock.patch("adb_utils.run_adb")
+    def test_run_adb_with_retries_reraises_after_exhausting(
+        self, run_adb_mock, _sleep
+    ):
+        run_adb_mock.side_effect = subprocess.CalledProcessError(1, ["adb", "pull"])
+
+        with contextlib.redirect_stdout(io.StringIO()):
+            with self.assertRaises(subprocess.CalledProcessError):
+                adb_utils.run_adb_with_retries(
+                    "adb", "emulator-5554", "pull", "a", "b", retries=2
+                )
+
+        self.assertEqual(3, run_adb_mock.call_count)
+
     @mock.patch("adb_utils.run_adb")
     def test_capture_adb_returns_stdout(self, run_adb_mock):
         run_adb_mock.return_value = subprocess.CompletedProcess(

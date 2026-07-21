@@ -99,11 +99,15 @@ def run_screen(screen_name: str, dry_run: bool = False) -> None:
         app_navigator.navigate_to_screen(screen_name)
 
         # Step 3: Capture screenshot + UI hierarchy
+        # The on-device daltonizer is not captured by screencap, so apply the
+        # profile's color-vision transform to the PNG in software instead.
+        color_mode = layout_modifier.ELDER_PROFILES[profile_name].get("daltonizer", "off")
         print(f"\n  [3/4] Capturing screen assets...")
         xml_path, png_path, status_bar_h, nav_bar_h = screenshot_pipeline.run_pipeline(
             output_name=stem,
             image_dir=IMAGES_DIR,
             xml_dir=RAW_XML_DIR,
+            color_mode=color_mode,
         )
         app_navigator.validate_xml_package(xml_path, screen_name)
 
