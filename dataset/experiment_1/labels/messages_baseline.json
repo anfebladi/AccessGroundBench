@@ -1,0 +1,314 @@
+[
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "scrollable_container",
+    "box": [
+      0,
+      1841,
+      1080,
+      2282
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "content_container",
+    "box": [
+      0,
+      1841,
+      1080,
+      2282
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1862,
+      1080,
+      2282
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "accounts_content_container",
+    "box": [
+      0,
+      1862,
+      1080,
+      2282
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "footer_container",
+    "box": [
+      0,
+      1862,
+      1080,
+      2282
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Sign In",
+    "content_desc": null,
+    "resource_id": "sign_in_button",
+    "box": [
+      330,
+      1904,
+      750,
+      2030
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Use Messages without an account",
+    "content_desc": null,
+    "resource_id": "secondary_action_button",
+    "box": [
+      42,
+      2030,
+      1038,
+      2156
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "footer_bottom_padding",
+    "box": [
+      0,
+      2156,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      -142,
+      1080,
+      1611
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      0,
+      1080,
+      1611
+    ]
+  },
+  {
+    "class": "ComposeView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "compose_view",
+    "box": [
+      0,
+      0,
+      1080,
+      1611
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      0,
+      1080,
+      1611
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      0,
+      1080,
+      1611
+    ]
+  },
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      53,
+      195,
+      1027,
+      1548
+    ]
+  },
+  {
+    "class": "mjc",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      331,
+      216,
+      748,
+      281
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": "Google Messages",
+    "resource_id": null,
+    "box": [
+      331,
+      216,
+      748,
+      281
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "logo",
+    "box": [
+      331,
+      223,
+      509,
+      281
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Messages",
+    "content_desc": null,
+    "resource_id": "product_name",
+    "box": [
+      519,
+      216,
+      748,
+      279
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Welcome!",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      276,
+      365,
+      805,
+      513
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Sign into your Google account to get the very best of Messages",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      70,
+      518,
+      1010,
+      666
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      53,
+      792,
+      1027,
+      1308
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      143,
+      888,
+      269,
+      1014
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Chat with Gemini in Messages (Available in select regions)",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      316,
+      897,
+      922,
+      1003
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      143,
+      1093,
+      269,
+      1219
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Sync chats across your devices",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      316,
+      1129,
+      824,
+      1182
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Google and your carrier will periodically verify your device info to enable Google services. Carrier rates apply.",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      53,
+      1400,
+      1027,
+      1484
+    ]
+  }
+]

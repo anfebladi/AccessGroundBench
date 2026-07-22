@@ -120,6 +120,108 @@ SCREEN_TARGETS: dict[str, ScreenTarget] = {
             "com.android.deskclock",
         }),
     ),
+    "calculator": ScreenTarget(
+        name="calculator",
+        launch_commands=(
+            ("shell", "monkey", "-p", "com.google.android.calculator", "-c", "android.intent.category.LAUNCHER", "1"),
+            ("shell", "monkey", "-p", "com.android.calculator2", "-c", "android.intent.category.LAUNCHER", "1"),
+        ),
+        expected_packages=frozenset({
+            "com.google.android.calculator",
+            "com.android.calculator2",
+        }),
+    ),
+    "calendar": ScreenTarget(
+        name="calendar",
+        launch_commands=(
+            ("shell", "monkey", "-p", "com.google.android.calendar", "-c", "android.intent.category.LAUNCHER", "1"),
+            ("shell", "monkey", "-p", "com.android.calendar", "-c", "android.intent.category.LAUNCHER", "1"),
+        ),
+        expected_packages=frozenset({
+            "com.google.android.calendar",
+            "com.android.calendar",
+        }),
+    ),
+    "chrome": ScreenTarget(
+        name="chrome",
+        launch_commands=(
+            ("shell", "am", "start", "-a", "android.intent.action.VIEW", "-d", "https://www.google.com"),
+            ("shell", "monkey", "-p", "com.android.chrome", "-c", "android.intent.category.LAUNCHER", "1"),
+        ),
+        expected_packages=frozenset({
+            "com.android.chrome",
+        }),
+    ),
+    "maps": ScreenTarget(
+        name="maps",
+        launch_commands=(
+            ("shell", "monkey", "-p", "com.google.android.apps.maps", "-c", "android.intent.category.LAUNCHER", "1"),
+        ),
+        expected_packages=frozenset({
+            "com.google.android.apps.maps",
+        }),
+    ),
+    "camera": ScreenTarget(
+        name="camera",
+        launch_commands=(
+            ("shell", "am", "start", "-a", "android.media.action.IMAGE_CAPTURE"),
+            ("shell", "monkey", "-p", "com.google.android.GoogleCamera", "-c", "android.intent.category.LAUNCHER", "1"),
+            ("shell", "monkey", "-p", "com.android.camera2", "-c", "android.intent.category.LAUNCHER", "1"),
+        ),
+        expected_packages=frozenset({
+            "com.google.android.GoogleCamera",
+            "com.android.camera2",
+        }),
+    ),
+    "files": ScreenTarget(
+        name="files",
+        launch_commands=(
+            ("shell", "monkey", "-p", "com.google.android.apps.nbu.files", "-c", "android.intent.category.LAUNCHER", "1"),
+            ("shell", "monkey", "-p", "com.android.documentsui", "-c", "android.intent.category.LAUNCHER", "1"),
+        ),
+        expected_packages=frozenset({
+            "com.google.android.apps.nbu.files",
+            "com.android.documentsui",
+        }),
+    ),
+    "play_store": ScreenTarget(
+        name="play_store",
+        launch_commands=(
+            ("shell", "monkey", "-p", "com.android.vending", "-c", "android.intent.category.LAUNCHER", "1"),
+        ),
+        expected_packages=frozenset({
+            "com.android.vending",
+        }),
+    ),
+    "gmail": ScreenTarget(
+        name="gmail",
+        launch_commands=(
+            ("shell", "monkey", "-p", "com.google.android.gm", "-c", "android.intent.category.LAUNCHER", "1"),
+        ),
+        expected_packages=frozenset({
+            "com.google.android.gm",
+        }),
+    ),
+    "youtube": ScreenTarget(
+        name="youtube",
+        launch_commands=(
+            ("shell", "monkey", "-p", "com.google.android.youtube", "-c", "android.intent.category.LAUNCHER", "1"),
+        ),
+        expected_packages=frozenset({
+            "com.google.android.youtube",
+        }),
+    ),
+    "photos": ScreenTarget(
+        name="photos",
+        launch_commands=(
+            ("shell", "monkey", "-p", "com.google.android.apps.photos", "-c", "android.intent.category.LAUNCHER", "1"),
+            ("shell", "monkey", "-p", "com.android.gallery3d", "-c", "android.intent.category.LAUNCHER", "1"),
+        ),
+        expected_packages=frozenset({
+            "com.google.android.apps.photos",
+            "com.android.gallery3d",
+        }),
+    ),
 }
 
 

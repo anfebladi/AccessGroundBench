@@ -44,6 +44,16 @@ SCREENS: list[str] = [
     "dialer",
     "messages",
     "clock",
+    "calculator",
+    "calendar",
+    "chrome",
+    "maps",
+    "camera",
+    "files",
+    "play_store",
+    "gmail",
+    "youtube",
+    "photos",
 ]
 
 # ---------------------------------------------------------------------------

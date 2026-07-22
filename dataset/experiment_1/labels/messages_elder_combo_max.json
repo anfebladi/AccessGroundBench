@@ -1,0 +1,278 @@
+[
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "scrollable_container",
+    "box": [
+      0,
+      1659,
+      1080,
+      2255
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "content_container",
+    "box": [
+      0,
+      1659,
+      1080,
+      2255
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1685,
+      1080,
+      2255
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "accounts_content_container",
+    "box": [
+      0,
+      1685,
+      1080,
+      2255
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "footer_container",
+    "box": [
+      0,
+      1685,
+      1080,
+      2255
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Sign In",
+    "content_desc": null,
+    "resource_id": "sign_in_button",
+    "box": [
+      280,
+      1737,
+      800,
+      1918
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Use without an account",
+    "content_desc": null,
+    "resource_id": "secondary_action_button",
+    "box": [
+      52,
+      1918,
+      1028,
+      2099
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "footer_bottom_padding",
+    "box": [
+      0,
+      2099,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      -169,
+      1080,
+      1386
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      0,
+      1080,
+      1386
+    ]
+  },
+  {
+    "class": "ComposeView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "compose_view",
+    "box": [
+      0,
+      0,
+      1080,
+      1386
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      0,
+      1080,
+      1386
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      0,
+      1080,
+      1386
+    ]
+  },
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      65,
+      65,
+      1015,
+      1386
+    ]
+  },
+  {
+    "class": "mjc",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      281,
+      91,
+      799,
+      172
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": "Google Messages",
+    "resource_id": null,
+    "box": [
+      281,
+      91,
+      799,
+      172
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "logo",
+    "box": [
+      281,
+      100,
+      501,
+      172
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Messages",
+    "content_desc": null,
+    "resource_id": "product_name",
+    "box": [
+      514,
+      91,
+      799,
+      169
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Welcome!",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      205,
+      276,
+      876,
+      464
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Sign into your Google account to get the very best of Messages",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      65,
+      471,
+      1015,
+      828
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      65,
+      984,
+      1015,
+      1386
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      176,
+      1302,
+      332,
+      1386
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Chat with Gemini in Messages (Available in select regions)",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      390,
+      1114,
+      885,
+      1386
+    ]
+  }
+]

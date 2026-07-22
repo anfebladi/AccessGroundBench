@@ -8,23 +8,23 @@ from vlm_eval import config
 
 class VlmEvaluatorConfigTests(unittest.TestCase):
     @mock.patch.dict("vlm_eval.config.os.environ", {"VLM_MODEL": "openai/gpt-4o-mini"})
-    def test_resolve_model_prefers_cli_model(self):
+    def test_resolve_models_prefers_cli_model(self):
         self.assertEqual(
-            "gemini/gemini-2.5-pro",
-            config.resolve_model("gemini/gemini-2.5-pro"),
+            ["gemini/gemini-2.5-pro"],
+            config.resolve_models("gemini/gemini-2.5-pro"),
         )
 
-    @mock.patch.dict("vlm_eval.config.os.environ", {"VLM_MODEL": "openai/gpt-4o-mini"})
-    def test_resolve_model_uses_env_model(self):
+    @mock.patch.dict("vlm_eval.config.os.environ", {"VLM_MODEL": "openai/gpt-4o-mini, local/ferret-ui-llama8b"})
+    def test_resolve_models_uses_env_model_and_splits(self):
         self.assertEqual(
-            "openai/gpt-4o-mini",
-            config.resolve_model(None),
+            ["openai/gpt-4o-mini", "local/ferret-ui-llama8b"],
+            config.resolve_models(None),
         )
 
     @mock.patch.dict("vlm_eval.config.os.environ", {}, clear=True)
-    def test_resolve_model_exits_without_cli_or_env_model(self):
+    def test_resolve_models_exits_without_cli_or_env_model(self):
         with self.assertRaises(SystemExit) as exc:
-            config.resolve_model(None)
+            config.resolve_models(None)
 
         self.assertEqual(1, exc.exception.code)
 

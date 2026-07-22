@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 from vlm_eval.config import (
     LABELS_DIR,
     get_results_csv,
-    resolve_model,
+    resolve_models,
     resolve_pace_seconds,
     resolve_use_a11y_tree,
 )
@@ -61,8 +61,7 @@ def main() -> None:
     import sys
     sys.stdout.reconfigure(encoding='utf-8')
     
-    model = resolve_model(None)
-    models = [model]
+    models = resolve_models(None)
     pace_seconds = resolve_pace_seconds(None)
     use_a11y_tree = resolve_use_a11y_tree()
 
