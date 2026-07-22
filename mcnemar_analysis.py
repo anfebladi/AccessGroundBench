@@ -42,6 +42,13 @@ ALPHA = 0.05
 # Discordant pair threshold for test selection
 ASYMPTOTIC_THRESHOLD = 25
 
+# Baseline-accuracy threshold below which a non-significant result is treated
+# as floor-limited rather than as evidence of resilience. McNemar can only
+# detect degradation among targets that passed at baseline (a + b); when the
+# baseline accuracy is low, most targets already fail and the test is
+# underpowered by construction, so a null result says nothing about resilience.
+FLOOR_ACC_THRESHOLD = 50.0
+
 # Experimental profiles to compare against baseline
 EXPERIMENTAL_PROFILES = [
     "elder_text_heavy",
@@ -257,6 +264,14 @@ def format_report(
         lines.append(f"  chi2 statistic:   {result['statistic']:.4f}")
 
     lines.append(f"  p-value:          {result['p_value']:.6f}")
+
+    floor_limited = base_acc < FLOOR_ACC_THRESHOLD
+    if floor_limited:
+        lines.append(
+            f"  Floor check:      FLOOR-LIMITED (baseline acc {base_acc:.1f}% "
+            f"< {FLOOR_ACC_THRESHOLD:.0f}%; only {a + b}/{total} targets "
+            f"could show degradation)"
+        )
     lines.append(f"")
 
     if result["p_value"] < ALPHA:
@@ -264,6 +279,13 @@ def format_report(
             f"  >> REJECT H0 (p < {ALPHA}): The accessibility layout modifications "
             f"caused a STATISTICALLY SIGNIFICANT alteration in VLM grounding "
             f"performance for profile '{profile}'."
+        )
+    elif floor_limited:
+        lines.append(
+            f"  >> INCONCLUSIVE (p >= {ALPHA}, FLOOR EFFECT): Baseline accuracy is "
+            f"only {base_acc:.1f}%, so most targets already fail before any "
+            f"distortion. This test CANNOT detect degradation here and is NOT "
+            f"evidence of resilience for profile '{profile}'."
         )
     else:
         lines.append(
@@ -576,9 +598,10 @@ def main() -> None:
         with open(out_csv_path, "w", newline="", encoding="utf-8") as out_f:
             writer = csv.writer(out_f)
             writer.writerow([
-                "Profile", "Total_Pairs", "Both_Pass_a", "Broke_It_b", 
-                "Fluke_Recovery_c", "Both_Fail_d", "Discordant_Pairs", 
-                "Baseline_Acc", "Exp_Acc", "Test_Used", "Statistic", "P_Value", "Significant"
+                "Profile", "Total_Pairs", "Both_Pass_a", "Broke_It_b",
+                "Fluke_Recovery_c", "Both_Fail_d", "Discordant_Pairs",
+                "Baseline_Acc", "Exp_Acc", "Test_Used", "Statistic", "P_Value",
+                "Significant", "Floor_Limited"
             ])
 
             for profile in EXPERIMENTAL_PROFILES:
@@ -586,18 +609,20 @@ def main() -> None:
                 result = run_mcnemar(b, c)
                 report = format_report(profile, a, b, c, d, result)
                 print(report)
-                
+
                 verdict = "Yes" if result["p_value"] < ALPHA else "No"
                 total = a + b + c + d
-                base_acc = f"{((a + b) / total * 100):.1f}%" if total > 0 else "0%"
+                base_acc_pct = (a + b) / total * 100 if total > 0 else 0.0
+                base_acc = f"{base_acc_pct:.1f}%"
                 exp_acc = f"{((a + c) / total * 100):.1f}%" if total > 0 else "0%"
+                floor_limited = "Yes" if base_acc_pct < FLOOR_ACC_THRESHOLD else "No"
 
                 writer.writerow([
                     profile, total, a, b, c, d, b + c,
                     base_acc, exp_acc,
                     result["test"],
                     result["statistic"] if result["statistic"] is not None else "",
-                    result["p_value"], verdict
+                    result["p_value"], verdict, floor_limited
                 ])
 
         # Summary table
@@ -610,13 +635,21 @@ def main() -> None:
         for profile in EXPERIMENTAL_PROFILES:
             a, b, c, d = compute_contingency(pairs, profile)
             result = run_mcnemar(b, c)
-            verdict = "SIGNIFICANT" if result["p_value"] < ALPHA else "Not Sig."
+            total = a + b + c + d
+            base_acc_pct = (a + b) / total * 100 if total > 0 else 0.0
+            floor_limited = base_acc_pct < FLOOR_ACC_THRESHOLD
+
+            if result["p_value"] < ALPHA:
+                verdict = "SIGNIFICANT"
+            elif floor_limited:
+                verdict = "Inconclusive (floor)"
+            else:
+                verdict = "Not Sig."
             test_short = "Asymptotic" if b + c >= ASYMPTOTIC_THRESHOLD else "Exact Binom."
             if b + c == 0:
                 test_short = "N/A"
-            
-            total = a + b + c + d
-            base_acc = f"{((a + b) / total * 100):.1f}%" if total > 0 else "0%"
+
+            base_acc = f"{base_acc_pct:.1f}%"
             exp_acc = f"{((a + c) / total * 100):.1f}%" if total > 0 else "0%"
 
             print(f"  {profile:<20} {base_acc:>9} {exp_acc:>9} {b + c:>5}  {test_short:<15}  "

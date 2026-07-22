@@ -7,7 +7,7 @@ from pathlib import Path
 from unittest import mock
 
 from vlm_eval.results import init_csv
-from vlm_eval.runner import evaluate_screen
+from vlm_eval.runner import build_tree_text, evaluate_screen
 
 
 def write_png_header(path: Path, width: int, height: int) -> None:
@@ -113,6 +113,68 @@ class VlmEvalRunnerTests(unittest.TestCase):
         self.assertEqual("-1", row["x_pred"])
         self.assertEqual("-1", row["y_pred"])
         self.assertEqual("0", row["score"])
+
+
+class BuildTreeTextTests(unittest.TestCase):
+    LABELS = [
+        {"text": "Wi-Fi", "box": [0, 0, 100, 50]},
+        {"text": "Bluetooth", "box": [0, 60, 100, 110]},
+        {"text": "", "content_desc": "Back", "box": [0, 120, 40, 160]},
+    ]
+
+    def test_includes_all_rows_without_exclusion(self):
+        tree = build_tree_text(self.LABELS)
+        self.assertIn('"Wi-Fi" [0,0][100,50]', tree)
+        self.assertIn('"Bluetooth" [0,60][100,110]', tree)
+        self.assertIn('"Back" [0,120][40,160]', tree)
+
+    def test_excludes_target_row_to_avoid_leaking_bounds(self):
+        tree = build_tree_text(self.LABELS, exclude_text="Bluetooth")
+        # Target row (and its exact bounds) is withheld...
+        self.assertNotIn("Bluetooth", tree)
+        self.assertNotIn("[0,60][100,110]", tree)
+        # ...but surrounding elements remain as spatial context.
+        self.assertIn('"Wi-Fi" [0,0][100,50]', tree)
+        self.assertIn('"Back" [0,120][40,160]', tree)
+
+    @mock.patch("vlm_eval.runner.call_vlm", return_value="[50, 85]")
+    def test_a11y_tree_prompt_withholds_target(self, call_vlm_mock):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        images_dir = root / "images"
+        labels_dir = root / "labels"
+        images_dir.mkdir()
+        labels_dir.mkdir()
+        results_csv = root / "results.csv"
+        init_csv(results_csv)
+
+        write_png_header(images_dir / "net_baseline.png", 1080, 2274)
+        labels = [
+            {"text": "Wi-Fi", "box": [0, 0, 100, 50]},
+            {"text": "Bluetooth", "box": [0, 60, 100, 110]},
+        ]
+        (labels_dir / "net_baseline.json").write_text(
+            json.dumps(labels), encoding="utf-8"
+        )
+
+        evaluate_screen(
+            "test-model",
+            "net",
+            0,
+            results_csv,
+            images_dir=images_dir,
+            labels_dir=labels_dir,
+            profiles=["baseline"],
+            use_a11y_tree=True,
+        )
+
+        prompt = call_vlm_mock.call_args.args[2]
+        # The target's own bounds must not be handed to the model...
+        self.assertNotIn("[0,60][100,110]", prompt)
+        # ...while a neighbor stays as context, and the ask still names the target.
+        self.assertIn('"Wi-Fi" [0,0][100,50]', prompt)
+        self.assertIn("'Bluetooth'", prompt)
 
 
 if __name__ == "__main__":
