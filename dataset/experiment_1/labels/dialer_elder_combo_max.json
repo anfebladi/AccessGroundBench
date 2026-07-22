@@ -1,0 +1,1154 @@
+[
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "main_screen_without_navigation_view",
+    "box": [
+      0,
+      -169,
+      1080,
+      1942
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "main_screen_coordinator_layout",
+    "box": [
+      0,
+      -169,
+      1080,
+      1942
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "tab_fragment_container",
+    "box": [
+      0,
+      0,
+      1080,
+      1942
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "dialpad_search_root",
+    "box": [
+      0,
+      0,
+      1080,
+      1942
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "dialpad_search_search_fragment_view",
+    "box": [
+      0,
+      0,
+      1080,
+      551
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      0,
+      1080,
+      551
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      0,
+      1080,
+      551
+    ]
+  },
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "result_container",
+    "box": [
+      0,
+      0,
+      1080,
+      551
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "dialpad_search_dialpad_view",
+    "box": [
+      0,
+      518,
+      1080,
+      1942
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      518,
+      1080,
+      1942
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "dialpad_view_vertical",
+    "box": [
+      0,
+      518,
+      1080,
+      1942
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      518,
+      1080,
+      1942
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "dialpad_view",
+    "box": [
+      0,
+      518,
+      1080,
+      1942
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      518,
+      1080,
+      697
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "digits_container",
+    "box": [
+      0,
+      518,
+      1080,
+      697
+    ]
+  },
+  {
+    "class": "EditText",
+    "text": "4",
+    "content_desc": null,
+    "resource_id": "digits",
+    "box": [
+      182,
+      518,
+      898,
+      697
+    ]
+  },
+  {
+    "class": "ImageButton",
+    "text": null,
+    "content_desc": "backspace",
+    "resource_id": "deleteButton",
+    "box": [
+      898,
+      518,
+      1080,
+      697
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "dialpad",
+    "box": [
+      0,
+      723,
+      1080,
+      1698
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "dialpad_scalable_contents",
+    "box": [
+      0,
+      723,
+      1080,
+      1698
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      723,
+      1080,
+      1698
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      26,
+      749,
+      1054,
+      960
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "1,",
+    "resource_id": "one",
+    "box": [
+      26,
+      749,
+      351,
+      960
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      149,
+      758,
+      227,
+      950
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "1",
+    "content_desc": null,
+    "resource_id": "dialpad_key_number",
+    "box": [
+      167,
+      758,
+      209,
+      885
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "dialpad_key_icon",
+    "box": [
+      149,
+      885,
+      227,
+      950
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "2,ABC",
+    "resource_id": "two",
+    "box": [
+      377,
+      749,
+      702,
+      960
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      497,
+      764,
+      582,
+      945
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "2",
+    "content_desc": null,
+    "resource_id": "dialpad_key_number",
+    "box": [
+      513,
+      764,
+      566,
+      891
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "ABC",
+    "content_desc": null,
+    "resource_id": "dialpad_key_letters",
+    "box": [
+      497,
+      891,
+      582,
+      945
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "3,DEF",
+    "resource_id": "three",
+    "box": [
+      728,
+      749,
+      1054,
+      960
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      851,
+      764,
+      930,
+      945
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "3",
+    "content_desc": null,
+    "resource_id": "dialpad_key_number",
+    "box": [
+      863,
+      764,
+      917,
+      891
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "DEF",
+    "content_desc": null,
+    "resource_id": "dialpad_key_letters",
+    "box": [
+      851,
+      891,
+      930,
+      945
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      26,
+      986,
+      1054,
+      1197
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "4,GHI",
+    "resource_id": "four",
+    "box": [
+      26,
+      986,
+      351,
+      1197
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      152,
+      1001,
+      225,
+      1182
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "4",
+    "content_desc": null,
+    "resource_id": "dialpad_key_number",
+    "box": [
+      159,
+      1001,
+      217,
+      1128
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "GHI",
+    "content_desc": null,
+    "resource_id": "dialpad_key_letters",
+    "box": [
+      152,
+      1128,
+      225,
+      1182
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "5,JKL",
+    "resource_id": "five",
+    "box": [
+      377,
+      986,
+      702,
+      1197
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      503,
+      1001,
+      575,
+      1182
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "5",
+    "content_desc": null,
+    "resource_id": "dialpad_key_number",
+    "box": [
+      511,
+      1001,
+      567,
+      1128
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "JKL",
+    "content_desc": null,
+    "resource_id": "dialpad_key_letters",
+    "box": [
+      503,
+      1128,
+      575,
+      1182
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "6,MNO",
+    "resource_id": "six",
+    "box": [
+      728,
+      986,
+      1054,
+      1197
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      841,
+      1001,
+      940,
+      1182
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "6",
+    "content_desc": null,
+    "resource_id": "dialpad_key_number",
+    "box": [
+      862,
+      1001,
+      919,
+      1128
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "MNO",
+    "content_desc": null,
+    "resource_id": "dialpad_key_letters",
+    "box": [
+      841,
+      1128,
+      940,
+      1182
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      26,
+      1223,
+      1054,
+      1434
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "7,PQRS",
+    "resource_id": "seven",
+    "box": [
+      26,
+      1223,
+      351,
+      1434
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      133,
+      1238,
+      244,
+      1419
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "7",
+    "content_desc": null,
+    "resource_id": "dialpad_key_number",
+    "box": [
+      162,
+      1238,
+      214,
+      1365
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "PQRS",
+    "content_desc": null,
+    "resource_id": "dialpad_key_letters",
+    "box": [
+      133,
+      1365,
+      244,
+      1419
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "8,TUV",
+    "resource_id": "eight",
+    "box": [
+      377,
+      1223,
+      702,
+      1434
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      499,
+      1238,
+      579,
+      1419
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "8",
+    "content_desc": null,
+    "resource_id": "dialpad_key_number",
+    "box": [
+      511,
+      1238,
+      566,
+      1365
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "TUV",
+    "content_desc": null,
+    "resource_id": "dialpad_key_letters",
+    "box": [
+      499,
+      1365,
+      579,
+      1419
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "9,WXYZ",
+    "resource_id": "nine",
+    "box": [
+      728,
+      1223,
+      1054,
+      1434
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      834,
+      1238,
+      947,
+      1419
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "9",
+    "content_desc": null,
+    "resource_id": "dialpad_key_number",
+    "box": [
+      862,
+      1238,
+      919,
+      1365
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "WXYZ",
+    "content_desc": null,
+    "resource_id": "dialpad_key_letters",
+    "box": [
+      834,
+      1365,
+      947,
+      1419
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      26,
+      1460,
+      1054,
+      1672
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "*",
+    "resource_id": "star",
+    "box": [
+      26,
+      1460,
+      351,
+      1672
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      165,
+      1470,
+      212,
+      1662
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "∗",
+    "content_desc": null,
+    "resource_id": "dialpad_key_number",
+    "box": [
+      165,
+      1470,
+      212,
+      1608
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "0",
+    "resource_id": "zero",
+    "box": [
+      377,
+      1460,
+      702,
+      1672
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      506,
+      1475,
+      573,
+      1656
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "0",
+    "content_desc": null,
+    "resource_id": "dialpad_key_number",
+    "box": [
+      506,
+      1475,
+      573,
+      1602
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "+",
+    "content_desc": null,
+    "resource_id": "dialpad_key_letters",
+    "box": [
+      527,
+      1602,
+      552,
+      1656
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "#",
+    "resource_id": "pound",
+    "box": [
+      728,
+      1460,
+      1054,
+      1672
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      856,
+      1475,
+      925,
+      1656
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "#",
+    "content_desc": null,
+    "resource_id": "dialpad_key_number",
+    "box": [
+      856,
+      1475,
+      925,
+      1602
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "dialpad_call_buttons",
+    "box": [
+      0,
+      1721,
+      1080,
+      1942
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Call",
+    "content_desc": "dial",
+    "resource_id": "dialpad_voice_call_button",
+    "box": [
+      360,
+      1721,
+      720,
+      1903
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_layout",
+    "box": [
+      0,
+      1942,
+      1080,
+      2255
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1942,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Home",
+    "resource_id": "tab_call_history",
+    "box": [
+      0,
+      1942,
+      360,
+      2177
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      89,
+      1962,
+      271,
+      2177
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      89,
+      1962,
+      271,
+      2066
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      141,
+      1975,
+      219,
+      2053
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      141,
+      1975,
+      219,
+      2053
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_labels_group",
+    "box": [
+      93,
+      2079,
+      266,
+      2177
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Home",
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_small_label_view",
+    "box": [
+      93,
+      2079,
+      266,
+      2157
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Keypad",
+    "resource_id": "tab_dialpad",
+    "box": [
+      360,
+      1942,
+      720,
+      2177
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      429,
+      1962,
+      651,
+      2177
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      449,
+      1962,
+      631,
+      2066
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_active_indicator_view",
+    "box": [
+      449,
+      1962,
+      631,
+      2066
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      501,
+      1975,
+      579,
+      2053
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      501,
+      1975,
+      579,
+      2053
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_labels_group",
+    "box": [
+      429,
+      2079,
+      651,
+      2177
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Keypad",
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_large_label_view",
+    "box": [
+      429,
+      2079,
+      651,
+      2157
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Voicemail",
+    "resource_id": "tab_voicemail",
+    "box": [
+      720,
+      1942,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      757,
+      1962,
+      1042,
+      2177
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      808,
+      1962,
+      990,
+      2066
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      860,
+      1975,
+      938,
+      2053
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      860,
+      1975,
+      938,
+      2053
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_labels_group",
+    "box": [
+      757,
+      2079,
+      1042,
+      2177
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Voicemail",
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_small_label_view",
+    "box": [
+      757,
+      2079,
+      1042,
+      2157
+    ]
+  }
+]

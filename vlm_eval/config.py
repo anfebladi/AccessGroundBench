@@ -22,14 +22,16 @@ ALL_PROFILES = [
 ]
 
 
-def resolve_model(cli_model: str | None) -> str:
+def resolve_models(cli_model: str | None) -> list[str]:
     """Resolve model precedence: CLI override, then VLM_MODEL env."""
+    raw = ""
     if cli_model:
-        return cli_model
+        raw = cli_model
+    else:
+        raw = os.environ.get(MODEL_ENV_VAR, "").strip()
 
-    env_model = os.environ.get(MODEL_ENV_VAR, "").strip()
-    if env_model:
-        return env_model
+    if raw:
+        return [m.strip() for m in raw.split(",") if m.strip()]
 
     print(f"[ERROR] {MODEL_ENV_VAR} is not set.")
     print("")

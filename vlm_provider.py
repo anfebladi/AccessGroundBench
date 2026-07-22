@@ -55,14 +55,15 @@ def _resolve_max_retries(max_retries: int | None = None) -> int:
 def _is_rate_limit_error(exc: Exception) -> bool:
     """Detect LiteLLM/provider rate-limit errors without importing LiteLLM eagerly."""
     class_name = exc.__class__.__name__.lower()
-    if "ratelimit" in class_name or "rate_limit" in class_name:
+    if "ratelimit" in class_name or "rate_limit" in class_name or "overload" in class_name:
         return True
 
     status_code = getattr(exc, "status_code", None)
-    if status_code == 429:
+    if status_code in (429, 503):
         return True
 
-    return "rate limit" in str(exc).lower()
+    exc_str = str(exc).lower()
+    return "rate limit" in exc_str or "try again" in exc_str or "later" in exc_str or "overload" in exc_str
 
 
 def _retry_delay_seconds(exc: Exception, fallback: float) -> float:

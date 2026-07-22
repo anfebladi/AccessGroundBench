@@ -1,0 +1,722 @@
+[
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "settings_homepage_container",
+    "box": [
+      0,
+      -142,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "app_bar",
+    "box": [
+      0,
+      -142,
+      1080,
+      231
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "app_bar_container",
+    "box": [
+      0,
+      -142,
+      1080,
+      231
+    ]
+  },
+  {
+    "class": "CardView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      42,
+      21,
+      1038,
+      210
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "search_action_bar",
+    "box": [
+      42,
+      21,
+      1038,
+      210
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "imageView",
+    "box": [
+      105,
+      84,
+      168,
+      147
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Search Settings",
+    "content_desc": null,
+    "resource_id": "search_bar_title",
+    "box": [
+      189,
+      72,
+      664,
+      159
+    ]
+  },
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "main_content_scrollable_container",
+    "box": [
+      0,
+      231,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "homepage_container",
+    "box": [
+      0,
+      231,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "main_content",
+    "box": [
+      0,
+      231,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "container_material",
+    "box": [
+      0,
+      231,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "list_container",
+    "box": [
+      0,
+      231,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "RecyclerView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "recycler_view",
+    "box": [
+      0,
+      231,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      231,
+      1080,
+      322
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      42,
+      231,
+      189,
+      257
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      84,
+      231,
+      189,
+      257
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      189,
+      231,
+      1038,
+      322
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "50% used - 7.93 GB free",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      221,
+      231,
+      788,
+      280
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      327,
+      1080,
+      561
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      42,
+      391,
+      189,
+      496
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      84,
+      391,
+      189,
+      496
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      189,
+      327,
+      1038,
+      561
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Battery",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      221,
+      369,
+      403,
+      446
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Charged",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      221,
+      446,
+      422,
+      519
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      566,
+      1080,
+      800
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      42,
+      630,
+      189,
+      735
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      84,
+      630,
+      189,
+      735
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      189,
+      566,
+      1038,
+      800
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "System",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      221,
+      608,
+      410,
+      685
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Languages, gestures, time",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      221,
+      685,
+      850,
+      758
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      805,
+      1080,
+      1039
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      42,
+      869,
+      189,
+      974
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      84,
+      869,
+      189,
+      974
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      189,
+      805,
+      1038,
+      1039
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "About emulated device",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      221,
+      847,
+      802,
+      924
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "sdk_gphone16k_x86_64",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      221,
+      924,
+      792,
+      997
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1081,
+      1080,
+      1378
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      42,
+      1177,
+      189,
+      1282
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      84,
+      1177,
+      189,
+      1282
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      189,
+      1081,
+      1038,
+      1378
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Security & privacy",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      221,
+      1123,
+      669,
+      1200
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "App security, device lock, permissions",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      221,
+      1200,
+      996,
+      1336
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1383,
+      1080,
+      1680
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      42,
+      1479,
+      189,
+      1584
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      84,
+      1479,
+      189,
+      1584
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      189,
+      1383,
+      1038,
+      1680
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Location",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      221,
+      1425,
+      443,
+      1502
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "On / 5 apps have access to location",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      221,
+      1502,
+      996,
+      1638
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1685,
+      1080,
+      1982
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      42,
+      1781,
+      189,
+      1886
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      84,
+      1781,
+      189,
+      1886
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      189,
+      1685,
+      1038,
+      1982
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Passwords & passkeys",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      221,
+      1727,
+      800,
+      1804
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Suggestions for sign-in & autofill",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      221,
+      1804,
+      996,
+      1940
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1987,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      42,
+      2083,
+      189,
+      2188
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      84,
+      2083,
+      189,
+      2188
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      189,
+      1987,
+      1038,
+      2219
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Accounts and backup",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      221,
+      2029,
+      768,
+      2106
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Back up data, copy data from another device",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      221,
+      2106,
+      996,
+      2219
+    ]
+  }
+]

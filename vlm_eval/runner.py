@@ -173,8 +173,20 @@ def evaluate_screen(
                 raw_response = call_vlm(model, image_path, prompt)
             except Exception as exc:
                 print(f"    [API-ERROR] '{target_text}': {exc}")
-                print("    [ABORT] Provider/API error; no CSV row written for this target.")
-                raise SystemExit(1) from exc
+                print("    [SKIP] Provider/API error; skipping target and moving to next.")
+                row = {
+                    "screen": screen_name,
+                    "target_text": target_text,
+                    "profile": profile_name,
+                    "raw_response": f"[API-ERROR: {type(exc).__name__}]",
+                    "x_pred": -1, "y_pred": -1,
+                    "x_min": box[0], "y_min": box[1],
+                    "x_max": box[2], "y_max": box[3],
+                    "score": 0,
+                }
+                append_result(results_csv, row)
+                count += 1
+                continue
 
             x_coord, y_coord = parse_coordinates(raw_response)
 
