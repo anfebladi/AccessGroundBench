@@ -13,12 +13,53 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from adb_utils import get_device_serial, get_system_bar_heights, resolve_adb, run_adb
+from adb_utils import (
+    get_device_serial,
+    get_system_bar_heights,
+    resolve_adb,
+    run_adb,
+    run_adb_with_retries,
+)
 
 
 # Remote paths on the emulator's sdcard (temporary staging area)
 REMOTE_XML = "/sdcard/ui_layout.xml"
 REMOTE_PNG = "/sdcard/ui_screen.png"
+
+# ---------------------------------------------------------------------------
+# Software color-vision transforms (applied to the captured PNG).
+#
+# Android's on-device daltonizer is a display-pipeline color transform that
+# `adb screencap` does NOT capture -- the saved PNG comes out with original
+# colors. To make a colorblind profile actually affect the pixels the VLM
+# sees, we apply the equivalent transform in software here. Deterministic and
+# reproducible, independent of emulator/Android version.
+#
+# Matrices are the Machado et al. (2009) severity-1.0 color-vision-deficiency
+# matrices (sRGB, row-major 3x3), plus a luma grayscale for monochromacy.
+# ---------------------------------------------------------------------------
+COLOR_TRANSFORMS: dict[str, tuple[float, ...]] = {
+    "protanomaly": (
+        0.152286, 1.052583, -0.204868,
+        0.114503, 0.786281, 0.099216,
+        -0.003882, -0.048116, 1.051998,
+    ),
+    "deuteranomaly": (
+        0.367322, 0.860646, -0.227968,
+        0.280085, 0.672501, 0.047413,
+        -0.011820, 0.042940, 0.968881,
+    ),
+    "tritanomaly": (
+        1.255528, -0.076749, -0.178779,
+        -0.078411, 0.930809, 0.147602,
+        0.004733, 0.691367, 0.303900,
+    ),
+    "monochromacy": (
+        0.299, 0.587, 0.114,
+        0.299, 0.587, 0.114,
+        0.299, 0.587, 0.114,
+    ),
+}
 
 # Output directory: outputs/ subfolder inside the project root
 OUTPUT_DIR = Path(__file__).parent / "outputs"
@@ -61,7 +102,7 @@ def capture_on_device(adb: str, serial: str) -> None:
 
     # 2b — Visual snapshot (PNG) immediately after
     print("  [2b] Capturing screen -> /sdcard/ui_screen.png")
-    run_adb(adb, serial, "shell", "screencap", "-p", REMOTE_PNG)
+    run_adb_with_retries(adb, serial, "shell", "screencap", "-p", REMOTE_PNG)
     print("  [OK]  Screenshot capture complete.")
 
 
@@ -94,12 +135,12 @@ def pull_files(
 
     # Pull XML
     print(f"  [3a] Pulling {REMOTE_XML} -> {local_xml}")
-    run_adb(adb, serial, "pull", REMOTE_XML, str(local_xml))
+    run_adb_with_retries(adb, serial, "pull", REMOTE_XML, str(local_xml))
     print("  [OK]  XML transferred.")
 
     # Pull PNG
     print(f"  [3b] Pulling {REMOTE_PNG} -> {local_png}")
-    run_adb(adb, serial, "pull", REMOTE_PNG, str(local_png))
+    run_adb_with_retries(adb, serial, "pull", REMOTE_PNG, str(local_png))
     print("  [OK]  PNG transferred.")
 
     return local_xml, local_png
@@ -136,6 +177,43 @@ def crop_screenshot(
     print(f"  [OK]  Cropped {png_path.name}: {width}x{height} -> {width}x{height - top_crop - bottom_crop}")
 
 
+def apply_color_transform(png_path: Path, color_mode: str) -> None:
+    """
+    Phase 3.6 — Remap a screenshot's colors in-place to emulate a color-vision
+    deficiency, using the matrices in COLOR_TRANSFORMS.
+
+    This is what makes a colorblind profile visible in the saved pixels, since
+    `adb screencap` does not capture Android's on-device daltonizer.
+
+    Args:
+        png_path:   Path to the PNG file to transform.
+        color_mode: Key into COLOR_TRANSFORMS (e.g. "deuteranomaly").
+    """
+    from PIL import Image
+
+    matrix = COLOR_TRANSFORMS.get(color_mode)
+    if matrix is None:
+        valid = ", ".join(COLOR_TRANSFORMS)
+        print(f"  [WARN] Unknown color_mode '{color_mode}' (valid: {valid}); "
+              f"leaving colors unchanged.")
+        return
+
+    print(f"  [3.6] Applying color transform: {color_mode}")
+
+    # PIL's convert() takes a 12-tuple (3x4) for an RGB->RGB affine map;
+    # append a zero offset to each row. Out-of-range results are clamped.
+    tuple_12 = (
+        matrix[0], matrix[1], matrix[2], 0.0,
+        matrix[3], matrix[4], matrix[5], 0.0,
+        matrix[6], matrix[7], matrix[8], 0.0,
+    )
+    with Image.open(png_path) as img:
+        transformed = img.convert("RGB").convert("RGB", tuple_12)
+        transformed.save(png_path)
+
+    print(f"  [OK]  Color transform applied to {png_path.name}")
+
+
 
 def cleanup_device(adb: str, serial: str) -> None:
     """
@@ -154,6 +232,7 @@ def run_pipeline(
     output_name: str | None = None,
     image_dir: Path | None = None,
     xml_dir: Path | None = None,
+    color_mode: str | None = None,
 ) -> tuple[Path, Path, int, int]:
     """
     Execute the full four-phase capture pipeline.
@@ -163,6 +242,9 @@ def run_pipeline(
                      (e.g. 'capture_20260702_184055') for automatic uniqueness.
         image_dir:   Directory to save the .png into. Defaults to OUTPUT_DIR.
         xml_dir:     Directory to save the .xml into. Defaults to OUTPUT_DIR.
+        color_mode:  Optional color-vision transform to apply to the captured
+                     PNG (e.g. "deuteranomaly"). "off"/None leaves colors
+                     unchanged. See COLOR_TRANSFORMS.
 
     Returns:
         (xml_path, png_path, status_bar_h, nav_bar_h) — local paths of the
@@ -205,6 +287,10 @@ def run_pipeline(
 
         # Phase 3.5 — crop out status bar and navigation bar
         crop_screenshot(local_png, status_bar_h, nav_bar_h)
+
+        # Phase 3.6 — apply software color-vision transform if requested
+        if color_mode and color_mode != "off":
+            apply_color_transform(local_png, color_mode)
 
         # Phase 4 — clean up sdcard
         cleanup_device(adb, serial)

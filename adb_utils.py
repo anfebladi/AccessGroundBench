@@ -9,6 +9,7 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 
@@ -65,6 +66,36 @@ def run_adb(adb: str, serial: str, *args: str) -> subprocess.CompletedProcess[st
         text=True,
         check=True,
     )
+
+
+def run_adb_with_retries(
+    adb: str,
+    serial: str,
+    *args: str,
+    retries: int = 2,
+    delay: float = 1.0,
+) -> subprocess.CompletedProcess[str]:
+    """
+    Run an ADB command, retrying on failure.
+
+    Transient `adb pull`/`screencap` failures (empty stderr, flaky transfers)
+    otherwise abort a whole collection run. Retries `retries` times with a
+    `delay`-second pause between attempts before re-raising the last error.
+    """
+    last_exc: subprocess.CalledProcessError | None = None
+    for attempt in range(retries + 1):
+        try:
+            return run_adb(adb, serial, *args)
+        except subprocess.CalledProcessError as exc:
+            last_exc = exc
+            if attempt < retries:
+                print(
+                    f"  [RETRY] adb {args[0] if args else '?'} failed "
+                    f"(attempt {attempt + 1}/{retries + 1}); retrying in {delay}s..."
+                )
+                time.sleep(delay)
+    assert last_exc is not None
+    raise last_exc
 
 
 def capture_adb(adb: str, serial: str, *args: str) -> str:

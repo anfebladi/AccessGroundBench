@@ -55,6 +55,7 @@ EXPERIMENTAL_PROFILES = [
     "elder_zoom_heavy",
     "elder_combo_max",
     "elder_combo_rtl",
+    "colorblind_deuteranomaly",
 ]
 
 
