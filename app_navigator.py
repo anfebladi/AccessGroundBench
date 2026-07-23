@@ -70,7 +70,40 @@ SCREEN_TARGETS: dict[str, ScreenTarget] = {
             ("shell", "am", "start", "-a", "android.settings.SETTINGS"),
             ("shell", "monkey", "-p", "com.android.settings", "-c", "android.intent.category.LAUNCHER", "1"),
         ),
-        expected_packages=frozenset({"com.android.settings"}),
+        expected_packages=frozenset({
+            "com.android.settings",
+            "com.google.android.settings.intelligence",
+        }),
+    ),
+    "settings_display": ScreenTarget(
+        name="settings_display",
+        launch_commands=(
+            ("shell", "am", "start", "-a", "android.settings.DISPLAY_SETTINGS"),
+        ),
+        expected_packages=frozenset({
+            "com.android.settings",
+            "com.google.android.settings.intelligence",
+        }),
+    ),
+    "settings_network": ScreenTarget(
+        name="settings_network",
+        launch_commands=(
+            ("shell", "am", "start", "-a", "android.settings.WIRELESS_SETTINGS"),
+        ),
+        expected_packages=frozenset({
+            "com.android.settings",
+            "com.google.android.settings.intelligence",
+        }),
+    ),
+    "settings_accessibility": ScreenTarget(
+        name="settings_accessibility",
+        launch_commands=(
+            ("shell", "am", "start", "-a", "android.settings.ACCESSIBILITY_SETTINGS"),
+        ),
+        expected_packages=frozenset({
+            "com.android.settings",
+            "com.google.android.settings.intelligence",
+        }),
     ),
     "contacts": ScreenTarget(
         name="contacts",

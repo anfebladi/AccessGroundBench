@@ -1,0 +1,758 @@
+[
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "settings_homepage_container",
+    "box": [
+      0,
+      -156,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "app_bar",
+    "box": [
+      0,
+      -156,
+      1080,
+      264
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "app_bar_container",
+    "box": [
+      0,
+      -156,
+      1080,
+      264
+    ]
+  },
+  {
+    "class": "CardView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      48,
+      24,
+      1032,
+      240
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "search_action_bar",
+    "box": [
+      48,
+      24,
+      1032,
+      240
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "imageView",
+    "box": [
+      120,
+      96,
+      192,
+      168
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Search Settings",
+    "content_desc": null,
+    "resource_id": "search_bar_title",
+    "box": [
+      216,
+      91,
+      661,
+      172
+    ]
+  },
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "main_content_scrollable_container",
+    "box": [
+      0,
+      264,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "homepage_container",
+    "box": [
+      0,
+      264,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "main_content",
+    "box": [
+      0,
+      264,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "container_material",
+    "box": [
+      0,
+      264,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "list_container",
+    "box": [
+      0,
+      264,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "RecyclerView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "recycler_view",
+    "box": [
+      0,
+      264,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      282,
+      1080,
+      500
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      48,
+      331,
+      216,
+      451
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      96,
+      331,
+      216,
+      451
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      216,
+      282,
+      1032,
+      500
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Google",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      252,
+      330,
+      403,
+      395
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Services & preferences",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      252,
+      395,
+      677,
+      452
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      548,
+      1080,
+      766
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      48,
+      597,
+      216,
+      717
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      96,
+      597,
+      216,
+      717
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      216,
+      548,
+      1032,
+      766
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Network & internet",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      252,
+      596,
+      648,
+      661
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Mobile, Wi‑Fi, hotspot",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      252,
+      661,
+      652,
+      718
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      772,
+      1080,
+      990
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      48,
+      821,
+      216,
+      941
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      96,
+      821,
+      216,
+      941
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      216,
+      772,
+      1032,
+      990
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Connected devices",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      252,
+      820,
+      656,
+      885
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Bluetooth, pairing",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      252,
+      885,
+      578,
+      942
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1038,
+      1080,
+      1256
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      48,
+      1087,
+      216,
+      1207
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      96,
+      1087,
+      216,
+      1207
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      216,
+      1038,
+      1032,
+      1256
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Apps",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      252,
+      1086,
+      362,
+      1151
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Assistant, recent apps, default apps",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      252,
+      1151,
+      919,
+      1208
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1262,
+      1080,
+      1480
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      48,
+      1311,
+      216,
+      1431
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      96,
+      1311,
+      216,
+      1431
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      216,
+      1262,
+      1032,
+      1480
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Notifications",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      252,
+      1310,
+      526,
+      1375
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Notification history, conversations",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      252,
+      1375,
+      885,
+      1432
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1486,
+      1080,
+      1704
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      48,
+      1535,
+      216,
+      1655
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      96,
+      1535,
+      216,
+      1655
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      216,
+      1486,
+      1032,
+      1704
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Sound & vibration",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      252,
+      1534,
+      628,
+      1599
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Volume and haptics",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      252,
+      1599,
+      623,
+      1656
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1710,
+      1080,
+      1928
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      48,
+      1759,
+      216,
+      1879
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      96,
+      1759,
+      216,
+      1879
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      216,
+      1710,
+      1032,
+      1928
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Modes",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      252,
+      1758,
+      398,
+      1823
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Do Not Disturb, Bedtime, Driving",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      252,
+      1823,
+      847,
+      1880
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1934,
+      1080,
+      2152
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      48,
+      1983,
+      216,
+      2103
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      96,
+      1983,
+      216,
+      2103
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      216,
+      1934,
+      1032,
+      2152
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Display & touch",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      252,
+      1982,
+      583,
+      2047
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Dark theme, font size, touch",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      252,
+      2047,
+      769,
+      2104
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2158,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "text_frame",
+    "box": [
+      216,
+      2158,
+      1032,
+      2196
+    ]
+  }
+]
