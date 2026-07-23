@@ -1,0 +1,650 @@
+[
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_divider_frame",
+    "box": [
+      0,
+      -156,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "global_slim_status_bar_container",
+    "box": [
+      0,
+      -156,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "accessibility_layer_container",
+    "box": [
+      0,
+      -156,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "bottom_ui_container",
+    "box": [
+      0,
+      -156,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "next_gen_watch_container_layout",
+    "box": [
+      0,
+      -156,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "watch_while_layout_coordinator_layout",
+    "box": [
+      0,
+      -156,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "fab_container",
+    "box": [
+      0,
+      -156,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "pane_fragment_container",
+    "box": [
+      0,
+      -156,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "browse_fragment_layout_coordinator_layout",
+    "box": [
+      0,
+      -156,
+      1080,
+      2040
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "appbar_layout",
+    "box": [
+      0,
+      -156,
+      1080,
+      144
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "toolbar_container",
+    "box": [
+      0,
+      -156,
+      1080,
+      144
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "toolbar",
+    "box": [
+      0,
+      0,
+      1080,
+      144
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      0,
+      792,
+      144
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": "YouTube",
+    "resource_id": "youtube_logo",
+    "box": [
+      0,
+      0,
+      366,
+      144
+    ]
+  },
+  {
+    "class": "LinearLayoutCompat",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      792,
+      0,
+      1080,
+      144
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "menu_item_0",
+    "box": [
+      792,
+      0,
+      936,
+      144
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      792,
+      0,
+      936,
+      144
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": "Notifications",
+    "resource_id": "menu_item_view",
+    "box": [
+      792,
+      0,
+      936,
+      144
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "menu_item_1",
+    "box": [
+      936,
+      0,
+      1080,
+      144
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      936,
+      0,
+      1080,
+      144
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": "Search",
+    "resource_id": "menu_item_view",
+    "box": [
+      936,
+      0,
+      1080,
+      144
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "pane_fragment_contents",
+    "box": [
+      0,
+      144,
+      1080,
+      2040
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "loading_layout",
+    "box": [
+      0,
+      144,
+      1080,
+      2040
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      144,
+      1080,
+      2040
+    ]
+  },
+  {
+    "class": "RecyclerView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "results",
+    "box": [
+      0,
+      144,
+      1080,
+      2040
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      144,
+      1080,
+      717
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      421,
+      288,
+      658,
+      453
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": "Explore Menu",
+    "resource_id": null,
+    "box": [
+      69,
+      501,
+      189,
+      621
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      93,
+      525,
+      165,
+      597
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": "Search YouTube",
+    "resource_id": null,
+    "box": [
+      213,
+      501,
+      867,
+      621
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": "Search with your voice",
+    "resource_id": null,
+    "box": [
+      891,
+      501,
+      1011,
+      621
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      915,
+      525,
+      987,
+      597
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      717,
+      1080,
+      1479
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      717,
+      1080,
+      1443
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      36,
+      741,
+      1044,
+      1395
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "bottom_bar_container",
+    "box": [
+      0,
+      2040,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "HorizontalScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "pivot_bar",
+    "box": [
+      0,
+      2040,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2040,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "Home",
+    "resource_id": null,
+    "box": [
+      0,
+      2040,
+      270,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "thumbnail_layout",
+    "box": [
+      99,
+      2062,
+      171,
+      2134
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "image",
+    "box": [
+      99,
+      2062,
+      171,
+      2134
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Home",
+    "content_desc": null,
+    "resource_id": "text",
+    "box": [
+      92,
+      2140,
+      178,
+      2175
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "Shorts",
+    "resource_id": null,
+    "box": [
+      270,
+      2040,
+      540,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "thumbnail_layout",
+    "box": [
+      369,
+      2062,
+      441,
+      2134
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "image",
+    "box": [
+      369,
+      2062,
+      441,
+      2134
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Shorts",
+    "content_desc": null,
+    "resource_id": "text",
+    "box": [
+      358,
+      2140,
+      452,
+      2175
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "Subscriptions",
+    "resource_id": null,
+    "box": [
+      540,
+      2040,
+      810,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "thumbnail_layout",
+    "box": [
+      639,
+      2062,
+      711,
+      2134
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "image",
+    "box": [
+      639,
+      2062,
+      711,
+      2134
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Subscriptions",
+    "content_desc": null,
+    "resource_id": "text",
+    "box": [
+      581,
+      2140,
+      770,
+      2175
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "You",
+    "resource_id": null,
+    "box": [
+      810,
+      2040,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "thumbnail_layout",
+    "box": [
+      909,
+      2062,
+      981,
+      2134
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "image",
+    "box": [
+      909,
+      2062,
+      981,
+      2134
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "You",
+    "content_desc": null,
+    "resource_id": "text",
+    "box": [
+      916,
+      2140,
+      974,
+      2175
+    ]
+  }
+]

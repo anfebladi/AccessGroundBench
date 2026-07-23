@@ -37,23 +37,15 @@ LABELS_DIR = DATASET_DIR / "labels"
 
 # ---------------------------------------------------------------------------
 # Target screen list -- add screens here as needed
-# ---------------------------------------------------------------------------
 SCREENS: list[str] = [
-    "settings_main",
-    "contacts",
-    "dialer",
-    "messages",
-    "clock",
-    "calculator",
-    "calendar",
-    "chrome",
-    "maps",
-    "camera",
-    "files",
-    "play_store",
-    "gmail",
-    "youtube",
-    "photos",
+    # Active screens (Yields ~1000 queries total across 6 profiles)
+    "settings_main", "contacts", "clock", 
+    "maps", "youtube", "photos",
+
+    # Inactive screens (Uncomment to expand dataset size later)
+    # "settings_display", "settings_network", "settings_accessibility",
+    # "dialer", "messages", "camera", "files",
+    # "chrome", "play_store", "gmail",
 ]
 
 # ---------------------------------------------------------------------------
