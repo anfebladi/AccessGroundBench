@@ -10,6 +10,7 @@ Pipeline Phases:
 
 import subprocess
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -97,7 +98,26 @@ def capture_on_device(adb: str, serial: str) -> None:
 
     # 2a — Structural snapshot (XML) first
     print("  [2a] Dumping UI layout tree -> /sdcard/ui_layout.xml")
-    run_adb(adb, serial, "shell", "uiautomator", "dump", REMOTE_XML)
+    for attempt in range(3):
+        try:
+            res = subprocess.run(
+                [adb, "-s", serial, "shell", "uiautomator", "dump", REMOTE_XML],
+                capture_output=True,
+                text=True,
+                timeout=15,  # never hang more than 15s on a frozen popup
+            )
+            out = res.stdout + res.stderr
+            if "dumped" in out and "ERROR" not in out:
+                break
+        except subprocess.TimeoutExpired:
+            out = ""
+            print(f"  [WARN] uiautomator dump timed out (attempt {attempt+1}/3). Retrying in 2s...")
+            time.sleep(2)
+            continue
+        print(f"  [WARN] uiautomator dump failed (attempt {attempt+1}/3). Retrying in 2s...")
+        time.sleep(2)
+    else:
+        raise RuntimeError(f"uiautomator dump failed completely. Output: {out}")
     print("  [OK]  UI layout dump complete.")
 
     # 2b — Visual snapshot (PNG) immediately after

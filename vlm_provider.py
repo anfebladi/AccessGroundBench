@@ -149,7 +149,7 @@ def call_vlm(
         ferret_prompt = prompt
         if target_match:
             target_text = target_match.group(1)
-            ferret_prompt = f"What is the bounding box of {target_text}?"
+            ferret_prompt = f"Provide the bounding box of the text '{target_text}'."
             
         data = {
             "image_path": str(image_path),

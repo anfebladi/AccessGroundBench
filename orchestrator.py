@@ -38,14 +38,11 @@ LABELS_DIR = DATASET_DIR / "labels"
 # ---------------------------------------------------------------------------
 # Target screen list -- add screens here as needed
 SCREENS: list[str] = [
-    # Active screens (Yields ~1000 queries total across 6 profiles)
-    "settings_main", "contacts", "clock", 
-    "maps", "youtube", "photos",
-
-    # Inactive screens (Uncomment to expand dataset size later)
-    # "settings_display", "settings_network", "settings_accessibility",
-    # "dialer", "messages", "camera", "files",
-    # "chrome", "play_store", "gmail",
+    "settings_main", "settings_display", "settings_network", "settings_accessibility",
+    "contacts", "dialer", "messages",
+    "clock",
+    "maps", "play_store",
+    "gmail", "youtube", "photos",
 ]
 
 # ---------------------------------------------------------------------------
@@ -98,30 +95,39 @@ def run_screen(screen_name: str, dry_run: bool = False) -> None:
 
         # Step 2: Navigate to the requested screen after profile reflow
         print(f"\n  [2/4] Navigating to target screen...")
-        app_navigator.navigate_to_screen(screen_name)
+        try:
+            app_navigator.navigate_to_screen(screen_name)
+        except SystemExit:
+            print(f"  [ERROR] Navigation failed for {stem}. Skipping...")
+            continue
 
         # Step 3: Capture screenshot + UI hierarchy
         # The on-device daltonizer is not captured by screencap, so apply the
         # profile's color-vision transform to the PNG in software instead.
         color_mode = layout_modifier.ELDER_PROFILES[profile_name].get("daltonizer", "off")
         print(f"\n  [3/4] Capturing screen assets...")
-        xml_path, png_path, status_bar_h, nav_bar_h = screenshot_pipeline.run_pipeline(
-            output_name=stem,
-            image_dir=IMAGES_DIR,
-            xml_dir=RAW_XML_DIR,
-            color_mode=color_mode,
-        )
-        app_navigator.validate_xml_package(xml_path, screen_name)
+        try:
+            xml_path, png_path, status_bar_h, nav_bar_h = screenshot_pipeline.run_pipeline(
+                output_name=stem,
+                image_dir=IMAGES_DIR,
+                xml_dir=RAW_XML_DIR,
+                color_mode=color_mode,
+            )
+            app_navigator.validate_xml_package(xml_path, screen_name)
 
-        # Step 4: Extract bounding-box labels from the XML
-        print(f"\n  [4/4] Extracting bounding-box labels...")
-        label_path = LABELS_DIR / f"{stem}.json"
-        bound_extractor.run(
-            str(xml_path),
-            output_path=str(label_path),
-            y_offset=status_bar_h,
-            bottom_crop=nav_bar_h,
-        )
+            # Step 4: Extract bounding-box labels from the XML
+            print(f"\n  [4/4] Extracting bounding-box labels...")
+            label_path = LABELS_DIR / f"{stem}.json"
+            bound_extractor.run(
+                str(xml_path),
+                output_path=str(label_path),
+                y_offset=status_bar_h,
+                bottom_crop=nav_bar_h,
+            )
+        except RuntimeError as e:
+            print(f"\n  [ERROR] Capture failed for {stem}: {e}")
+            print(f"  [ERROR] Skipping to next profile...")
+            continue
 
         print(f"\n  [DONE] {stem}")
         print(f"    PNG   -> {png_path}")
