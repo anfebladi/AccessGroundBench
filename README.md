@@ -1,256 +1,439 @@
 # AccessGroundBench
 
-AccessGroundBench evaluates how Android accessibility-layout changes affect a
-vision-language model's ability to locate UI elements. It has three stages:
+AccessGroundBench is a research benchmark that measures how Android accessibility layout changes (large fonts, zoomed displays, RTL layouts, color filters) affect a vision-language model's (VLM) ability to locate UI text elements on screen.
 
-1. Capture a target Android screen under a baseline and accessibility-stress
-   profiles.
-2. Evaluate saved screenshots and labels with a LiteLLM-supported vision model.
-3. Compare each experimental profile with baseline accuracy using McNemar's
-   test.
+The pipeline has three stages:
+
+1. **Collect** — capture screenshots and UI hierarchy XML from an Android emulator under a baseline layout and five accessibility-stress profiles.
+2. **Evaluate** — send grounding queries to a VLM for each captured screen and score the predictions against ground-truth bounding boxes.
+3. **Analyze** — compare baseline vs. experimental accuracy using McNemar's paired statistical test.
+
+---
 
 ## Requirements
 
-- Python 3.11 or later
-- An Android emulator (AVD) running a supported target app
-- Android SDK Platform Tools (`adb`) available on `PATH`
-- A provider API key for the model used during VLM evaluation
+| Requirement | Version |
+|---|---|
+| Python | 3.11 or later |
+| Android Studio / AVD | Any recent release |
+| Android SDK Platform Tools (`adb`) | Any recent release |
+| CUDA-capable GPU *(optional)* | Required only for local Ferret-UI model |
 
-The project dependencies are declared in `pyproject.toml`:
+**Python dependencies** (declared in `pyproject.toml`):
 
-- `litellm`
-- `Pillow`
-- `python-dotenv`
+```
+litellm >= 1.91.3
+Pillow >= 10.0
+python-dotenv >= 1.0
+scipy  (optional — for precise McNemar p-values)
+```
 
-Install them with your preferred environment manager. For example:
+Install with `uv` (recommended) or `pip`:
 
 ```bash
+# using uv
 uv sync
-# or
-python -m pip install .
+
+# using pip
+pip install .
+
+# optional: precise McNemar p-values
+pip install scipy
 ```
 
-SciPy is optional. The analysis script works without it using fallback
-calculations, but SciPy provides the precise McNemar p-values:
+---
 
-```bash
-python -m pip install scipy
+## Project Layout
+
 ```
-
-## Project layout
-
-```text
 AccessGroundBench/
-├── .env.example             # Model configuration and provider-key template
-├── .python-version          # Project Python version pin
-├── pyproject.toml           # Project metadata and dependencies
-├── uv.lock                  # Locked dependency set
-├── main.py                  # Minimal package entry point
-├── orchestrator.py          # Android data-collection driver
-├── app_navigator.py         # Android screen launch and validation
-├── adb_utils.py             # Shared ADB helpers
-├── layout_modifier.py       # Accessibility-profile applicator
-├── screenshot_pipeline.py   # Screenshot and UI-hierarchy capture
-├── bound_extractor.py       # XML-to-JSON bounding-box extraction
-├── vlm_evaluator.py         # Offline VLM evaluation entry point
-├── vlm_provider.py          # LiteLLM calls and retry handling
-├── vlm_eval/                # Evaluation config, targets, scoring, results, runner
-├── mcnemar_analysis.py      # Paired statistical analysis
-├── tests/                   # Unit tests
-├── sample_input/            # Committed PNG/XML sample captures
-├── outputs/                 # Ignored standalone-capture output directory
-└── dataset/
-    ├── images/              # Ignored collected PNGs; .gitkeep is committed
-    ├── raw_xml/             # Ignored collected XML; .gitkeep is committed
-    ├── labels/              # Ignored extracted labels; .gitkeep is committed
-    ├── evaluation_results_*.csv  # Evaluation ledgers
-    └── mcnemar_results_*.csv     # Analysis reports
+├── orchestrator.py           # Master collection driver — runs all screens × profiles
+├── app_navigator.py          # Android app launching, permission handling, XML validation
+├── adb_utils.py              # Shared ADB helper functions (resolve, run, retry)
+├── layout_modifier.py        # Apply/reset accessibility profiles via ADB settings commands
+├── screenshot_pipeline.py    # Capture screenshot + UI XML, crop system bars, color filter
+├── bound_extractor.py        # Parse XML → JSON bounding-box label files
+├── vlm_evaluator.py          # Entry point: load labels, query VLM, score predictions
+├── vlm_provider.py           # LiteLLM + Ferret-UI server calls with retry handling
+├── mcnemar_analysis.py       # Paired McNemar's test over evaluation CSVs
+├── main.py                   # Minimal package entry point
+│
+├── vlm_eval/
+│   ├── config.py             # VLM model / pacing / retry settings from .env
+│   ├── runner.py             # Per-screen evaluation loop and prompt templates
+│   ├── targets.py            # Harvest unambiguous text targets from baseline labels
+│   ├── scoring.py            # Hit-test logic (point-in-box with ±30 px tolerance)
+│   └── results.py            # CSV read/write helpers
+│
+├── ferret_ui/                # Local Ferret-UI inference server (optional)
+│   ├── ferret_server.py      # FastAPI server wrapping the Ferret-UI model
+│   ├── start_server.bat      # Launch script for Windows
+│   ├── requirements.txt      # Ferret-UI Python dependencies (separate venv)
+│   └── ...                   # Model architecture modules
+│
+├── dataset/
+│   ├── images/               # Collected PNGs  — gitignored, created by orchestrator
+│   ├── raw_xml/              # Collected UI XML — gitignored, created by orchestrator
+│   ├── labels/               # Extracted JSON labels — gitignored, created by orchestrator
+│   └── experiment_1/         # Committed reference results from Experiment 1
+│
+├── tests/                    # Unit tests
+├── outputs/                  # Standalone pipeline output (gitignored)
+├── .env.example              # Environment variable template — copy to .env
+├── .python-version           # Python version pin
+└── pyproject.toml            # Project metadata and dependencies
 ```
 
-The collection pipeline writes screenshots, XML, and labels under `dataset/`.
-Those capture artifacts are intentionally ignored by Git (apart from the
-directory placeholders). Evaluation reads them from disk and does not control
-the emulator.
-
-## Accessibility profiles
-
-| Profile | Font scale | Density | Force RTL |
-| --- | ---: | --- | --- |
-| `baseline` | 1.0 | reset | off |
-| `elder_text_heavy` | 1.4 | reset | off |
-| `elder_zoom_heavy` | 1.0 | 480 | off |
-| `elder_combo_max` | 1.6 | 520 | off |
-| `elder_combo_rtl` | 1.5 | 480 | on |
+---
 
 ## Setup
 
-### Connect an emulator
-
-Start an AVD from Android Studio's Device Manager, wait for it to boot, then
-confirm that ADB sees exactly one usable device:
+### Step 1 — Clone the repository
 
 ```bash
-adb devices
+git clone <repo-url>
+cd AccessGroundBench
 ```
 
-On macOS, a typical SDK Platform Tools location is
-`$HOME/Library/Android/sdk/platform-tools`. Add it to `PATH` if needed:
+### Step 2 — Install Python dependencies
 
 ```bash
-export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
+uv sync
+# or: pip install .
 ```
 
-### Configure a VLM provider
+### Step 3 — Configure environment variables
 
-Copy `.env.example` to `.env` and replace the placeholder key for the selected
-provider. `vlm_evaluator.py` loads `.env` automatically.
+Copy the template and fill in your API keys:
 
 ```bash
 cp .env.example .env
 ```
 
-At minimum, configure `VLM_MODEL` and the matching key. The evaluator supports
-these variables:
+Edit `.env`:
 
 ```dotenv
-VLM_MODEL=openai/gpt-4o-mini
-VLM_PACE_SECONDS=0
-VLM_MAX_RETRIES=3
+# Comma-separated list of models to evaluate (evaluated in sequence)
+VLM_MODEL=openai/gpt-4o-mini, gemini/gemini-2.5-pro, local/ferret-ui-llama8b
 
-OPENAI_API_KEY=your-openai-api-key
-GOOGLE_API_KEY=your-google-api-key
-GEMINI_API_KEY=your-gemini-api-key
-ANTHROPIC_API_KEY=your-anthropic-api-key
+VLM_PACE_SECONDS=0       # Optional delay between API calls (use for rate-limited APIs)
+VLM_MAX_RETRIES=3         # Number of retries on provider failure
+
+GOOGLE_API_KEY=your-google-api-key-here
+OPENAI_API_KEY=your-openai-api-key-here
+ANTHROPIC_API_KEY=your-anthropic-api-key-here
 ```
 
-`VLM_PACE_SECONDS` is an optional non-negative delay between successful model
-calls. `VLM_MAX_RETRIES` controls retries for provider failures. Use the key
-for the selected LiteLLM model: `openai/` models require `OPENAI_API_KEY`,
-`gemini/` models accept `GEMINI_API_KEY` or `GOOGLE_API_KEY`, and `anthropic/`
-models require `ANTHROPIC_API_KEY`.
+Model prefix → required key:
+| Model prefix | Key variable |
+|---|---|
+| `openai/` | `OPENAI_API_KEY` |
+| `gemini/` | `GOOGLE_API_KEY` |
+| `anthropic/` | `ANTHROPIC_API_KEY` |
+| `local/ferret-ui-llama8b` | Ferret-UI server (see below) |
 
-## End-to-end workflow
+### Step 4 — Set up the Android emulator
 
-### 1. Collect Android screenshots and labels
+1. Open **Android Studio** → **Device Manager** → **Create Virtual Device**
+2. Select hardware profile: **Pixel 6**
+3. Select system image: **Android 14 (API 34), x86_64**
+4. Start the AVD and wait for it to fully boot
+5. Verify ADB sees it:
 
-Run all built-in target screens and profiles:
+```bash
+adb devices
+# Expected output:
+# List of devices attached
+# emulator-5554   device
+```
+
+> **Windows note:** If `adb` is not on PATH, use the full path:
+> `C:\Users\<you>\AppData\Local\Android\Sdk\platform-tools\adb.exe`
+
+### Step 5 — Prepare the emulator
+
+Some apps require a one-time manual setup before the orchestrator can navigate to them automatically:
+
+1. **Sign in with a Google Account** — open the Play Store app and sign in. This unlocks Gmail, YouTube, Maps, and Photos automatically.
+2. **Dismiss first-run dialogs** — manually open each of the following apps once and tap through any welcome screens or permission dialogs:
+   - Messages
+   - Gmail
+   - Google Maps
+3. Verify the emulator is back on the home screen before running the orchestrator.
+
+---
+
+## Accessibility Profiles
+
+Six layout profiles are applied programmatically to the emulator before each screen capture:
+
+| Profile | Font Scale | Screen Density | Force RTL | Color Filter |
+|---|---:|---|---|---|
+| `baseline` | 1.0× | Device default | Off | None |
+| `elder_text_heavy` | 1.4× | Default | Off | None |
+| `elder_zoom_heavy` | 1.0× | 480 dpi | Off | None |
+| `elder_combo_max` | 1.6× | 520 dpi | Off | None |
+| `elder_combo_rtl` | 1.5× | 480 dpi | On | None |
+| `colorblind_deuteranomaly` | 1.0× | Default | Off | Deuteranomaly (green-weak) |
+
+> The deuteranomaly color filter is applied in software to the saved PNG (using a 3×3 RGB matrix via Pillow) because `adb screencap` captures display buffers before Android's hardware daltonizer transform is applied.
+
+---
+
+## End-to-End Workflow
+
+### Stage 1 — Collect screenshots and labels
 
 ```bash
 python orchestrator.py
 ```
 
-The configured screen list is `settings_main`, `contacts`, `dialer`,
-`messages`, and `clock`. For every screen/profile pair, the orchestrator
-applies the profile, navigates to the target screen, captures a PNG and XML,
-checks that the XML belongs to the expected app, extracts JSON bounds, and
-resets the emulator after that screen.
+For each of the 13 target screens × 6 profiles the orchestrator will:
+- Apply the accessibility profile via ADB settings commands
+- Launch the target app and confirm it is in the foreground
+- Capture the UI hierarchy XML and screenshot
+- Crop system bars (status bar + navigation bar)
+- Apply software color filters where required
+- Extract interactive text elements to a JSON label file
+- Reset the emulator to baseline
 
-Validate the collection flow without ADB or an emulator:
+**Output:**
+```
+dataset/images/{screen}_{profile}.png
+dataset/raw_xml/{screen}_{profile}.xml
+dataset/labels/{screen}_{profile}.json
+```
 
+**Dry run (no emulator needed):**
 ```bash
 python orchestrator.py --dry-run
 ```
 
-Collect only selected screens:
-
+**Collect specific screens only:**
 ```bash
-python orchestrator.py --screens settings_main dialer
+python orchestrator.py --screens settings_main contacts dialer
 ```
 
-### 2. Run offline VLM evaluation
+> **Target apps:** `settings_main`, `settings_display`, `settings_network`, `settings_accessibility`, `contacts`, `dialer`, `messages`, `clock`, `maps`, `play_store`, `gmail`, `youtube`, `photos`
 
-After collection, run:
+---
+
+### Stage 2 — Run VLM evaluation
 
 ```bash
 python vlm_evaluator.py
 ```
 
-The evaluator discovers screen names from `dataset/labels/*_baseline.json`,
-uses baseline labels to select unambiguous text targets, evaluates every
-configured profile, and logs hit-test results to:
+The evaluator:
+1. Discovers all screens from `dataset/labels/*_baseline.json`
+2. Harvests unambiguous text targets (unique text on screen, appears exactly once)
+3. Queries each configured VLM with a grounding prompt for every `(target, screen, profile)` triple
+4. Scores each prediction with a ±30 px hit-test against the ground-truth bounding box
+5. Writes results to CSV
 
-```text
-dataset/evaluation_results_{model}.csv
-```
+**Output:** `dataset/evaluation_results_{model_id}.csv`
 
-Here `{model}` is the `VLM_MODEL` value with `/` replaced by `_`; for example,
-`openai/gpt-4o-mini` produces
-`dataset/evaluation_results_openai_gpt-4o-mini.csv`.
+Example: `VLM_MODEL=openai/gpt-4o-mini` → `dataset/evaluation_results_openai_gpt-4o-mini.csv`
 
-The evaluator has no command-line flags. Set `VLM_MODEL` and optional pacing
-or retry settings in `.env` (or the process environment) before running it.
+---
 
-### 3. Run McNemar analysis
-
-Analyze every `evaluation_results_*.csv` file in `dataset/`:
+### Stage 3 — Run McNemar's analysis
 
 ```bash
 python mcnemar_analysis.py
 ```
 
-To analyze one results file:
+Analyzes all `evaluation_results_*.csv` files in `dataset/` automatically.
 
+To analyze a single file:
 ```bash
 python mcnemar_analysis.py --csv dataset/evaluation_results_openai_gpt-4o-mini.csv
 ```
 
-For each input, the script compares each experimental profile with baseline,
-uses asymptotic McNemar when there are at least 25 discordant pairs and an
-exact binomial test otherwise, and writes:
+For each model and profile, the script:
+- Builds a paired contingency table (both-pass, broke-it, fluke-recovery, both-fail)
+- Uses asymptotic McNemar's χ² when discordant pairs *n* ≥ 25, exact binomial otherwise
+- Flags results as `Floor_Limited` when baseline accuracy < 55%
 
-```text
-dataset/mcnemar_results_{model}.csv
-```
+**Output:** `dataset/mcnemar_results_{model_id}.csv`
 
-## Standalone utilities
+---
 
-The collection helpers can also be run directly when an emulator is connected:
+## Optional: Local Ferret-UI Model
+
+Ferret-UI is a small open-source VLM fine-tuned for mobile UI grounding. It runs locally on a CUDA-capable GPU.
+
+### Setup
+
+1. Download the model weights (requires Hugging Face access):
 
 ```bash
+python ferret_ui/download_scripts.py
+```
+
+2. Create a separate virtual environment for Ferret-UI (its dependencies conflict with the main project):
+
+```bash
+cd ferret_ui
+python -m venv venv
+venv\Scripts\activate          # Windows
+pip install -r requirements.txt
+```
+
+3. Start the inference server:
+
+```bash
+.\ferret_ui\start_server.bat
+```
+
+The server runs on `http://localhost:8000` by default. Leave it running in a separate terminal.
+
+4. Add `local/ferret-ui-llama8b` to `VLM_MODEL` in `.env` and run the evaluator normally.
+
+> **Hardware:** Running Ferret-UI requires a CUDA GPU with at least 10 GB VRAM. The model will not damage hardware — the GPU will thermal-throttle or OOM-error safely if resources are insufficient.
+
+---
+
+## Standalone Utilities
+
+The collection tools can be run independently when an emulator is connected:
+
+```bash
+# Apply an accessibility profile manually
 python layout_modifier.py elder_combo_max
+
+# Reset emulator to baseline
 python layout_modifier.py reset
+
+# Capture a single screen (output goes to outputs/)
 python screenshot_pipeline.py my_capture
+
+# Extract labels from a single XML file
 python bound_extractor.py outputs/my_capture.xml
 ```
 
-The standalone screenshot pipeline writes to `outputs/` by default. In the
-normal workflow, `orchestrator.py` instead routes captures to `dataset/`.
+---
 
 ## Troubleshooting
 
-### ADB or emulator is unavailable
+### `adb devices` shows no device
 
-Start an AVD, wait for Android to finish booting, and run `adb devices`. Ensure
-the Platform Tools directory is on `PATH`. The collection and standalone
-utilities require a connected device; `python orchestrator.py --dry-run` does
-not.
+- Make sure the AVD is fully booted (home screen visible)
+- On Windows, confirm the Platform Tools path is correct or add it to PATH
+- If the emulator disconnected after a script crash, run: `adb kill-server && adb start-server`
 
-### The evaluator reports no screens found
+### Orchestrator freezes without output
 
-No baseline label files were found in `dataset/labels`. Run the collection
-pipeline first, or ensure the directory contains files named
-`{screen}_baseline.json` alongside the matching profile assets.
+The `uiautomator dump` command hangs when a system popup is covering the screen. The script is designed to time out after 15 seconds and skip the frozen capture automatically. If it consistently freezes on a particular screen, manually dismiss any system dialogs on the emulator.
 
-### The evaluator skips a model for a missing key
+### `ERROR: null root node returned by UiTestAutomationBridge`
 
-Add a non-placeholder provider key to `.env` or the process environment. Values
-that still use the `your-...-here` placeholder are deliberately treated as
-missing. Confirm the `VLM_MODEL` prefix and key match the provider.
+The app had not finished rendering when `uiautomator dump` was called. The orchestrator retries automatically. If this persists, try increasing `SETTLE_DELAY` in `layout_modifier.py`.
+
+### Evaluator reports no screens found
+
+No baseline label files exist in `dataset/labels/`. Run `python orchestrator.py` first to collect the dataset.
+
+### Model key is missing
+
+Set the correct key in `.env`. Values that still contain `your-...-here` are treated as unset. Check that the `VLM_MODEL` prefix matches the provider key variable (see the table in Setup Step 3).
 
 ### `VLM_MODEL` is not set
 
-Set it in `.env` or export it before running the evaluator:
-
 ```bash
-export VLM_MODEL=openai/gpt-4o-mini
-python vlm_evaluator.py
+# Set temporarily for a single run
+VLM_MODEL=openai/gpt-4o-mini python vlm_evaluator.py
 ```
 
-### SciPy is not installed
+### McNemar results show `Floor_Limited=Yes`
 
-Analysis continues with fallback calculations. Install SciPy when precise
-p-values are required:
+This means baseline accuracy is below 55%. It is caused by the model failing to ground most elements even under the unmodified baseline layout. Possible causes:
+- Prompt format mismatch (especially for Ferret-UI — it requires its specific training prompt)
+- Model has no vision capability
+- Bounding boxes are too small relative to model prediction precision (increase `TOLERANCE` in `vlm_eval/scoring.py`)
 
-```bash
-python -m pip install scipy
+---
+
+## Methods
+
+This section describes the full experimental methodology in sufficient detail for replication.
+
+### Overview
+
+The benchmark evaluates whether Android accessibility layout transformations impair a VLM's ability to ground UI text elements. Each experiment follows a paired design: the same model receives the same grounding queries under a **baseline** layout and under each **experimental accessibility profile**, and the resulting hit-rate difference is evaluated using McNemar's test.
+
+### 1. Environment Setup
+
+- **Host:** Windows 11, Android Studio
+- **Emulator:** AVD running Android 14 (API 34), Pixel 6 hardware profile, x86_64 system image, 1080 × 2400 px screen (420 dpi)
+- **Python:** 3.11, dependencies as listed above
+- All target applications were pre-launched manually once to dismiss first-run onboarding dialogs
+- Google Account sign-in was completed on the emulator to unlock apps requiring authentication
+
+### 2. Target Applications
+
+13 Android apps were used. Apps requiring unavailable hardware (Camera), apps not installed by default (Files), and apps that failed to reliably launch on the test emulator (Chrome) were excluded.
+
+### 3. Accessibility Profiles
+
+Six profiles were applied via ADB `settings` commands:
+
+- **Font scale:** `adb shell settings put system font_scale <value>`
+- **Screen density:** `adb shell wm density <value>` / `wm density reset`
+- **RTL layout:** `adb shell settings put global force_rtl_layout_direction <0|1>`
+- **Color filter:** Android's daltonizer toggled via `accessibility_display_daltonizer_enabled` and `accessibility_display_daltonizer` secure settings. Applied in software to the PNG because `adb screencap` captures pre-daltonizer buffers.
+- A 2.5-second stabilization delay followed each profile application.
+
+### 4. Data Collection Pipeline
+
+For each screen × profile pair:
+
+1. Apply profile → 2.5 s settle
+2. Launch app via `adb shell am start`; confirm foreground package; auto-dismiss permission dialogs
+3. `adb shell uiautomator dump` with 15-second timeout (retried 3× on failure/timeout)
+4. `adb shell screencap` immediately after XML dump
+5. `adb pull` both files to host
+6. Crop status bar and navigation bar heights (detected from `dumpsys window displays`)
+7. Apply software deuteranomaly matrix (colorblind profile only)
+8. Parse XML → extract interactive nodes with non-empty, non-zero-bounds `text` → save JSON
+9. Reset all four display vectors to baseline
+
+### 5. Target Harvesting
+
+From each `{screen}_baseline.json`:
+- Include only elements with non-empty, non-whitespace `text`
+- Include only elements whose `text` value appears **exactly once** on screen (discard duplicates)
+- The same target set is used for all profiles of that screen
+
+### 6. VLM Evaluation
+
+**General-purpose models (GPT, Gemini, Claude):**
 ```
+You are an autonomous mobile agent operating an Android phone.
+Look closely at this image and find the UI element with the text '{target_text}'.
+Provide the exact central pixel (x,y) coordinates of that element.
+Return your response strictly in the bracket format: [x, y]
+```
+
+**Ferret-UI only:**
+```
+Provide the bounding box of the text '{target_text}'.
+```
+
+Ferret-UI was fine-tuned on this exact format. The general-purpose prompt caused it to return text descriptions instead of coordinates.
+
+**Scoring:** A prediction is a hit (1) if the predicted (x, y) falls within the target element's bounding box expanded by ±30 px on all sides (simulating Google's 48 dp minimum touch-target guideline). All results logged to `evaluation_results_{model}.csv`.
+
+### 7. Statistical Analysis
+
+McNemar's paired test over the contingency table for each screen × profile:
+
+| | Exp Pass | Exp Fail |
+|---|---|---|
+| **Baseline Pass** | *a* | *b* (Broke it) |
+| **Baseline Fail** | *c* (Fluke recovery) | *d* |
+
+- *n* = *b* + *c* (discordant pairs)
+- *n* ≥ 25 → asymptotic χ² with continuity correction
+- *n* < 25 → exact two-tailed binomial (H₀: P(b) = 0.5)
+- `Floor_Limited = Yes` when baseline accuracy < 55%

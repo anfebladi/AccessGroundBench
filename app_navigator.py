@@ -526,4 +526,4 @@ def validate_xml_package(xml_path: str | Path, screen_name: str) -> None:
     print(f"        Found packages:   {actual}")
     if packages & PERMISSION_CONTROLLER_PACKAGES:
         print("        Permission dialog was captured; navigation should handle it before capture.")
-    sys.exit(1)
+    raise RuntimeError(f"Captured XML package mismatch for {screen_name}")
