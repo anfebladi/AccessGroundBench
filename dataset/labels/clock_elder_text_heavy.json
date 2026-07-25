@@ -1,0 +1,758 @@
+[
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "app_bar_layout",
+    "box": [
+      0,
+      -142,
+      1080,
+      168
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "toolbar",
+    "box": [
+      0,
+      0,
+      1080,
+      168
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Alarms",
+    "content_desc": null,
+    "resource_id": "action_bar_title",
+    "box": [
+      63,
+      35,
+      275,
+      133
+    ]
+  },
+  {
+    "class": "LinearLayoutCompat",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      954,
+      10,
+      1080,
+      157
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": "More options",
+    "resource_id": "overflow_action_button",
+    "box": [
+      954,
+      20,
+      1080,
+      146
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "desk_clock_pager_frame",
+    "box": [
+      0,
+      168,
+      1080,
+      2049
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "desk_clock_pager",
+    "box": [
+      0,
+      168,
+      1080,
+      2049
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      168,
+      1080,
+      2049
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "main",
+    "box": [
+      0,
+      168,
+      1080,
+      2049
+    ]
+  },
+  {
+    "class": "GridView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "alarm_recycler_view",
+    "box": [
+      0,
+      168,
+      1080,
+      2049
+    ]
+  },
+  {
+    "class": "CardView",
+    "text": null,
+    "content_desc": "Alarm Monday to Friday 8:30 AM Alarm is currently disabled. ",
+    "resource_id": "alarm_card",
+    "box": [
+      42,
+      168,
+      1038,
+      533
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "alarm_card_layout",
+    "box": [
+      42,
+      168,
+      1038,
+      533
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "alarm_header",
+    "box": [
+      95,
+      221,
+      985,
+      304
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Mon-Fri",
+    "content_desc": "Monday to Friday",
+    "resource_id": "days_of_week",
+    "box": [
+      95,
+      221,
+      319,
+      304
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "clock_switch_flow",
+    "box": [
+      95,
+      325,
+      985,
+      480
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "8:30 AM",
+    "content_desc": "8:30 AM",
+    "resource_id": "digital_clock",
+    "box": [
+      95,
+      325,
+      393,
+      480
+    ]
+  },
+  {
+    "class": "Switch",
+    "text": null,
+    "content_desc": "8:30 AM alarm",
+    "resource_id": "onoff",
+    "box": [
+      848,
+      340,
+      985,
+      466
+    ]
+  },
+  {
+    "class": "CardView",
+    "text": null,
+    "content_desc": "Alarm Sunday, Saturday 9:00 AM Alarm is currently disabled. ",
+    "resource_id": "alarm_card",
+    "box": [
+      42,
+      538,
+      1038,
+      903
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "alarm_card_layout",
+    "box": [
+      42,
+      538,
+      1038,
+      903
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "alarm_header",
+    "box": [
+      95,
+      591,
+      985,
+      674
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Sun Sat",
+    "content_desc": "Sunday, Saturday",
+    "resource_id": "days_of_week",
+    "box": [
+      95,
+      591,
+      309,
+      674
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "clock_switch_flow",
+    "box": [
+      95,
+      695,
+      985,
+      850
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "9:00 AM",
+    "content_desc": "9:00 AM",
+    "resource_id": "digital_clock",
+    "box": [
+      95,
+      695,
+      408,
+      850
+    ]
+  },
+  {
+    "class": "Switch",
+    "text": null,
+    "content_desc": "9:00 AM alarm",
+    "resource_id": "onoff",
+    "box": [
+      848,
+      710,
+      985,
+      836
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "Add alarm",
+    "resource_id": "fab",
+    "box": [
+      828,
+      1797,
+      1038,
+      2007
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar",
+    "box": [
+      0,
+      2049,
+      1080,
+      2282
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2049,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Alarms",
+    "resource_id": "tab_menu_alarm",
+    "box": [
+      0,
+      2049,
+      216,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      34,
+      2065,
+      181,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      34,
+      2065,
+      181,
+      2149
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_active_indicator_view",
+    "box": [
+      34,
+      2065,
+      181,
+      2149
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      76,
+      2075,
+      139,
+      2138
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      76,
+      2075,
+      139,
+      2138
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_labels_group",
+    "box": [
+      45,
+      2160,
+      170,
+      2219
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Alarms",
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_large_label_view",
+    "box": [
+      45,
+      2160,
+      170,
+      2203
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "World Clock",
+    "resource_id": "tab_menu_clock",
+    "box": [
+      216,
+      2049,
+      432,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      216,
+      2065,
+      432,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      250,
+      2065,
+      397,
+      2149
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      292,
+      2075,
+      355,
+      2138
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      292,
+      2075,
+      355,
+      2138
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_labels_group",
+    "box": [
+      216,
+      2160,
+      432,
+      2219
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "World Clock",
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_small_label_view",
+    "box": [
+      216,
+      2160,
+      432,
+      2203
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Timers",
+    "resource_id": "tab_menu_timer",
+    "box": [
+      432,
+      2049,
+      648,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      466,
+      2065,
+      613,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      466,
+      2065,
+      613,
+      2149
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      508,
+      2075,
+      571,
+      2138
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      508,
+      2075,
+      571,
+      2138
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_labels_group",
+    "box": [
+      478,
+      2160,
+      600,
+      2219
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Timers",
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_small_label_view",
+    "box": [
+      478,
+      2160,
+      600,
+      2203
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Stopwatch",
+    "resource_id": "tab_menu_stopwatch",
+    "box": [
+      648,
+      2049,
+      864,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      660,
+      2065,
+      851,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      682,
+      2065,
+      829,
+      2149
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      724,
+      2075,
+      787,
+      2138
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      724,
+      2075,
+      787,
+      2138
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_labels_group",
+    "box": [
+      660,
+      2160,
+      851,
+      2219
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Stopwatch",
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_small_label_view",
+    "box": [
+      660,
+      2160,
+      851,
+      2203
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Bedtime",
+    "resource_id": "tab_menu_bedtime",
+    "box": [
+      864,
+      2049,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      896,
+      2065,
+      1047,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      898,
+      2065,
+      1045,
+      2149
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      940,
+      2075,
+      1003,
+      2138
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      940,
+      2075,
+      1003,
+      2138
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_labels_group",
+    "box": [
+      896,
+      2160,
+      1047,
+      2219
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Bedtime",
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_small_label_view",
+    "box": [
+      896,
+      2160,
+      1047,
+      2203
+    ]
+  }
+]

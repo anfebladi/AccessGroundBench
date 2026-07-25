@@ -1,0 +1,1202 @@
+[
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "osb_app_bar_layout",
+    "box": [
+      0,
+      -142,
+      1080,
+      168
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "open_search_container",
+    "box": [
+      0,
+      -142,
+      1080,
+      168
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "toolbar_wrapped_around_search_bar",
+    "box": [
+      11,
+      0,
+      1069,
+      168
+    ]
+  },
+  {
+    "class": "ImageButton",
+    "text": null,
+    "content_desc": "Open navigation drawer",
+    "resource_id": null,
+    "box": [
+      11,
+      10,
+      137,
+      157
+    ]
+  },
+  {
+    "class": "EditText",
+    "text": "Ask Gmail",
+    "content_desc": null,
+    "resource_id": "open_search",
+    "box": [
+      158,
+      10,
+      914,
+      157
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "open_search_bar_text_view_container",
+    "box": [
+      441,
+      52,
+      632,
+      114
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Ask Gmail",
+    "content_desc": null,
+    "resource_id": "open_search_bar_text_view",
+    "box": [
+      441,
+      52,
+      632,
+      114
+    ]
+  },
+  {
+    "class": "LinearLayoutCompat",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      776,
+      10,
+      903,
+      157
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "sidekick_stub_in_search_bar_parent",
+    "box": [
+      776,
+      20,
+      903,
+      147
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": "Gemini",
+    "resource_id": "sidekick_tl",
+    "box": [
+      776,
+      20,
+      903,
+      147
+    ]
+  },
+  {
+    "class": "LinearLayoutCompat",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      935,
+      10,
+      1069,
+      157
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Signed in as Andres anfebladi5@gmail.com\nGoogle One account.\nAccount and settings.",
+    "resource_id": "selected_account_disc_gmail",
+    "box": [
+      935,
+      20,
+      1069,
+      146
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "og_selected_account_disc_apd",
+    "box": [
+      935,
+      20,
+      1061,
+      146
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "og_apd_internal_image_view",
+    "box": [
+      943,
+      28,
+      1053,
+      138
+    ]
+  },
+  {
+    "class": "RecyclerView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "thread_list_view",
+    "box": [
+      0,
+      47,
+      1080,
+      2282
+    ]
+  },
+  {
+    "class": "ComposeView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      200,
+      1080,
+      305
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      200,
+      1080,
+      305
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Primary",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      42,
+      226,
+      175,
+      279
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      21,
+      307,
+      1059,
+      494
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "conversation_tip_swipeable_content",
+    "box": [
+      21,
+      307,
+      1059,
+      494
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      21,
+      307,
+      1059,
+      494
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "conversation_tip_icon1",
+    "box": [
+      84,
+      369,
+      147,
+      432
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Tap a sender image to select that conversation.",
+    "content_desc": null,
+    "resource_id": "conversation_tip_text",
+    "box": [
+      210,
+      307,
+      773,
+      494
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Dismiss",
+    "content_desc": "Dismiss tip",
+    "resource_id": "dismiss_icon",
+    "box": [
+      786,
+      330,
+      1017,
+      470
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      496,
+      1080,
+      1233
+    ]
+  },
+  {
+    "class": "CardView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      21,
+      517,
+      1059,
+      1212
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      21,
+      517,
+      1059,
+      1212
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      42,
+      538,
+      1038,
+      810
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      42,
+      538,
+      1038,
+      810
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Welcome to your new Inbox",
+    "content_desc": null,
+    "resource_id": "promo_title",
+    "box": [
+      63,
+      559,
+      1017,
+      622
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more",
+    "content_desc": null,
+    "resource_id": "promo_body",
+    "box": [
+      63,
+      633,
+      1017,
+      799
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "promo_sectioned_inbox_categories",
+    "box": [
+      42,
+      810,
+      1038,
+      1063
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "category_social",
+    "box": [
+      63,
+      842,
+      1017,
+      947
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "category_icon",
+    "box": [
+      74,
+      863,
+      137,
+      926
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Social",
+    "content_desc": null,
+    "resource_id": "category_name",
+    "box": [
+      179,
+      864,
+      909,
+      924
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "category_unseen_indicator",
+    "box": [
+      909,
+      876,
+      996,
+      913
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "category_promo",
+    "box": [
+      63,
+      947,
+      1017,
+      1052
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "category_icon",
+    "box": [
+      74,
+      968,
+      137,
+      1031
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Promotions",
+    "content_desc": null,
+    "resource_id": "category_name",
+    "box": [
+      179,
+      969,
+      909,
+      1029
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "category_unseen_indicator",
+    "box": [
+      909,
+      981,
+      996,
+      1018
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "promo_actions_single_line",
+    "box": [
+      42,
+      1063,
+      666,
+      1191
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "OK",
+    "content_desc": null,
+    "resource_id": "promo_action_positive_single_line",
+    "box": [
+      42,
+      1063,
+      221,
+      1191
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Change categories",
+    "content_desc": null,
+    "resource_id": "promo_action_negative_single_line",
+    "box": [
+      242,
+      1063,
+      666,
+      1191
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": "Unread, , , Google’s Find Hub, , Your Android device will soon join the Find Hub network, , Find Hub network You can use Find Hub to locate devices when they're connected to the internet. The Find Hub network can help locate devices, even if they're offline. It can also help find, , ,  at 3:02 PM",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      21,
+      1235,
+      1059,
+      1482
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "viewified_conversation_item_view",
+    "box": [
+      21,
+      1235,
+      1059,
+      1482
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "contact_image",
+    "box": [
+      21,
+      1235,
+      210,
+      1424
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Google’s Find Hub",
+    "content_desc": null,
+    "resource_id": "senders",
+    "box": [
+      210,
+      1277,
+      829,
+      1330
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "3:02 PM",
+    "content_desc": null,
+    "resource_id": "date",
+    "box": [
+      829,
+      1287,
+      1017,
+      1327
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Your Android device will soon join the Find Hub network",
+    "content_desc": null,
+    "resource_id": "subject",
+    "box": [
+      210,
+      1338,
+      933,
+      1385
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Find Hub network You can use Find Hub to locate devices when they're connected to the internet. The Find Hub network can help locate devices, even if they're offline. It can also help find",
+    "content_desc": null,
+    "resource_id": "snippet",
+    "box": [
+      210,
+      1393,
+      933,
+      1440
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "star",
+    "box": [
+      933,
+      1356,
+      1059,
+      1440
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": "Unread, , , Google Play, , Your new privacy settings on Play, , Hello Andres, Now that you've added your account to your device, we'd like to share more information on how to manage your privacy settings on Play. We've updated settings that manage, , ,  on Jul 23",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      21,
+      1486,
+      1059,
+      1733
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "viewified_conversation_item_view",
+    "box": [
+      21,
+      1486,
+      1059,
+      1733
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "contact_image",
+    "box": [
+      21,
+      1486,
+      210,
+      1675
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Google Play",
+    "content_desc": null,
+    "resource_id": "senders",
+    "box": [
+      210,
+      1528,
+      861,
+      1581
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Jul 23",
+    "content_desc": null,
+    "resource_id": "date",
+    "box": [
+      861,
+      1538,
+      1017,
+      1578
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Your new privacy settings on Play",
+    "content_desc": null,
+    "resource_id": "subject",
+    "box": [
+      210,
+      1589,
+      933,
+      1636
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Hello Andres, Now that you've added your account to your device, we'd like to share more information on how to manage your privacy settings on Play. We've updated settings that manage",
+    "content_desc": null,
+    "resource_id": "snippet",
+    "box": [
+      210,
+      1644,
+      933,
+      1691
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "star",
+    "box": [
+      933,
+      1607,
+      1059,
+      1691
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": "Unread, , , Google, , Security alert, , A new sign-in on Android anfebladi5@gmail.com We noticed a new sign-in to your Google Account on a Android device. If this was you, you don't need to do anything. If not, we'll help you secure, , ,  on Jul 23",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      21,
+      1737,
+      1059,
+      1984
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "viewified_conversation_item_view",
+    "box": [
+      21,
+      1737,
+      1059,
+      1984
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "contact_image",
+    "box": [
+      21,
+      1737,
+      210,
+      1926
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Google",
+    "content_desc": null,
+    "resource_id": "senders",
+    "box": [
+      210,
+      1779,
+      861,
+      1832
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Jul 23",
+    "content_desc": null,
+    "resource_id": "date",
+    "box": [
+      861,
+      1789,
+      1017,
+      1829
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Security alert",
+    "content_desc": null,
+    "resource_id": "subject",
+    "box": [
+      210,
+      1840,
+      933,
+      1887
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "A new sign-in on Android anfebladi5@gmail.com We noticed a new sign-in to your Google Account on a Android device. If this was you, you don't need to do anything. If not, we'll help you secure",
+    "content_desc": null,
+    "resource_id": "snippet",
+    "box": [
+      210,
+      1895,
+      933,
+      1942
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "star",
+    "box": [
+      933,
+      1858,
+      1059,
+      1942
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": "Unread, , , Google, , Andres, review your Google Account settings, , Hi Andres, Welcome to Google on your new PC. Here are a few of tips to get you started. ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌, , ,  on Jul 21",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      21,
+      1988,
+      1059,
+      2235
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "viewified_conversation_item_view",
+    "box": [
+      21,
+      1988,
+      1059,
+      2235
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "contact_image",
+    "box": [
+      21,
+      1988,
+      210,
+      2177
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Google",
+    "content_desc": null,
+    "resource_id": "senders",
+    "box": [
+      210,
+      2030,
+      865,
+      2083
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Jul 21",
+    "content_desc": null,
+    "resource_id": "date",
+    "box": [
+      865,
+      2040,
+      1017,
+      2080
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Andres, review your Google Account settings",
+    "content_desc": null,
+    "resource_id": "subject",
+    "box": [
+      210,
+      2091,
+      933,
+      2138
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Hi Andres, Welcome to Google on your new PC. Here are a few of tips to get you started. ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌",
+    "content_desc": null,
+    "resource_id": "snippet",
+    "box": [
+      210,
+      2146,
+      933,
+      2193
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "star",
+    "box": [
+      933,
+      2109,
+      1059,
+      2193
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "content_without_bottom_nav_bar",
+    "box": [
+      0,
+      -142,
+      1080,
+      2093
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "hub_opt_out_survey_holder",
+    "box": [
+      0,
+      -142,
+      1080,
+      2093
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "conversation_view_container",
+    "box": [
+      0,
+      -142,
+      1080,
+      2093
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1606,
+      1080,
+      2093
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "toast_bar",
+    "box": [
+      0,
+      1757,
+      1080,
+      2093
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Compose",
+    "content_desc": "Compose",
+    "resource_id": "compose_button",
+    "box": [
+      662,
+      1904,
+      1017,
+      2051
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "hub_tabs_nav_container",
+    "box": [
+      0,
+      2093,
+      1080,
+      2282
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "hub_tabs_nav",
+    "box": [
+      0,
+      2093,
+      1080,
+      2282
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2093,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Mail, 58 new notifications",
+    "resource_id": null,
+    "box": [
+      0,
+      2093,
+      360,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      106,
+      2116,
+      253,
+      2195
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      106,
+      2116,
+      253,
+      2195
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_active_indicator_view",
+    "box": [
+      106,
+      2116,
+      253,
+      2195
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      148,
+      2124,
+      211,
+      2187
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      148,
+      2124,
+      211,
+      2187
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "AI Inbox, New",
+    "resource_id": null,
+    "box": [
+      360,
+      2093,
+      720,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      466,
+      2116,
+      613,
+      2195
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      466,
+      2116,
+      613,
+      2195
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      508,
+      2124,
+      571,
+      2187
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      508,
+      2124,
+      571,
+      2187
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Meet",
+    "resource_id": null,
+    "box": [
+      720,
+      2093,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      826,
+      2116,
+      973,
+      2195
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      826,
+      2116,
+      973,
+      2195
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      868,
+      2124,
+      931,
+      2187
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      868,
+      2124,
+      931,
+      2187
+    ]
+  }
+]

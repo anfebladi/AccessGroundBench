@@ -1,0 +1,602 @@
+[
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      26,
+      3,
+      1054,
+      678
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "conversation_tip_swipeable_content",
+    "box": [
+      26,
+      3,
+      1054,
+      678
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      26,
+      3,
+      1054,
+      678
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "conversation_tip_icon1",
+    "box": [
+      104,
+      301,
+      182,
+      379
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Tap a sender image to select that conversation.",
+    "content_desc": null,
+    "resource_id": "conversation_tip_text",
+    "box": [
+      260,
+      3,
+      621,
+      678
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Dismiss",
+    "content_desc": "Dismiss tip",
+    "resource_id": "dismiss_icon",
+    "box": [
+      637,
+      233,
+      1002,
+      448
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      681,
+      1080,
+      2255
+    ]
+  },
+  {
+    "class": "CardView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      26,
+      707,
+      1054,
+      2251
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      26,
+      707,
+      1054,
+      2251
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      52,
+      733,
+      1028,
+      1620
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      52,
+      733,
+      1028,
+      1620
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Welcome to your new Inbox",
+    "content_desc": null,
+    "resource_id": "promo_title",
+    "box": [
+      78,
+      759,
+      1002,
+      973
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more",
+    "content_desc": null,
+    "resource_id": "promo_body",
+    "box": [
+      78,
+      986,
+      1002,
+      1607
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "promo_sectioned_inbox_categories",
+    "box": [
+      52,
+      1620,
+      1028,
+      1932
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "category_social",
+    "box": [
+      78,
+      1659,
+      1002,
+      1789
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "category_icon",
+    "box": [
+      91,
+      1685,
+      169,
+      1763
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Social",
+    "content_desc": null,
+    "resource_id": "category_name",
+    "box": [
+      221,
+      1665,
+      869,
+      1783
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "category_unseen_indicator",
+    "box": [
+      869,
+      1701,
+      976,
+      1747
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "category_promo",
+    "box": [
+      78,
+      1789,
+      1002,
+      1919
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "category_icon",
+    "box": [
+      91,
+      1815,
+      169,
+      1893
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Promotions",
+    "content_desc": null,
+    "resource_id": "category_name",
+    "box": [
+      221,
+      1795,
+      869,
+      1913
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "category_unseen_indicator",
+    "box": [
+      869,
+      1831,
+      976,
+      1877
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "promo_actions_single_line",
+    "box": [
+      52,
+      1932,
+      1028,
+      2225
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "OK",
+    "content_desc": null,
+    "resource_id": "promo_action_positive_single_line",
+    "box": [
+      52,
+      1932,
+      273,
+      2133
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Change categories",
+    "content_desc": null,
+    "resource_id": "promo_action_negative_single_line",
+    "box": [
+      299,
+      1932,
+      1028,
+      2225
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "content_without_bottom_nav_bar",
+    "box": [
+      0,
+      -169,
+      1080,
+      2021
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "hub_opt_out_survey_holder",
+    "box": [
+      0,
+      -169,
+      1080,
+      2021
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "conversation_view_container",
+    "box": [
+      0,
+      -169,
+      1080,
+      2021
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1365,
+      1080,
+      2021
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "toast_bar",
+    "box": [
+      0,
+      1594,
+      1080,
+      2021
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Compose",
+    "content_desc": "Compose",
+    "resource_id": "compose_button",
+    "box": [
+      446,
+      1770,
+      1002,
+      1969
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "hub_tabs_nav_container",
+    "box": [
+      0,
+      2021,
+      1080,
+      2255
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "hub_tabs_nav",
+    "box": [
+      0,
+      2021,
+      1080,
+      2255
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2021,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Mail, 58 new notifications",
+    "resource_id": null,
+    "box": [
+      0,
+      2021,
+      360,
+      2177
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      89,
+      2050,
+      271,
+      2148
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      89,
+      2050,
+      271,
+      2148
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_active_indicator_view",
+    "box": [
+      89,
+      2050,
+      271,
+      2148
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      141,
+      2060,
+      219,
+      2138
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      141,
+      2060,
+      219,
+      2138
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "AI Inbox, New",
+    "resource_id": null,
+    "box": [
+      360,
+      2021,
+      720,
+      2177
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      449,
+      2050,
+      631,
+      2148
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      449,
+      2050,
+      631,
+      2148
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      501,
+      2060,
+      579,
+      2138
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      501,
+      2060,
+      579,
+      2138
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Meet",
+    "resource_id": null,
+    "box": [
+      720,
+      2021,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      809,
+      2050,
+      991,
+      2148
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      809,
+      2050,
+      991,
+      2148
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      861,
+      2060,
+      939,
+      2138
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      861,
+      2060,
+      939,
+      2138
+    ]
+  }
+]

@@ -1,0 +1,758 @@
+[
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "content_parent",
+    "box": [
+      0,
+      0,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "app_bar",
+    "box": [
+      0,
+      0,
+      1080,
+      168
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Accessibility",
+    "resource_id": "collapsing_toolbar",
+    "box": [
+      0,
+      0,
+      1080,
+      168
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "action_bar",
+    "box": [
+      24,
+      0,
+      1080,
+      168
+    ]
+  },
+  {
+    "class": "ImageButton",
+    "text": null,
+    "content_desc": "Navigate up",
+    "resource_id": null,
+    "box": [
+      48,
+      0,
+      216,
+      168
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      240,
+      0,
+      1056,
+      168
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "content_frame",
+    "box": [
+      0,
+      168,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      168,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "main_content",
+    "box": [
+      0,
+      168,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "container_material",
+    "box": [
+      0,
+      168,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "list_container",
+    "box": [
+      0,
+      168,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "RecyclerView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "recycler_view",
+    "box": [
+      0,
+      168,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      168,
+      1080,
+      321
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      48,
+      216,
+      1032,
+      321
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Screen reader",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      72,
+      240,
+      1032,
+      297
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      327,
+      1080,
+      594
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      96,
+      327,
+      984,
+      594
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      96,
+      400,
+      216,
+      520
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      96,
+      400,
+      216,
+      520
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      252,
+      327,
+      984,
+      594
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "TalkBack",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      252,
+      375,
+      447,
+      440
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Off / Use a screen reader to hear items spoken aloud",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      252,
+      440,
+      936,
+      546
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      600,
+      1080,
+      753
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      48,
+      648,
+      1032,
+      753
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Display",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      72,
+      672,
+      1032,
+      729
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      759,
+      1080,
+      1026
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      96,
+      759,
+      984,
+      1026
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      96,
+      832,
+      216,
+      952
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      96,
+      832,
+      216,
+      952
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      252,
+      759,
+      984,
+      1026
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Display size & text",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      252,
+      807,
+      642,
+      872
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Font size, display size, bold text, outline text",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      252,
+      872,
+      936,
+      978
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1032,
+      1080,
+      1299
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      96,
+      1032,
+      984,
+      1299
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      96,
+      1105,
+      216,
+      1225
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      96,
+      1105,
+      216,
+      1225
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      252,
+      1032,
+      984,
+      1299
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Color & motion",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      252,
+      1080,
+      570,
+      1145
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Dark theme, color correction, remove animations",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      252,
+      1145,
+      936,
+      1251
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1305,
+      1080,
+      1572
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      96,
+      1305,
+      984,
+      1572
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      96,
+      1378,
+      216,
+      1498
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      96,
+      1378,
+      216,
+      1498
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      252,
+      1305,
+      984,
+      1572
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Magnification",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      252,
+      1353,
+      546,
+      1418
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Off / Zoom in to make content larger on your screen",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      252,
+      1418,
+      936,
+      1524
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1578,
+      1080,
+      1796
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      96,
+      1578,
+      984,
+      1796
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      96,
+      1627,
+      216,
+      1747
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      96,
+      1627,
+      216,
+      1747
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      252,
+      1578,
+      984,
+      1796
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Select to Speak",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      252,
+      1626,
+      583,
+      1691
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Off / Hear selected text",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      252,
+      1691,
+      686,
+      1748
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1802,
+      1080,
+      1955
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      48,
+      1850,
+      1032,
+      1955
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Interaction controls",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      72,
+      1874,
+      1032,
+      1931
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1961,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      96,
+      1961,
+      984,
+      2196
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon_frame",
+    "box": [
+      96,
+      2034,
+      216,
+      2154
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "icon",
+    "box": [
+      96,
+      2034,
+      216,
+      2154
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      252,
+      1961,
+      984,
+      2196
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Accessibility Menu",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      252,
+      2009,
+      654,
+      2074
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Off / Control volume, brightness, and more with a large menu",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      252,
+      2074,
+      936,
+      2180
+    ]
+  }
+]

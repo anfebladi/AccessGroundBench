@@ -1,0 +1,218 @@
+[
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "toolbarLayout",
+    "box": [
+      0,
+      -156,
+      1080,
+      192
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "toolbar",
+    "box": [
+      0,
+      0,
+      1080,
+      192
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": "Google Messages",
+    "resource_id": "lockup_gm",
+    "box": [
+      48,
+      58,
+      506,
+      130
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "logo",
+    "box": [
+      48,
+      67,
+      243,
+      130
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Messages",
+    "content_desc": null,
+    "resource_id": "product_name",
+    "box": [
+      254,
+      58,
+      506,
+      128
+    ]
+  },
+  {
+    "class": "LinearLayoutCompat",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      768,
+      12,
+      1080,
+      180
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "Search messages",
+    "resource_id": "action_zero_state_search",
+    "box": [
+      768,
+      24,
+      912,
+      168
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Signed in as Andres anfebladi5@gmail.com\nGoogle One account.\nAccount and settings.",
+    "resource_id": "selected_account_disc",
+    "box": [
+      912,
+      24,
+      1080,
+      168
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "og_selected_account_disc_apd",
+    "box": [
+      912,
+      24,
+      1056,
+      168
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "og_apd_internal_image_view",
+    "box": [
+      918,
+      30,
+      1050,
+      162
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "gk_tooltip_hack",
+    "box": [
+      1015,
+      115,
+      1018,
+      118
+    ]
+  },
+  {
+    "class": "RecyclerView",
+    "text": null,
+    "content_desc": "Conversation list",
+    "resource_id": "list",
+    "box": [
+      0,
+      192,
+      1080,
+      2268
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "list_empty_view",
+    "box": [
+      0,
+      529,
+      1080,
+      1492
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "empty_image_hint",
+    "box": [
+      247,
+      529,
+      832,
+      1339
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Once you start a new conversation, you’ll see it listed here",
+    "content_desc": "Once you start a new conversation, you’ll see it listed here",
+    "resource_id": "empty_text_hint",
+    "box": [
+      180,
+      1375,
+      900,
+      1492
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "fab_stub",
+    "box": [
+      590,
+      1764,
+      1008,
+      2124
+    ]
+  },
+  {
+    "class": "FloatingActionButton",
+    "text": null,
+    "content_desc": "Gemini",
+    "resource_id": "penpal_fab",
+    "box": [
+      840,
+      1764,
+      1008,
+      1932
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Start chat",
+    "content_desc": "Start chat",
+    "resource_id": "start_chat_fab",
+    "box": [
+      590,
+      1956,
+      1008,
+      2124
+    ]
+  }
+]

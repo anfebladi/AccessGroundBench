@@ -1,0 +1,1178 @@
+[
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      -156,
+      1080,
+      2004
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      -156,
+      1080,
+      2004
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      -156,
+      1080,
+      2004
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      168,
+      1080,
+      2004
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      168,
+      838,
+      312
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      36,
+      168,
+      317,
+      312
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "Top charts",
+    "resource_id": null,
+    "box": [
+      36,
+      180,
+      317,
+      300
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      72,
+      210,
+      281,
+      270
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      36,
+      180,
+      317,
+      300
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      329,
+      168,
+      503,
+      312
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "Kids",
+    "resource_id": null,
+    "box": [
+      329,
+      180,
+      503,
+      300
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      374,
+      210,
+      459,
+      270
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      329,
+      180,
+      503,
+      300
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      515,
+      168,
+      802,
+      312
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "Categories",
+    "resource_id": null,
+    "box": [
+      515,
+      180,
+      802,
+      300
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      551,
+      210,
+      766,
+      270
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      515,
+      180,
+      802,
+      300
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      312,
+      1080,
+      2004
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      360,
+      1080,
+      1089
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      36,
+      360,
+      1008,
+      1089
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      36,
+      360,
+      1008,
+      867
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      36,
+      745,
+      1008,
+      867
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      72,
+      348,
+      292,
+      492
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Fresh Drops",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      84,
+      396,
+      292,
+      444
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Instagram, now designed for bigger screens",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      72,
+      651,
+      972,
+      795
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "See more, scroll better",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      72,
+      795,
+      444,
+      843
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      36,
+      867,
+      1008,
+      1089
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "Instagram\nInstagram\nTeen\nStar rating: 4.0\n",
+    "resource_id": null,
+    "box": [
+      198,
+      915,
+      756,
+      1040
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      792,
+      885,
+      1008,
+      1029
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "Install",
+    "resource_id": null,
+    "box": [
+      840,
+      927,
+      960,
+      987
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Install",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      840,
+      927,
+      960,
+      987
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      792,
+      915,
+      1008,
+      999
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "In-app purchases",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      798,
+      999,
+      1003,
+      1041
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      1044,
+      360,
+      1080,
+      1089
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      1044,
+      360,
+      1080,
+      867
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      1044,
+      757,
+      1080,
+      867
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      1044,
+      867,
+      1080,
+      1089
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Sponsored",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      36,
+      1197,
+      207,
+      1245
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Suggested for you",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      249,
+      1185,
+      708,
+      1257
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "More options",
+    "resource_id": null,
+    "box": [
+      924,
+      1149,
+      1068,
+      1293
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1305,
+      1080,
+      2004
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      18,
+      1305,
+      1026,
+      1576
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      18,
+      1305,
+      1026,
+      1576
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "TikTok - Videos, Shop & LIVE\nSocial\nNetworking\nStar rating: 4.0\nEditors' Choice\n",
+    "resource_id": null,
+    "box": [
+      240,
+      1329,
+      1008,
+      1514
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      18,
+      1576,
+      1026,
+      1847
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      18,
+      1576,
+      1026,
+      1847
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "Evony: The King's Return\nStrategy\n4X\nZombie\nStar rating: 4.0\n",
+    "resource_id": null,
+    "box": [
+      240,
+      1600,
+      1008,
+      1785
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      18,
+      1847,
+      1026,
+      2004
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      18,
+      1847,
+      1026,
+      2004
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "ChatGPT\nProductivity\nAi playground\nStar rating: 4.8\nEditors' Choice\n",
+    "resource_id": null,
+    "box": [
+      240,
+      1871,
+      1008,
+      2004
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      1026,
+      1305,
+      1080,
+      1576
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      1026,
+      1305,
+      1080,
+      1576
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      1026,
+      1576,
+      1080,
+      1847
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      1026,
+      1576,
+      1080,
+      1847
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      1026,
+      1847,
+      1080,
+      2004
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      1026,
+      1847,
+      1080,
+      2004
+    ]
+  },
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      -156,
+      1080,
+      168
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      756,
+      12,
+      900,
+      156
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "Show notifications and offers.",
+    "resource_id": null,
+    "box": [
+      792,
+      48,
+      864,
+      120
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      756,
+      12,
+      900,
+      156
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      900,
+      12,
+      1044,
+      156
+    ]
+  },
+  {
+    "class": "kak",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      900,
+      12,
+      1044,
+      156
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Signed in as Andres anfebladi5@gmail.com\nGoogle One account.\nAccount and settings.",
+    "resource_id": null,
+    "box": [
+      900,
+      12,
+      1044,
+      156
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "0_resource_name_obfuscated",
+    "box": [
+      900,
+      12,
+      1044,
+      156
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "0_resource_name_obfuscated",
+    "box": [
+      906,
+      18,
+      1038,
+      150
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2004,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2004,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2004,
+      216,
+      2196
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      24,
+      1998,
+      192,
+      2142
+    ]
+  },
+  {
+    "class": "kak",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      77,
+      2039,
+      140,
+      2102
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      77,
+      2039,
+      140,
+      2102
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Games",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      48,
+      2130,
+      169,
+      2178
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2004,
+      216,
+      2196
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      216,
+      2004,
+      432,
+      2196
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      240,
+      1998,
+      408,
+      2142
+    ]
+  },
+  {
+    "class": "kak",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      293,
+      2039,
+      356,
+      2102
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      293,
+      2039,
+      356,
+      2102
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Apps",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      280,
+      2130,
+      368,
+      2178
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      216,
+      2004,
+      432,
+      2196
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      432,
+      2004,
+      648,
+      2196
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      456,
+      1998,
+      624,
+      2142
+    ]
+  },
+  {
+    "class": "kak",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      509,
+      2039,
+      572,
+      2102
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      509,
+      2039,
+      572,
+      2102
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Search",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      479,
+      2130,
+      601,
+      2178
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      432,
+      2004,
+      648,
+      2196
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      648,
+      2004,
+      864,
+      2196
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      672,
+      1998,
+      840,
+      2142
+    ]
+  },
+  {
+    "class": "kak",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      725,
+      2039,
+      788,
+      2102
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      725,
+      2039,
+      788,
+      2102
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Books",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      703,
+      2130,
+      810,
+      2178
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      648,
+      2004,
+      864,
+      2196
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      864,
+      2004,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      888,
+      1998,
+      1056,
+      2142
+    ]
+  },
+  {
+    "class": "kak",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      941,
+      2039,
+      1004,
+      2102
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      941,
+      2039,
+      1004,
+      2102
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "You",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      940,
+      2130,
+      1004,
+      2178
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      864,
+      2004,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2124,
+      1080,
+      2268
+    ]
+  }
+]

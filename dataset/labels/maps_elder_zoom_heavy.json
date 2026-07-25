@@ -1,0 +1,1154 @@
+[
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      906,
+      354,
+      1050,
+      498
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      906,
+      354,
+      1050,
+      498
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "Layers",
+    "resource_id": null,
+    "box": [
+      942,
+      390,
+      1014,
+      462
+    ]
+  },
+  {
+    "class": "CheckBox",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      918,
+      366,
+      1038,
+      486
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      48,
+      1286,
+      363,
+      1430
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      888,
+      1037,
+      1032,
+      1181
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      888,
+      1037,
+      1032,
+      1181
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "Location services disabled. Enable location services to re-center map to your location.",
+    "resource_id": null,
+    "box": [
+      912,
+      1061,
+      1008,
+      1157
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      888,
+      1037,
+      1032,
+      1181
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      888,
+      1229,
+      1032,
+      1373
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      888,
+      1229,
+      1032,
+      1373
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "Directions",
+    "resource_id": null,
+    "box": [
+      924,
+      1265,
+      996,
+      1337
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      888,
+      1229,
+      1032,
+      1373
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1421,
+      1080,
+      2268
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1421,
+      1080,
+      2268
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "content_container",
+    "box": [
+      0,
+      1421,
+      1080,
+      2268
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1421,
+      1080,
+      2268
+    ]
+  },
+  {
+    "class": "RecyclerView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "scrollable_card_stream_container",
+    "box": [
+      0,
+      1424,
+      1080,
+      2268
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1424,
+      1080,
+      2268
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1424,
+      1080,
+      2268
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1448,
+      1080,
+      2268
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1448,
+      1080,
+      2268
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1448,
+      1080,
+      2268
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1448,
+      1080,
+      2268
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      60,
+      1496,
+      738,
+      1544
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      60,
+      1592,
+      582,
+      1640
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      60,
+      1688,
+      1080,
+      1691
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      60,
+      1739,
+      675,
+      1787
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      60,
+      1835,
+      669,
+      1883
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      60,
+      1931,
+      1080,
+      1934
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      60,
+      1982,
+      723,
+      2030
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      60,
+      2078,
+      867,
+      2126
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      60,
+      2174,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1424,
+      1080,
+      1430
+    ]
+  },
+  {
+    "class": "ProgressBar",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1424,
+      1080,
+      1430
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "grippy",
+    "box": [
+      480,
+      1445,
+      600,
+      1457
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "sidequest_container",
+    "box": [
+      0,
+      -156,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "search_omnibox_container",
+    "box": [
+      0,
+      -156,
+      1080,
+      186
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      -156,
+      1080,
+      186
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      -156,
+      1080,
+      186
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      -156,
+      1080,
+      186
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      18,
+      -3,
+      1062,
+      186
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      36,
+      24,
+      1044,
+      168
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      36,
+      24,
+      1044,
+      168
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      36,
+      24,
+      1044,
+      168
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "mod_search_omnibox_layout",
+    "box": [
+      36,
+      24,
+      1044,
+      168
+    ]
+  },
+  {
+    "class": "EditText",
+    "text": null,
+    "content_desc": "Search here",
+    "resource_id": "search_omnibox_text_box",
+    "box": [
+      36,
+      24,
+      603,
+      168
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      72,
+      54,
+      156,
+      138
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Search here",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      186,
+      52,
+      600,
+      139
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      603,
+      24,
+      747,
+      168
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      603,
+      24,
+      747,
+      168
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "Voice search",
+    "resource_id": null,
+    "box": [
+      603,
+      24,
+      747,
+      168
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "Voice search",
+    "resource_id": null,
+    "box": [
+      603,
+      24,
+      747,
+      168
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "search_omnibox_live_view_entry_layout",
+    "box": [
+      747,
+      24,
+      891,
+      168
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      747,
+      24,
+      891,
+      168
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "Lens in Maps",
+    "resource_id": null,
+    "box": [
+      747,
+      24,
+      891,
+      168
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "Lens in Maps",
+    "resource_id": null,
+    "box": [
+      747,
+      24,
+      891,
+      168
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "search_omnibox_one_google_account_disc",
+    "box": [
+      891,
+      24,
+      1044,
+      168
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Signed in as Andres anfebladi5@gmail.com\nGoogle One account.\nAccount and settings.",
+    "resource_id": "selected_account_disc",
+    "box": [
+      891,
+      24,
+      1044,
+      168
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "og_selected_account_disc_apd",
+    "box": [
+      891,
+      24,
+      1035,
+      168
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "og_apd_internal_image_view",
+    "box": [
+      900,
+      33,
+      1026,
+      159
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "home_bottom_sheet_container",
+    "box": [
+      0,
+      186,
+      1080,
+      2268
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "below_search_omnibox_container",
+    "box": [
+      0,
+      186,
+      1080,
+      330
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      186,
+      1080,
+      330
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      36,
+      186,
+      754,
+      330
+    ]
+  },
+  {
+    "class": "RecyclerView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "recycler_view",
+    "box": [
+      36,
+      186,
+      754,
+      330
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Ask Maps",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      36,
+      186,
+      379,
+      330
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Set home",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      397,
+      186,
+      736,
+      330
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "compass_container",
+    "box": [
+      0,
+      342,
+      1080,
+      462
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      342,
+      1080,
+      462
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "footer_container",
+    "box": [
+      0,
+      2004,
+      1080,
+      2268
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2004,
+      1080,
+      2268
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "bottom_nav",
+    "box": [
+      0,
+      2004,
+      1080,
+      2268
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2004,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Explore",
+    "resource_id": "explore_tab_strip_button",
+    "box": [
+      0,
+      2004,
+      360,
+      2196
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      84,
+      2016,
+      276,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      84,
+      2016,
+      276,
+      2112
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_active_indicator_view",
+    "box": [
+      84,
+      2016,
+      276,
+      2112
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      144,
+      2028,
+      216,
+      2100
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      144,
+      2028,
+      216,
+      2100
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_labels_group",
+    "box": [
+      114,
+      2124,
+      245,
+      2196
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Explore",
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_large_label_view",
+    "box": [
+      114,
+      2124,
+      245,
+      2172
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "You",
+    "resource_id": "saved_tab_strip_button",
+    "box": [
+      360,
+      2004,
+      720,
+      2196
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      444,
+      2016,
+      636,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      444,
+      2016,
+      636,
+      2112
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      504,
+      2028,
+      576,
+      2100
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      504,
+      2028,
+      576,
+      2100
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_labels_group",
+    "box": [
+      508,
+      2124,
+      571,
+      2196
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "You",
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_small_label_view",
+    "box": [
+      508,
+      2124,
+      571,
+      2172
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Contribute",
+    "resource_id": "contribute_tab_strip_button",
+    "box": [
+      720,
+      2004,
+      1080,
+      2196
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      804,
+      2016,
+      996,
+      2196
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      804,
+      2016,
+      996,
+      2112
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      864,
+      2028,
+      936,
+      2100
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      864,
+      2028,
+      936,
+      2100
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_labels_group",
+    "box": [
+      806,
+      2124,
+      994,
+      2196
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Contribute",
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_small_label_view",
+    "box": [
+      806,
+      2124,
+      994,
+      2172
+    ]
+  }
+]
