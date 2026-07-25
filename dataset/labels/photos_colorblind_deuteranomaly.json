@@ -1,0 +1,302 @@
+[
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      168,
+      1080,
+      2009
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "empty_page_layout",
+    "box": [
+      0,
+      769,
+      1080,
+      1408
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "empty_page_image",
+    "box": [
+      251,
+      769,
+      829,
+      974
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Take a picture.\nPhotos & videos appear here.",
+    "content_desc": null,
+    "resource_id": "empty_page_caption",
+    "box": [
+      172,
+      1021,
+      907,
+      1192
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "No Photos",
+    "content_desc": null,
+    "resource_id": "empty_page_title_top",
+    "box": [
+      172,
+      1192,
+      907,
+      1324
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      498,
+      1324,
+      582,
+      1366
+    ]
+  },
+  {
+    "class": "GridView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "recycler_view",
+    "box": [
+      0,
+      -142,
+      1080,
+      2009
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "scrolling_toolbar_container",
+    "box": [
+      0,
+      -142,
+      1080,
+      168
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "toolbar_container",
+    "box": [
+      0,
+      -142,
+      1080,
+      168
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "toolbar",
+    "box": [
+      0,
+      0,
+      1080,
+      168
+    ]
+  },
+  {
+    "class": "ImageButton",
+    "text": null,
+    "content_desc": "Show Navigation Drawer",
+    "resource_id": null,
+    "box": [
+      0,
+      10,
+      147,
+      157
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      368,
+      0,
+      712,
+      168
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": "Google Photos",
+    "resource_id": "product_lockup_view",
+    "box": [
+      368,
+      52,
+      712,
+      117
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "logo",
+    "box": [
+      368,
+      59,
+      546,
+      117
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Photos",
+    "content_desc": null,
+    "resource_id": "product_name",
+    "box": [
+      556,
+      52,
+      712,
+      115
+    ]
+  },
+  {
+    "class": "LinearLayoutCompat",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      933,
+      10,
+      1080,
+      157
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Account and settings.\nChoose an account",
+    "resource_id": "selected_account_disc",
+    "box": [
+      933,
+      20,
+      1080,
+      146
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "og_selected_account_disc_apd",
+    "box": [
+      933,
+      20,
+      1059,
+      146
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "og_apd_internal_image_view",
+    "box": [
+      938,
+      25,
+      1054,
+      141
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "tab_bar",
+    "box": [
+      0,
+      2009,
+      1080,
+      2282
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2009,
+      1080,
+      2282
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "tab_layout",
+    "box": [
+      0,
+      2009,
+      1080,
+      2282
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "photos_tabbar_layout",
+    "box": [
+      0,
+      2009,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Photos",
+    "content_desc": null,
+    "resource_id": "tab_photos",
+    "box": [
+      0,
+      2009,
+      540,
+      2219
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Search",
+    "content_desc": null,
+    "resource_id": "search_destination",
+    "box": [
+      540,
+      2009,
+      1080,
+      2219
+    ]
+  }
+]

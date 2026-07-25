@@ -1,0 +1,758 @@
+[
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_divider_frame",
+    "box": [
+      0,
+      -142,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "global_slim_status_bar_container",
+    "box": [
+      0,
+      -142,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "accessibility_layer_container",
+    "box": [
+      0,
+      -142,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "next_gen_watch_container_layout",
+    "box": [
+      0,
+      -142,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "watch_while_layout_coordinator_layout",
+    "box": [
+      0,
+      -142,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "fab_container",
+    "box": [
+      0,
+      -142,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "pane_fragment_container",
+    "box": [
+      0,
+      -142,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "browse_fragment_layout_coordinator_layout",
+    "box": [
+      0,
+      -142,
+      1080,
+      2075
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "appbar_layout",
+    "box": [
+      0,
+      -142,
+      1080,
+      126
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "toolbar_container",
+    "box": [
+      0,
+      -142,
+      1080,
+      126
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "toolbar",
+    "box": [
+      0,
+      0,
+      1080,
+      126
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      0,
+      828,
+      126
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": "YouTube",
+    "resource_id": "youtube_logo",
+    "box": [
+      0,
+      0,
+      366,
+      126
+    ]
+  },
+  {
+    "class": "LinearLayoutCompat",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      828,
+      0,
+      1080,
+      126
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "menu_item_0",
+    "box": [
+      828,
+      0,
+      954,
+      126
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      828,
+      0,
+      954,
+      126
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": "Notifications",
+    "resource_id": "menu_item_view",
+    "box": [
+      828,
+      0,
+      954,
+      126
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "menu_item_1",
+    "box": [
+      954,
+      0,
+      1080,
+      126
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      954,
+      0,
+      1080,
+      126
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": "Search",
+    "resource_id": "menu_item_view",
+    "box": [
+      954,
+      0,
+      1080,
+      126
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "pane_fragment_contents",
+    "box": [
+      0,
+      126,
+      1080,
+      2075
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "loading_layout",
+    "box": [
+      0,
+      126,
+      1080,
+      2075
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      126,
+      1080,
+      2075
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "chip_ghost",
+    "box": [
+      36,
+      126,
+      1080,
+      222
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      36,
+      126,
+      324,
+      222
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      348,
+      126,
+      636,
+      222
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      660,
+      126,
+      948,
+      222
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      972,
+      126,
+      1080,
+      222
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      222,
+      1080,
+      1092
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "thumbnail_layout",
+    "box": [
+      0,
+      246,
+      1080,
+      846
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "channel_avatar",
+    "box": [
+      36,
+      882,
+      132,
+      978
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      180,
+      882,
+      1044,
+      930
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "title2",
+    "box": [
+      180,
+      954,
+      1044,
+      1002
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "subtitle",
+    "box": [
+      180,
+      1026,
+      540,
+      1074
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1092,
+      1080,
+      1962
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "thumbnail_layout",
+    "box": [
+      0,
+      1116,
+      1080,
+      1716
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "channel_avatar",
+    "box": [
+      36,
+      1752,
+      132,
+      1848
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      180,
+      1752,
+      1044,
+      1800
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "title2",
+    "box": [
+      180,
+      1824,
+      1044,
+      1872
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "subtitle",
+    "box": [
+      180,
+      1896,
+      540,
+      1944
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1962,
+      1080,
+      2075
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "thumbnail_layout",
+    "box": [
+      0,
+      1986,
+      1080,
+      2075
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "bottom_bar_container",
+    "box": [
+      0,
+      2075,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "HorizontalScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "pivot_bar",
+    "box": [
+      0,
+      2075,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2075,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "Home",
+    "resource_id": null,
+    "box": [
+      0,
+      2075,
+      216,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "thumbnail_layout",
+    "box": [
+      77,
+      2098,
+      140,
+      2161
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "image",
+    "box": [
+      77,
+      2098,
+      140,
+      2161
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Home",
+    "content_desc": null,
+    "resource_id": "text",
+    "box": [
+      70,
+      2166,
+      147,
+      2196
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "Shorts",
+    "resource_id": null,
+    "box": [
+      216,
+      2075,
+      432,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "thumbnail_layout",
+    "box": [
+      293,
+      2098,
+      356,
+      2161
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "image",
+    "box": [
+      293,
+      2098,
+      356,
+      2161
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Shorts",
+    "content_desc": null,
+    "resource_id": "text",
+    "box": [
+      283,
+      2166,
+      365,
+      2196
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "Create",
+    "resource_id": null,
+    "box": [
+      432,
+      2075,
+      648,
+      2219
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "image",
+    "box": [
+      493,
+      2101,
+      588,
+      2196
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "Subscriptions",
+    "resource_id": null,
+    "box": [
+      648,
+      2075,
+      864,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "thumbnail_layout",
+    "box": [
+      725,
+      2098,
+      788,
+      2161
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "image",
+    "box": [
+      725,
+      2098,
+      788,
+      2161
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Subscriptions",
+    "content_desc": null,
+    "resource_id": "text",
+    "box": [
+      674,
+      2166,
+      838,
+      2196
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "You",
+    "resource_id": null,
+    "box": [
+      864,
+      2075,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "thumbnail_layout",
+    "box": [
+      941,
+      2098,
+      1004,
+      2161
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "pivot_bar_thumbnail",
+    "box": [
+      941,
+      2098,
+      1004,
+      2161
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "You",
+    "content_desc": null,
+    "resource_id": "text",
+    "box": [
+      947,
+      2166,
+      998,
+      2196
+    ]
+  }
+]
