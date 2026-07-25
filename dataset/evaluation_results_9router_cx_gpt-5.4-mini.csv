@@ -1,0 +1,1011 @@
+screen,target_text,profile,raw_response,x_pred,y_pred,x_min,y_min,x_max,y_max,score
+clock,Mon-Fri,baseline,"[204, 231]",204,231,95,221,266,283,1
+clock,8:30 AM,baseline,"[289, 362]",289,362,95,304,393,459,1
+clock,Sun Sat,baseline,"[168, 549]",168,549,95,570,256,632,1
+clock,9:00 AM,baseline,"[246, 672]",246,672,95,653,408,808,1
+clock,World Clock,baseline,"[321, 2018]",321,2018,221,2162,426,2202,0
+clock,Timers,baseline,"[511, 2028]",511,2028,482,2162,596,2202,0
+clock,Stopwatch,baseline,"[695, 2022]",695,2022,666,2162,845,2202,0
+clock,Bedtime,baseline,"[950, 2145]",950,2145,900,2162,1042,2202,1
+clock,Mon-Fri,elder_text_heavy,"[198, 239]",198,239,95,221,319,304,1
+clock,8:30 AM,elder_text_heavy,"[245, 370]",245,370,95,325,393,480,1
+clock,Sun Sat,elder_text_heavy,"[191, 578]",191,578,95,591,309,674,1
+clock,9:00 AM,elder_text_heavy,"[221, 712]",221,712,95,695,408,850,1
+clock,World Clock,elder_text_heavy,"[310, 2028]",310,2028,216,2160,432,2203,0
+clock,Timers,elder_text_heavy,"[507, 2014]",507,2014,478,2160,600,2203,0
+clock,Stopwatch,elder_text_heavy,"[699, 2017]",699,2017,660,2160,851,2203,0
+clock,Bedtime,elder_text_heavy,"[908, 2015]",908,2015,896,2160,1047,2203,0
+clock,Mon-Fri,elder_zoom_heavy,"[193, 268]",193,268,108,252,303,322,1
+clock,8:30 AM,elder_zoom_heavy,"[261, 404]",261,404,108,346,448,523,1
+clock,Sun Sat,elder_zoom_heavy,"[188, 634]",188,634,108,649,293,719,1
+clock,9:00 AM,elder_zoom_heavy,"[272, 776]",272,776,108,743,466,920,1
+clock,World Clock,elder_zoom_heavy,"[307, 2017]",307,2017,221,2130,426,2170,0
+clock,Timers,elder_zoom_heavy,"[510, 2020]",510,2020,483,2130,597,2170,0
+clock,Stopwatch,elder_zoom_heavy,"[725, 2021]",725,2021,666,2130,845,2170,0
+clock,Bedtime,elder_zoom_heavy,"[954, 2011]",954,2011,901,2130,1043,2170,0
+clock,Mon-Fri,elder_combo_max,"[255, 308]",255,308,117,273,419,386,1
+clock,8:30 AM,elder_combo_max,"[291, 495]",291,495,117,412,495,609,1
+clock,Sun Sat,elder_combo_max,"[250, 755]",250,755,117,746,403,859,1
+clock,9:00 AM,elder_combo_max,"[293, 923]",293,923,117,885,513,1082,1
+clock,World Clock,elder_combo_max,"[309, 2004]",309,2004,216,2106,432,2151,0
+clock,Timers,elder_combo_max,"[542, 2011]",542,2011,476,2106,604,2151,0
+clock,Stopwatch,elder_combo_max,"[756, 2081]",756,2081,654,2106,857,2151,1
+clock,Bedtime,elder_combo_max,"[954, 2015]",954,2015,892,2106,1052,2151,0
+clock,Mon-Fri,elder_combo_rtl,"[248, 280]",248,280,108,252,378,352,1
+clock,8:30 AM,elder_combo_rtl,"[270, 430]",270,430,108,376,448,553,1
+clock,Sun Sat,elder_combo_rtl,"[220, 678]",220,678,108,679,363,779,1
+clock,9:00 AM,elder_combo_rtl,"[275, 830]",275,830,108,803,466,980,1
+clock,World Clock,elder_combo_rtl,"[304, 2030]",304,2030,216,2130,432,2174,0
+clock,Timers,elder_combo_rtl,"[510, 2019]",510,2019,477,2130,603,2174,0
+clock,Stopwatch,elder_combo_rtl,"[715, 2021]",715,2021,658,2130,854,2174,0
+clock,Bedtime,elder_combo_rtl,"[968, 2006]",968,2006,894,2130,1049,2174,0
+clock,Mon-Fri,colorblind_deuteranomaly,"[169, 230]",169,230,95,221,266,283,1
+clock,8:30 AM,colorblind_deuteranomaly,"[272, 360]",272,360,95,304,393,459,1
+clock,Sun Sat,colorblind_deuteranomaly,"[172, 557]",172,557,95,570,256,632,1
+clock,9:00 AM,colorblind_deuteranomaly,"[234, 676]",234,676,95,653,408,808,1
+clock,World Clock,colorblind_deuteranomaly,"[307, 2022]",307,2022,221,2162,426,2202,0
+clock,Timers,colorblind_deuteranomaly,"[508, 2012]",508,2012,482,2162,596,2202,0
+clock,Stopwatch,colorblind_deuteranomaly,"[709, 2014]",709,2014,666,2162,845,2202,0
+clock,Bedtime,colorblind_deuteranomaly,"[937, 2149]",937,2149,900,2162,1042,2202,1
+contacts,All contacts,baseline,"[217, 231]",217,231,142,226,342,279,1
+contacts,Your info,baseline,"[266, 374]",266,374,221,389,346,431,1
+contacts,Andres,baseline,"[273, 425]",273,425,221,431,365,494,1
+contacts,No contacts yet,baseline,"[511, 1370]",511,1370,317,1446,763,1530,0
+contacts,Contacts,baseline,"[162, 2065]",162,2065,110,2161,248,2203,0
+contacts,Highlights,baseline,"[508, 2016]",508,2016,463,2161,616,2203,0
+contacts,Organize,baseline,"[862, 2113]",862,2113,831,2161,968,2203,0
+contacts,All contacts,elder_text_heavy,"[279, 230]",279,230,142,214,436,291,1
+contacts,Your info,elder_text_heavy,"[306, 384]",306,384,221,389,400,448,1
+contacts,Andres,elder_text_heavy,"[297, 455]",297,455,221,448,412,534,1
+contacts,No contacts yet,elder_text_heavy,"[503, 1385]",503,1385,289,1453,792,1549,0
+contacts,Contacts,elder_text_heavy,"[164, 2015]",164,2015,84,2147,275,2203,0
+contacts,Highlights,elder_text_heavy,"[512, 2016]",512,2016,434,2147,646,2203,0
+contacts,Organize,elder_text_heavy,"[867, 2008]",867,2008,805,2147,994,2203,0
+contacts,All contacts,elder_zoom_heavy,"[256, 268]",256,268,162,258,394,318,1
+contacts,Your info,elder_zoom_heavy,"[309, 433]",309,433,252,444,396,492,1
+contacts,Andres,elder_zoom_heavy,"[332, 491]",332,491,252,492,415,564,1
+contacts,No contacts yet,elder_zoom_heavy,"[539, 1426]",539,1426,284,1482,796,1578,0
+contacts,Contacts,elder_zoom_heavy,"[197, 2025]",197,2025,101,2130,258,2178,0
+contacts,Highlights,elder_zoom_heavy,"[540, 2017]",540,2017,452,2130,627,2178,0
+contacts,Organize,elder_zoom_heavy,"[852, 2017]",852,2017,822,2130,977,2178,0
+contacts,All contacts,elder_combo_max,"[365, 293]",365,293,176,260,584,366,1
+contacts,Your info,elder_combo_max,"[388, 493]",388,493,273,483,523,567,1
+contacts,Andres,elder_combo_max,"[384, 591]",384,591,273,567,538,684,1
+contacts,No contacts yet,elder_combo_max,"[510, 1498]",510,1498,199,1516,881,1645,0
+contacts,Contacts,elder_combo_max,"[151, 1993]",151,1993,46,2079,314,2157,0
+contacts,Highlights,elder_combo_max,"[510, 1995]",510,1995,390,2079,690,2157,0
+contacts,Organize,elder_combo_max,"[883, 1987]",883,1987,766,2079,1033,2157,0
+contacts,All contacts,elder_combo_rtl,"[329, 269]",329,269,162,241,527,336,1
+contacts,Your info,elder_combo_rtl,"[368, 439]",368,439,252,444,470,516,1
+contacts,Andres,elder_combo_rtl,"[348, 536]",348,536,252,516,486,620,1
+contacts,No contacts yet,elder_combo_rtl,"[539, 1437]",539,1437,242,1493,839,1605,0
+contacts,Contacts,elder_combo_rtl,"[160, 2001]",160,2001,63,2111,297,2178,0
+contacts,Highlights,elder_combo_rtl,"[541, 2008]",541,2008,409,2111,671,2178,0
+contacts,Organize,elder_combo_rtl,"[862, 1998]",862,1998,784,2111,1016,2178,0
+contacts,All contacts,colorblind_deuteranomaly,"[233, 229]",233,229,142,226,342,279,1
+contacts,Your info,colorblind_deuteranomaly,"[263, 378]",263,378,221,389,346,431,1
+contacts,Andres,colorblind_deuteranomaly,"[271, 426]",271,426,221,431,365,494,1
+contacts,No contacts yet,colorblind_deuteranomaly,"[501, 1376]",501,1376,317,1446,763,1530,0
+contacts,Contacts,colorblind_deuteranomaly,"[168, 2014]",168,2014,110,2161,248,2203,0
+contacts,Highlights,colorblind_deuteranomaly,"[510, 2167]",510,2167,463,2161,616,2203,1
+contacts,Organize,colorblind_deuteranomaly,"[856, 2016]",856,2016,831,2161,968,2203,0
+dialer,Phone Number,baseline,"[540, 790]",540,790,147,900,933,1044,0
+dialer,1,baseline,"[176, 1054]",176,1054,169,1093,203,1197,0
+dialer,2,baseline,"[531, 1080]",531,1080,518,1097,561,1201,1
+dialer,ABC,baseline,"[504, 1129]",504,1129,505,1201,574,1245,0
+dialer,3,baseline,"[876, 1056]",876,1056,870,1097,914,1201,0
+dialer,DEF,baseline,"[839, 1125]",839,1125,861,1201,924,1245,0
+dialer,4,baseline,"[181, 1244]",181,1244,163,1288,210,1392,0
+dialer,GHI,baseline,"[180, 1305]",180,1305,157,1392,216,1436,0
+dialer,5,baseline,"[510, 1241]",510,1241,516,1288,562,1392,0
+dialer,JKL,baseline,"[506, 1299]",506,1299,510,1392,569,1436,0
+dialer,6,baseline,"[840, 1240]",840,1240,869,1288,915,1392,0
+dialer,MNO,baseline,"[840, 1308]",840,1308,852,1392,933,1436,0
+dialer,7,baseline,"[180, 1431]",180,1431,166,1480,208,1584,0
+dialer,PQRS,baseline,"[174, 1481]",174,1481,142,1584,232,1628,0
+dialer,8,baseline,"[506, 1418]",506,1418,517,1480,562,1584,0
+dialer,TUV,baseline,"[511, 1498]",511,1498,507,1584,573,1628,0
+dialer,9,baseline,"[824, 1429]",824,1429,869,1480,915,1584,0
+dialer,WXYZ,baseline,"[833, 1488]",833,1488,846,1584,939,1628,0
+dialer,∗,baseline,"[174, 1606]",174,1606,168,1668,206,1780,0
+dialer,0,baseline,"[540, 1615]",540,1615,512,1672,567,1776,0
+dialer,+,baseline,"[499, 1659]",499,1659,529,1776,549,1820,0
+dialer,#,baseline,"[841, 1600]",841,1600,865,1672,921,1776,0
+dialer,Call,baseline,"[560, 1795]",560,1795,414,1871,666,2018,0
+dialer,Home,baseline,"[171, 2152]",171,2152,135,2161,224,2203,1
+dialer,Keypad,baseline,"[510, 2161]",510,2161,481,2161,597,2203,1
+dialer,Voicemail,baseline,"[853, 2147]",853,2147,826,2161,972,2203,1
+dialer,Phone Number,elder_text_heavy,"[540, 728]",540,728,147,886,933,1030,0
+dialer,1,elder_text_heavy,"[175, 1053]",175,1053,169,1079,203,1183,1
+dialer,2,elder_text_heavy,"[532, 1043]",532,1043,518,1083,561,1187,0
+dialer,ABC,elder_text_heavy,"[540, 1119]",540,1119,505,1187,574,1231,0
+dialer,3,elder_text_heavy,"[819, 1058]",819,1058,870,1083,914,1187,0
+dialer,DEF,elder_text_heavy,"[837, 1114]",837,1114,861,1187,924,1231,0
+dialer,4,elder_text_heavy,"[169, 1239]",169,1239,163,1274,210,1378,0
+dialer,GHI,elder_text_heavy,"[176, 1297]",176,1297,157,1378,216,1422,0
+dialer,5,elder_text_heavy,"[511, 1227]",511,1227,516,1274,562,1378,0
+dialer,JKL,elder_text_heavy,"[509, 1307]",509,1307,510,1378,569,1422,0
+dialer,6,elder_text_heavy,"[876, 1231]",876,1231,869,1274,915,1378,0
+dialer,MNO,elder_text_heavy,"[848, 1290]",848,1290,852,1378,933,1422,0
+dialer,7,elder_text_heavy,"[178, 1403]",178,1403,166,1466,208,1570,0
+dialer,PQRS,elder_text_heavy,"[180, 1468]",180,1468,142,1570,232,1614,0
+dialer,8,elder_text_heavy,"[505, 1408]",505,1408,517,1466,562,1570,0
+dialer,TUV,elder_text_heavy,"[540, 1453]",540,1453,507,1570,573,1614,0
+dialer,9,elder_text_heavy,"[833, 1399]",833,1399,869,1466,915,1570,0
+dialer,WXYZ,elder_text_heavy,"[833, 1469]",833,1469,846,1570,939,1614,0
+dialer,∗,elder_text_heavy,"[174, 1584]",174,1584,168,1654,206,1766,0
+dialer,0,elder_text_heavy,"[506, 1596]",506,1596,512,1658,567,1762,0
+dialer,+,elder_text_heavy,"[540, 1648]",540,1648,529,1762,549,1806,0
+dialer,#,elder_text_heavy,"[859, 1597]",859,1597,865,1658,921,1762,0
+dialer,Call,elder_text_heavy,"[543, 1783]",543,1783,400,1857,681,2004,0
+dialer,Home,elder_text_heavy,"[159, 2013]",159,2013,118,2147,241,2203,0
+dialer,Keypad,elder_text_heavy,"[540, 2016]",540,2016,461,2147,618,2203,0
+dialer,Voicemail,elder_text_heavy,"[852, 2101]",852,2101,800,2147,1000,2203,0
+dialer,Phone Number,elder_zoom_heavy,"[540, 525]",540,525,168,690,912,855,0
+dialer,1,elder_zoom_heavy,"[176, 902]",176,902,168,911,207,1029,1
+dialer,2,elder_zoom_heavy,"[538, 907]",538,907,514,916,564,1034,1
+dialer,ABC,elder_zoom_heavy,"[509, 987]",509,987,500,1034,579,1085,0
+dialer,3,elder_zoom_heavy,"[839, 906]",839,906,866,916,916,1034,1
+dialer,DEF,elder_zoom_heavy,"[845, 988]",845,988,855,1034,928,1085,0
+dialer,4,elder_zoom_heavy,"[178, 1115]",178,1115,160,1135,214,1253,1
+dialer,GHI,elder_zoom_heavy,"[181, 1189]",181,1189,154,1253,221,1304,0
+dialer,5,elder_zoom_heavy,"[511, 1124]",511,1124,514,1135,566,1253,1
+dialer,JKL,elder_zoom_heavy,"[509, 1190]",509,1190,506,1253,574,1304,0
+dialer,6,elder_zoom_heavy,"[836, 1120]",836,1120,865,1135,918,1253,0
+dialer,MNO,elder_zoom_heavy,"[835, 1190]",835,1190,845,1253,938,1304,0
+dialer,7,elder_zoom_heavy,"[179, 1319]",179,1319,163,1354,211,1472,0
+dialer,PQRS,elder_zoom_heavy,"[179, 1400]",179,1400,136,1472,239,1523,0
+dialer,8,elder_zoom_heavy,"[509, 1320]",509,1320,514,1354,565,1472,0
+dialer,TUV,elder_zoom_heavy,"[540, 1400]",540,1400,502,1472,577,1523,0
+dialer,9,elder_zoom_heavy,"[836, 1343]",836,1343,865,1354,918,1472,0
+dialer,WXYZ,elder_zoom_heavy,"[850, 1395]",850,1395,839,1472,945,1523,0
+dialer,∗,elder_zoom_heavy,"[184, 1531]",184,1531,166,1568,209,1696,0
+dialer,0,elder_zoom_heavy,"[541, 1512]",541,1512,508,1573,571,1691,0
+dialer,+,elder_zoom_heavy,"[505, 1603]",505,1603,528,1691,551,1742,0
+dialer,#,elder_zoom_heavy,"[864, 1564]",864,1564,860,1573,924,1691,1
+dialer,Call,elder_zoom_heavy,"[578, 1758]",578,1758,396,1800,684,1968,0
+dialer,Home,elder_zoom_heavy,"[170, 2110]",170,2110,129,2130,230,2178,1
+dialer,Keypad,elder_zoom_heavy,"[540, 2107]",540,2107,475,2130,605,2178,1
+dialer,Voicemail,elder_zoom_heavy,"[845, 2104]",845,2104,817,2130,982,2178,1
+dialer,Phone Number,elder_combo_max,"[540, 365]",540,365,182,518,898,697,0
+dialer,1,elder_combo_max,"[176, 769]",176,769,167,758,209,885,1
+dialer,2,elder_combo_max,"[540, 786]",540,786,513,764,566,891,1
+dialer,ABC,elder_combo_max,"[511, 864]",511,864,497,891,582,945,0
+dialer,3,elder_combo_max,"[836, 776]",836,776,863,764,917,891,0
+dialer,DEF,elder_combo_max,"[846, 861]",846,861,851,891,930,945,0
+dialer,4,elder_combo_max,"[180, 1002]",180,1002,159,1001,217,1128,1
+dialer,GHI,elder_combo_max,"[182, 1087]",182,1087,152,1128,225,1182,0
+dialer,5,elder_combo_max,"[541, 1000]",541,1000,511,1001,567,1128,1
+dialer,JKL,elder_combo_max,"[512, 1092]",512,1092,503,1128,575,1182,0
+dialer,6,elder_combo_max,"[841, 1000]",841,1000,862,1001,919,1128,1
+dialer,MNO,elder_combo_max,"[853, 1089]",853,1089,841,1128,940,1182,0
+dialer,7,elder_combo_max,"[179, 1218]",179,1218,162,1238,214,1365,0
+dialer,PQRS,elder_combo_max,"[179, 1314]",179,1314,133,1365,244,1419,0
+dialer,8,elder_combo_max,"[513, 1220]",513,1220,511,1238,566,1365,1
+dialer,TUV,elder_combo_max,"[512, 1314]",512,1314,499,1365,579,1419,0
+dialer,9,elder_combo_max,"[834, 1223]",834,1223,862,1238,919,1365,0
+dialer,WXYZ,elder_combo_max,"[846, 1307]",846,1307,834,1365,947,1419,0
+dialer,∗,elder_combo_max,"[184, 1447]",184,1447,165,1470,212,1608,0
+dialer,0,elder_combo_max,"[537, 1447]",537,1447,506,1475,573,1602,0
+dialer,+,elder_combo_max,"[545, 1534]",545,1534,527,1602,552,1656,0
+dialer,#,elder_combo_max,"[870, 1470]",870,1470,856,1475,925,1602,1
+dialer,Call,elder_combo_max,"[561, 1704]",561,1704,360,1721,720,1903,0
+dialer,Home,elder_combo_max,"[171, 1990]",171,1990,93,2079,266,2157,0
+dialer,Keypad,elder_combo_max,"[539, 2081]",539,2081,429,2079,651,2157,1
+dialer,Voicemail,elder_combo_max,"[867, 2005]",867,2005,757,2079,1042,2157,0
+dialer,Phone Number,elder_combo_rtl,"[540, 500]",540,500,168,671,912,836,0
+dialer,1,elder_combo_rtl,"[178, 884]",178,884,168,892,207,1010,1
+dialer,2,elder_combo_rtl,"[537, 887]",537,887,514,897,564,1015,1
+dialer,ABC,elder_combo_rtl,"[510, 970]",510,970,500,1015,579,1066,0
+dialer,3,elder_combo_rtl,"[865, 916]",865,916,866,897,916,1015,1
+dialer,DEF,elder_combo_rtl,"[837, 970]",837,970,855,1015,928,1066,0
+dialer,4,elder_combo_rtl,"[179, 1094]",179,1094,160,1116,214,1234,1
+dialer,GHI,elder_combo_rtl,"[180, 1175]",180,1175,154,1234,221,1285,0
+dialer,5,elder_combo_rtl,"[508, 1116]",508,1116,514,1116,566,1234,1
+dialer,JKL,elder_combo_rtl,"[512, 1178]",512,1178,506,1234,574,1285,0
+dialer,6,elder_combo_rtl,"[834, 1091]",834,1091,865,1116,918,1234,0
+dialer,MNO,elder_combo_rtl,"[842, 1181]",842,1181,845,1234,938,1285,0
+dialer,7,elder_combo_rtl,"[184, 1288]",184,1288,163,1335,211,1453,0
+dialer,PQRS,elder_combo_rtl,"[176, 1380]",176,1380,136,1453,239,1504,0
+dialer,8,elder_combo_rtl,"[511, 1300]",511,1300,514,1335,565,1453,0
+dialer,TUV,elder_combo_rtl,"[511, 1380]",511,1380,502,1453,577,1504,0
+dialer,9,elder_combo_rtl,"[832, 1298]",832,1298,865,1335,918,1453,0
+dialer,WXYZ,elder_combo_rtl,"[837, 1379]",837,1379,839,1453,945,1504,0
+dialer,∗,elder_combo_rtl,"[186, 1527]",186,1527,166,1549,209,1677,1
+dialer,0,elder_combo_rtl,"[540, 1503]",540,1503,508,1554,571,1672,0
+dialer,+,elder_combo_rtl,"[541, 1584]",541,1584,528,1672,551,1723,0
+dialer,#,elder_combo_rtl,"[848, 1506]",848,1506,860,1554,924,1672,0
+dialer,Call,elder_combo_rtl,"[553, 1748]",553,1748,377,1781,704,1949,0
+dialer,Home,elder_combo_rtl,"[169, 2004]",169,2004,104,2111,255,2178,0
+dialer,Keypad,elder_combo_rtl,"[540, 2017]",540,2017,443,2111,637,2178,0
+dialer,Voicemail,elder_combo_rtl,"[864, 2011]",864,2011,776,2111,1024,2178,0
+dialer,Phone Number,colorblind_deuteranomaly,"[540, 412]",540,412,147,900,933,1044,0
+dialer,1,colorblind_deuteranomaly,"[175, 1080]",175,1080,169,1093,203,1197,1
+dialer,2,colorblind_deuteranomaly,"[520, 1055]",520,1055,518,1097,561,1201,0
+dialer,ABC,colorblind_deuteranomaly,"[504, 1130]",504,1130,505,1201,574,1245,0
+dialer,3,colorblind_deuteranomaly,"[837, 1079]",837,1079,870,1097,914,1201,0
+dialer,DEF,colorblind_deuteranomaly,"[829, 1125]",829,1125,861,1201,924,1245,0
+dialer,4,colorblind_deuteranomaly,"[184, 1241]",184,1241,163,1288,210,1392,0
+dialer,GHI,colorblind_deuteranomaly,"[178, 1308]",178,1308,157,1392,216,1436,0
+dialer,5,colorblind_deuteranomaly,"[503, 1238]",503,1238,516,1288,562,1392,0
+dialer,JKL,colorblind_deuteranomaly,"[507, 1308]",507,1308,510,1392,569,1436,0
+dialer,6,colorblind_deuteranomaly,"[880, 1240]",880,1240,869,1288,915,1392,0
+dialer,MNO,colorblind_deuteranomaly,"[864, 1302]",864,1302,852,1392,933,1436,0
+dialer,7,colorblind_deuteranomaly,"[173, 1424]",173,1424,166,1480,208,1584,0
+dialer,PQRS,colorblind_deuteranomaly,"[179, 1485]",179,1485,142,1584,232,1628,0
+dialer,8,colorblind_deuteranomaly,"[505, 1420]",505,1420,517,1480,562,1584,0
+dialer,TUV,colorblind_deuteranomaly,"[512, 1485]",512,1485,507,1584,573,1628,0
+dialer,9,colorblind_deuteranomaly,"[826, 1408]",826,1408,869,1480,915,1584,0
+dialer,WXYZ,colorblind_deuteranomaly,"[826, 1495]",826,1495,846,1584,939,1628,0
+dialer,∗,colorblind_deuteranomaly,"[176, 1595]",176,1595,168,1668,206,1780,0
+dialer,0,colorblind_deuteranomaly,"[540, 1589]",540,1589,512,1672,567,1776,0
+dialer,+,colorblind_deuteranomaly,"[540, 1660]",540,1660,529,1776,549,1820,0
+dialer,#,colorblind_deuteranomaly,"[847, 1604]",847,1604,865,1672,921,1776,0
+dialer,Call,colorblind_deuteranomaly,"[542, 1794]",542,1794,414,1871,666,2018,0
+dialer,Home,colorblind_deuteranomaly,"[167, 2118]",167,2118,135,2161,224,2203,0
+dialer,Keypad,colorblind_deuteranomaly,"[509, 2172]",509,2172,481,2161,597,2203,1
+dialer,Voicemail,colorblind_deuteranomaly,"[870, 2164]",870,2164,826,2161,972,2203,1
+gmail,Primary,baseline,"[85, 229]",85,229,42,226,175,279,1
+gmail,Tap a sender image to select that conversation.,baseline,"[424, 369]",424,369,210,307,773,494,1
+gmail,Dismiss,baseline,"[826, 366]",826,366,786,330,1017,470,1
+gmail,Welcome to your new Inbox,baseline,"[296, 541]",296,541,63,559,1017,622,1
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,baseline,"[456, 655]",456,655,63,633,1017,799,1
+gmail,Social,baseline,"[256, 827]",256,827,179,864,909,924,0
+gmail,Promotions,baseline,"[281, 924]",281,924,179,969,909,1029,0
+gmail,OK,baseline,"[123, 1032]",123,1032,42,1063,221,1191,0
+gmail,Change categories,baseline,"[429, 1036]",429,1036,242,1063,666,1191,1
+gmail,"Unread, , , Google’s Find Hub, , Your Android device will soon join the Find Hub network, , Find Hub network You can use Find Hub to locate devices when they're connected to the internet. The Find Hub network can help locate devices, even if they're offline. It can also help find, , ,  at 3:02 PM",baseline,"[494, 1260]",494,1260,21,1235,1059,1482,1
+gmail,Google’s Find Hub,baseline,"[426, 1211]",426,1211,210,1277,829,1330,0
+gmail,3:02 PM,baseline,"[835, 1205]",835,1205,829,1287,1017,1327,0
+gmail,Your Android device will soon join the Find Hub network,baseline,"[480, 1255]",480,1255,210,1338,933,1385,0
+gmail,"Find Hub network You can use Find Hub to locate devices when they're connected to the internet. The Find Hub network can help locate devices, even if they're offline. It can also help find",baseline,"[418, 1312]",418,1312,210,1393,933,1440,0
+gmail,"Unread, , , Google Play, , Your new privacy settings on Play, , Hello Andres, Now that you've added your account to your device, we'd like to share more information on how to manage your privacy settings on Play. We've updated settings that manage, , ,  on Jul 23",baseline,"[459, 1462]",459,1462,21,1486,1059,1733,1
+gmail,Google Play,baseline,"[303, 1438]",303,1438,210,1528,861,1581,0
+gmail,Your new privacy settings on Play,baseline,"[460, 1490]",460,1490,210,1589,933,1636,0
+gmail,"Hello Andres, Now that you've added your account to your device, we'd like to share more information on how to manage your privacy settings on Play. We've updated settings that manage",baseline,"[519, 1551]",519,1551,210,1644,933,1691,0
+gmail,"Unread, , , Google, , Security alert, , A new sign-in on Android anfebladi5@gmail.com We noticed a new sign-in to your Google Account on a Android device. If this was you, you don't need to do anything. If not, we'll help you secure, , ,  on Jul 23",baseline,"[360, 1720]",360,1720,21,1737,1059,1984,1
+gmail,Security alert,baseline,"[319, 1716]",319,1716,210,1840,933,1887,0
+gmail,"A new sign-in on Android anfebladi5@gmail.com We noticed a new sign-in to your Google Account on a Android device. If this was you, you don't need to do anything. If not, we'll help you secure",baseline,"[421, 1764]",421,1764,210,1895,933,1942,0
+gmail,"Unread, , , Google, , Andres, review your Google Account settings, , Hi Andres, Welcome to Google on your new PC. Here are a few of tips to get you started. ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌, , ,  on Jul 21",baseline,"[466, 2108]",466,2108,21,1988,1059,2235,1
+gmail,Jul 21,baseline,"[863, 1905]",863,1905,865,2040,1017,2080,0
+gmail,"Andres, review your Google Account settings",baseline,"[435, 1898]",435,1898,210,2091,933,2138,0
+gmail,"Hi Andres, Welcome to Google on your new PC. Here are a few of tips to get you started. ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌",baseline,"[444, 1968]",444,1968,210,2146,933,2193,0
+gmail,Compose,baseline,"[830, 1838]",830,1838,662,1904,1017,2051,0
+gmail,Primary,elder_text_heavy,"[134, 234]",134,234,42,214,236,291,1
+gmail,Tap a sender image to select that conversation.,elder_text_heavy,"[391, 421]",391,421,210,307,729,606,1
+gmail,Dismiss,elder_text_heavy,"[819, 419]",819,419,742,374,1017,539,1
+gmail,Welcome to your new Inbox,elder_text_heavy,"[399, 656]",399,656,63,671,1017,757,1
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,elder_text_heavy,"[490, 840]",490,840,63,768,1017,1074,1
+gmail,Social,elder_text_heavy,"[248, 1072]",248,1072,179,1126,909,1213,0
+gmail,Promotions,elder_text_heavy,"[313, 1180]",313,1180,179,1231,909,1318,0
+gmail,OK,elder_text_heavy,"[121, 1299]",121,1299,42,1338,221,1491,0
+gmail,Change categories,elder_text_heavy,"[492, 1310]",492,1310,242,1338,822,1491,0
+gmail,"Unread, , , Google’s Find Hub, , Your Android device will soon join the Find Hub network, , Find Hub network You can use Find Hub to locate devices when they're connected to the internet. The Find Hub network can help locate devices, even if they're offline. It can also help find, , ,  at 3:02 PM",elder_text_heavy,"[542, 1594]",542,1594,21,1535,1059,1840,1
+gmail,Google’s Find Hub,elder_text_heavy,"[411, 1495]",411,1495,210,1577,783,1648,0
+gmail,3:02 PM,elder_text_heavy,"[809, 1497]",809,1497,783,1589,1017,1645,0
+gmail,Your Android device will soon join the Find Hub network,elder_text_heavy,"[530, 1568]",530,1568,210,1656,933,1723,0
+gmail,"Find Hub network You can use Find Hub to locate devices when they're connected to the internet. The Find Hub network can help locate devices, even if they're offline. It can also help find",elder_text_heavy,"[516, 1629]",516,1629,210,1731,933,1798,0
+gmail,"Unread, , , Google Play, , Your new privacy settings on Play, , Hello Andres, Now that you've added your account to your device, we'd like to share more information on how to manage your privacy settings on Play. We've updated settings that manage, , ,  on Jul 23",elder_text_heavy,"[368, 1790]",368,1790,21,1844,1059,2149,0
+gmail,Google Play,elder_text_heavy,"[348, 1791]",348,1791,210,1886,828,1957,0
+gmail,Your new privacy settings on Play,elder_text_heavy,"[350, 1888]",350,1888,210,1965,933,2032,0
+gmail,"Hello Andres, Now that you've added your account to your device, we'd like to share more information on how to manage your privacy settings on Play. We've updated settings that manage",elder_text_heavy,"[372, 1942]",372,1942,210,2040,933,2107,0
+gmail,"Unread, , , Google, , Security alert, , A new sign-in on Android anfebladi5@gmail.com We noticed a new sign-in to your Google Account on a Android device. If this was you, you don't need to do anything. If not, we'll help you secure, , ,  on Jul 23",elder_text_heavy,"[506, 1905]",506,1905,21,2153,1059,2282,0
+gmail,Security alert,elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"A new sign-in on Android anfebladi5@gmail.com We noticed a new sign-in to your Google Account on a Android device. If this was you, you don't need to do anything. If not, we'll help you secure",elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Unread, , , Google, , Andres, review your Google Account settings, , Hi Andres, Welcome to Google on your new PC. Here are a few of tips to get you started. ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌, , ,  on Jul 21",elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Jul 21,elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Andres, review your Google Account settings",elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Hi Andres, Welcome to Google on your new PC. Here are a few of tips to get you started. ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌",elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Compose,elder_text_heavy,"[754, 1851]",754,1851,594,1898,1017,2051,0
+gmail,Primary,elder_zoom_heavy,"[121, 266]",121,266,48,258,201,318,1
+gmail,Tap a sender image to select that conversation.,elder_zoom_heavy,"[394, 425]",394,425,240,351,729,564,1
+gmail,Dismiss,elder_zoom_heavy,"[817, 424]",817,424,744,378,1008,537,1
+gmail,Welcome to your new Inbox,elder_zoom_heavy,"[369, 631]",369,631,72,639,1008,711,1
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,elder_zoom_heavy,"[451, 762]",451,762,72,723,1008,911,1
+gmail,Social,elder_zoom_heavy,"[306, 956]",306,956,204,985,885,1052,0
+gmail,Promotions,elder_zoom_heavy,"[319, 1061]",319,1061,204,1105,885,1172,0
+gmail,OK,elder_zoom_heavy,"[143, 1199]",143,1199,48,1211,252,1358,1
+gmail,Change categories,elder_zoom_heavy,"[510, 1197]",510,1197,276,1211,758,1358,1
+gmail,"Unread, , , Google’s Find Hub, , Your Android device will soon join the Find Hub network, , Find Hub network You can use Find Hub to locate devices when they're connected to the internet. The Find Hub network can help locate devices, even if they're offline. It can also help find, , ,  at 3:02 PM",elder_zoom_heavy,"[490, 1446]",490,1446,24,1409,1056,1689,1
+gmail,Google’s Find Hub,elder_zoom_heavy,"[417, 1401]",417,1401,240,1457,796,1517,0
+gmail,3:02 PM,elder_zoom_heavy,"[831, 1388]",831,1388,796,1468,1008,1513,0
+gmail,Your Android device will soon join the Find Hub network,elder_zoom_heavy,"[543, 1450]",543,1450,240,1526,912,1579,0
+gmail,"Find Hub network You can use Find Hub to locate devices when they're connected to the internet. The Find Hub network can help locate devices, even if they're offline. It can also help find",elder_zoom_heavy,"[546, 1510]",546,1510,240,1588,912,1641,0
+gmail,"Unread, , , Google Play, , Your new privacy settings on Play, , Hello Andres, Now that you've added your account to your device, we'd like to share more information on how to manage your privacy settings on Play. We've updated settings that manage, , ,  on Jul 23",elder_zoom_heavy,"[418, 1708]",418,1708,24,1695,1056,1975,1
+gmail,Google Play,elder_zoom_heavy,"[361, 1650]",361,1650,240,1743,833,1803,0
+gmail,Your new privacy settings on Play,elder_zoom_heavy,"[474, 1706]",474,1706,240,1812,912,1865,0
+gmail,"Hello Andres, Now that you've added your account to your device, we'd like to share more information on how to manage your privacy settings on Play. We've updated settings that manage",elder_zoom_heavy,"[486, 1769]",486,1769,240,1874,912,1927,0
+gmail,"Unread, , , Google, , Security alert, , A new sign-in on Android anfebladi5@gmail.com We noticed a new sign-in to your Google Account on a Android device. If this was you, you don't need to do anything. If not, we'll help you secure, , ,  on Jul 23",elder_zoom_heavy,"[516, 1911]",516,1911,24,1981,1056,2261,0
+gmail,Security alert,elder_zoom_heavy,"[415, 2029]",415,2029,240,2098,912,2151,0
+gmail,"A new sign-in on Android anfebladi5@gmail.com We noticed a new sign-in to your Google Account on a Android device. If this was you, you don't need to do anything. If not, we'll help you secure",elder_zoom_heavy,"[510, 1445]",510,1445,240,2160,912,2213,0
+gmail,"Unread, , , Google, , Andres, review your Google Account settings, , Hi Andres, Welcome to Google on your new PC. Here are a few of tips to get you started. ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌, , ,  on Jul 21",elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Jul 21,elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Andres, review your Google Account settings",elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Hi Andres, Welcome to Google on your new PC. Here are a few of tips to get you started. ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌",elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Compose,elder_zoom_heavy,"[820, 1788]",820,1788,600,1836,1008,2004,0
+gmail,Primary,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Tap a sender image to select that conversation.,elder_combo_max,"[413, 321]",413,321,260,3,621,678,1
+gmail,Dismiss,elder_combo_max,"[768, 327]",768,327,637,233,1002,448,1
+gmail,Welcome to your new Inbox,elder_combo_max,"[396, 809]",396,809,78,759,1002,973,1
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,elder_combo_max,"[500, 1265]",500,1265,78,986,1002,1607,1
+gmail,Social,elder_combo_max,"[317, 1618]",317,1618,221,1665,869,1783,0
+gmail,Promotions,elder_combo_max,"[293, 1742]",293,1742,221,1795,869,1913,0
+gmail,OK,elder_combo_max,"[128, 1900]",128,1900,52,1932,273,2133,0
+gmail,Change categories,elder_combo_max,"[674, 1621]",674,1621,299,1932,1028,2225,0
+gmail,"Unread, , , Google’s Find Hub, , Your Android device will soon join the Find Hub network, , Find Hub network You can use Find Hub to locate devices when they're connected to the internet. The Find Hub network can help locate devices, even if they're offline. It can also help find, , ,  at 3:02 PM",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Google’s Find Hub,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,3:02 PM,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Your Android device will soon join the Find Hub network,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Find Hub network You can use Find Hub to locate devices when they're connected to the internet. The Find Hub network can help locate devices, even if they're offline. It can also help find",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Unread, , , Google Play, , Your new privacy settings on Play, , Hello Andres, Now that you've added your account to your device, we'd like to share more information on how to manage your privacy settings on Play. We've updated settings that manage, , ,  on Jul 23",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Google Play,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Your new privacy settings on Play,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Hello Andres, Now that you've added your account to your device, we'd like to share more information on how to manage your privacy settings on Play. We've updated settings that manage",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Unread, , , Google, , Security alert, , A new sign-in on Android anfebladi5@gmail.com We noticed a new sign-in to your Google Account on a Android device. If this was you, you don't need to do anything. If not, we'll help you secure, , ,  on Jul 23",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Security alert,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"A new sign-in on Android anfebladi5@gmail.com We noticed a new sign-in to your Google Account on a Android device. If this was you, you don't need to do anything. If not, we'll help you secure",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Unread, , , Google, , Andres, review your Google Account settings, , Hi Andres, Welcome to Google on your new PC. Here are a few of tips to get you started. ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌, , ,  on Jul 21",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Jul 21,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Andres, review your Google Account settings",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Hi Andres, Welcome to Google on your new PC. Here are a few of tips to get you started. ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Compose,elder_combo_max,"[742, 1759]",742,1759,446,1770,1002,1969,0
+gmail,Primary,elder_combo_rtl,"[151, 269]",151,269,48,241,290,336,1
+gmail,Tap a sender image to select that conversation.,elder_combo_rtl,"[421, 544]",421,544,240,351,665,795,1
+gmail,Dismiss,elder_combo_rtl,"[789, 530]",789,530,680,475,1008,670,1
+gmail,Welcome to your new Inbox,elder_combo_rtl,"[487, 849]",487,849,72,870,1008,973,0
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,elder_combo_rtl,"[563, 1311]",563,1311,72,985,1008,1452,1
+gmail,Social,elder_combo_rtl,"[320, 1457]",320,1457,204,1507,885,1612,0
+gmail,Promotions,elder_combo_rtl,"[418, 1576]",418,1576,204,1627,885,1732,0
+gmail,OK,elder_combo_rtl,"[145, 1718]",145,1718,48,1752,252,1935,0
+gmail,Change categories,elder_combo_rtl,"[452, 1718]",452,1718,276,1752,978,1935,0
+gmail,"Unread, , , Google’s Find Hub, , Your Android device will soon join the Find Hub network, , Find Hub network You can use Find Hub to locate devices when they're connected to the internet. The Find Hub network can help locate devices, even if they're offline. It can also help find, , ,  at 3:02 PM",elder_combo_rtl,"[743, 54]",743,54,24,1986,1056,2268,0
+gmail,Google’s Find Hub,elder_combo_rtl,"[318, 1915]",318,1915,240,2034,726,2121,0
+gmail,3:02 PM,elder_combo_rtl,"[936, 2108]",936,2108,726,2049,1008,2116,1
+gmail,Your Android device will soon join the Find Hub network,elder_combo_rtl,"[511, 1938]",511,1938,240,2130,912,2213,0
+gmail,"Find Hub network You can use Find Hub to locate devices when they're connected to the internet. The Find Hub network can help locate devices, even if they're offline. It can also help find",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Unread, , , Google Play, , Your new privacy settings on Play, , Hello Andres, Now that you've added your account to your device, we'd like to share more information on how to manage your privacy settings on Play. We've updated settings that manage, , ,  on Jul 23",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Google Play,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Your new privacy settings on Play,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Hello Andres, Now that you've added your account to your device, we'd like to share more information on how to manage your privacy settings on Play. We've updated settings that manage",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Unread, , , Google, , Security alert, , A new sign-in on Android anfebladi5@gmail.com We noticed a new sign-in to your Google Account on a Android device. If this was you, you don't need to do anything. If not, we'll help you secure, , ,  on Jul 23",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Security alert,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"A new sign-in on Android anfebladi5@gmail.com We noticed a new sign-in to your Google Account on a Android device. If this was you, you don't need to do anything. If not, we'll help you secure",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Unread, , , Google, , Andres, review your Google Account settings, , Hi Andres, Welcome to Google on your new PC. Here are a few of tips to get you started. ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌, , ,  on Jul 21",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Jul 21,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Andres, review your Google Account settings",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+gmail,"Hi Andres, Welcome to Google on your new PC. Here are a few of tips to get you started. ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+gmail,Compose,elder_combo_rtl,"[754, 1787]",754,1787,507,1825,1008,2004,0
+gmail,Primary,colorblind_deuteranomaly,"[94, 230]",94,230,42,226,175,279,1
+gmail,Tap a sender image to select that conversation.,colorblind_deuteranomaly,"[438, 369]",438,369,210,307,773,494,1
+gmail,Dismiss,colorblind_deuteranomaly,"[870, 368]",870,368,786,330,1017,470,1
+gmail,Welcome to your new Inbox,colorblind_deuteranomaly,"[314, 539]",314,539,63,559,1017,622,1
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,colorblind_deuteranomaly,"[342, 664]",342,664,63,633,1017,799,1
+gmail,Social,colorblind_deuteranomaly,"[226, 826]",226,826,179,864,909,924,0
+gmail,Promotions,colorblind_deuteranomaly,"[260, 923]",260,923,179,969,909,1029,0
+gmail,OK,colorblind_deuteranomaly,"[126, 1040]",126,1040,42,1063,221,1191,1
+gmail,Change categories,colorblind_deuteranomaly,"[429, 1039]",429,1039,242,1063,666,1191,1
+gmail,"Unread, , , Google’s Find Hub, , Your Android device will soon join the Find Hub network, , Find Hub network You can use Find Hub to locate devices when they're connected to the internet. The Find Hub network can help locate devices, even if they're offline. It can also help find, , ,  at 3:02 PM",colorblind_deuteranomaly,"[495, 1265]",495,1265,21,1235,1059,1482,1
+gmail,Google’s Find Hub,colorblind_deuteranomaly,"[363, 1200]",363,1200,210,1277,829,1330,0
+gmail,3:02 PM,colorblind_deuteranomaly,"[872, 1204]",872,1204,829,1287,1017,1327,0
+gmail,Your Android device will soon join the Find Hub network,colorblind_deuteranomaly,"[430, 1252]",430,1252,210,1338,933,1385,0
+gmail,"Find Hub network You can use Find Hub to locate devices when they're connected to the internet. The Find Hub network can help locate devices, even if they're offline. It can also help find",colorblind_deuteranomaly,"[511, 1310]",511,1310,210,1393,933,1440,0
+gmail,"Unread, , , Google Play, , Your new privacy settings on Play, , Hello Andres, Now that you've added your account to your device, we'd like to share more information on how to manage your privacy settings on Play. We've updated settings that manage, , ,  on Jul 23",colorblind_deuteranomaly,"[530, 1500]",530,1500,21,1486,1059,1733,1
+gmail,Google Play,colorblind_deuteranomaly,"[300, 1440]",300,1440,210,1528,861,1581,0
+gmail,Your new privacy settings on Play,colorblind_deuteranomaly,"[475, 1488]",475,1488,210,1589,933,1636,0
+gmail,"Hello Andres, Now that you've added your account to your device, we'd like to share more information on how to manage your privacy settings on Play. We've updated settings that manage",colorblind_deuteranomaly,"[514, 1544]",514,1544,210,1644,933,1691,0
+gmail,"Unread, , , Google, , Security alert, , A new sign-in on Android anfebladi5@gmail.com We noticed a new sign-in to your Google Account on a Android device. If this was you, you don't need to do anything. If not, we'll help you secure, , ,  on Jul 23",colorblind_deuteranomaly,"[396, 1749]",396,1749,21,1737,1059,1984,1
+gmail,Security alert,colorblind_deuteranomaly,"[306, 1719]",306,1719,210,1840,933,1887,0
+gmail,"A new sign-in on Android anfebladi5@gmail.com We noticed a new sign-in to your Google Account on a Android device. If this was you, you don't need to do anything. If not, we'll help you secure",colorblind_deuteranomaly,"[466, 1767]",466,1767,210,1895,933,1942,0
+gmail,"Unread, , , Google, , Andres, review your Google Account settings, , Hi Andres, Welcome to Google on your new PC. Here are a few of tips to get you started. ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌, , ,  on Jul 21",colorblind_deuteranomaly,"[260, 1906]",260,1906,21,1988,1059,2235,0
+gmail,Jul 21,colorblind_deuteranomaly,"[897, 1908]",897,1908,865,2040,1017,2080,0
+gmail,"Andres, review your Google Account settings",colorblind_deuteranomaly,"[431, 1973]",431,1973,210,2091,933,2138,0
+gmail,"Hi Andres, Welcome to Google on your new PC. Here are a few of tips to get you started. ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌",colorblind_deuteranomaly,"[527, 1540]",527,1540,210,2146,933,2193,0
+gmail,Compose,colorblind_deuteranomaly,"[810, 1826]",810,1826,662,1904,1017,2051,0
+maps,Search here,baseline,"[299, 75]",299,75,162,45,661,122,1
+maps,Set home,baseline,"[168, 209]",168,209,31,163,325,289,1
+maps,Explore,baseline,"[167, 2008]",167,2008,122,2156,238,2198,0
+maps,You,baseline,"[540, 2106]",540,2106,512,2156,568,2198,0
+maps,Contribute,baseline,"[844, 2110]",844,2110,816,2156,983,2198,0
+maps,Search here,elder_text_heavy,"[305, 74]",305,74,162,37,661,131,1
+maps,Set home,elder_text_heavy,"[529, 209]",529,209,422,163,716,289,1
+maps,Explore,elder_text_heavy,"[172, 2111]",172,2111,122,2156,238,2198,0
+maps,You,elder_text_heavy,"[510, 2014]",510,2014,512,2156,568,2198,0
+maps,Contribute,elder_text_heavy,"[842, 2019]",842,2019,816,2156,983,2198,0
+maps,Search here,elder_zoom_heavy,"[317, 85]",317,85,186,52,600,139,1
+maps,Set home,elder_zoom_heavy,"[529, 240]",529,240,397,186,736,330,1
+maps,Explore,elder_zoom_heavy,"[170, 2010]",170,2010,114,2124,245,2172,0
+maps,You,elder_zoom_heavy,"[511, 2014]",511,2014,508,2124,571,2172,0
+maps,Contribute,elder_zoom_heavy,"[866, 2010]",866,2010,806,2124,994,2172,0
+maps,Search here,elder_combo_max,"[331, 94]",331,94,201,38,559,169,1
+maps,Set home,elder_combo_max,"[769, 262]",769,262,561,201,1059,357,1
+maps,Explore,elder_combo_max,"[165, 2006]",165,2006,109,2099,250,2151,0
+maps,You,elder_combo_max,"[511, 2010]",511,2010,506,2099,573,2151,0
+maps,Contribute,elder_combo_max,"[894, 2029]",894,2029,799,2099,1001,2151,0
+maps,Search here,elder_combo_rtl,"[368, 89]",368,89,186,39,600,152,1
+maps,Set home,elder_combo_rtl,"[732, 243]",732,243,508,186,957,330,1
+maps,Explore,elder_combo_rtl,"[166, 2004]",166,2004,114,2124,245,2172,0
+maps,You,elder_combo_rtl,"[511, 2003]",511,2003,508,2124,571,2172,0
+maps,Contribute,elder_combo_rtl,"[855, 1998]",855,1998,806,2124,994,2172,0
+maps,Search here,colorblind_deuteranomaly,"[281, 69]",281,69,162,45,661,122,1
+maps,Set home,colorblind_deuteranomaly,"[458, 208]",458,208,344,163,638,289,1
+maps,Explore,colorblind_deuteranomaly,"[168, 2018]",168,2018,122,2156,238,2198,0
+maps,You,colorblind_deuteranomaly,"[506, 2107]",506,2107,512,2156,568,2198,0
+maps,Contribute,colorblind_deuteranomaly,"[894, 2173]",894,2173,816,2156,983,2198,1
+messages,Messages,baseline,"[318, 73]",318,73,222,51,450,114,1
+messages,"Once you start a new conversation, you’ll see it listed here",baseline,"[511, 1292]",511,1292,158,1349,922,1452,0
+messages,Start chat,baseline,"[825, 1922]",825,1922,650,2009,1017,2156,0
+messages,Messages,elder_text_heavy,"[297, 75]",297,75,222,51,442,111,1
+messages,"Once you start a new conversation, you’ll see it listed here",elder_text_heavy,"[541, 1295]",541,1295,158,1293,922,1508,0
+messages,Start chat,elder_text_heavy,"[759, 1919]",759,1919,578,2003,1017,2156,0
+messages,Messages,elder_zoom_heavy,"[348, 83]",348,83,254,58,506,128,1
+messages,"Once you start a new conversation, you’ll see it listed here",elder_zoom_heavy,"[509, 1338]",509,1338,180,1375,900,1492,0
+messages,Start chat,elder_zoom_heavy,"[803, 1908]",803,1908,590,1956,1008,2124,0
+messages,Messages,elder_combo_max,"[407, 95]",407,95,276,63,549,138,1
+messages,"Once you start a new conversation, you’ll see it listed here",elder_combo_max,"[520, 1367]",520,1367,195,1259,885,1646,0
+messages,Start chat,elder_combo_max,"[721, 1881]",721,1881,425,1900,1002,2099,0
+messages,Messages,elder_combo_rtl,"[366, 85]",366,85,254,58,506,128,1
+messages,"Once you start a new conversation, you’ll see it listed here",elder_combo_rtl,"[540, 1333]",540,1333,180,1301,900,1566,0
+messages,Start chat,elder_combo_rtl,"[755, 1896]",755,1896,490,1945,1008,2124,0
+messages,Messages,colorblind_deuteranomaly,"[296, 75]",296,75,222,51,442,111,1
+messages,"Once you start a new conversation, you’ll see it listed here",colorblind_deuteranomaly,"[504, 1293]",504,1293,158,1349,922,1452,0
+messages,Start chat,colorblind_deuteranomaly,"[807, 1923]",807,1923,650,2009,1017,2156,0
+photos,"Take a picture.
+Photos & videos appear here.",baseline,"[512, 999]",512,999,172,1021,907,1192,1
+photos,No Photos,baseline,"[509, 1138]",509,1138,172,1192,907,1324,0
+photos,Search,baseline,"[744, 1987]",744,1987,540,2009,1080,2219,1
+photos,"Take a picture.
+Photos & videos appear here.",elder_zoom_heavy,"[540, 1006]",540,1006,120,997,960,1192,1
+photos,No Photos,elder_zoom_heavy,"[509, 1156]",509,1156,120,1192,960,1342,0
+photos,Search,elder_zoom_heavy,"[761, 1974]",761,1974,540,1956,1080,2196,1
+photos,"Take a picture.
+Photos & videos appear here.",elder_combo_max,"[540, 988]",540,988,85,867,995,1273,1
+photos,No Photos,elder_combo_max,"[505, 1260]",505,1260,85,1273,995,1467,0
+photos,Search,elder_combo_max,"[766, 1962]",766,1962,540,1917,1080,2177,1
+photos,"Take a picture.
+Photos & videos appear here.",elder_combo_rtl,"[512, 986]",512,986,120,901,960,1268,1
+photos,No Photos,elder_combo_rtl,"[512, 1230]",512,1230,120,1268,960,1439,0
+photos,Search,elder_combo_rtl,"[760, 2070]",760,2070,540,1956,1080,2196,1
+photos,"Take a picture.
+Photos & videos appear here.",colorblind_deuteranomaly,"[513, 995]",513,995,172,1021,907,1192,1
+photos,No Photos,colorblind_deuteranomaly,"[508, 1147]",508,1147,172,1192,907,1324,0
+photos,Search,colorblind_deuteranomaly,"[740, 1988]",740,1988,540,2009,1080,2219,1
+play_store,Welcome Back,baseline,"[231, 825]",231,825,105,856,393,919,0
+play_store,Find amazing apps for your new device,baseline,"[353, 869]",353,869,105,919,659,961,0
+play_store,View,baseline,"[833, 838]",833,838,850,883,931,936,0
+play_store,"Instagram, now designed for bigger screens",baseline,"[932, 1440]",932,1440,1079,647,1080,773,0
+play_store,"See more, scroll better",baseline,"[352, 1848]",352,1848,1079,773,1080,815,0
+play_store,Sponsored,baseline,"[162, 1059]",162,1059,63,1125,208,1167,0
+play_store,Suggested for you,baseline,"[410, 1057]",410,1057,244,1114,644,1177,0
+play_store,⚡ Catch the buzz,baseline,"[244, 1850]",244,1850,63,1972,459,2035,0
+play_store,Games,baseline,"[95, 2166]",95,2166,56,2162,160,2204,1
+play_store,Apps,baseline,"[324, 2115]",324,2115,286,2162,363,2204,0
+play_store,Search,baseline,"[507, 2142]",507,2142,488,2162,593,2204,1
+play_store,Books,baseline,"[705, 2020]",705,2020,710,2162,803,2204,0
+play_store,You,baseline,"[924, 2122]",924,2122,945,2162,1000,2204,0
+play_store,Welcome Back,elder_text_heavy,"[0, 0]",0,0,105,856,487,942,0
+play_store,Find amazing apps for your new device,elder_text_heavy,"[518, 124]",518,124,105,942,729,1001,0
+play_store,View,elder_text_heavy,"[912, 1061]",912,1061,813,890,931,967,0
+play_store,"Instagram, now designed for bigger screens",elder_text_heavy,"[319, 620]",319,620,1079,596,1080,756,0
+play_store,"See more, scroll better",elder_text_heavy,"[291, 729]",291,729,1079,756,1080,815,0
+play_store,Sponsored,elder_text_heavy,"[151, 1068]",151,1068,63,1125,271,1184,0
+play_store,Suggested for you,elder_text_heavy,"[523, 1068]",523,1068,321,1114,824,1194,0
+play_store,⚡ Catch the buzz,elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+play_store,Games,elder_text_heavy,"[96, 2176]",96,2176,35,2153,181,2212,1
+play_store,Apps,elder_text_heavy,"[305, 2028]",305,2028,270,2153,379,2212,0
+play_store,Search,elder_text_heavy,"[511, 2140]",511,2140,467,2153,614,2212,1
+play_store,Books,elder_text_heavy,"[711, 2028]",711,2028,692,2153,821,2212,0
+play_store,You,elder_text_heavy,"[915, 2021]",915,2021,934,2153,1010,2212,0
+play_store,Welcome Back,elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+play_store,Find amazing apps for your new device,elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+play_store,View,elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+play_store,"Instagram, now designed for bigger screens",elder_zoom_heavy,"[459, 672]",459,672,72,651,972,795,0
+play_store,"See more, scroll better",elder_zoom_heavy,"[242, 762]",242,762,72,795,444,843,0
+play_store,Sponsored,elder_zoom_heavy,"[112, 1140]",112,1140,36,1197,207,1245,0
+play_store,Suggested for you,elder_zoom_heavy,"[469, 1139]",469,1139,249,1185,708,1257,0
+play_store,⚡ Catch the buzz,elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+play_store,Games,elder_zoom_heavy,"[100, 2100]",100,2100,48,2130,169,2178,0
+play_store,Apps,elder_zoom_heavy,"[304, 2020]",304,2020,280,2130,368,2178,0
+play_store,Search,elder_zoom_heavy,"[540, 2010]",540,2010,479,2130,601,2178,0
+play_store,Books,elder_zoom_heavy,"[718, 2010]",718,2010,703,2130,810,2178,0
+play_store,You,elder_zoom_heavy,"[961, 2015]",961,2015,940,2130,1004,2178,0
+play_store,Welcome Back,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+play_store,Find amazing apps for your new device,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+play_store,View,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+play_store,"Instagram, now designed for bigger screens",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+play_store,"See more, scroll better",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+play_store,Sponsored,elder_combo_max,"[169, 1238]",169,1238,39,1279,334,1363,0
+play_store,Suggested for you,elder_combo_max,"[567, 1245]",567,1245,406,1211,885,1431,0
+play_store,⚡ Catch the buzz,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+play_store,Games,elder_combo_max,"[78, 2003]",78,2003,13,2090,203,2174,0
+play_store,Apps,elder_combo_max,"[315, 2024]",315,2024,248,2090,400,2174,0
+play_store,Search,elder_combo_max,"[539, 2069]",539,2069,445,2090,635,2174,0
+play_store,Books,elder_combo_max,"[704, 2014]",704,2014,665,2090,847,2174,0
+play_store,You,elder_combo_max,"[954, 2105]",954,2105,919,2090,1026,2174,1
+play_store,Welcome Back,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+play_store,Find amazing apps for your new device,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+play_store,View,elder_combo_rtl,"[24, 920]",24,920,756,942,905,1037,0
+play_store,"Instagram, now designed for bigger screens",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+play_store,"See more, scroll better",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+play_store,Sponsored,elder_combo_rtl,"[125, 1198]",125,1198,36,1245,289,1317,0
+play_store,Suggested for you,elder_combo_rtl,"[528, 1198]",528,1198,351,1185,900,1377,0
+play_store,⚡ Catch the buzz,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+play_store,Games,elder_combo_rtl,"[92, 2016]",92,2016,18,2118,198,2190,0
+play_store,Apps,elder_combo_rtl,"[318, 2015]",318,2015,258,2118,390,2190,0
+play_store,Search,elder_combo_rtl,"[539, 2011]",539,2011,450,2118,631,2190,0
+play_store,Books,elder_combo_rtl,"[758, 2116]",758,2116,677,2118,835,2190,1
+play_store,You,elder_combo_rtl,"[969, 2109]",969,2109,925,2118,1019,2190,1
+play_store,Welcome Back,colorblind_deuteranomaly,[OFF-SCREEN],-1,-1,,,,,0
+play_store,Find amazing apps for your new device,colorblind_deuteranomaly,[OFF-SCREEN],-1,-1,,,,,0
+play_store,View,colorblind_deuteranomaly,[OFF-SCREEN],-1,-1,,,,,0
+play_store,"Instagram, now designed for bigger screens",colorblind_deuteranomaly,[OFF-SCREEN],-1,-1,,,,,0
+play_store,"See more, scroll better",colorblind_deuteranomaly,[OFF-SCREEN],-1,-1,,,,,0
+play_store,Sponsored,colorblind_deuteranomaly,"[125, 1043]",125,1043,63,1111,208,1153,0
+play_store,Suggested for you,colorblind_deuteranomaly,"[426, 1046]",426,1046,244,1100,644,1163,0
+play_store,⚡ Catch the buzz,colorblind_deuteranomaly,"[250, 1848]",250,1848,63,1958,459,2021,0
+play_store,Games,colorblind_deuteranomaly,"[97, 2147]",97,2147,56,2162,160,2204,1
+play_store,Apps,colorblind_deuteranomaly,"[317, 2141]",317,2141,286,2162,363,2204,1
+play_store,Search,colorblind_deuteranomaly,"[512, 2154]",512,2154,488,2162,593,2204,1
+play_store,Books,colorblind_deuteranomaly,"[702, 2018]",702,2018,710,2162,803,2204,0
+play_store,You,colorblind_deuteranomaly,"[926, 2150]",926,2150,945,2162,1000,2204,1
+settings_accessibility,Screen reader,baseline,"[175, 221]",175,221,63,210,1038,261,1
+settings_accessibility,TalkBack,baseline,"[290, 330]",290,330,221,329,391,386,1
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,baseline,"[520, 399]",520,399,221,386,954,480,1
+settings_accessibility,Display,baseline,"[118, 571]",118,571,63,590,1038,641,1
+settings_accessibility,Display size & text,baseline,"[383, 679]",383,679,221,709,560,766,1
+settings_accessibility,"Font size, display size, bold text, outline text",baseline,"[523, 706]",523,706,221,766,933,817,0
+settings_accessibility,Color & motion,baseline,"[345, 867]",345,867,221,906,498,963,0
+settings_accessibility,"Dark theme, color correction, remove animations",baseline,"[501, 933]",501,933,221,963,954,1057,1
+settings_accessibility,Magnification,baseline,"[370, 1092]",370,1092,221,1146,477,1203,0
+settings_accessibility,Off / Zoom in to make content larger on your screen,baseline,"[559, 1154]",559,1154,221,1203,954,1297,0
+settings_accessibility,Select to Speak,baseline,"[367, 1328]",367,1328,221,1386,510,1443,0
+settings_accessibility,Off / Hear selected text,baseline,"[418, 1352]",418,1352,221,1443,604,1494,0
+settings_accessibility,Interaction controls,baseline,"[220, 1507]",220,1507,63,1604,1038,1655,0
+settings_accessibility,Accessibility Menu,baseline,"[371, 1622]",371,1622,221,1723,571,1780,0
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",baseline,"[553, 1699]",553,1699,221,1780,954,1874,0
+settings_accessibility,Voice Access,baseline,"[333, 1838]",333,1838,221,1963,473,2020,0
+settings_accessibility,Off / Control device with voice commands,baseline,"[516, 1897]",516,1897,221,2020,908,2071,0
+settings_accessibility,Vibration & haptics,baseline,"[399, 2145]",399,2145,221,2160,574,2217,1
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",baseline,"[587, 2148]",587,2148,221,2217,954,2219,0
+settings_accessibility,Screen reader,elder_text_heavy,"[241, 229]",241,229,63,210,1038,283,1
+settings_accessibility,TalkBack,elder_text_heavy,"[313, 363]",313,363,221,351,452,428,1
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,elder_text_heavy,"[531, 458]",531,458,221,428,954,564,1
+settings_accessibility,Display,elder_text_heavy,"[143, 657]",143,657,63,674,1038,747,1
+settings_accessibility,Display size & text,elder_text_heavy,"[418, 793]",418,793,221,815,679,892,0
+settings_accessibility,"Font size, display size, bold text, outline text",elder_text_heavy,"[488, 892]",488,892,221,892,954,1028,0
+settings_accessibility,Color & motion,elder_text_heavy,"[394, 1065]",394,1065,221,1117,600,1194,0
+settings_accessibility,"Dark theme, color correction, remove animations",elder_text_heavy,"[490, 1174]",490,1174,221,1194,954,1330,0
+settings_accessibility,Magnification,elder_text_heavy,"[365, 1360]",365,1360,221,1419,569,1496,0
+settings_accessibility,Off / Zoom in to make content larger on your screen,elder_text_heavy,"[545, 1442]",545,1442,221,1496,954,1632,0
+settings_accessibility,Select to Speak,elder_text_heavy,"[394, 1643]",394,1643,221,1721,614,1798,0
+settings_accessibility,Off / Hear selected text,elder_text_heavy,"[464, 1699]",464,1699,221,1798,781,1871,0
+settings_accessibility,Interaction controls,elder_text_heavy,"[324, 1871]",324,1871,63,1981,1038,2054,0
+settings_accessibility,Accessibility Menu,elder_text_heavy,"[440, 2000]",440,2000,221,2122,696,2199,0
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",elder_text_heavy,"[553, 2106]",553,2106,221,2199,954,2219,0
+settings_accessibility,Voice Access,elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Off / Control device with voice commands,elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Vibration & haptics,elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Screen reader,elder_zoom_heavy,"[184, 249]",184,249,72,240,1032,297,1
+settings_accessibility,TalkBack,elder_zoom_heavy,"[398, 378]",398,378,252,375,447,440,1
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,elder_zoom_heavy,"[520, 458]",520,458,252,440,936,546,1
+settings_accessibility,Display,elder_zoom_heavy,"[164, 652]",164,652,72,672,1032,729,1
+settings_accessibility,Display size & text,elder_zoom_heavy,"[429, 780]",429,780,252,807,642,872,0
+settings_accessibility,"Font size, display size, bold text, outline text",elder_zoom_heavy,"[546, 865]",546,865,252,872,936,978,0
+settings_accessibility,Color & motion,elder_zoom_heavy,"[393, 1047]",393,1047,252,1080,570,1145,0
+settings_accessibility,"Dark theme, color correction, remove animations",elder_zoom_heavy,"[566, 1110]",566,1110,252,1145,936,1251,0
+settings_accessibility,Magnification,elder_zoom_heavy,"[385, 1295]",385,1295,252,1353,546,1418,0
+settings_accessibility,Off / Zoom in to make content larger on your screen,elder_zoom_heavy,"[561, 1378]",561,1378,252,1418,936,1524,0
+settings_accessibility,Select to Speak,elder_zoom_heavy,"[394, 1561]",394,1561,252,1626,583,1691,0
+settings_accessibility,Off / Hear selected text,elder_zoom_heavy,"[485, 1619]",485,1619,252,1691,686,1748,0
+settings_accessibility,Interaction controls,elder_zoom_heavy,"[246, 1775]",246,1775,72,1874,1032,1931,0
+settings_accessibility,Accessibility Menu,elder_zoom_heavy,"[422, 1914]",422,1914,252,2009,654,2074,0
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",elder_zoom_heavy,"[574, 2060]",574,2060,252,2074,936,2180,1
+settings_accessibility,Voice Access,elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Off / Control device with voice commands,elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Vibration & haptics,elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Screen reader,elder_combo_max,"[302, 293]",302,293,78,260,1028,360,1
+settings_accessibility,TalkBack,elder_combo_max,"[441, 469]",441,469,273,445,589,550,1
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,elder_combo_max,"[569, 646]",569,646,273,550,924,824,1
+settings_accessibility,Display,elder_combo_max,"[194, 957]",194,957,78,961,1028,1061,1
+settings_accessibility,Display size & text,elder_combo_max,"[554, 1131]",554,1131,273,1146,901,1251,0
+settings_accessibility,"Font size, display size, bold text, outline text",elder_combo_max,"[458, 1310]",458,1310,273,1251,924,1525,0
+settings_accessibility,Color & motion,elder_combo_max,"[497, 1589]",497,1589,273,1636,788,1741,0
+settings_accessibility,"Dark theme, color correction, remove animations",elder_combo_max,"[502, 1776]",502,1776,273,1741,924,2015,0
+settings_accessibility,Magnification,elder_combo_max,"[443, 2061]",443,2061,273,2126,747,2177,0
+settings_accessibility,Off / Zoom in to make content larger on your screen,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Select to Speak,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Off / Hear selected text,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Interaction controls,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Accessibility Menu,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Voice Access,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Off / Control device with voice commands,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Vibration & haptics,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Screen reader,elder_combo_rtl,"[272, 260]",272,260,72,240,1032,328,1
+settings_accessibility,TalkBack,elder_combo_rtl,"[426, 422]",426,422,252,406,532,498,1
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,elder_combo_rtl,"[519, 575]",519,575,252,498,936,740,1
+settings_accessibility,Display,elder_combo_rtl,"[165, 851]",165,851,72,866,1032,954,0
+settings_accessibility,Display size & text,elder_combo_rtl,"[492, 1004]",492,1004,252,1032,811,1124,0
+settings_accessibility,"Font size, display size, bold text, outline text",elder_combo_rtl,"[515, 1081]",515,1081,252,1124,936,1289,0
+settings_accessibility,Color & motion,elder_combo_rtl,"[454, 1345]",454,1345,252,1391,709,1483,0
+settings_accessibility,"Dark theme, color correction, remove animations",elder_combo_rtl,"[478, 1496]",478,1496,252,1483,936,1725,0
+settings_accessibility,Magnification,elder_combo_rtl,"[477, 1779]",477,1779,252,1827,673,1919,0
+settings_accessibility,Off / Zoom in to make content larger on your screen,elder_combo_rtl,"[525, 1914]",525,1914,252,1919,936,2161,0
+settings_accessibility,Select to Speak,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Off / Hear selected text,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Interaction controls,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Accessibility Menu,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Voice Access,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Off / Control device with voice commands,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Vibration & haptics,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_accessibility,Screen reader,colorblind_deuteranomaly,"[179, 219]",179,219,63,210,1038,261,1
+settings_accessibility,TalkBack,colorblind_deuteranomaly,"[296, 332]",296,332,221,329,391,386,1
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,colorblind_deuteranomaly,"[496, 383]",496,383,221,386,954,480,1
+settings_accessibility,Display,colorblind_deuteranomaly,"[118, 571]",118,571,63,590,1038,641,1
+settings_accessibility,Display size & text,colorblind_deuteranomaly,"[409, 681]",409,681,221,709,560,766,1
+settings_accessibility,"Font size, display size, bold text, outline text",colorblind_deuteranomaly,"[529, 737]",529,737,221,766,933,817,1
+settings_accessibility,Color & motion,colorblind_deuteranomaly,"[321, 864]",321,864,221,906,498,963,0
+settings_accessibility,"Dark theme, color correction, remove animations",colorblind_deuteranomaly,"[498, 934]",498,934,221,963,954,1057,1
+settings_accessibility,Magnification,colorblind_deuteranomaly,"[335, 1088]",335,1088,221,1146,477,1203,0
+settings_accessibility,Off / Zoom in to make content larger on your screen,colorblind_deuteranomaly,"[571, 1151]",571,1151,221,1203,954,1297,0
+settings_accessibility,Select to Speak,colorblind_deuteranomaly,"[372, 1310]",372,1310,221,1386,510,1443,0
+settings_accessibility,Off / Hear selected text,colorblind_deuteranomaly,"[378, 1357]",378,1357,221,1443,604,1494,0
+settings_accessibility,Interaction controls,colorblind_deuteranomaly,"[212, 1506]",212,1506,63,1604,1038,1655,0
+settings_accessibility,Accessibility Menu,colorblind_deuteranomaly,"[384, 1623]",384,1623,221,1723,571,1780,0
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",colorblind_deuteranomaly,"[561, 1700]",561,1700,221,1780,954,1874,0
+settings_accessibility,Voice Access,colorblind_deuteranomaly,"[413, 1849]",413,1849,221,1963,473,2020,0
+settings_accessibility,Off / Control device with voice commands,colorblind_deuteranomaly,"[513, 1911]",513,1911,221,2020,908,2071,0
+settings_accessibility,Vibration & haptics,colorblind_deuteranomaly,"[404, 2140]",404,2140,221,2160,574,2217,1
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",colorblind_deuteranomaly,"[565, 2148]",565,2148,221,2217,954,2219,0
+settings_display,Brightness,baseline,"[150, 216]",150,216,63,210,1038,261,1
+settings_display,Brightness level,baseline,"[216, 331]",216,331,84,329,378,386,1
+settings_display,83%,baseline,"[112, 379]",112,379,84,386,153,437,1
+settings_display,Lock display,baseline,"[154, 530]",154,530,63,547,1038,598,1
+settings_display,Lock screen,baseline,"[186, 638]",186,638,84,666,309,723,1
+settings_display,Show all notification content,baseline,"[299, 695]",299,695,84,723,548,774,1
+settings_display,Screen timeout,baseline,"[220, 828]",220,828,84,863,366,920,0
+settings_display,Not set,baseline,"[163, 874]",163,874,84,920,203,971,0
+settings_display,Appearance,baseline,"[160, 1023]",160,1023,63,1081,1038,1132,0
+settings_display,Dark theme,baseline,"[187, 1139]",187,1139,84,1200,298,1257,0
+settings_display,Will turn on when Bedtime starts,baseline,"[343, 1204]",343,1204,84,1257,616,1308,0
+settings_display,Display size & text,baseline,"[315, 1320]",315,1320,84,1397,423,1454,0
+settings_display,"Font size, display size, bold text, outline text",baseline,"[405, 1378]",405,1378,84,1454,796,1505,0
+settings_display,Navigation mode,baseline,"[223, 1507]",223,1507,84,1594,402,1651,0
+settings_display,Gesture navigation,baseline,"[239, 1551]",239,1551,84,1651,392,1702,0
+settings_display,Screen saver,baseline,"[192, 1687]",192,1687,84,1791,323,1848,0
+settings_display,On / Clock,baseline,"[180, 1729]",180,1729,84,1848,254,1899,0
+settings_display,Color,baseline,"[112, 1882]",112,1882,63,2009,1038,2060,0
+settings_display,Colors,baseline,"[170, 2038]",170,2038,84,2152,205,2209,0
+settings_display,Brightness,elder_text_heavy,"[184, 226]",184,226,63,210,1038,283,1
+settings_display,Brightness level,elder_text_heavy,"[261, 361]",261,361,84,351,484,428,1
+settings_display,83%,elder_text_heavy,"[117, 431]",117,431,84,428,184,501,1
+settings_display,Lock display,elder_text_heavy,"[199, 601]",199,601,63,611,1038,684,1
+settings_display,Lock screen,elder_text_heavy,"[214, 727]",214,727,84,752,390,829,0
+settings_display,Show all notification content,elder_text_heavy,"[399, 801]",399,801,84,829,767,902,0
+settings_display,Screen timeout,elder_text_heavy,"[269, 955]",269,955,84,991,468,1068,0
+settings_display,Not set,elder_text_heavy,"[155, 1024]",155,1024,84,1068,260,1141,0
+settings_display,Appearance,elder_text_heavy,"[204, 1192]",204,1192,63,1251,1038,1324,0
+settings_display,Dark theme,elder_text_heavy,"[218, 1323]",218,1323,84,1392,374,1469,0
+settings_display,Will turn on when Bedtime starts,elder_text_heavy,"[279, 1412]",279,1412,84,1469,672,1605,0
+settings_display,Display size & text,elder_text_heavy,"[300, 1603]",300,1603,84,1694,542,1771,0
+settings_display,"Font size, display size, bold text, outline text",elder_text_heavy,"[383, 1696]",383,1696,84,1771,954,1907,0
+settings_display,Navigation mode,elder_text_heavy,"[245, 1891]",245,1891,84,1996,517,2073,0
+settings_display,Gesture navigation,elder_text_heavy,"[267, 1969]",267,1969,84,2073,535,2146,0
+settings_display,Screen saver,elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,On / Clock,elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,Color,elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,Colors,elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,Brightness,elder_zoom_heavy,"[168, 253]",168,253,72,240,1032,297,1
+settings_display,Brightness level,elder_zoom_heavy,"[266, 380]",266,380,96,375,434,440,1
+settings_display,83%,elder_zoom_heavy,"[126, 439]",126,439,96,440,175,497,1
+settings_display,Lock display,elder_zoom_heavy,"[189, 608]",189,608,72,623,1032,680,1
+settings_display,Lock screen,elder_zoom_heavy,"[225, 736]",225,736,96,758,353,823,1
+settings_display,Show all notification content,elder_zoom_heavy,"[357, 799]",357,799,96,823,625,880,1
+settings_display,Screen timeout,elder_zoom_heavy,"[242, 949]",242,949,96,982,419,1047,0
+settings_display,Not set,elder_zoom_heavy,"[157, 1003]",157,1003,96,1047,232,1104,0
+settings_display,Appearance,elder_zoom_heavy,"[187, 1180]",187,1180,72,1230,1032,1287,0
+settings_display,Dark theme,elder_zoom_heavy,"[208, 1310]",208,1310,96,1365,340,1430,0
+settings_display,Will turn on when Bedtime starts,elder_zoom_heavy,"[327, 1388]",327,1388,96,1430,615,1536,0
+settings_display,Display size & text,elder_zoom_heavy,"[307, 1568]",307,1568,96,1638,486,1703,0
+settings_display,"Font size, display size, bold text, outline text",elder_zoom_heavy,"[478, 1619]",478,1619,96,1703,906,1760,0
+settings_display,Navigation mode,elder_zoom_heavy,"[270, 1768]",270,1768,96,1862,459,1927,0
+settings_display,Gesture navigation,elder_zoom_heavy,"[238, 1826]",238,1826,96,1927,446,1984,0
+settings_display,Screen saver,elder_zoom_heavy,"[223, 1985]",223,1985,96,2086,369,2151,0
+settings_display,On / Clock,elder_zoom_heavy,"[220, 2140]",220,2140,96,2151,290,2196,1
+settings_display,Color,elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,Colors,elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,Brightness,elder_combo_max,"[249, 291]",249,291,78,260,1028,360,1
+settings_display,Brightness level,elder_combo_max,"[349, 469]",349,469,104,445,652,550,1
+settings_display,83%,elder_combo_max,"[157, 566]",157,566,104,550,242,650,1
+settings_display,Lock display,elder_combo_max,"[278, 790]",278,790,78,787,1028,887,1
+settings_display,Lock screen,elder_combo_max,"[308, 961]",308,961,104,972,522,1077,0
+settings_display,Show all notification content,elder_combo_max,"[412, 1102]",412,1102,104,1077,924,1264,0
+settings_display,Screen timeout,elder_combo_max,"[350, 1350]",350,1350,104,1375,628,1480,0
+settings_display,Not set,elder_combo_max,"[228, 1444]",228,1444,104,1480,342,1580,0
+settings_display,Appearance,elder_combo_max,"[265, 1671]",265,1671,78,1717,1028,1817,0
+settings_display,Dark theme,elder_combo_max,"[293, 1847]",293,1847,104,1902,501,2007,0
+settings_display,Will turn on when Bedtime starts,elder_combo_max,"[333, 2015]",333,2015,104,2007,576,2177,0
+settings_display,Display size & text,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,"Font size, display size, bold text, outline text",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,Navigation mode,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,Gesture navigation,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,Screen saver,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,On / Clock,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,Color,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,Colors,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,Brightness,elder_combo_rtl,"[225, 265]",225,265,72,240,1032,328,1
+settings_display,Brightness level,elder_combo_rtl,"[325, 419]",325,419,96,406,584,498,1
+settings_display,83%,elder_combo_rtl,"[179, 509]",179,509,96,498,218,586,1
+settings_display,Lock display,elder_combo_rtl,"[252, 709]",252,709,72,712,1032,800,1
+settings_display,Lock screen,elder_combo_rtl,"[275, 864]",275,864,96,878,467,970,0
+settings_display,Show all notification content,elder_combo_rtl,"[488, 948]",488,948,96,970,931,1058,0
+settings_display,Screen timeout,elder_combo_rtl,"[319, 1123]",319,1123,96,1160,563,1252,0
+settings_display,Not set,elder_combo_rtl,"[184, 1214]",184,1214,96,1252,310,1340,0
+settings_display,Appearance,elder_combo_rtl,"[234, 1418]",234,1418,72,1466,1032,1554,0
+settings_display,Dark theme,elder_combo_rtl,"[261, 1567]",261,1567,96,1632,450,1724,0
+settings_display,Will turn on when Bedtime starts,elder_combo_rtl,"[310, 1675]",310,1675,96,1724,615,1889,0
+settings_display,Display size & text,elder_combo_rtl,"[356, 1917]",356,1917,96,1991,655,2083,0
+settings_display,"Font size, display size, bold text, outline text",elder_combo_rtl,"[470, 1995]",470,1995,96,2083,936,2196,0
+settings_display,Navigation mode,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,Gesture navigation,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,Screen saver,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,On / Clock,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,Color,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,Colors,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_display,Brightness,colorblind_deuteranomaly,"[146, 220]",146,220,63,210,1038,261,1
+settings_display,Brightness level,colorblind_deuteranomaly,"[243, 334]",243,334,84,329,378,386,1
+settings_display,83%,colorblind_deuteranomaly,"[106, 379]",106,379,84,386,153,437,1
+settings_display,Lock display,colorblind_deuteranomaly,"[157, 529]",157,529,63,547,1038,598,1
+settings_display,Lock screen,colorblind_deuteranomaly,"[192, 641]",192,641,84,666,309,723,1
+settings_display,Show all notification content,colorblind_deuteranomaly,"[311, 693]",311,693,84,723,548,774,1
+settings_display,Screen timeout,colorblind_deuteranomaly,"[215, 831]",215,831,84,863,366,920,0
+settings_display,Not set,colorblind_deuteranomaly,"[151, 878]",151,878,84,920,203,971,0
+settings_display,Appearance,colorblind_deuteranomaly,"[155, 1024]",155,1024,63,1081,1038,1132,0
+settings_display,Dark theme,colorblind_deuteranomaly,"[183, 1138]",183,1138,84,1200,298,1257,0
+settings_display,Will turn on when Bedtime starts,colorblind_deuteranomaly,"[345, 1185]",345,1185,84,1257,616,1308,0
+settings_display,Display size & text,colorblind_deuteranomaly,"[314, 1332]",314,1332,84,1397,423,1454,0
+settings_display,"Font size, display size, bold text, outline text",colorblind_deuteranomaly,"[400, 1375]",400,1375,84,1454,796,1505,0
+settings_display,Navigation mode,colorblind_deuteranomaly,"[232, 1504]",232,1504,84,1594,402,1651,0
+settings_display,Gesture navigation,colorblind_deuteranomaly,"[225, 1550]",225,1550,84,1651,392,1702,0
+settings_display,Screen saver,colorblind_deuteranomaly,"[191, 1679]",191,1679,84,1791,323,1848,0
+settings_display,On / Clock,colorblind_deuteranomaly,"[167, 1728]",167,1728,84,1848,254,1899,0
+settings_display,Color,colorblind_deuteranomaly,"[107, 1876]",107,1876,63,2009,1038,2060,0
+settings_display,Colors,colorblind_deuteranomaly,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Search Settings,baseline,"[363, 104]",363,104,189,80,578,151,1
+settings_main,Google,baseline,"[284, 289]",284,289,221,289,354,346,1
+settings_main,Services & preferences,baseline,"[390, 348]",390,348,221,346,600,397,1
+settings_main,Network & internet,baseline,"[379, 509]",379,509,221,523,566,580,1
+settings_main,"Mobile, Wi‑Fi, hotspot",baseline,"[396, 559]",396,559,221,580,572,631,1
+settings_main,Connected devices,baseline,"[389, 699]",389,699,221,720,574,777,1
+settings_main,"Bluetooth, pairing",baseline,"[355, 744]",355,744,221,777,508,828,0
+settings_main,Apps,baseline,"[264, 902]",264,902,221,954,318,1011,0
+settings_main,"Assistant, recent apps, default apps",baseline,"[494, 955]",494,955,221,1011,806,1062,0
+settings_main,Notifications,baseline,"[341, 1090]",341,1090,221,1151,460,1208,0
+settings_main,"Notification history, conversations",baseline,"[485, 1138]",485,1138,221,1208,777,1259,0
+settings_main,Sound & vibration,baseline,"[365, 1267]",365,1267,221,1348,548,1405,0
+settings_main,Volume and haptics,baseline,"[378, 1325]",378,1325,221,1405,546,1456,0
+settings_main,Modes,baseline,"[286, 1452]",286,1452,221,1545,350,1602,0
+settings_main,"Do Not Disturb, Bedtime, Driving",baseline,"[377, 1510]",377,1510,221,1602,744,1653,0
+settings_main,Display & touch,baseline,"[338, 1640]",338,1640,221,1742,510,1799,0
+settings_main,"Dark theme, font size, touch",baseline,"[431, 1688]",431,1688,221,1799,675,1850,0
+settings_main,Wallpaper & style,baseline,"[347, 1817]",347,1817,221,1939,542,1996,0
+settings_main,"Colors, themed icons, app grid",baseline,"[443, 1856]",443,1856,221,1996,717,2047,0
+settings_main,Storage,baseline,"[286, 2147]",286,2147,221,2173,366,2219,1
+settings_main,Search Settings,elder_text_heavy,"[399, 108]",399,108,189,72,664,159,1
+settings_main,Google,elder_text_heavy,"[308, 304]",308,304,221,289,402,366,1
+settings_main,Services & preferences,elder_text_heavy,"[463, 375]",463,375,221,366,770,439,1
+settings_main,Network & internet,elder_text_heavy,"[431, 555]",431,555,221,565,691,642,1
+settings_main,"Mobile, Wi‑Fi, hotspot",elder_text_heavy,"[448, 629]",448,629,221,642,737,715,1
+settings_main,Connected devices,elder_text_heavy,"[427, 785]",427,785,221,804,701,881,1
+settings_main,"Bluetooth, pairing",elder_text_heavy,"[423, 850]",423,850,221,881,642,954,0
+settings_main,Apps,elder_text_heavy,"[273, 1037]",273,1037,221,1080,351,1157,0
+settings_main,"Assistant, recent apps, default apps",elder_text_heavy,"[560, 1132]",560,1132,221,1157,996,1293,0
+settings_main,Notifications,elder_text_heavy,"[365, 1315]",365,1315,221,1382,547,1459,0
+settings_main,"Notification history, conversations",elder_text_heavy,"[435, 1412]",435,1412,221,1459,996,1595,0
+settings_main,Sound & vibration,elder_text_heavy,"[422, 1596]",422,1596,221,1684,665,1761,0
+settings_main,Volume and haptics,elder_text_heavy,"[411, 1658]",411,1658,221,1761,695,1834,0
+settings_main,Modes,elder_text_heavy,"[300, 1810]",300,1810,221,1923,395,2000,0
+settings_main,"Do Not Disturb, Bedtime, Driving",elder_text_heavy,"[552, 1876]",552,1876,221,2000,986,2073,0
+settings_main,Display & touch,elder_text_heavy,"[352, 2078]",352,2078,221,2162,612,2219,0
+settings_main,"Dark theme, font size, touch",elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Wallpaper & style,elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Colors, themed icons, app grid",elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Storage,elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Search Settings,elder_zoom_heavy,"[414, 123]",414,123,216,91,661,172,1
+settings_main,Google,elder_zoom_heavy,"[347, 346]",347,346,252,330,403,395,1
+settings_main,Services & preferences,elder_zoom_heavy,"[411, 395]",411,395,252,395,677,452,1
+settings_main,Network & internet,elder_zoom_heavy,"[429, 587]",429,587,252,596,648,661,1
+settings_main,"Mobile, Wi‑Fi, hotspot",elder_zoom_heavy,"[464, 647]",464,647,252,661,652,718,1
+settings_main,Connected devices,elder_zoom_heavy,"[420, 795]",420,795,252,820,656,885,1
+settings_main,"Bluetooth, pairing",elder_zoom_heavy,"[382, 858]",382,858,252,885,578,942,1
+settings_main,Apps,elder_zoom_heavy,"[299, 1038]",299,1038,252,1086,362,1151,0
+settings_main,"Assistant, recent apps, default apps",elder_zoom_heavy,"[545, 1120]",545,1120,252,1151,919,1208,0
+settings_main,Notifications,elder_zoom_heavy,"[411, 1280]",411,1280,252,1310,526,1375,0
+settings_main,"Notification history, conversations",elder_zoom_heavy,"[535, 1317]",535,1317,252,1375,885,1432,0
+settings_main,Sound & vibration,elder_zoom_heavy,"[415, 1474]",415,1474,252,1534,628,1599,0
+settings_main,Volume and haptics,elder_zoom_heavy,"[418, 1517]",418,1517,252,1599,623,1656,0
+settings_main,Modes,elder_zoom_heavy,"[307, 1681]",307,1681,252,1758,398,1823,0
+settings_main,"Do Not Disturb, Bedtime, Driving",elder_zoom_heavy,"[515, 1732]",515,1732,252,1823,847,1880,0
+settings_main,Display & touch,elder_zoom_heavy,"[382, 1886]",382,1886,252,1982,583,2047,0
+settings_main,"Dark theme, font size, touch",elder_zoom_heavy,"[516, 1946]",516,1946,252,2047,769,2104,0
+settings_main,Wallpaper & style,elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Colors, themed icons, app grid",elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Storage,elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Search Settings,elder_combo_max,"[548, 142]",548,142,234,82,888,203,1
+settings_main,Google,elder_combo_max,"[440, 391]",440,391,273,358,518,463,1
+settings_main,Services & preferences,elder_combo_max,"[444, 526]",444,526,273,463,976,650,1
+settings_main,Network & internet,elder_combo_max,"[563, 808]",563,808,273,807,917,912,1
+settings_main,"Mobile, Wi‑Fi, hotspot",elder_combo_max,"[493, 948]",493,948,273,912,976,1099,0
+settings_main,Connected devices,elder_combo_max,"[572, 1194]",572,1194,273,1210,930,1315,0
+settings_main,"Bluetooth, pairing",elder_combo_max,"[551, 1286]",551,1286,273,1315,849,1415,0
+settings_main,Apps,elder_combo_max,"[349, 1529]",349,1529,273,1572,452,1677,0
+settings_main,"Assistant, recent apps, default apps",elder_combo_max,"[527, 1670]",527,1670,273,1677,976,1864,0
+settings_main,Notifications,elder_combo_max,"[477, 1909]",477,1909,273,1975,716,2080,0
+settings_main,"Notification history, conversations",elder_combo_max,"[536, 2029]",536,2029,273,2080,976,2177,0
+settings_main,Sound & vibration,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Volume and haptics,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Modes,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Do Not Disturb, Bedtime, Driving",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Display & touch,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Dark theme, font size, touch",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Wallpaper & style,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Colors, themed icons, app grid",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Storage,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Search Settings,elder_combo_rtl,"[431, 126]",431,126,216,79,783,184,1
+settings_main,Google,elder_combo_rtl,"[331, 352]",331,352,252,330,470,422,1
+settings_main,Services & preferences,elder_combo_rtl,"[545, 436]",545,436,252,422,921,510,1
+settings_main,Network & internet,elder_combo_rtl,"[504, 654]",504,654,252,654,823,746,1
+settings_main,"Mobile, Wi‑Fi, hotspot",elder_combo_rtl,"[538, 744]",538,744,252,746,882,834,1
+settings_main,Connected devices,elder_combo_rtl,"[524, 918]",524,918,252,936,836,1028,0
+settings_main,"Bluetooth, pairing",elder_combo_rtl,"[472, 1004]",472,1004,252,1028,765,1116,0
+settings_main,Apps,elder_combo_rtl,"[312, 1212]",312,1212,252,1260,411,1352,0
+settings_main,"Assistant, recent apps, default apps",elder_combo_rtl,"[539, 1343]",539,1343,252,1352,984,1517,0
+settings_main,Notifications,elder_combo_rtl,"[416, 1554]",416,1554,252,1619,645,1711,0
+settings_main,"Notification history, conversations",elder_combo_rtl,"[479, 1678]",479,1678,252,1711,984,1876,0
+settings_main,Sound & vibration,elder_combo_rtl,"[481, 1890]",481,1890,252,1978,790,2070,0
+settings_main,Volume and haptics,elder_combo_rtl,"[519, 1994]",519,1994,252,2070,833,2158,0
+settings_main,Modes,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Do Not Disturb, Bedtime, Driving",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Display & touch,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Dark theme, font size, touch",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Wallpaper & style,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Colors, themed icons, app grid",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Storage,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Search Settings,colorblind_deuteranomaly,"[350, 104]",350,104,189,80,578,151,1
+settings_main,Google,colorblind_deuteranomaly,"[286, 292]",286,292,221,289,354,346,1
+settings_main,Services & preferences,colorblind_deuteranomaly,"[395, 346]",395,346,221,346,600,397,1
+settings_main,Network & internet,colorblind_deuteranomaly,"[467, 513]",467,513,221,523,566,580,1
+settings_main,"Mobile, Wi‑Fi, hotspot",colorblind_deuteranomaly,"[417, 557]",417,557,221,580,572,631,1
+settings_main,Connected devices,colorblind_deuteranomaly,"[364, 693]",364,693,221,720,574,777,1
+settings_main,"Bluetooth, pairing",colorblind_deuteranomaly,"[348, 752]",348,752,221,777,508,828,1
+settings_main,Apps,colorblind_deuteranomaly,"[269, 907]",269,907,221,954,318,1011,0
+settings_main,"Assistant, recent apps, default apps",colorblind_deuteranomaly,"[490, 962]",490,962,221,1011,806,1062,0
+settings_main,Notifications,colorblind_deuteranomaly,"[328, 1092]",328,1092,221,1151,460,1208,0
+settings_main,"Notification history, conversations",colorblind_deuteranomaly,"[483, 1144]",483,1144,221,1208,777,1259,0
+settings_main,Sound & vibration,colorblind_deuteranomaly,"[371, 1279]",371,1279,221,1348,548,1405,0
+settings_main,Volume and haptics,colorblind_deuteranomaly,"[386, 1325]",386,1325,221,1405,546,1456,0
+settings_main,Modes,colorblind_deuteranomaly,"[279, 1450]",279,1450,221,1545,350,1602,0
+settings_main,"Do Not Disturb, Bedtime, Driving",colorblind_deuteranomaly,"[392, 1508]",392,1508,221,1602,744,1653,0
+settings_main,Display & touch,colorblind_deuteranomaly,"[371, 1641]",371,1641,221,1742,510,1799,0
+settings_main,"Dark theme, font size, touch",colorblind_deuteranomaly,"[436, 1689]",436,1689,221,1799,675,1850,0
+settings_main,Wallpaper & style,colorblind_deuteranomaly,"[364, 1827]",364,1827,221,1939,542,1996,0
+settings_main,"Colors, themed icons, app grid",colorblind_deuteranomaly,"[447, 1869]",447,1869,221,1996,717,2047,0
+settings_main,Storage,colorblind_deuteranomaly,"[270, 2121]",270,2121,221,2173,366,2219,0
+settings_network,Internet,baseline,"[269, 201]",269,201,221,189,364,246,1
+settings_network,AndroidWifi,baseline,"[286, 250]",286,250,221,246,413,297,1
+settings_network,SIMs,baseline,"[254, 384]",254,384,221,386,316,443,1
+settings_network,T-Mobile,baseline,"[274, 435]",274,435,221,443,361,494,1
+settings_network,Airplane mode,baseline,"[340, 589]",340,589,221,607,491,664,1
+settings_network,Hotspot & tethering,baseline,"[369, 745]",369,745,221,777,585,834,0
+settings_network,Data Saver,baseline,"[303, 929]",303,929,221,974,423,1031,0
+settings_network,VPN,baseline,"[247, 1110]",247,1110,221,1171,305,1228,0
+settings_network,None,baseline,"[242, 1162]",242,1162,221,1228,308,1279,0
+settings_network,Private DNS,baseline,"[184, 1284]",184,1284,84,1368,307,1425,0
+settings_network,Automatic,baseline,"[155, 1339]",155,1339,84,1425,253,1476,0
+settings_network,Adaptive connectivity,baseline,"[343, 1479]",343,1479,84,1565,482,1622,0
+settings_network,On,baseline,"[104, 1519]",104,1519,84,1622,129,1673,0
+settings_network,Mobile network security,baseline,"[277, 1660]",277,1660,84,1762,528,1819,0
+settings_network,"Network type, encryption, notification controls",baseline,"[405, 1707]",405,1707,84,1819,835,1870,0
+settings_network,Internet,elder_text_heavy,"[300, 214]",300,214,221,189,416,266,1
+settings_network,AndroidWifi,elder_text_heavy,"[354, 282]",354,282,221,266,499,339,1
+settings_network,SIMs,elder_text_heavy,"[270, 431]",270,431,221,428,350,505,1
+settings_network,T-Mobile,elder_text_heavy,"[321, 507]",321,507,221,505,425,578,1
+settings_network,Airplane mode,elder_text_heavy,"[385, 667]",385,667,221,681,588,758,1
+settings_network,Hotspot & tethering,elder_text_heavy,"[511, 832]",511,832,221,861,715,938,0
+settings_network,Data Saver,elder_text_heavy,"[341, 1052]",341,1052,221,1100,495,1177,0
+settings_network,VPN,elder_text_heavy,"[278, 1280]",278,1280,221,1339,334,1416,0
+settings_network,None,elder_text_heavy,"[271, 1344]",271,1344,221,1416,350,1489,0
+settings_network,Private DNS,elder_text_heavy,"[228, 1505]",228,1505,84,1578,387,1655,0
+settings_network,Automatic,elder_text_heavy,"[183, 1566]",183,1566,84,1655,333,1728,0
+settings_network,Adaptive connectivity,elder_text_heavy,"[332, 1718]",332,1718,84,1817,627,1894,0
+settings_network,On,elder_text_heavy,"[106, 1788]",106,1788,84,1894,151,1967,0
+settings_network,Mobile network security,elder_text_heavy,"[354, 1948]",354,1948,84,2056,688,2133,0
+settings_network,"Network type, encryption, notification controls",elder_text_heavy,"[378, 2010]",378,2010,84,2133,954,2219,0
+settings_network,Internet,elder_zoom_heavy,"[312, 230]",312,230,252,216,417,281,1
+settings_network,AndroidWifi,elder_zoom_heavy,"[342, 290]",342,290,252,281,468,338,1
+settings_network,SIMs,elder_zoom_heavy,"[287, 445]",287,445,252,440,361,505,1
+settings_network,T-Mobile,elder_zoom_heavy,"[309, 498]",309,498,252,505,412,562,1
+settings_network,Airplane mode,elder_zoom_heavy,"[383, 678]",383,678,252,691,561,756,1
+settings_network,Hotspot & tethering,elder_zoom_heavy,"[419, 860]",419,860,252,886,668,951,1
+settings_network,Data Saver,elder_zoom_heavy,"[361, 1066]",361,1066,252,1110,483,1175,0
+settings_network,VPN,elder_zoom_heavy,"[286, 1279]",286,1279,252,1334,347,1399,0
+settings_network,None,elder_zoom_heavy,"[286, 1342]",286,1342,252,1399,351,1456,0
+settings_network,Private DNS,elder_zoom_heavy,"[211, 1488]",211,1488,96,1558,351,1623,0
+settings_network,Automatic,elder_zoom_heavy,"[191, 1538]",191,1538,96,1623,290,1680,0
+settings_network,Adaptive connectivity,elder_zoom_heavy,"[305, 1697]",305,1697,96,1782,553,1847,0
+settings_network,On,elder_zoom_heavy,"[117, 1750]",117,1750,96,1847,148,1904,0
+settings_network,Mobile network security,elder_zoom_heavy,"[326, 1909]",326,1909,96,2006,604,2071,0
+settings_network,"Network type, encryption, notification controls",elder_zoom_heavy,"[297, 1992]",297,1992,96,2071,936,2177,0
+settings_network,Internet,elder_combo_max,"[400, 273]",400,273,273,234,540,339,1
+settings_network,AndroidWifi,elder_combo_max,"[437, 374]",437,374,273,339,656,439,1
+settings_network,SIMs,elder_combo_max,"[341, 567]",341,567,273,550,448,655,1
+settings_network,T-Mobile,elder_combo_max,"[394, 667]",394,667,273,655,553,755,1
+settings_network,Airplane mode,elder_combo_max,"[403, 909]",403,909,273,866,755,1062,1
+settings_network,Hotspot & tethering,elder_combo_max,"[419, 1205]",419,1205,273,1173,924,1369,0
+settings_network,Data Saver,elder_combo_max,"[521, 1542]",521,1542,273,1580,645,1685,0
+settings_network,VPN,elder_combo_max,"[339, 1842]",339,1842,273,1896,428,2001,0
+settings_network,None,elder_combo_max,"[345, 1954]",345,1954,273,2001,448,2101,0
+settings_network,Private DNS,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_network,Automatic,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_network,Adaptive connectivity,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_network,On,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_network,Mobile network security,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_network,"Network type, encryption, notification controls",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_network,Internet,elder_combo_rtl,"[362, 252]",362,252,252,216,490,308,1
+settings_network,AndroidWifi,elder_combo_rtl,"[421, 331]",421,331,252,308,593,396,1
+settings_network,SIMs,elder_combo_rtl,"[315, 506]",315,506,252,498,408,590,1
+settings_network,T-Mobile,elder_combo_rtl,"[370, 595]",370,595,252,590,502,678,1
+settings_network,Airplane mode,elder_combo_rtl,"[447, 783]",447,783,252,794,699,886,1
+settings_network,Hotspot & tethering,elder_combo_rtl,"[525, 977]",525,977,252,1002,852,1094,0
+settings_network,Data Saver,elder_combo_rtl,"[394, 1255]",394,1255,252,1284,585,1376,0
+settings_network,VPN,elder_combo_rtl,"[345, 1526]",345,1526,252,1566,389,1658,0
+settings_network,None,elder_combo_rtl,"[319, 1597]",319,1597,252,1658,408,1746,0
+settings_network,Private DNS,elder_combo_rtl,"[257, 1774]",257,1774,96,1848,463,1940,0
+settings_network,Automatic,elder_combo_rtl,"[243, 1851]",243,1851,96,1940,401,2028,0
+settings_network,Adaptive connectivity,elder_combo_rtl,"[391, 2088]",391,2088,96,2130,754,2196,0
+settings_network,On,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_network,Mobile network security,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_network,"Network type, encryption, notification controls",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_network,Internet,colorblind_deuteranomaly,"[327, 203]",327,203,221,189,364,246,1
+settings_network,AndroidWifi,colorblind_deuteranomaly,"[298, 253]",298,253,221,246,413,297,1
+settings_network,SIMs,colorblind_deuteranomaly,"[245, 387]",245,387,221,386,316,443,1
+settings_network,T-Mobile,colorblind_deuteranomaly,"[274, 434]",274,434,221,443,361,494,1
+settings_network,Airplane mode,colorblind_deuteranomaly,"[335, 585]",335,585,221,607,491,664,1
+settings_network,Hotspot & tethering,colorblind_deuteranomaly,"[375, 743]",375,743,221,777,585,834,0
+settings_network,Data Saver,colorblind_deuteranomaly,"[305, 923]",305,923,221,974,423,1031,0
+settings_network,VPN,colorblind_deuteranomaly,"[244, 1105]",244,1105,221,1171,305,1228,0
+settings_network,None,colorblind_deuteranomaly,"[246, 1158]",246,1158,221,1228,308,1279,0
+settings_network,Private DNS,colorblind_deuteranomaly,"[181, 1290]",181,1290,84,1368,307,1425,0
+settings_network,Automatic,colorblind_deuteranomaly,"[138, 1344]",138,1344,84,1425,253,1476,0
+settings_network,Adaptive connectivity,colorblind_deuteranomaly,"[263, 1475]",263,1475,84,1565,482,1622,0
+settings_network,On,colorblind_deuteranomaly,"[100, 1518]",100,1518,84,1622,129,1673,0
+settings_network,Mobile network security,colorblind_deuteranomaly,"[275, 1652]",275,1652,84,1762,528,1819,0
+settings_network,"Network type, encryption, notification controls",colorblind_deuteranomaly,"[430, 1704]",430,1704,84,1819,835,1870,0
+youtube,Home,baseline,"[98, 2129]",98,2129,70,2175,147,2205,0
+youtube,Shorts,baseline,"[303, 2169]",303,2169,283,2175,365,2205,1
+youtube,Subscriptions,baseline,"[704, 2185]",704,2185,674,2175,838,2205,1
+youtube,You,baseline,"[955, 2167]",955,2167,947,2175,998,2205,1
+youtube,Home,elder_text_heavy,"[97, 2119]",97,2119,70,2175,147,2205,0
+youtube,Shorts,elder_text_heavy,"[307, 2190]",307,2190,283,2175,365,2205,1
+youtube,Subscriptions,elder_text_heavy,"[694, 2104]",694,2104,674,2175,838,2205,0
+youtube,You,elder_text_heavy,"[905, 2124]",905,2124,947,2175,998,2205,0
+youtube,Home,elder_zoom_heavy,"[106, 2130]",106,2130,65,2155,151,2190,1
+youtube,Shorts,elder_zoom_heavy,"[308, 2075]",308,2075,277,2155,371,2190,0
+youtube,Subscriptions,elder_zoom_heavy,"[724, 2117]",724,2117,662,2155,851,2190,0
+youtube,You,elder_zoom_heavy,"[900, 2143]",900,2143,943,2155,1001,2190,0
+youtube,Home,elder_combo_max,"[101, 2120]",101,2120,60,2128,156,2167,1
+youtube,Shorts,elder_combo_max,"[307, 2128]",307,2128,273,2128,376,2167,1
+youtube,Subscriptions,elder_combo_max,"[722, 2126]",722,2126,652,2128,860,2167,1
+youtube,You,elder_combo_max,"[938, 2140]",938,2140,941,2128,1003,2167,1
+youtube,Home,elder_combo_rtl,"[97, 2114]",97,2114,65,2140,151,2175,1
+youtube,Shorts,elder_combo_rtl,"[309, 2114]",309,2114,277,2140,371,2175,1
+youtube,Subscriptions,elder_combo_rtl,"[713, 2023]",713,2023,662,2140,851,2175,0
+youtube,You,elder_combo_rtl,"[914, 2116]",914,2116,943,2140,1001,2175,0
+youtube,Home,colorblind_deuteranomaly,"[103, 2088]",103,2088,70,2166,147,2196,0
+youtube,Shorts,colorblind_deuteranomaly,"[304, 2177]",304,2177,283,2166,365,2196,1
+youtube,Subscriptions,colorblind_deuteranomaly,"[705, 2091]",705,2091,674,2166,838,2196,0
+youtube,You,colorblind_deuteranomaly,"[958, 2170]",958,2170,947,2166,998,2196,1
