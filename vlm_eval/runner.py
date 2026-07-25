@@ -206,7 +206,7 @@ def evaluate_screen(
                 "screen": screen_name,
                 "target_text": target_text,
                 "profile": profile_name,
-                "raw_response": raw_response.replace("\n", " ").strip(),
+                "raw_response": raw_response.replace("\r", " ").replace("\n", " ").strip(),
                 "x_pred": x_pred, "y_pred": y_pred,
                 "x_min": box[0], "y_min": box[1],
                 "x_max": box[2], "y_max": box[3],
