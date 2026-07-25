@@ -17,6 +17,15 @@ from typing import Any
 MAX_RETRIES_ENV_VAR = "VLM_MAX_RETRIES"
 DEFAULT_MAX_RETRIES = 3
 DEFAULT_RATE_LIMIT_BACKOFF_SECONDS = 0.5
+REQUEST_TIMEOUT_ENV_VAR = "VLM_REQUEST_TIMEOUT_SECONDS"
+DEFAULT_REQUEST_TIMEOUT_SECONDS = 120.0
+
+NINEROUTER_PREFIX = "9router/"
+OPENAI_COMPATIBLE_PREFIX = "openai_compatible/"
+NINEROUTER_BASE_URL_ENV_VAR = "NINEROUTER_BASE_URL"
+NINEROUTER_API_KEY_ENV_VAR = "NINEROUTER_API_KEY"
+OPENAI_COMPATIBLE_BASE_URL_ENV_VAR = "OPENAI_COMPATIBLE_BASE_URL"
+OPENAI_COMPATIBLE_API_KEY_ENV_VAR = "OPENAI_COMPATIBLE_API_KEY"
 
 
 def image_to_data_url(image_path: Path) -> str:
@@ -36,6 +45,134 @@ def _completion(**kwargs: Any) -> Any:
         ) from exc
 
     return completion(**kwargs)
+
+
+def _is_compatibility_model(model: str) -> bool:
+    return model.startswith((NINEROUTER_PREFIX, OPENAI_COMPATIBLE_PREFIX))
+
+
+def _register_compatible_model(model: str) -> None:
+    """Register an arbitrary OpenAI-compatible route with LiteLLM once."""
+    if not _is_compatibility_model(model):
+        return
+
+    route = model.split("/", 1)[1]
+    try:
+        import litellm
+    except ImportError as exc:
+        raise RuntimeError(
+            "litellm package not installed. Run: pip install litellm"
+        ) from exc
+
+    if route in litellm.open_ai_chat_completion_models:
+        return
+
+    # register_model() performs an internal model-info lookup. LiteLLM's
+    # lookup prints its provider help text for unknown custom IDs, so suppress
+    # only that registration-time diagnostic and restore the setting at once.
+    previous_suppress_debug_info = getattr(litellm, "suppress_debug_info", False)
+    try:
+        litellm.suppress_debug_info = True
+        litellm.register_model(
+            {
+                route: {
+                    "litellm_provider": "openai",
+                    "mode": "chat",
+                    "input_cost_per_token": 0.0,
+                    "output_cost_per_token": 0.0,
+                }
+            }
+        )
+    finally:
+        litellm.suppress_debug_info = previous_suppress_debug_info
+
+
+def _resolve_request_timeout(timeout: float | None = None) -> float:
+    """Resolve the per-request timeout from an argument or environment."""
+    if timeout is not None:
+        resolved = timeout
+    else:
+        raw_timeout = os.environ.get(REQUEST_TIMEOUT_ENV_VAR, "").strip()
+        resolved = (
+            DEFAULT_REQUEST_TIMEOUT_SECONDS
+            if not raw_timeout
+            else float(raw_timeout)
+        )
+
+    if resolved <= 0:
+        raise ValueError(f"{REQUEST_TIMEOUT_ENV_VAR} must be > 0")
+    return resolved
+
+
+def _normalize_compatible_base_url(base_url: str) -> str:
+    """Return an OpenAI-compatible base URL ending in exactly one ``/v1``."""
+    normalized = base_url.strip().rstrip("/")
+    if not normalized:
+        return normalized
+    return normalized if normalized.endswith("/v1") else f"{normalized}/v1"
+
+
+def _is_configured_value(value: str | None) -> bool:
+    if not value:
+        return False
+    value_lower = value.lower()
+    return not ("your-" in value_lower and "-here" in value_lower)
+
+
+def model_configuration_error(model: str) -> str | None:
+    """Return a user-facing configuration error, or None when configured."""
+    if model.startswith(NINEROUTER_PREFIX):
+        if not model[len(NINEROUTER_PREFIX):].strip():
+            return f"A 9Router model route is required after {NINEROUTER_PREFIX}"
+        base_var = NINEROUTER_BASE_URL_ENV_VAR
+        key_var = NINEROUTER_API_KEY_ENV_VAR
+        example = "VLM_MODEL=9router/cx/gpt-5.3-codex"
+    elif model.startswith(OPENAI_COMPATIBLE_PREFIX):
+        if not model[len(OPENAI_COMPATIBLE_PREFIX):].strip():
+            return f"An OpenAI-compatible model is required after {OPENAI_COMPATIBLE_PREFIX}"
+        base_var = OPENAI_COMPATIBLE_BASE_URL_ENV_VAR
+        key_var = OPENAI_COMPATIBLE_API_KEY_ENV_VAR
+        example = "VLM_MODEL=openai_compatible/my-provider-model"
+    else:
+        return None
+
+    missing = [
+        name
+        for name in (base_var, key_var)
+        if not _is_configured_value(os.environ.get(name, "").strip())
+    ]
+    if not missing:
+        return None
+    return f"{', '.join(missing)} must be set for {model}. Example: {example}"
+
+
+def resolve_completion_config(model: str) -> dict[str, str]:
+    """Resolve a model name into stable LiteLLM completion arguments."""
+    error = model_configuration_error(model)
+    if error:
+        raise ValueError(error)
+
+    if model.startswith(NINEROUTER_PREFIX):
+        return {
+            "model": model[len(NINEROUTER_PREFIX):],
+            "custom_llm_provider": "openai",
+            "api_base": _normalize_compatible_base_url(
+                os.environ[NINEROUTER_BASE_URL_ENV_VAR]
+            ),
+            "api_key": os.environ[NINEROUTER_API_KEY_ENV_VAR].strip(),
+        }
+
+    if model.startswith(OPENAI_COMPATIBLE_PREFIX):
+        return {
+            "model": model[len(OPENAI_COMPATIBLE_PREFIX):],
+            "custom_llm_provider": "openai",
+            "api_base": _normalize_compatible_base_url(
+                os.environ[OPENAI_COMPATIBLE_BASE_URL_ENV_VAR]
+            ),
+            "api_key": os.environ[OPENAI_COMPATIBLE_API_KEY_ENV_VAR].strip(),
+        }
+
+    return {"model": model}
 
 
 def _resolve_max_retries(max_retries: int | None = None) -> int:
@@ -64,6 +201,28 @@ def _is_rate_limit_error(exc: Exception) -> bool:
 
     exc_str = str(exc).lower()
     return "rate limit" in exc_str or "try again" in exc_str or "later" in exc_str or "overload" in exc_str
+
+
+def _is_retryable_error(exc: Exception) -> bool:
+    """Identify provider throttling and transient network failures."""
+    if _is_rate_limit_error(exc):
+        return True
+
+    class_name = exc.__class__.__name__.lower()
+    if any(token in class_name for token in ("timeout", "connecterror", "networkerror")):
+        return True
+
+    message = str(exc).lower()
+    return any(
+        token in message
+        for token in (
+            "timed out",
+            "timeout",
+            "connection reset",
+            "connection error",
+            "connect error",
+        )
+    )
 
 
 def _retry_delay_seconds(exc: Exception, fallback: float) -> float:
@@ -127,6 +286,7 @@ def call_vlm(
     prompt: str,
     max_retries: int | None = None,
     max_tokens: int | None = None,
+    request_timeout: float | None = None,
 ) -> str:
     """
     Send image + prompt to a LiteLLM vision model and return raw text.
@@ -201,12 +361,14 @@ def call_vlm(
 
     data_url = image_to_data_url(image_path)
     retries = _resolve_max_retries(max_retries)
+    timeout = _resolve_request_timeout(request_timeout)
+    _register_compatible_model(model)
     delay = DEFAULT_RATE_LIMIT_BACKOFF_SECONDS
 
     for attempt in range(retries + 1):
         try:
             kwargs = dict(
-                model=model,
+                **resolve_completion_config(model),
                 messages=[
                     {
                         "role": "user",
@@ -222,15 +384,17 @@ def call_vlm(
             )
             if max_tokens is not None:
                 kwargs["max_tokens"] = max_tokens
+            kwargs["timeout"] = timeout
             response = _completion(**kwargs)
             return _extract_response_text(response)
         except Exception as exc:
-            if not _is_rate_limit_error(exc) or attempt >= retries:
+            if not _is_retryable_error(exc) or attempt >= retries:
                 raise
 
             sleep_seconds = _retry_delay_seconds(exc, delay)
+            failure_kind = "Rate limited" if _is_rate_limit_error(exc) else "Request failed"
             print(
-                f"    [RETRY] Rate limited; sleeping {sleep_seconds:.2f}s "
+                f"    [RETRY] {failure_kind}; sleeping {sleep_seconds:.2f}s "
                 f"before retry {attempt + 1}/{retries}"
             )
             time.sleep(sleep_seconds)

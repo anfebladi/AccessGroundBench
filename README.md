@@ -118,10 +118,19 @@ VLM_MODEL=openai/gpt-4o-mini, gemini/gemini-2.5-pro, local/ferret-ui-llama8b
 
 VLM_PACE_SECONDS=0       # Optional delay between API calls (use for rate-limited APIs)
 VLM_MAX_RETRIES=3         # Number of retries on provider failure
+VLM_REQUEST_TIMEOUT_SECONDS=120  # Per-request timeout in seconds
 
 GOOGLE_API_KEY=your-google-api-key-here
 OPENAI_API_KEY=your-openai-api-key-here
 ANTHROPIC_API_KEY=your-anthropic-api-key-here
+
+# Optional: local 9Router using Codex/other subscription quota
+NINEROUTER_BASE_URL=http://localhost:20128/v1
+NINEROUTER_API_KEY=your-9router-api-key-here
+
+# Optional: any other OpenAI-compatible gateway
+OPENAI_COMPATIBLE_BASE_URL=https://provider.example.com/v1
+OPENAI_COMPATIBLE_API_KEY=your-compatible-provider-key-here
 ```
 
 Model prefix → required key:
@@ -131,6 +140,36 @@ Model prefix → required key:
 | `gemini/` | `GOOGLE_API_KEY` |
 | `anthropic/` | `ANTHROPIC_API_KEY` |
 | `local/ferret-ui-llama8b` | Ferret-UI server (see below) |
+| `9router/` | `NINEROUTER_BASE_URL` + `NINEROUTER_API_KEY` |
+| `openai_compatible/` | `OPENAI_COMPATIBLE_BASE_URL` + `OPENAI_COMPATIBLE_API_KEY` |
+
+Hosted models are sent through LiteLLM. Native LiteLLM model names keep their
+normal behavior. For 9Router, connect your provider in the 9Router dashboard,
+then select the route in `.env`:
+
+```dotenv
+VLM_MODEL=9router/cx/gpt-5.3-codex
+NINEROUTER_BASE_URL=http://localhost:20128/v1
+NINEROUTER_API_KEY=your-9router-api-key
+```
+
+The `9router/` prefix is translated to an OpenAI-compatible LiteLLM request;
+the route after the prefix is passed through unchanged. You can use the same
+adapter with another OpenAI-compatible gateway:
+
+```dotenv
+VLM_MODEL=openai_compatible/provider/model-name
+OPENAI_COMPATIBLE_BASE_URL=https://provider.example.com/v1
+OPENAI_COMPATIBLE_API_KEY=your-provider-key
+```
+
+The base URL may include `/v1` or omit it. One generic compatibility endpoint
+is configured per process, while native providers can still be mixed in the
+comma-separated `VLM_MODEL` list.
+
+Compatibility requests time out after 120 seconds by default and retry
+transient timeout, connection, and rate-limit failures according to
+`VLM_MAX_RETRIES`. Adjust `VLM_REQUEST_TIMEOUT_SECONDS` for slower gateways.
 
 ### Step 4 — Set up the Android emulator
 
@@ -337,6 +376,11 @@ No baseline label files exist in `dataset/labels/`. Run `python orchestrator.py`
 ### Model key is missing
 
 Set the correct key in `.env`. Values that still contain `your-...-here` are treated as unset. Check that the `VLM_MODEL` prefix matches the provider key variable (see the table in Setup Step 3).
+
+For 9Router, confirm the local router is running and that
+`NINEROUTER_BASE_URL` points to its OpenAI-compatible `/v1` endpoint. For
+other compatible gateways, set both `OPENAI_COMPATIBLE_BASE_URL` and
+`OPENAI_COMPATIBLE_API_KEY`.
 
 ### `VLM_MODEL` is not set
 

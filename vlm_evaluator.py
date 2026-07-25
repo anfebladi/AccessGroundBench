@@ -23,6 +23,7 @@ from vlm_eval.config import (
 )
 from vlm_eval.results import init_csv
 from vlm_eval.runner import evaluate_screen
+from vlm_provider import model_configuration_error
 
 load_dotenv()
 
@@ -48,6 +49,8 @@ def _is_valid_key(key: str | None) -> bool:
 
 
 def api_key_exists(model_name: str) -> bool:
+    if model_name.startswith(("9router/", "openai_compatible/")):
+        return model_configuration_error(model_name) is None
     if model_name.startswith("openai/"):
         return _is_valid_key(os.environ.get("OPENAI_API_KEY"))
     elif model_name.startswith("gemini/"):
@@ -84,7 +87,11 @@ def main() -> None:
     total_rows = 0
     for model in models:
         if not api_key_exists(model):
-            print(f"\n[SKIP] Missing API key for model: {model}")
+            config_error = model_configuration_error(model)
+            if config_error:
+                print(f"\n[SKIP] {config_error}")
+            else:
+                print(f"\n[SKIP] Missing API key for model: {model}")
             continue
 
         results_csv = get_results_csv(model, use_a11y_tree)
