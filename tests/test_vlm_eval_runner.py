@@ -176,6 +176,10 @@ class BuildTreeTextTests(unittest.TestCase):
         # ...while a neighbor stays as context, and the ask still names the target.
         self.assertIn('"Wi-Fi" [0,0][100,50]', prompt)
         self.assertIn("'Bluetooth'", prompt)
+        self.assertEqual(
+            "Bluetooth",
+            call_vlm_mock.call_args.kwargs["target_text"],
+        )
 
 
 if __name__ == "__main__":

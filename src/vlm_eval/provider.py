@@ -17,6 +17,8 @@ from numbers import Real
 from pathlib import Path
 from typing import Any
 
+from .ferret_provider import call_ferret_ui
+
 MAX_RETRIES_ENV_VAR = "VLM_MAX_RETRIES"
 DEFAULT_MAX_RETRIES = 3
 DEFAULT_RATE_LIMIT_BACKOFF_SECONDS = 0.5
@@ -52,8 +54,6 @@ COORDINATE_RESPONSE_FORMAT = {
         },
     },
 }
-
-FERRET_BBOX_REGEX = re.compile(r"\[\[(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\]\]")
 
 
 def image_to_data_url(image_path: Path) -> str:
@@ -319,29 +319,6 @@ def _canonicalize_coordinate_response(response_text: str) -> str:
     return json.dumps(payload["coordinates"])
 
 
-def _ferret_bbox_to_coordinates(ferret_text: str, image_path: Path) -> str:
-    """Convert Ferret's normalized bbox response into canonical [x, y] text."""
-    if not isinstance(ferret_text, str):
-        return "" if ferret_text is None else str(ferret_text)
-
-    bbox_match = FERRET_BBOX_REGEX.search(ferret_text)
-    if bbox_match is None:
-        return ferret_text
-
-    try:
-        from PIL import Image
-
-        with Image.open(image_path) as image:
-            width, height = image.size
-    except (FileNotFoundError, OSError, ValueError):
-        width, height = 1000, 1000
-
-    x1, y1, x2, y2 = map(float, bbox_match.groups())
-    x_center = ((x1 + x2) / 2.0 / 1000.0) * width
-    y_center = ((y1 + y2) / 2.0 / 1000.0) * height
-    return f"[{x_center:.1f}, {y_center:.1f}]"
-
-
 def call_vlm(
     model: str,
     image_path: Path,
@@ -349,6 +326,8 @@ def call_vlm(
     max_retries: int | None = None,
     max_tokens: int | None = None,
     request_timeout: float | None = None,
+    *,
+    target_text: str | None = None,
 ) -> str:
     """
     Send image + prompt to a LiteLLM vision model and return raw text.
@@ -359,47 +338,9 @@ def call_vlm(
       - anthropic/claude-3-5-sonnet-latest
     """
     if model == "local/ferret-ui-llama8b":
-        import urllib.request
-        import urllib.error
-        
-        # Rewrite prompt for Ferret-UI to trigger bounding box grounding.
-        # The generic zero-shot prompt confuses Ferret, causing it to just repeat the text.
-        target_match = re.search(r"click on the text element:\s*'([^']+)'", prompt)
-        ferret_prompt = prompt
-        if target_match:
-            target_text = target_match.group(1)
-            ferret_prompt = f"Provide the bounding box of the text '{target_text}'."
-            
-        data = {
-            "image_path": str(image_path),
-            "prompt": ferret_prompt
-        }
-        
-        req = urllib.request.Request(
-            "http://localhost:8000/", 
-            data=json.dumps(data).encode('utf-8'), 
-            headers={'Content-Type': 'application/json'},
-            method='POST'
-        )
-        
-        try:
-            with urllib.request.urlopen(req) as response:
-                result = json.loads(response.read().decode('utf-8'))
-                ferret_text = result.get('text', '')
-                return _ferret_bbox_to_coordinates(ferret_text, image_path)
-                
-        except urllib.error.URLError as e:
-            if isinstance(e.reason, ConnectionRefusedError):
-                print("\n[ERROR] Could not connect to the Ferret-UI inference server!")
-                print("Please start the server in a separate terminal:")
-                print("  cd ferret_ui")
-                print("  .\\venv\\Scripts\\activate")
-                print("  python -m ferret_ui.ferret_server")
-                print("Wait for 'Model loaded successfully!' before running the evaluator.\n")
-                raise SystemExit(1)
-            else:
-                print(f"Error communicating with local ferret model: {e}")
-                raise e
+        if target_text is None:
+            raise ValueError("target_text is required for the Ferret-UI provider")
+        return call_ferret_ui(image_path, target_text)
 
     data_url = image_to_data_url(image_path)
     retries = _resolve_max_retries(max_retries)

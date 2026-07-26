@@ -1,4 +1,5 @@
 import base64
+import json
 import tempfile
 import unittest
 from contextlib import redirect_stdout
@@ -8,6 +9,7 @@ from types import SimpleNamespace
 from unittest import mock
 
 from vlm_eval import provider as vlm_provider
+from vlm_eval import ferret_provider
 
 
 class FakeRateLimitError(Exception):
@@ -285,21 +287,113 @@ class VlmProviderTests(unittest.TestCase):
     def test_ferret_bbox_normalizes_to_canonical_coordinates(self):
         self.assertEqual(
             "[200.0, 300.0]",
-            vlm_provider._ferret_bbox_to_coordinates(
+            ferret_provider._ferret_bbox_to_coordinates(
                 "[[100, 200, 300, 400]]",
                 Path("missing-screen.png"),
             ),
         )
 
+    def test_ferret_bbox_uses_real_image_dimensions(self):
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("Pillow is unavailable in this test environment")
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            image_path = Path(tmp_dir) / "screen.png"
+            Image.new("RGB", (2000, 1000)).save(image_path)
+
+            self.assertEqual(
+                "[400.0, 300.0]",
+                ferret_provider._ferret_bbox_to_coordinates(
+                    "[[100, 200, 300, 400]]",
+                    image_path,
+                ),
+            )
+
     def test_invalid_ferret_response_is_left_for_strict_parser_to_reject(self):
         raw_response = "The target is near the top."
         self.assertEqual(
             raw_response,
-            vlm_provider._ferret_bbox_to_coordinates(
+            ferret_provider._ferret_bbox_to_coordinates(
                 raw_response,
                 Path("missing-screen.png"),
             ),
         )
+
+    @mock.patch("vlm_eval.ferret_provider.urllib.request.urlopen")
+    def test_call_ferret_ui_sends_specialized_prompt_and_payload(self, urlopen_mock):
+        response_mock = mock.MagicMock()
+        response_mock.__enter__.return_value = response_mock
+        response_mock.__exit__.return_value = False
+        response_mock.read.return_value = json.dumps(
+            {"text": "[[100, 200, 300, 400]]"}
+        ).encode("utf-8")
+        urlopen_mock.return_value = response_mock
+
+        response_text = ferret_provider.call_ferret_ui(
+            Path("screen.png"), "Settings"
+        )
+
+        self.assertEqual("[200.0, 300.0]", response_text)
+        request = urlopen_mock.call_args.args[0]
+        self.assertEqual(ferret_provider.FERRET_SERVER_URL, request.full_url)
+        self.assertEqual("POST", request.method)
+        self.assertEqual(
+            {
+                "image_path": "screen.png",
+                "prompt": "Provide the bounding box of the text 'Settings'.",
+            },
+            json.loads(request.data.decode("utf-8")),
+        )
+
+    @mock.patch("vlm_eval.ferret_provider.urllib.request.urlopen")
+    def test_call_ferret_ui_wraps_connection_failure(self, urlopen_mock):
+        urlopen_mock.side_effect = ferret_provider.urllib.error.URLError(
+            ConnectionRefusedError()
+        )
+
+        with self.assertRaisesRegex(
+            ferret_provider.FerretProviderError, "Could not connect"
+        ):
+            ferret_provider.call_ferret_ui(Path("screen.png"), "Settings")
+
+    @mock.patch("vlm_eval.ferret_provider.urllib.request.urlopen")
+    def test_call_ferret_ui_rejects_response_without_text(self, urlopen_mock):
+        response_mock = mock.MagicMock()
+        response_mock.__enter__.return_value = response_mock
+        response_mock.__exit__.return_value = False
+        response_mock.read.return_value = b"{}"
+        urlopen_mock.return_value = response_mock
+
+        with self.assertRaisesRegex(
+            ferret_provider.FerretProviderError, "missing the 'text' field"
+        ):
+            ferret_provider.call_ferret_ui(Path("screen.png"), "Settings")
+
+    @mock.patch("vlm_eval.provider.call_ferret_ui")
+    def test_call_vlm_delegates_ferret_with_explicit_target(
+        self, call_ferret_ui_mock
+    ):
+        call_ferret_ui_mock.return_value = "[200.0, 300.0]"
+
+        response_text = vlm_provider.call_vlm(
+            "local/ferret-ui-llama8b",
+            Path("screen.png"),
+            "generic prompt",
+            target_text="Settings",
+        )
+
+        self.assertEqual("[200.0, 300.0]", response_text)
+        call_ferret_ui_mock.assert_called_once_with(Path("screen.png"), "Settings")
+
+    def test_call_vlm_requires_target_for_ferret(self):
+        with self.assertRaisesRegex(ValueError, "target_text"):
+            vlm_provider.call_vlm(
+                "local/ferret-ui-llama8b",
+                Path("screen.png"),
+                "generic prompt",
+            )
 
     @mock.patch("vlm_eval.provider._completion")
     def test_structured_output_rejection_is_not_retried_without_schema(

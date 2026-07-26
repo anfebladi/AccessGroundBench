@@ -57,7 +57,8 @@ AccessGroundBench/
 │   │   └── orchestrator.py   # Master collection driver
 │   ├── vlm_eval/             # VLM evaluation pipeline
 │   │   ├── cli.py            # Evaluation entry point
-│   │   ├── provider.py       # LiteLLM + Ferret-UI provider calls
+│   │   ├── provider.py       # LiteLLM + 9Router provider facade
+│   │   ├── ferret_provider.py # Local Ferret-UI provider adapter
 │   │   ├── config.py         # VLM model / pacing / retry settings from .env
 │   │   ├── runner.py         # Per-screen evaluation loop and prompt templates
 │   │   ├── targets.py        # Harvest unambiguous text targets from baseline labels

@@ -168,7 +168,12 @@ def evaluate_screen(
                         img_height=img_height,
                         target_text=target_text,
                     )
-                raw_response = call_vlm(model, image_path, prompt)
+                raw_response = call_vlm(
+                    model,
+                    image_path,
+                    prompt,
+                    target_text=target_text,
+                )
             except Exception as exc:
                 print(f"    [API-ERROR] '{target_text}': {exc}")
                 print("    [SKIP] Provider/API error; skipping target and moving to next.")
