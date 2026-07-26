@@ -7,6 +7,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATASET_DIR = PROJECT_ROOT / "dataset"
 IMAGES_DIR = DATASET_DIR / "images"
 LABELS_DIR = DATASET_DIR / "labels"
+OUTPUTS_DIR = PROJECT_ROOT / "outputs"
+EVALUATION_RESULTS_DIR = OUTPUTS_DIR / "evaluation_results"
 
 MODEL_ENV_VAR: str = "VLM_MODEL"
 PACE_ENV_VAR: str = "VLM_PACE_SECONDS"
@@ -85,4 +87,4 @@ def get_results_csv(model: str, use_a11y_tree: bool = False) -> Path:
     """
     clean_model = model.replace("/", "_")
     suffix = "_with_tree" if use_a11y_tree else ""
-    return DATASET_DIR / f"evaluation_results_{clean_model}{suffix}.csv"
+    return EVALUATION_RESULTS_DIR / f"evaluation_results_{clean_model}{suffix}.csv"

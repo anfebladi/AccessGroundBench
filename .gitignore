@@ -33,12 +33,6 @@ dist/
 .DS_Store
 ._*
 
-# Generated standalone capture/extraction outputs
-/outputs/*
-!/outputs/.gitkeep
-
-
-
 # Generated JSON from committed sample inputs
 sample_input/capture_*.json
 

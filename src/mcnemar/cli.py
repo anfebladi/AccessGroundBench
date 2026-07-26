@@ -26,6 +26,26 @@ from .service import EXPERIMENTAL_PROFILES, analyze_profiles, cross_file_profile
 from .statistics import ALPHA, HAS_SCIPY
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+OUTPUTS_DIR_NAME = "outputs"
+EVALUATION_RESULTS_DIR_NAME = "evaluation_results"
+MCNEMAR_RESULTS_DIR_NAME = "mcnemar"
+
+
+def get_evaluation_results_dir(project_root: Path) -> Path:
+    """Return the directory containing active VLM evaluation CSVs."""
+    return project_root / OUTPUTS_DIR_NAME / EVALUATION_RESULTS_DIR_NAME
+
+
+def get_mcnemar_results_dir(project_root: Path) -> Path:
+    """Return the directory containing active McNemar CSVs."""
+    return project_root / OUTPUTS_DIR_NAME / MCNEMAR_RESULTS_DIR_NAME
+
+
+def discover_evaluation_csvs(project_root: Path) -> list[Path]:
+    """Discover active evaluation CSVs without scanning reference datasets."""
+    return sorted(
+        get_evaluation_results_dir(project_root).glob("evaluation_results_*.csv")
+    )
 
 
 def run_cross_comparison(csv_a: Path, csv_b: Path, project_root: Path) -> None:
@@ -45,7 +65,8 @@ def run_cross_comparison(csv_a: Path, csv_b: Path, project_root: Path) -> None:
         sys.exit(1)
 
     stem_a = csv_a.stem.replace("evaluation_results_", "")
-    out_csv_path = project_root / "dataset" / f"mcnemar_compare_{stem_a}.csv"
+    out_csv_path = get_mcnemar_results_dir(project_root) / f"mcnemar_compare_{stem_a}.csv"
+    out_csv_path.parent.mkdir(parents=True, exist_ok=True)
     print(f"[INFO] Writing comparison results to: {out_csv_path}")
 
     records = analyze_profiles(pairs, profiles_to_compare, compute_cross_contingency)
@@ -62,7 +83,8 @@ def run_cross_comparison(csv_a: Path, csv_b: Path, project_root: Path) -> None:
 
 def run_standard_analysis(csv_files: list[Path], project_root: Path) -> None:
     """Run the legacy baseline-versus-profile analysis for each CSV file."""
-    dataset_dir = project_root / "dataset"
+    results_dir = get_mcnemar_results_dir(project_root)
+    results_dir.mkdir(parents=True, exist_ok=True)
     for csv_file in csv_files:
         print(f"\n{'=' * 60}")
         print(f"  Analyzing: {csv_file.name}")
@@ -75,7 +97,7 @@ def run_standard_analysis(csv_files: list[Path], project_root: Path) -> None:
         pairs = build_pairs(load_results(csv_file))
         print(f"[PAIRS] {len(pairs)} unique (screen, target_text) tracking keys")
 
-        out_csv_path = dataset_dir / f"mcnemar_results_{model_name}.csv"
+        out_csv_path = results_dir / f"mcnemar_results_{model_name}.csv"
         print(f"[INFO] Writing statistical results to: {out_csv_path}")
 
         records = analyze_profiles(pairs, EXPERIMENTAL_PROFILES, compute_contingency)
@@ -92,7 +114,8 @@ def run_standard_analysis(csv_files: list[Path], project_root: Path) -> None:
 def main(project_root: Path | None = None) -> None:
     """Parse arguments and run the selected legacy analysis mode."""
     project_root = project_root or PROJECT_ROOT
-    default_csv = project_root / "dataset" / "evaluation_results.csv"
+    evaluation_results_dir = get_evaluation_results_dir(project_root)
+    default_csv = evaluation_results_dir / "evaluation_results.csv"
 
     parser = argparse.ArgumentParser(
         description="AccessGroundBench -- McNemar's Statistical Analysis"
@@ -101,7 +124,10 @@ def main(project_root: Path | None = None) -> None:
         "--csv",
         type=Path,
         default=None,
-        help="Path to a specific evaluation_results_*.csv file. If omitted, runs on all in dataset/",
+        help=(
+            "Path to a specific evaluation_results_*.csv file. If omitted, "
+            "runs on all files in outputs/evaluation_results/"
+        ),
     )
     parser.add_argument(
         "--compare-a",
@@ -139,16 +165,18 @@ def main(project_root: Path | None = None) -> None:
     print(f"  alpha: {ALPHA}")
     print("=" * 60)
 
-    dataset_dir = project_root / "dataset"
     if args.csv:
         csv_files = [args.csv]
     else:
-        csv_files = list(dataset_dir.glob("evaluation_results_*.csv"))
+        csv_files = discover_evaluation_csvs(project_root)
         if not csv_files:
             if default_csv.is_file():
                 csv_files = [default_csv]
             else:
-                print(f"[ERROR] No evaluation_results_*.csv files found in {dataset_dir}")
+                print(
+                    "[ERROR] No evaluation_results_*.csv files found in "
+                    f"{evaluation_results_dir}"
+                )
                 sys.exit(1)
 
     run_standard_analysis(csv_files, project_root)
