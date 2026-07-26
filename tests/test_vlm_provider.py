@@ -139,7 +139,7 @@ class VlmProviderTests(unittest.TestCase):
     @mock.patch("vlm_eval.provider._completion")
     def test_call_vlm_sends_litellm_vision_message(self, completion_mock):
         completion_mock.return_value = {
-            "choices": [{"message": {"content": "[123, 456]"}}],
+            "choices": [{"message": {"content": '{"coordinates": [123, 456]}'}}],
         }
 
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -161,6 +161,170 @@ class VlmProviderTests(unittest.TestCase):
         self.assertEqual("image_url", content[1]["type"])
         self.assertTrue(
             content[1]["image_url"]["url"].startswith("data:image/png;base64,")
+        )
+        self.assertEqual(
+            vlm_provider.COORDINATE_RESPONSE_FORMAT,
+            call_kwargs["response_format"],
+        )
+        self.assertEqual(vlm_provider.COORDINATE_TEMPERATURE, call_kwargs["temperature"])
+        self.assertEqual(vlm_provider.COORDINATE_MAX_TOKENS, call_kwargs["max_tokens"])
+
+    @mock.patch("vlm_eval.provider._completion")
+    def test_hosted_models_use_deterministic_coordinate_settings(self, completion_mock):
+        completion_mock.return_value = {
+            "choices": [{"message": {"content": '{"coordinates": [1, 2]}'}}],
+        }
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            image_path = Path(tmp_dir) / "screen.png"
+            image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
+
+            for model in (
+                "openai/gpt-4o-mini",
+                "gemini/gemini-2.5-pro",
+                "anthropic/claude-sonnet-4-5",
+            ):
+                with self.subTest(model=model):
+                    vlm_provider.call_vlm(model, image_path, "Find Settings")
+                    call_kwargs = completion_mock.call_args.kwargs
+                    self.assertEqual(
+                        vlm_provider.COORDINATE_RESPONSE_FORMAT,
+                        call_kwargs["response_format"],
+                    )
+                    self.assertEqual(
+                        vlm_provider.COORDINATE_TEMPERATURE,
+                        call_kwargs["temperature"],
+                    )
+                    self.assertEqual(
+                        vlm_provider.COORDINATE_MAX_TOKENS,
+                        call_kwargs["max_tokens"],
+                    )
+
+            vlm_provider.call_vlm(
+                "openai/gpt-4o-mini",
+                image_path,
+                "Find Settings",
+                max_tokens=128,
+            )
+
+        self.assertEqual(
+            vlm_provider.COORDINATE_MAX_TOKENS,
+            completion_mock.call_args.kwargs["max_tokens"],
+        )
+
+    def test_litellm_translates_coordinate_schema_for_gemini(self):
+        try:
+            from litellm.llms.gemini.chat.transformation import GoogleAIStudioGeminiConfig
+        except ImportError:
+            self.skipTest("LiteLLM is unavailable in this test environment")
+
+        optional_params = GoogleAIStudioGeminiConfig().map_openai_params(
+            {"response_format": vlm_provider.COORDINATE_RESPONSE_FORMAT},
+            {},
+            "gemini-2.5-pro",
+            False,
+        )
+
+        self.assertEqual("application/json", optional_params["response_mime_type"])
+        self.assertIn("response_json_schema", optional_params)
+
+    def test_litellm_translates_coordinate_schema_for_modern_claude(self):
+        try:
+            from litellm.llms.anthropic.chat.transformation import AnthropicConfig
+        except ImportError:
+            self.skipTest("LiteLLM is unavailable in this test environment")
+
+        optional_params = AnthropicConfig().map_openai_params(
+            {"response_format": vlm_provider.COORDINATE_RESPONSE_FORMAT},
+            {},
+            "claude-sonnet-4-5",
+            False,
+        )
+
+        self.assertTrue(optional_params["json_mode"])
+        self.assertEqual("json_schema", optional_params["output_format"]["type"])
+
+    def test_litellm_uses_schema_tool_fallback_for_legacy_claude(self):
+        try:
+            from litellm.llms.anthropic.chat.transformation import AnthropicConfig
+        except ImportError:
+            self.skipTest("LiteLLM is unavailable in this test environment")
+
+        optional_params = AnthropicConfig().map_openai_params(
+            {"response_format": vlm_provider.COORDINATE_RESPONSE_FORMAT},
+            {},
+            "claude-3-5-sonnet",
+            False,
+        )
+
+        self.assertTrue(optional_params["json_mode"])
+        self.assertIn("tools", optional_params)
+        self.assertEqual("tool", optional_params["tool_choice"]["type"])
+
+    def test_canonicalize_coordinate_response_unwraps_provider_object(self):
+        self.assertEqual(
+            "[123, 456]",
+            vlm_provider._canonicalize_coordinate_response(
+                '{"coordinates": [123, 456]}'
+            ),
+        )
+
+    def test_canonicalize_coordinate_response_rejects_invalid_objects(self):
+        invalid_responses = (
+            '{"x": 123, "y": 456}',
+            '{"coordinates": [123]}',
+            '{"coordinates": [123, 456], "extra": true}',
+        )
+        for response in invalid_responses:
+            with self.subTest(response=response):
+                self.assertEqual(
+                    response,
+                    vlm_provider._canonicalize_coordinate_response(response),
+                )
+
+    def test_ferret_bbox_normalizes_to_canonical_coordinates(self):
+        self.assertEqual(
+            "[200.0, 300.0]",
+            vlm_provider._ferret_bbox_to_coordinates(
+                "[[100, 200, 300, 400]]",
+                Path("missing-screen.png"),
+            ),
+        )
+
+    def test_invalid_ferret_response_is_left_for_strict_parser_to_reject(self):
+        raw_response = "The target is near the top."
+        self.assertEqual(
+            raw_response,
+            vlm_provider._ferret_bbox_to_coordinates(
+                raw_response,
+                Path("missing-screen.png"),
+            ),
+        )
+
+    @mock.patch("vlm_eval.provider._completion")
+    def test_structured_output_rejection_is_not_retried_without_schema(
+        self, completion_mock
+    ):
+        completion_mock.side_effect = ValueError(
+            "response_format is not supported by this provider"
+        )
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            image_path = Path(tmp_dir) / "screen.png"
+            image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
+
+            with self.assertRaisesRegex(ValueError, "response_format"):
+                vlm_provider.call_vlm(
+                    "openai/gpt-4o-mini",
+                    image_path,
+                    "Find it",
+                    max_retries=3,
+                )
+
+        self.assertEqual(1, completion_mock.call_count)
+        self.assertEqual(
+            vlm_provider.COORDINATE_RESPONSE_FORMAT,
+            completion_mock.call_args.kwargs["response_format"],
         )
 
     @mock.patch.dict(

@@ -16,8 +16,7 @@ PROMPT_TEMPLATE = (
     "You are an autonomous mobile agent navigating an Android user interface. "
     "Look closely at this image. This image is {img_width} x {img_height} pixels. "
     "Provide the exact central pixel (x, y) coordinates "
-    "needed to click on the text element: '{target_text}'. "
-    "Return your response strictly in the bracket format: [x, y]"
+    "needed to click on the text element: '{target_text}'."
 )
 
 PROMPT_TEMPLATE_WITH_TREE = (
@@ -29,8 +28,7 @@ PROMPT_TEMPLATE_WITH_TREE = (
     "The target element may not appear in this tree; use the surrounding "
     "elements' positions as spatial reference and the image to locate it. "
     "Provide the exact central (x, y) pixel coordinates needed to click on the "
-    "text element: '{target_text}'. "
-    "Return your response strictly in the bracket format: [x, y]"
+    "text element: '{target_text}'."
 )
 
 

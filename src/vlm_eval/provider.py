@@ -8,9 +8,12 @@ vision-capable model and return the raw text response.
 """
 
 import base64
+import json
+import math
 import os
 import re
 import time
+from numbers import Real
 from pathlib import Path
 from typing import Any
 
@@ -19,10 +22,38 @@ DEFAULT_MAX_RETRIES = 3
 DEFAULT_RATE_LIMIT_BACKOFF_SECONDS = 0.5
 REQUEST_TIMEOUT_ENV_VAR = "VLM_REQUEST_TIMEOUT_SECONDS"
 DEFAULT_REQUEST_TIMEOUT_SECONDS = 120.0
+COORDINATE_TEMPERATURE = 0
+COORDINATE_MAX_TOKENS = 32
 
 NINEROUTER_PREFIX = "9router/"
 NINEROUTER_BASE_URL_ENV_VAR = "NINEROUTER_BASE_URL"
 NINEROUTER_API_KEY_ENV_VAR = "NINEROUTER_API_KEY"
+
+# OpenAI-compatible structured outputs require an object at the schema root.
+# The provider unwraps the `coordinates` property before returning the response
+# so the evaluator continues to consume the compact [x, y] representation.
+COORDINATE_RESPONSE_FORMAT = {
+    "type": "json_schema",
+    "json_schema": {
+        "name": "coords",
+        "strict": True,
+        "schema": {
+            "type": "object",
+            "properties": {
+                "coordinates": {
+                    "type": "array",
+                    "items": {"type": "number"},
+                    "minItems": 2,
+                    "maxItems": 2,
+                },
+            },
+            "required": ["coordinates"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+FERRET_BBOX_REGEX = re.compile(r"\[\[(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\]\]")
 
 
 def image_to_data_url(image_path: Path) -> str:
@@ -261,6 +292,56 @@ def _extract_response_text(response: Any) -> str:
     return "" if content is None else str(content)
 
 
+def _canonicalize_coordinate_response(response_text: str) -> str:
+    """Unwrap a strict provider object into the evaluator's [x, y] form."""
+    try:
+        payload = json.loads(response_text)
+    except (json.JSONDecodeError, TypeError):
+        return response_text
+
+    if isinstance(payload, list):
+        return response_text
+
+    if (
+        not isinstance(payload, dict)
+        or set(payload) != {"coordinates"}
+        or not isinstance(payload["coordinates"], list)
+        or len(payload["coordinates"]) != 2
+        or any(
+            isinstance(value, bool)
+            or not isinstance(value, Real)
+            or not math.isfinite(value)
+            for value in payload["coordinates"]
+        )
+    ):
+        return response_text
+
+    return json.dumps(payload["coordinates"])
+
+
+def _ferret_bbox_to_coordinates(ferret_text: str, image_path: Path) -> str:
+    """Convert Ferret's normalized bbox response into canonical [x, y] text."""
+    if not isinstance(ferret_text, str):
+        return "" if ferret_text is None else str(ferret_text)
+
+    bbox_match = FERRET_BBOX_REGEX.search(ferret_text)
+    if bbox_match is None:
+        return ferret_text
+
+    try:
+        from PIL import Image
+
+        with Image.open(image_path) as image:
+            width, height = image.size
+    except (FileNotFoundError, OSError, ValueError):
+        width, height = 1000, 1000
+
+    x1, y1, x2, y2 = map(float, bbox_match.groups())
+    x_center = ((x1 + x2) / 2.0 / 1000.0) * width
+    y_center = ((y1 + y2) / 2.0 / 1000.0) * height
+    return f"[{x_center:.1f}, {y_center:.1f}]"
+
+
 def call_vlm(
     model: str,
     image_path: Path,
@@ -280,9 +361,6 @@ def call_vlm(
     if model == "local/ferret-ui-llama8b":
         import urllib.request
         import urllib.error
-        import json
-        import re
-        from PIL import Image
         
         # Rewrite prompt for Ferret-UI to trigger bounding box grounding.
         # The generic zero-shot prompt confuses Ferret, causing it to just repeat the text.
@@ -308,24 +386,7 @@ def call_vlm(
             with urllib.request.urlopen(req) as response:
                 result = json.loads(response.read().decode('utf-8'))
                 ferret_text = result.get('text', '')
-                
-                bbox_match = re.search(r'\[\[(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\]\]', ferret_text)
-                if bbox_match:
-                    try:
-                        with Image.open(image_path) as img:
-                            w, h = img.size
-                    except:
-                        w, h = 1000, 1000 # Fallback
-                        
-                    x1, y1, x2, y2 = map(float, bbox_match.groups())
-                    
-                    # Convert from 1000-scale to absolute pixels and find center
-                    cx = ((x1 + x2) / 2.0 / 1000.0) * w
-                    cy = ((y1 + y2) / 2.0 / 1000.0) * h
-                    
-                    return f"[{cx:.1f}, {cy:.1f}]"
-                
-                return ferret_text
+                return _ferret_bbox_to_coordinates(ferret_text, image_path)
                 
         except urllib.error.URLError as e:
             if isinstance(e.reason, ConnectionRefusedError):
@@ -362,12 +423,17 @@ def call_vlm(
                         ],
                     }
                 ],
+                response_format=COORDINATE_RESPONSE_FORMAT,
+                temperature=COORDINATE_TEMPERATURE,
+                max_tokens=(
+                    COORDINATE_MAX_TOKENS
+                    if max_tokens is None
+                    else min(max_tokens, COORDINATE_MAX_TOKENS)
+                ),
             )
-            if max_tokens is not None:
-                kwargs["max_tokens"] = max_tokens
             kwargs["timeout"] = timeout
             response = _completion(**kwargs)
-            return _extract_response_text(response)
+            return _canonicalize_coordinate_response(_extract_response_text(response))
         except Exception as exc:
             if not _is_retryable_error(exc) or attempt >= retries:
                 raise

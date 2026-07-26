@@ -110,7 +110,7 @@ def main():
     parser.add_argument("--conv_mode", type=str, default="ferret_llama_3")
     parser.add_argument("--image_w", type=int, default=336)
     parser.add_argument("--image_h", type=int, default=336)
-    parser.add_argument("--temperature", type=float, default=0.001)
+    parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--top_p", type=float, default=None)
     parser.add_argument("--num_beams", type=int, default=1)
     parser.add_argument("--max_new_tokens", type=int, default=1024)

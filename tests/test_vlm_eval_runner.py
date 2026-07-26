@@ -59,6 +59,7 @@ class VlmEvalRunnerTests(unittest.TestCase):
         prompt = call_vlm_mock.call_args.args[2]
         self.assertIn("This image is 1080 x 2274 pixels", prompt)
         self.assertIn("central pixel (x, y) coordinates", prompt)
+        self.assertNotIn("Return your response", prompt)
         self.assertNotIn("0-1000", prompt)
         self.assertNotIn("Normalize", prompt)
 

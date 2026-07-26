@@ -565,8 +565,14 @@ From each `{screen}_baseline.json`:
 You are an autonomous mobile agent operating an Android phone.
 Look closely at this image and find the UI element with the text '{target_text}'.
 Provide the exact central pixel (x,y) coordinates of that element.
-Return your response strictly in the bracket format: [x, y]
 ```
+
+The evaluator also sends a provider-level strict JSON Schema requiring an
+object with one `coordinates` property containing exactly two numeric values.
+The provider unwraps that property into the evaluator's internal `[x, y]`
+format. Hosted requests use `temperature=0` and a 32-token output cap.
+Responses containing prose, extra values, or another JSON shape are invalid,
+and the evaluator does not fall back to prompt-only formatting.
 
 **Ferret-UI only:**
 ```
@@ -574,6 +580,8 @@ Provide the bounding box of the text '{target_text}'.
 ```
 
 Ferret-UI was fine-tuned on this exact format. The general-purpose prompt caused it to return text descriptions instead of coordinates.
+Its server uses deterministic decoding by default and converts a valid bounding
+box response to the evaluator's canonical `[x, y]` format.
 
 **Scoring:** A prediction is a hit (1) if the predicted (x, y) falls within the target element's bounding box expanded by ±30 px on all sides (simulating Google's 48 dp minimum touch-target guideline). All results logged to `evaluation_results_{model}.csv`.
 

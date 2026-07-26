@@ -1,16 +1,31 @@
 """Coordinate parsing and bounding-box scoring helpers."""
 
-import re
+import json
+import math
+from numbers import Real
 
-COORD_REGEX = re.compile(r"(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)")
 
 
 def parse_coordinates(response_text: str) -> tuple[float, float]:
-    """Extract (x, y) coordinates from model response text."""
-    match = COORD_REGEX.search(response_text)
-    if match:
-        return float(match.group(1)), float(match.group(2))
-    return -1.0, -1.0
+    """Parse exactly two finite numeric values from a JSON array response."""
+    try:
+        coordinates = json.loads(response_text)
+    except (json.JSONDecodeError, TypeError):
+        return -1.0, -1.0
+
+    if (
+        not isinstance(coordinates, list)
+        or len(coordinates) != 2
+        or any(
+            isinstance(value, bool)
+            or not isinstance(value, Real)
+            or not math.isfinite(value)
+            for value in coordinates
+        )
+    ):
+        return -1.0, -1.0
+
+    return float(coordinates[0]), float(coordinates[1])
 
 
 TOLERANCE = 30

@@ -257,7 +257,7 @@ if __name__ == "__main__":
     parser.add_argument("--add_region_feature", action="store_true")
     parser.add_argument("--region_format", type=str, default="point", choices=["point", "box", "segment", "free_shape"])
     parser.add_argument("--no_coor", action="store_true")
-    parser.add_argument("--temperature", type=float, default=0.001)
+    parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--top_p", type=float, default=None)
     parser.add_argument("--num_beams", type=int, default=1)
     parser.add_argument("--max_new_tokens", type=int, default=1024)
