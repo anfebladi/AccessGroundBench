@@ -3,10 +3,38 @@ import contextlib
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from PIL import Image
 
-import screenshot_pipeline as sp
+from collection.capture import screenshot_pipeline as sp
+
+
+class OutputDirectoryTests(unittest.TestCase):
+    def test_default_output_directory_is_project_root_outputs(self):
+        expected = Path(sp.__file__).resolve().parents[3] / "outputs"
+        self.assertEqual(expected, sp.OUTPUT_DIR)
+
+    def test_custom_image_and_xml_directories_are_respected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            image_dir = root / "images"
+            xml_dir = root / "xml"
+
+            with patch.object(sp, "run_adb_with_retries") as pull:
+                xml_path, png_path = sp.pull_files(
+                    "adb",
+                    "serial",
+                    "sample_capture",
+                    image_dir=image_dir,
+                    xml_dir=xml_dir,
+                )
+
+            self.assertEqual(xml_dir / "sample_capture.xml", xml_path)
+            self.assertEqual(image_dir / "sample_capture.png", png_path)
+            self.assertTrue(image_dir.is_dir())
+            self.assertTrue(xml_dir.is_dir())
+            self.assertEqual(2, pull.call_count)
 
 
 class ApplyColorTransformTests(unittest.TestCase):

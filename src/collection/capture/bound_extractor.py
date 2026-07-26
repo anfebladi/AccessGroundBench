@@ -215,6 +215,6 @@ def run(
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python bound_extractor.py <path_to_xml>")
+        print("Usage: python -m collection.capture.bound_extractor <path_to_xml>")
         sys.exit(1)
     run(sys.argv[1])

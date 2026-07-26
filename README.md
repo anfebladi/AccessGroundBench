@@ -15,6 +15,8 @@ The pipeline has three stages:
 | Requirement | Version |
 |---|---|
 | Python | 3.11 or later |
+| uv | Latest stable release |
+| Node.js / npm *(optional)* | Required for the 9Router gateway |
 | Android Studio / AVD | Any recent release |
 | Android SDK Platform Tools (`adb`) | Any recent release |
 | CUDA-capable GPU *(optional)* | Required only for local Ferret-UI model |
@@ -47,23 +49,21 @@ pip install scipy
 
 ```
 AccessGroundBench/
-├── orchestrator.py           # Master collection driver — runs all screens × profiles
-├── app_navigator.py          # Android app launching, permission handling, XML validation
-├── adb_utils.py              # Shared ADB helper functions (resolve, run, retry)
-├── layout_modifier.py        # Apply/reset accessibility profiles via ADB settings commands
-├── screenshot_pipeline.py    # Capture screenshot + UI XML, crop system bars, color filter
-├── bound_extractor.py        # Parse XML → JSON bounding-box label files
-├── vlm_evaluator.py          # Entry point: load labels, query VLM, score predictions
-├── vlm_provider.py           # LiteLLM + Ferret-UI server calls with retry handling
-├── mcnemar_analysis.py       # Paired McNemar's test over evaluation CSVs
-├── main.py                   # Minimal package entry point
-│
-├── vlm_eval/
-│   ├── config.py             # VLM model / pacing / retry settings from .env
-│   ├── runner.py             # Per-screen evaluation loop and prompt templates
-│   ├── targets.py            # Harvest unambiguous text targets from baseline labels
-│   ├── scoring.py            # Hit-test logic (point-in-box with ±30 px tolerance)
-│   └── results.py            # CSV read/write helpers
+├── src/                      # Installable Python packages
+│   ├── collection/           # Android/ADB collection pipeline
+│   │   ├── device/           # ADB, emulator state, permissions, and profiles
+│   │   ├── navigation/       # Screen targets, navigation, and XML validation
+│   │   ├── capture/          # Screenshots and bounding-box label extraction
+│   │   └── orchestrator.py   # Master collection driver
+│   ├── vlm_eval/             # VLM evaluation pipeline
+│   │   ├── cli.py            # Evaluation entry point
+│   │   ├── provider.py       # LiteLLM + Ferret-UI provider calls
+│   │   ├── config.py         # VLM model / pacing / retry settings from .env
+│   │   ├── runner.py         # Per-screen evaluation loop and prompt templates
+│   │   ├── targets.py        # Harvest unambiguous text targets from baseline labels
+│   │   ├── scoring.py        # Hit-test logic (point-in-box with ±30 px tolerance)
+│   │   └── results.py        # CSV read/write helpers
+│   └── mcnemar/              # Paired McNemar statistical analysis
 │
 ├── ferret_ui/                # Local Ferret-UI inference server (optional)
 │   ├── ferret_server.py      # FastAPI server wrapping the Ferret-UI model
@@ -72,16 +72,35 @@ AccessGroundBench/
 │   └── ...                   # Model architecture modules
 │
 ├── dataset/
-│   ├── images/               # Collected PNGs  — gitignored, created by orchestrator
-│   ├── raw_xml/              # Collected UI XML — gitignored, created by orchestrator
-│   ├── labels/               # Extracted JSON labels — gitignored, created by orchestrator
+│   ├── images/               # Collected PNGs created by the orchestrator
+│   ├── raw_xml/              # Collected UI XML created by the orchestrator
+│   ├── labels/               # Extracted JSON labels created by the orchestrator
 │   └── experiment_1/         # Committed reference results from Experiment 1
 │
 ├── tests/                    # Unit tests
-├── outputs/                  # Standalone pipeline output (gitignored)
+├── outputs/                  # Standalone pipeline output (generated files ignored)
 ├── .env.example              # Environment variable template — copy to .env
 ├── .python-version           # Python version pin
 └── pyproject.toml            # Project metadata and dependencies
+```
+
+Python imports and all commands use the packages: `collection`, `vlm_eval`, and
+`mcnemar`. Package-native commands are `uv run python -m collection.orchestrator`,
+`uv run python -m vlm_eval.cli`, and `uv run python -m mcnemar.cli`.
+
+The default collection run uses 13 enabled screens: `settings_main`,
+`settings_display`, `settings_network`, `settings_accessibility`, `contacts`,
+`dialer`, `messages`, `clock`, `maps`, `play_store`, `gmail`, `youtube`, and
+`photos`. The navigation registry also contains `calculator`, `calendar`,
+`chrome`, `camera`, and `files`; these are disabled by default but can be
+requested explicitly with `--screens` when the emulator supports them.
+
+Collection utilities use these canonical paths:
+
+```bash
+uv run python -m collection.device.layout_modifier elder_combo_max
+uv run python -m collection.capture.screenshot_pipeline my_capture
+uv run python -m collection.capture.bound_extractor outputs/my_capture.xml
 ```
 
 ---
@@ -119,7 +138,9 @@ VLM_MODEL=openai/gpt-4o-mini, gemini/gemini-2.5-pro, local/ferret-ui-llama8b
 VLM_PACE_SECONDS=0       # Optional delay between API calls (use for rate-limited APIs)
 VLM_MAX_RETRIES=3         # Number of retries on provider failure
 VLM_REQUEST_TIMEOUT_SECONDS=120  # Per-request timeout in seconds
+USE_A11Y_TREE=false       # Include the captured accessibility tree in VLM prompts
 
+GEMINI_API_KEY=your-gemini-api-key-here
 GOOGLE_API_KEY=your-google-api-key-here
 OPENAI_API_KEY=your-openai-api-key-here
 ANTHROPIC_API_KEY=your-anthropic-api-key-here
@@ -128,50 +149,106 @@ ANTHROPIC_API_KEY=your-anthropic-api-key-here
 NINEROUTER_BASE_URL=http://localhost:20128/v1
 NINEROUTER_API_KEY=your-9router-api-key-here
 
-# Optional: any other OpenAI-compatible gateway
-OPENAI_COMPATIBLE_BASE_URL=https://provider.example.com/v1
-OPENAI_COMPATIBLE_API_KEY=your-compatible-provider-key-here
 ```
 
 Model prefix → required key:
 | Model prefix | Key variable |
 |---|---|
 | `openai/` | `OPENAI_API_KEY` |
-| `gemini/` | `GOOGLE_API_KEY` |
+| `gemini/` | `GEMINI_API_KEY` or `GOOGLE_API_KEY` |
 | `anthropic/` | `ANTHROPIC_API_KEY` |
 | `local/ferret-ui-llama8b` | Ferret-UI server (see below) |
 | `9router/` | `NINEROUTER_BASE_URL` + `NINEROUTER_API_KEY` |
-| `openai_compatible/` | `OPENAI_COMPATIBLE_BASE_URL` + `OPENAI_COMPATIBLE_API_KEY` |
 
-Hosted models are sent through LiteLLM. Native LiteLLM model names keep their
-normal behavior. For 9Router, connect your provider in the 9Router dashboard,
-then select the route in `.env`:
+LiteLLM normalizes the request format, but provider credentials remain
+provider-specific for direct native routes. For example, `openai/...`,
+`gemini/...`, and `anthropic/...` use the corresponding provider API keys.
+
+For OpenAI-compatible gateway access, this project supports 9Router. Connect
+your providers in the 9Router dashboard, then select the route in `.env`. See
+the [official 9Router setup guide](https://github.com/decolua/9router/blob/master/README.md)
+for platform-specific details:
 
 ```dotenv
-VLM_MODEL=9router/cx/gpt-5.3-codex
+VLM_MODEL=9router/<route-from-dashboard>
 NINEROUTER_BASE_URL=http://localhost:20128/v1
-NINEROUTER_API_KEY=your-9router-api-key
+NINEROUTER_API_KEY=<api-key-from-9router-dashboard>
 ```
 
 The `9router/` prefix is translated to an OpenAI-compatible LiteLLM request;
-the route after the prefix is passed through unchanged. You can use the same
-adapter with another OpenAI-compatible gateway:
+the route after the prefix is passed through unchanged. 9Router is the
+supported generic gateway for providers that are not called directly.
 
-```dotenv
-VLM_MODEL=openai_compatible/provider/model-name
-OPENAI_COMPATIBLE_BASE_URL=https://provider.example.com/v1
-OPENAI_COMPATIBLE_API_KEY=your-provider-key
-```
-
-The base URL may include `/v1` or omit it. One generic compatibility endpoint
-is configured per process, while native providers can still be mixed in the
+The 9Router base URL may include `/v1` or omit it. One 9Router endpoint is
+configured per process, while native providers can still be mixed in the
 comma-separated `VLM_MODEL` list.
 
 Compatibility requests time out after 120 seconds by default and retry
 transient timeout, connection, and rate-limit failures according to
 `VLM_MAX_RETRIES`. Adjust `VLM_REQUEST_TIMEOUT_SECONDS` for slower gateways.
 
-### Step 4 — Set up the Android emulator
+Set `USE_A11Y_TREE=true` to include the captured accessibility tree alongside
+the screenshot during evaluation. Tree-injected results are written with a
+`_with_tree` suffix, for example:
+
+```text
+dataset/evaluation_results_openai_gpt-4o-mini_with_tree.csv
+```
+
+### Step 4 — Set up 9Router (optional gateway)
+
+9Router is an optional local OpenAI-compatible gateway. Use it when you want
+to route supported models through a single local endpoint instead of calling a
+native provider directly. This project uses the 9Router API at
+`http://localhost:20128/v1` and its dashboard at
+`http://localhost:20128/dashboard`.
+
+#### Install and start 9Router
+
+Install the desktop package with npm, then start the local server:
+
+```bash
+npm install -g 9router
+9router
+```
+
+Leave the `9router` process running in its own terminal and open
+<http://localhost:20128/dashboard>.
+
+#### Configure a provider route
+
+In the 9Router dashboard, go to **Dashboard → Providers**:
+
+1. Open **Providers**.
+2. Connect or configure the provider/account you want to use.
+3. Copy the API key supplied by 9Router.
+4. Copy the exact model route shown by 9Router. Do not substitute the native
+   provider model name; the route may include a provider-specific prefix.
+
+Update `.env` with the local endpoint, dashboard API key, and exact route:
+
+```dotenv
+VLM_MODEL=9router/<route-from-dashboard>
+NINEROUTER_BASE_URL=http://localhost:20128/v1
+NINEROUTER_API_KEY=<api-key-from-9router-dashboard>
+```
+
+The `9router/` prefix tells LiteLLM to send the request to 9Router. The route
+after the prefix is passed through unchanged. Verify that `dataset/labels/`
+contains baseline labels before evaluation; if it does not, collect the data
+with the command below after setting up the Android emulator:
+
+```bash
+uv run python -m collection.orchestrator
+```
+
+Run the evaluator with the configured route:
+
+```bash
+uv run python -m vlm_eval.cli
+```
+
+### Step 5 — Set up the Android emulator
 
 1. Open **Android Studio** → **Device Manager** → **Create Virtual Device**
 2. Select hardware profile: **Pixel 6**
@@ -189,7 +266,7 @@ adb devices
 > **Windows note:** If `adb` is not on PATH, use the full path:
 > `C:\Users\<you>\AppData\Local\Android\Sdk\platform-tools\adb.exe`
 
-### Step 5 — Prepare the emulator
+### Step 6 — Prepare the emulator
 
 Some apps require a one-time manual setup before the orchestrator can navigate to them automatically:
 
@@ -224,7 +301,7 @@ Six layout profiles are applied programmatically to the emulator before each scr
 ### Stage 1 — Collect screenshots and labels
 
 ```bash
-python orchestrator.py
+uv run python -m collection.orchestrator
 ```
 
 For each of the 13 target screens × 6 profiles the orchestrator will:
@@ -245,12 +322,12 @@ dataset/labels/{screen}_{profile}.json
 
 **Dry run (no emulator needed):**
 ```bash
-python orchestrator.py --dry-run
+uv run python -m collection.orchestrator --dry-run
 ```
 
 **Collect specific screens only:**
 ```bash
-python orchestrator.py --screens settings_main contacts dialer
+uv run python -m collection.orchestrator --screens settings_main contacts dialer
 ```
 
 > **Target apps:** `settings_main`, `settings_display`, `settings_network`, `settings_accessibility`, `contacts`, `dialer`, `messages`, `clock`, `maps`, `play_store`, `gmail`, `youtube`, `photos`
@@ -260,7 +337,7 @@ python orchestrator.py --screens settings_main contacts dialer
 ### Stage 2 — Run VLM evaluation
 
 ```bash
-python vlm_evaluator.py
+uv run python -m vlm_eval.cli
 ```
 
 The evaluator:
@@ -274,27 +351,41 @@ The evaluator:
 
 Example: `VLM_MODEL=openai/gpt-4o-mini` → `dataset/evaluation_results_openai_gpt-4o-mini.csv`
 
+The model name is normalized by replacing `/` with `_`. When
+`USE_A11Y_TREE=true`, `_with_tree` is appended before `.csv`.
+
 ---
 
 ### Stage 3 — Run McNemar's analysis
 
 ```bash
-python mcnemar_analysis.py
+uv run python -m mcnemar.cli
 ```
 
 Analyzes all `evaluation_results_*.csv` files in `dataset/` automatically.
 
 To analyze a single file:
 ```bash
-python mcnemar_analysis.py --csv dataset/evaluation_results_openai_gpt-4o-mini.csv
+uv run python -m mcnemar.cli --csv dataset/evaluation_results_openai_gpt-4o-mini.csv
 ```
 
 For each model and profile, the script:
 - Builds a paired contingency table (both-pass, broke-it, fluke-recovery, both-fail)
 - Uses asymptotic McNemar's χ² when discordant pairs *n* ≥ 25, exact binomial otherwise
-- Flags results as `Floor_Limited` when baseline accuracy < 55%
+- Flags results as `Floor_Limited` when baseline accuracy < 50%
 
 **Output:** `dataset/mcnemar_results_{model_id}.csv`
+
+To compare a vision-only result file with a matching accessibility-tree result
+file, provide both inputs:
+
+```bash
+uv run python -m mcnemar.cli \
+  --compare-a dataset/evaluation_results_openai_gpt-4o-mini.csv \
+  --compare-b dataset/evaluation_results_openai_gpt-4o-mini_with_tree.csv
+```
+
+This writes `dataset/mcnemar_compare_{model_id}.csv`.
 
 ---
 
@@ -322,7 +413,7 @@ pip install -r requirements.txt
 3. Start the inference server:
 
 ```bash
-.\ferret_ui\start_server.bat
+.\start_server.bat
 ```
 
 The server runs on `http://localhost:8000` by default. Leave it running in a separate terminal.
@@ -339,16 +430,16 @@ The collection tools can be run independently when an emulator is connected:
 
 ```bash
 # Apply an accessibility profile manually
-python layout_modifier.py elder_combo_max
+uv run python -m collection.device.layout_modifier elder_combo_max
 
 # Reset emulator to baseline
-python layout_modifier.py reset
+uv run python -m collection.device.layout_modifier reset
 
 # Capture a single screen (output goes to outputs/)
-python screenshot_pipeline.py my_capture
+uv run python -m collection.capture.screenshot_pipeline my_capture
 
 # Extract labels from a single XML file
-python bound_extractor.py outputs/my_capture.xml
+uv run python -m collection.capture.bound_extractor outputs/my_capture.xml
 ```
 
 ---
@@ -367,34 +458,48 @@ The `uiautomator dump` command hangs when a system popup is covering the screen.
 
 ### `ERROR: null root node returned by UiTestAutomationBridge`
 
-The app had not finished rendering when `uiautomator dump` was called. The orchestrator retries automatically. If this persists, try increasing `SETTLE_DELAY` in `layout_modifier.py`.
+The app had not finished rendering when `uiautomator dump` was called. The orchestrator retries automatically. If this persists, try increasing `SETTLE_DELAY` in `src/collection/device/layout_modifier.py`.
 
 ### Evaluator reports no screens found
 
-No baseline label files exist in `dataset/labels/`. Run `python orchestrator.py` first to collect the dataset.
+No baseline label files exist in `dataset/labels/`. Run
+`uv run python -m collection.orchestrator` first to collect the dataset.
 
 ### Model key is missing
 
 Set the correct key in `.env`. Values that still contain `your-...-here` are treated as unset. Check that the `VLM_MODEL` prefix matches the provider key variable (see the table in Setup Step 3).
 
 For 9Router, confirm the local router is running and that
-`NINEROUTER_BASE_URL` points to its OpenAI-compatible `/v1` endpoint. For
-other compatible gateways, set both `OPENAI_COMPATIBLE_BASE_URL` and
-`OPENAI_COMPATIBLE_API_KEY`.
+`NINEROUTER_BASE_URL` points to its OpenAI-compatible `/v1` endpoint. Select a
+`9router/<route>` model in `VLM_MODEL` and set `NINEROUTER_API_KEY`.
+
+If the dashboard does not load, restart the `9router` process and confirm that
+port `20128` is available. If evaluation reports a provider or route error,
+copy the route exactly from the dashboard and make sure the route appears
+after the `9router/` prefix. If the request is unauthorized, replace
+`NINEROUTER_API_KEY` with the key copied from the dashboard.
 
 ### `VLM_MODEL` is not set
 
 ```bash
 # Set temporarily for a single run
-VLM_MODEL=openai/gpt-4o-mini python vlm_evaluator.py
+VLM_MODEL=openai/gpt-4o-mini uv run python -m vlm_eval.cli
 ```
 
 ### McNemar results show `Floor_Limited=Yes`
 
-This means baseline accuracy is below 55%. It is caused by the model failing to ground most elements even under the unmodified baseline layout. Possible causes:
+This means baseline accuracy is below 50%. It is caused by the model failing to ground most elements even under the unmodified baseline layout. Possible causes:
 - Prompt format mismatch (especially for Ferret-UI — it requires its specific training prompt)
 - Model has no vision capability
-- Bounding boxes are too small relative to model prediction precision (increase `TOLERANCE` in `vlm_eval/scoring.py`)
+- Bounding boxes are too small relative to model prediction precision (increase `TOLERANCE` in `src/vlm_eval/scoring.py`)
+
+### Run the tests
+
+After installing the project, run the existing unit and smoke tests with:
+
+```bash
+uv run python -m unittest discover -s tests
+```
 
 ---
 
@@ -416,7 +521,11 @@ The benchmark evaluates whether Android accessibility layout transformations imp
 
 ### 2. Target Applications
 
-13 Android apps were used. Apps requiring unavailable hardware (Camera), apps not installed by default (Files), and apps that failed to reliably launch on the test emulator (Chrome) were excluded.
+The default experiment uses 13 Android screens. Apps requiring unavailable
+hardware (Camera), apps not installed by default (Files), and apps that failed
+to reliably launch on the test emulator (Chrome) were excluded from the
+default run. The source registry retains these targets as opt-in entries, along
+with Calculator and Calendar, for explicit `--screens` runs.
 
 ### 3. Accessibility Profiles
 
@@ -424,7 +533,7 @@ Six profiles were applied via ADB `settings` commands:
 
 - **Font scale:** `adb shell settings put system font_scale <value>`
 - **Screen density:** `adb shell wm density <value>` / `wm density reset`
-- **RTL layout:** `adb shell settings put global force_rtl_layout_direction <0|1>`
+- **RTL layout:** `adb shell settings put global development_settings_force_rtl <0|1>`
 - **Color filter:** Android's daltonizer toggled via `accessibility_display_daltonizer_enabled` and `accessibility_display_daltonizer` secure settings. Applied in software to the PNG because `adb screencap` captures pre-daltonizer buffers.
 - A 2.5-second stabilization delay followed each profile application.
 
@@ -480,4 +589,4 @@ McNemar's paired test over the contingency table for each screen × profile:
 - *n* = *b* + *c* (discordant pairs)
 - *n* ≥ 25 → asymptotic χ² with continuity correction
 - *n* < 25 → exact two-tailed binomial (H₀: P(b) = 0.5)
-- `Floor_Limited = Yes` when baseline accuracy < 55%
+- `Floor_Limited = Yes` when baseline accuracy < 50%

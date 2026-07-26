@@ -4,16 +4,16 @@ import subprocess
 import unittest
 from unittest import mock
 
-import adb_utils
+from collection.device import adb_utils
 
 
 class AdbUtilsTests(unittest.TestCase):
-    @mock.patch("adb_utils.Path.is_file", return_value=False)
-    @mock.patch.dict("adb_utils.os.environ", {}, clear=True)
+    @mock.patch("collection.device.adb_utils.Path.is_file", return_value=False)
+    @mock.patch.dict("collection.device.adb_utils.os.environ", {}, clear=True)
     def test_resolve_adb_falls_back_to_path(self, _is_file):
         self.assertEqual("adb", adb_utils.resolve_adb())
 
-    @mock.patch("adb_utils.subprocess.run")
+    @mock.patch("collection.device.adb_utils.subprocess.run")
     def test_get_device_serial_returns_first_authorized_device(self, run_mock):
         run_mock.return_value = subprocess.CompletedProcess(
             args=["adb", "devices"],
@@ -30,7 +30,7 @@ class AdbUtilsTests(unittest.TestCase):
             check=True,
         )
 
-    @mock.patch("adb_utils.subprocess.run")
+    @mock.patch("collection.device.adb_utils.subprocess.run")
     def test_get_device_serial_exits_without_authorized_device(self, run_mock):
         run_mock.return_value = subprocess.CompletedProcess(
             args=["adb", "devices"],
@@ -43,7 +43,7 @@ class AdbUtilsTests(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 adb_utils.get_device_serial("adb")
 
-    @mock.patch("adb_utils.subprocess.run")
+    @mock.patch("collection.device.adb_utils.subprocess.run")
     def test_run_adb_builds_device_command(self, run_mock):
         run_mock.return_value = subprocess.CompletedProcess(
             args=["adb", "-s", "emulator-5554", "shell", "echo", "ok"],
@@ -62,8 +62,8 @@ class AdbUtilsTests(unittest.TestCase):
             check=True,
         )
 
-    @mock.patch("adb_utils.time.sleep", return_value=None)
-    @mock.patch("adb_utils.run_adb")
+    @mock.patch("collection.device.adb_utils.time.sleep", return_value=None)
+    @mock.patch("collection.device.adb_utils.run_adb")
     def test_run_adb_with_retries_succeeds_after_transient_failure(
         self, run_adb_mock, _sleep
     ):
@@ -81,8 +81,8 @@ class AdbUtilsTests(unittest.TestCase):
         self.assertIs(ok, result)
         self.assertEqual(2, run_adb_mock.call_count)
 
-    @mock.patch("adb_utils.time.sleep", return_value=None)
-    @mock.patch("adb_utils.run_adb")
+    @mock.patch("collection.device.adb_utils.time.sleep", return_value=None)
+    @mock.patch("collection.device.adb_utils.run_adb")
     def test_run_adb_with_retries_reraises_after_exhausting(
         self, run_adb_mock, _sleep
     ):
@@ -96,7 +96,7 @@ class AdbUtilsTests(unittest.TestCase):
 
         self.assertEqual(3, run_adb_mock.call_count)
 
-    @mock.patch("adb_utils.run_adb")
+    @mock.patch("collection.device.adb_utils.run_adb")
     def test_capture_adb_returns_stdout(self, run_adb_mock):
         run_adb_mock.return_value = subprocess.CompletedProcess(
             args=["adb", "-s", "emulator-5554", "shell", "pwd"],

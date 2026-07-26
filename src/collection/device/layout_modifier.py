@@ -12,7 +12,7 @@ import subprocess
 import sys
 import time
 
-from adb_utils import get_device_serial, resolve_adb, run_adb
+from .adb_utils import get_device_serial, resolve_adb, run_adb
 
 # ---------------------------------------------------------------------------
 # Profile Matrix
@@ -250,8 +250,8 @@ def apply_profile(profile_name: str) -> None:
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage:")
-        print("  python layout_modifier.py <profile_name>   # apply a profile")
-        print("  python layout_modifier.py reset            # factory reset all vectors")
+        print("  python -m collection.device.layout_modifier <profile_name>   # apply a profile")
+        print("  python -m collection.device.layout_modifier reset            # factory reset all vectors")
         print()
         print("Available profiles:")
         for name, cfg in ELDER_PROFILES.items():

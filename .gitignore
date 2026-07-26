@@ -33,14 +33,18 @@ dist/
 .DS_Store
 ._*
 
-# Generated capture/extraction outputs
-outputs/*
-!outputs/.gitkeep
+# Generated standalone capture/extraction outputs
+/outputs/*
+!/outputs/.gitkeep
 
 
 
 # Generated JSON from committed sample inputs
 sample_input/capture_*.json
+
+# Ferret-UI evaluation inputs and outputs
+eval.json
+eval_output.jsonl
 
 # Android/local tooling logs
 *.log

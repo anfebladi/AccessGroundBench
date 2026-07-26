@@ -1,5 +1,5 @@
 """
-orchestrator.py
+collection.orchestrator
 ---------------
 Master data-collection driver for AccessGroundBench.
 
@@ -18,8 +18,8 @@ All assets are routed into the deterministic dataset/ directory structure:
   dataset/labels/{screen}_{profile}.json
 
 Usage:
-  python orchestrator.py                  # interactive run (requires emulator)
-  python orchestrator.py --dry-run        # validate logic without emulator
+  python -m collection.orchestrator                  # interactive run (requires emulator)
+  python -m collection.orchestrator --dry-run        # validate logic without emulator
 """
 
 import argparse
@@ -29,29 +29,22 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 # Project paths
 # ---------------------------------------------------------------------------
-PROJECT_ROOT = Path(__file__).parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATASET_DIR = PROJECT_ROOT / "dataset"
 IMAGES_DIR = DATASET_DIR / "images"
 RAW_XML_DIR = DATASET_DIR / "raw_xml"
 LABELS_DIR = DATASET_DIR / "labels"
 
 # ---------------------------------------------------------------------------
-# Target screen list -- add screens here as needed
-SCREENS: list[str] = [
-    "settings_main", "settings_display", "settings_network", "settings_accessibility",
-    "contacts", "dialer", "messages",
-    "clock",
-    "maps", "play_store",
-    "gmail", "youtube", "photos",
-]
-
-# ---------------------------------------------------------------------------
 # Imports from sibling scripts (used as libraries)
 # ---------------------------------------------------------------------------
-import layout_modifier
-import app_navigator
-import screenshot_pipeline
-import bound_extractor
+from .capture import bound_extractor, screenshot_pipeline
+from .device import layout_modifier
+from .navigation import app_navigator
+
+# The target registry owns the default collection order. Registered targets
+# disabled by default remain available through explicit --screens selection.
+SCREENS: list[str] = list(app_navigator.default_screen_names())
 
 
 def ensure_dirs() -> None:
@@ -97,8 +90,9 @@ def run_screen(screen_name: str, dry_run: bool = False) -> None:
         print(f"\n  [2/4] Navigating to target screen...")
         try:
             app_navigator.navigate_to_screen(screen_name)
-        except SystemExit:
-            print(f"  [ERROR] Navigation failed for {stem}. Skipping...")
+        except app_navigator.NavigationError as exc:
+            print(f"  [ERROR] Navigation failed for {stem}: {exc}")
+            print("  [ERROR] Skipping...")
             continue
 
         # Step 3: Capture screenshot + UI hierarchy
@@ -159,6 +153,12 @@ def main() -> None:
 
     screens = args.screens or SCREENS
     dry_run = args.dry_run
+
+    try:
+        for screen_name in screens:
+            app_navigator.get_screen_target(screen_name)
+    except app_navigator.UnknownScreenError as exc:
+        parser.error(str(exc))
 
     print("=" * 60)
     print("  AccessGroundBench -- Orchestrator")

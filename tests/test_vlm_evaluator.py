@@ -2,11 +2,25 @@ import io
 import unittest
 from unittest import mock
 
-import vlm_evaluator
+from vlm_eval import cli as vlm_evaluator
 from vlm_eval import config
 
 
 class VlmEvaluatorConfigTests(unittest.TestCase):
+    def test_api_key_exists_supports_native_provider_keys(self):
+        provider_keys = (
+            ("openai/gpt-4o-mini", {"OPENAI_API_KEY": "openai-key"}),
+            ("gemini/gemini-2.5-pro", {"GEMINI_API_KEY": "gemini-key"}),
+            ("anthropic/claude-sonnet", {"ANTHROPIC_API_KEY": "anthropic-key"}),
+        )
+
+        for model, environment in provider_keys:
+            with self.subTest(model=model):
+                with mock.patch.dict(
+                    "vlm_eval.cli.os.environ", environment, clear=True
+                ):
+                    self.assertTrue(vlm_evaluator.api_key_exists(model))
+
     @mock.patch.dict("vlm_eval.config.os.environ", {"VLM_MODEL": "openai/gpt-4o-mini"})
     def test_resolve_models_prefers_cli_model(self):
         self.assertEqual(
@@ -56,10 +70,10 @@ class VlmEvaluatorConfigTests(unittest.TestCase):
 
 
 class VlmEvaluatorMainTests(unittest.TestCase):
-    @mock.patch("vlm_evaluator.evaluate_screen", return_value=1)
-    @mock.patch("vlm_evaluator.init_csv")
-    @mock.patch("vlm_evaluator.api_key_exists", return_value=True)
-    @mock.patch("vlm_evaluator.discover_screens", return_value=["clock", "settings_main"])
+    @mock.patch("vlm_eval.cli.evaluate_screen", return_value=1)
+    @mock.patch("vlm_eval.cli.init_csv")
+    @mock.patch("vlm_eval.cli.api_key_exists", return_value=True)
+    @mock.patch("vlm_eval.cli.discover_screens", return_value=["clock", "settings_main"])
     @mock.patch.dict(
         "vlm_eval.config.os.environ",
         {"VLM_MODEL": "openai/gpt-5.4-nano", "VLM_PACE_SECONDS": "1.5"},
@@ -97,4 +111,3 @@ class VlmEvaluatorMainTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

@@ -2,7 +2,7 @@ import unittest
 from unittest import mock
 import importlib
 
-import vlm_evaluator
+from vlm_eval import cli as vlm_evaluator
 
 
 class VlmEvaluatorEnvTests(unittest.TestCase):

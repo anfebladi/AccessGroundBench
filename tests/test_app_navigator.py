@@ -1,9 +1,11 @@
-import contextlib
-import io
+import subprocess
+import tempfile
 import unittest
+from pathlib import Path
+from unittest import mock
 
-import app_navigator
-import orchestrator
+from collection import orchestrator
+from collection.navigation import app_navigator
 
 
 class AppNavigatorTests(unittest.TestCase):
@@ -11,10 +13,23 @@ class AppNavigatorTests(unittest.TestCase):
         missing = [screen for screen in orchestrator.SCREENS if screen not in app_navigator.SCREEN_TARGETS]
         self.assertEqual([], missing)
 
+    def test_orchestrator_uses_registry_default_order(self):
+        self.assertEqual(
+            list(app_navigator.default_screen_names()),
+            orchestrator.SCREENS,
+        )
+        self.assertEqual(
+            {"calculator", "calendar", "chrome", "camera", "files"},
+            {
+                name for name, target in app_navigator.SCREEN_TARGETS.items()
+                if not target.default_enabled
+            },
+        )
+
     def test_unknown_screen_fails_clearly(self):
-        with contextlib.redirect_stdout(io.StringIO()):
-            with self.assertRaises(SystemExit):
-                app_navigator.get_screen_target("not_a_real_screen")
+        with self.assertRaises(app_navigator.UnknownScreenError) as raised:
+            app_navigator.get_screen_target("not_a_real_screen")
+        self.assertIn("not_a_real_screen", str(raised.exception))
 
     def test_parse_window_current_focus(self):
         output = (
@@ -96,6 +111,80 @@ class AppNavigatorTests(unittest.TestCase):
         </hierarchy>
         """
         self.assertIsNone(app_navigator.select_permission_allow_target(xml_text))
+
+    @mock.patch("collection.navigation.app_navigator.time.sleep")
+    @mock.patch("collection.navigation.app_navigator.get_foreground_package", return_value="com.google.android.contacts")
+    @mock.patch("collection.navigation.app_navigator.get_device_serial", return_value="emulator-5554")
+    @mock.patch("collection.navigation.app_navigator.resolve_adb", return_value="adb")
+    @mock.patch("collection.navigation.app_navigator.run_adb")
+    def test_navigation_tries_next_launch_command_after_failure(
+        self, run_adb, _resolve_adb, _get_serial, _foreground, _sleep
+    ):
+        run_adb.side_effect = [
+            subprocess.CalledProcessError(1, ["adb"], stderr="first command failed"),
+            subprocess.CompletedProcess([], 0),
+        ]
+
+        app_navigator.navigate_to_screen("contacts")
+
+        self.assertEqual(2, run_adb.call_count)
+        self.assertEqual(
+            ("shell", "monkey", "-p", "com.google.android.contacts", "-c", "android.intent.category.LAUNCHER", "1"),
+            run_adb.call_args.args[2:],
+        )
+
+    @mock.patch("collection.navigation.app_navigator.time.sleep")
+    @mock.patch(
+        "collection.navigation.app_navigator.get_foreground_package",
+        side_effect=[
+            "com.google.android.permissioncontroller",
+            "com.google.android.contacts",
+        ],
+    )
+    @mock.patch("collection.navigation.app_navigator.handle_permission_dialog", return_value=True)
+    @mock.patch("collection.navigation.app_navigator.get_device_serial", return_value="emulator-5554")
+    @mock.patch("collection.navigation.app_navigator.resolve_adb", return_value="adb")
+    @mock.patch("collection.navigation.app_navigator.run_adb")
+    def test_navigation_relaunches_after_permission_grant(
+        self, run_adb, _resolve_adb, _get_serial, handle_permission, _foreground, _sleep
+    ):
+        app_navigator.navigate_to_screen("contacts")
+
+        self.assertEqual(2, run_adb.call_count)
+        handle_permission.assert_called_once_with("adb", "emulator-5554")
+
+    @mock.patch("collection.navigation.app_navigator.time.sleep")
+    @mock.patch("collection.navigation.app_navigator.get_foreground_package", return_value="com.android.settings")
+    @mock.patch("collection.navigation.app_navigator.get_device_serial", return_value="emulator-5554")
+    @mock.patch("collection.navigation.app_navigator.resolve_adb", return_value="adb")
+    @mock.patch("collection.navigation.app_navigator.run_adb")
+    def test_navigation_raises_typed_error_for_foreground_mismatch(
+        self, run_adb, _resolve_adb, _get_serial, _foreground, _sleep
+    ):
+        with self.assertRaises(app_navigator.NavigationError) as raised:
+            app_navigator.navigate_to_screen("contacts")
+
+        self.assertIn("contacts", str(raised.exception))
+        self.assertEqual(3, run_adb.call_count)
+
+    def test_xml_package_validation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            xml_path = Path(directory) / "contacts.xml"
+            xml_path.write_text(
+                '<hierarchy><node package="com.google.android.contacts" /></hierarchy>',
+                encoding="utf-8",
+            )
+            app_navigator.validate_xml_package(xml_path, "contacts")
+
+    def test_xml_package_validation_rejects_wrong_package(self):
+        with tempfile.TemporaryDirectory() as directory:
+            xml_path = Path(directory) / "wrong.xml"
+            xml_path.write_text(
+                '<hierarchy><node package="com.android.settings" /></hierarchy>',
+                encoding="utf-8",
+            )
+            with self.assertRaises(RuntimeError):
+                app_navigator.validate_xml_package(xml_path, "contacts")
 
 
 if __name__ == "__main__":

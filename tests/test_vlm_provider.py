@@ -7,7 +7,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest import mock
 
-import vlm_provider
+from vlm_eval import provider as vlm_provider
 
 
 class FakeRateLimitError(Exception):
@@ -16,14 +16,14 @@ class FakeRateLimitError(Exception):
 
 class VlmProviderTests(unittest.TestCase):
     @mock.patch.dict(
-        "vlm_provider.os.environ",
+        "vlm_eval.provider.os.environ",
         {
             "NINEROUTER_BASE_URL": "http://localhost:20128/v1",
             "NINEROUTER_API_KEY": "router-key",
         },
         clear=True,
     )
-    def test_register_compatible_model_is_idempotent(self):
+    def test_register_ninerouter_model_is_idempotent(self):
         try:
             import litellm
         except ImportError:
@@ -31,8 +31,8 @@ class VlmProviderTests(unittest.TestCase):
 
         route = "cx/test-registration-route"
         litellm.open_ai_chat_completion_models.discard(route)
-        vlm_provider._register_compatible_model(f"9router/{route}")
-        vlm_provider._register_compatible_model(f"9router/{route}")
+        vlm_provider._register_ninerouter_model(f"9router/{route}")
+        vlm_provider._register_ninerouter_model(f"9router/{route}")
         self.assertIn(route, litellm.open_ai_chat_completion_models)
 
     def test_register_native_model_does_nothing(self):
@@ -42,15 +42,15 @@ class VlmProviderTests(unittest.TestCase):
             self.skipTest("LiteLLM is unavailable in this test environment")
 
         before = set(litellm.open_ai_chat_completion_models)
-        vlm_provider._register_compatible_model("openai/gpt-4o-mini")
+        vlm_provider._register_ninerouter_model("openai/gpt-4o-mini")
         self.assertEqual(before, set(litellm.open_ai_chat_completion_models))
 
-    @mock.patch.dict("vlm_provider.os.environ", {}, clear=True)
+    @mock.patch.dict("vlm_eval.provider.os.environ", {}, clear=True)
     def test_request_timeout_defaults_to_120_seconds(self):
         self.assertEqual(120.0, vlm_provider._resolve_request_timeout())
 
     @mock.patch.dict(
-        "vlm_provider.os.environ", {"VLM_REQUEST_TIMEOUT_SECONDS": "30"}, clear=True
+        "vlm_eval.provider.os.environ", {"VLM_REQUEST_TIMEOUT_SECONDS": "30"}, clear=True
     )
     def test_request_timeout_uses_environment(self):
         self.assertEqual(30.0, vlm_provider._resolve_request_timeout())
@@ -63,7 +63,7 @@ class VlmProviderTests(unittest.TestCase):
         self.assertTrue(vlm_provider._is_retryable_error(Exception("Connection error.")))
 
     @mock.patch.dict(
-        "vlm_provider.os.environ",
+        "vlm_eval.provider.os.environ",
         {
             "NINEROUTER_BASE_URL": "http://localhost:20128",
             "NINEROUTER_API_KEY": "router-key",
@@ -81,7 +81,7 @@ class VlmProviderTests(unittest.TestCase):
             vlm_provider.resolve_completion_config("9router/cx/gpt-5.3-codex"),
         )
 
-    @mock.patch.dict("vlm_provider.os.environ", {"NINEROUTER_API_KEY": "key"}, clear=True)
+    @mock.patch.dict("vlm_eval.provider.os.environ", {"NINEROUTER_API_KEY": "key"}, clear=True)
     def test_resolve_9router_requires_base_url(self):
         with self.assertRaisesRegex(ValueError, "NINEROUTER_BASE_URL"):
             vlm_provider.resolve_completion_config("9router/cx/gpt-5.3-codex")
@@ -90,7 +90,7 @@ class VlmProviderTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "model route"):
             vlm_provider.resolve_completion_config("9router/")
 
-    def test_normalize_compatible_base_url_accepts_host_and_v1_forms(self):
+    def test_normalize_ninerouter_base_url_accepts_host_and_v1_forms(self):
         for value in (
             "http://localhost:20128",
             "http://localhost:20128/",
@@ -100,53 +100,25 @@ class VlmProviderTests(unittest.TestCase):
             with self.subTest(value=value):
                 self.assertEqual(
                     "http://localhost:20128/v1",
-                    vlm_provider._normalize_compatible_base_url(value),
+                    vlm_provider._normalize_ninerouter_base_url(value),
                 )
 
-    @mock.patch.dict(
-        "vlm_provider.os.environ",
-        {
-            "OPENAI_COMPATIBLE_BASE_URL": "https://provider.example.com/v1/",
-            "OPENAI_COMPATIBLE_API_KEY": "provider-key",
-        },
-        clear=True,
-    )
-    def test_resolve_generic_compatible_model_preserves_nested_model_id(self):
-        self.assertEqual(
-            {
-                "model": "vendor/model-with-slashes",
-                "custom_llm_provider": "openai",
-                "api_base": "https://provider.example.com/v1",
-                "api_key": "provider-key",
-            },
-            vlm_provider.resolve_completion_config(
-                "openai_compatible/vendor/model-with-slashes"
-            ),
-        )
-
-    @mock.patch.dict("vlm_provider.os.environ", {}, clear=True)
+    @mock.patch.dict("vlm_eval.provider.os.environ", {}, clear=True)
     def test_compatible_model_reports_missing_configuration(self):
         error = vlm_provider.model_configuration_error("9router/cx/gpt-5.3-codex")
         self.assertIn("NINEROUTER_BASE_URL", error)
         self.assertIn("NINEROUTER_API_KEY", error)
 
-    @mock.patch.dict(
-        "vlm_provider.os.environ",
-        {
-            "OPENAI_COMPATIBLE_BASE_URL": "https://provider.example.com/v1",
-            "OPENAI_COMPATIBLE_API_KEY": "your-compatible-provider-key-here",
-        },
-        clear=True,
-    )
-    def test_generic_compatible_placeholder_key_is_missing(self):
-        error = vlm_provider.model_configuration_error(
-            "openai_compatible/my-provider-model"
-        )
-        self.assertIn("OPENAI_COMPATIBLE_API_KEY", error)
-
-    @mock.patch.dict("vlm_provider.os.environ", {}, clear=True)
+    @mock.patch.dict("vlm_eval.provider.os.environ", {}, clear=True)
     def test_native_model_configuration_is_unchanged(self):
-        self.assertIsNone(vlm_provider.model_configuration_error("openai/gpt-4o-mini"))
+        for model in (
+            "openai/gpt-4o-mini",
+            "gemini/gemini-2.5-pro",
+            "anthropic/claude-sonnet",
+        ):
+            with self.subTest(model=model):
+                self.assertIsNone(vlm_provider.model_configuration_error(model))
+
         self.assertEqual(
             {"model": "anthropic/claude-sonnet"},
             vlm_provider.resolve_completion_config("anthropic/claude-sonnet"),
@@ -164,7 +136,7 @@ class VlmProviderTests(unittest.TestCase):
         expected = base64.b64encode(png_bytes).decode("ascii")
         self.assertEqual(f"data:image/png;base64,{expected}", data_url)
 
-    @mock.patch("vlm_provider._completion")
+    @mock.patch("vlm_eval.provider._completion")
     def test_call_vlm_sends_litellm_vision_message(self, completion_mock):
         completion_mock.return_value = {
             "choices": [{"message": {"content": "[123, 456]"}}],
@@ -192,15 +164,15 @@ class VlmProviderTests(unittest.TestCase):
         )
 
     @mock.patch.dict(
-        "vlm_provider.os.environ",
+        "vlm_eval.provider.os.environ",
         {
             "NINEROUTER_BASE_URL": "http://localhost:20128/v1/",
             "NINEROUTER_API_KEY": "router-key",
         },
         clear=True,
     )
-    @mock.patch("vlm_provider._register_compatible_model")
-    @mock.patch("vlm_provider._completion")
+    @mock.patch("vlm_eval.provider._register_ninerouter_model")
+    @mock.patch("vlm_eval.provider._completion")
     def test_call_vlm_passes_9router_compatibility_arguments(
         self, completion_mock, register_model_mock
     ):
@@ -219,7 +191,7 @@ class VlmProviderTests(unittest.TestCase):
         self.assertEqual(120.0, call_kwargs["timeout"])
 
     @mock.patch.dict(
-        "vlm_provider.os.environ",
+        "vlm_eval.provider.os.environ",
         {
             "NINEROUTER_BASE_URL": "http://localhost:20128/v1",
             "NINEROUTER_API_KEY": "router-key",
@@ -237,7 +209,7 @@ class VlmProviderTests(unittest.TestCase):
 
         output = StringIO()
         with redirect_stdout(output):
-            vlm_provider._register_compatible_model(f"9router/{route}")
+            vlm_provider._register_ninerouter_model(f"9router/{route}")
             response = litellm.completion(
                 model=route,
                 custom_llm_provider="openai",
@@ -250,8 +222,8 @@ class VlmProviderTests(unittest.TestCase):
         self.assertNotIn("Provider List", output.getvalue())
         self.assertEqual("ok", response.choices[0].message.content)
 
-    @mock.patch("vlm_provider.time.sleep")
-    @mock.patch("vlm_provider._completion")
+    @mock.patch("vlm_eval.provider.time.sleep")
+    @mock.patch("vlm_eval.provider._completion")
     def test_call_vlm_retries_timeout_then_succeeds(self, completion_mock, sleep_mock):
         class FakeReadTimeout(Exception):
             pass
@@ -299,8 +271,8 @@ class VlmProviderTests(unittest.TestCase):
 
         self.assertEqual("[7, 8]", vlm_provider._extract_response_text(response))
 
-    @mock.patch("vlm_provider.time.sleep")
-    @mock.patch("vlm_provider._completion")
+    @mock.patch("vlm_eval.provider.time.sleep")
+    @mock.patch("vlm_eval.provider._completion")
     def test_call_vlm_retries_rate_limit_then_succeeds(self, completion_mock, sleep_mock):
         completion_mock.side_effect = [
             FakeRateLimitError("Please try again in 249ms."),
@@ -322,8 +294,8 @@ class VlmProviderTests(unittest.TestCase):
         self.assertEqual(2, completion_mock.call_count)
         sleep_mock.assert_called_once_with(0.249)
 
-    @mock.patch("vlm_provider.time.sleep")
-    @mock.patch("vlm_provider._completion")
+    @mock.patch("vlm_eval.provider.time.sleep")
+    @mock.patch("vlm_eval.provider._completion")
     def test_call_vlm_raises_after_repeated_rate_limits(self, completion_mock, sleep_mock):
         completion_mock.side_effect = FakeRateLimitError("Rate limit reached")
 

@@ -14,7 +14,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from adb_utils import (
+from ..device.adb_utils import (
     get_device_serial,
     get_system_bar_heights,
     resolve_adb,
@@ -62,9 +62,12 @@ COLOR_TRANSFORMS: dict[str, tuple[float, ...]] = {
     ),
 }
 
-# Output directory: outputs/ subfolder inside the project root
-OUTPUT_DIR = Path(__file__).parent / "outputs"
-OUTPUT_DIR.mkdir(exist_ok=True)
+# Standalone utility output directory at the project root.  The orchestrator
+# passes explicit dataset subdirectories, so this is only used when running
+# screenshot_pipeline directly.
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+OUTPUT_DIR = PROJECT_ROOT / "outputs"
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 # ---------------------------------------------------------------------------
@@ -330,6 +333,6 @@ def run_pipeline(
 
 if __name__ == "__main__":
     # Optional: pass a custom output name as the first CLI argument
-    # Usage: python screenshot_pipeline.py [output_name]
+    # Usage: python -m collection.capture.screenshot_pipeline [output_name]
     name_arg = sys.argv[1] if len(sys.argv) > 1 else None
     run_pipeline(output_name=name_arg)

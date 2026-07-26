@@ -5,7 +5,7 @@ import struct
 import time
 from pathlib import Path
 
-from vlm_provider import call_vlm
+from .provider import call_vlm
 
 from .config import ALL_PROFILES, IMAGES_DIR, LABELS_DIR
 from .results import append_result
@@ -225,4 +225,3 @@ def evaluate_screen(
                 time.sleep(pace_seconds)
 
     return count
-

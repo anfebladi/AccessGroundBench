@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATASET_DIR = PROJECT_ROOT / "dataset"
 IMAGES_DIR = DATASET_DIR / "images"
 LABELS_DIR = DATASET_DIR / "labels"
@@ -39,7 +39,7 @@ def resolve_models(cli_model: str | None) -> list[str]:
     print("  VLM_MODEL=openai/gpt-4o-mini")
     print("")
     print("  Or pass a temporary override:")
-    print("  python vlm_evaluator.py --model openai/gpt-4o-mini")
+    print("  VLM_MODEL=openai/gpt-4o-mini python -m vlm_eval.cli")
     raise SystemExit(1)
 
 

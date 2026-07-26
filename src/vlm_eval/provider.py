@@ -21,11 +21,8 @@ REQUEST_TIMEOUT_ENV_VAR = "VLM_REQUEST_TIMEOUT_SECONDS"
 DEFAULT_REQUEST_TIMEOUT_SECONDS = 120.0
 
 NINEROUTER_PREFIX = "9router/"
-OPENAI_COMPATIBLE_PREFIX = "openai_compatible/"
 NINEROUTER_BASE_URL_ENV_VAR = "NINEROUTER_BASE_URL"
 NINEROUTER_API_KEY_ENV_VAR = "NINEROUTER_API_KEY"
-OPENAI_COMPATIBLE_BASE_URL_ENV_VAR = "OPENAI_COMPATIBLE_BASE_URL"
-OPENAI_COMPATIBLE_API_KEY_ENV_VAR = "OPENAI_COMPATIBLE_API_KEY"
 
 
 def image_to_data_url(image_path: Path) -> str:
@@ -47,13 +44,13 @@ def _completion(**kwargs: Any) -> Any:
     return completion(**kwargs)
 
 
-def _is_compatibility_model(model: str) -> bool:
-    return model.startswith((NINEROUTER_PREFIX, OPENAI_COMPATIBLE_PREFIX))
+def _is_ninerouter_model(model: str) -> bool:
+    return model.startswith(NINEROUTER_PREFIX)
 
 
-def _register_compatible_model(model: str) -> None:
-    """Register an arbitrary OpenAI-compatible route with LiteLLM once."""
-    if not _is_compatibility_model(model):
+def _register_ninerouter_model(model: str) -> None:
+    """Register a 9Router route with LiteLLM once."""
+    if not _is_ninerouter_model(model):
         return
 
     route = model.split("/", 1)[1]
@@ -104,7 +101,7 @@ def _resolve_request_timeout(timeout: float | None = None) -> float:
     return resolved
 
 
-def _normalize_compatible_base_url(base_url: str) -> str:
+def _normalize_ninerouter_base_url(base_url: str) -> str:
     """Return an OpenAI-compatible base URL ending in exactly one ``/v1``."""
     normalized = base_url.strip().rstrip("/")
     if not normalized:
@@ -127,12 +124,6 @@ def model_configuration_error(model: str) -> str | None:
         base_var = NINEROUTER_BASE_URL_ENV_VAR
         key_var = NINEROUTER_API_KEY_ENV_VAR
         example = "VLM_MODEL=9router/cx/gpt-5.3-codex"
-    elif model.startswith(OPENAI_COMPATIBLE_PREFIX):
-        if not model[len(OPENAI_COMPATIBLE_PREFIX):].strip():
-            return f"An OpenAI-compatible model is required after {OPENAI_COMPATIBLE_PREFIX}"
-        base_var = OPENAI_COMPATIBLE_BASE_URL_ENV_VAR
-        key_var = OPENAI_COMPATIBLE_API_KEY_ENV_VAR
-        example = "VLM_MODEL=openai_compatible/my-provider-model"
     else:
         return None
 
@@ -156,20 +147,10 @@ def resolve_completion_config(model: str) -> dict[str, str]:
         return {
             "model": model[len(NINEROUTER_PREFIX):],
             "custom_llm_provider": "openai",
-            "api_base": _normalize_compatible_base_url(
+            "api_base": _normalize_ninerouter_base_url(
                 os.environ[NINEROUTER_BASE_URL_ENV_VAR]
             ),
             "api_key": os.environ[NINEROUTER_API_KEY_ENV_VAR].strip(),
-        }
-
-    if model.startswith(OPENAI_COMPATIBLE_PREFIX):
-        return {
-            "model": model[len(OPENAI_COMPATIBLE_PREFIX):],
-            "custom_llm_provider": "openai",
-            "api_base": _normalize_compatible_base_url(
-                os.environ[OPENAI_COMPATIBLE_BASE_URL_ENV_VAR]
-            ),
-            "api_key": os.environ[OPENAI_COMPATIBLE_API_KEY_ENV_VAR].strip(),
         }
 
     return {"model": model}
@@ -352,7 +333,7 @@ def call_vlm(
                 print("Please start the server in a separate terminal:")
                 print("  cd ferret_ui")
                 print("  .\\venv\\Scripts\\activate")
-                print("  python ferret_server.py")
+                print("  python -m ferret_ui.ferret_server")
                 print("Wait for 'Model loaded successfully!' before running the evaluator.\n")
                 raise SystemExit(1)
             else:
@@ -362,7 +343,7 @@ def call_vlm(
     data_url = image_to_data_url(image_path)
     retries = _resolve_max_retries(max_retries)
     timeout = _resolve_request_timeout(request_timeout)
-    _register_compatible_model(model)
+    _register_ninerouter_model(model)
     delay = DEFAULT_RATE_LIMIT_BACKOFF_SECONDS
 
     for attempt in range(retries + 1):
