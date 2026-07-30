@@ -285,6 +285,16 @@ prompting with `PROMPT_TEMPLATE` (image only). Results land in
 **Estimand:** does an accessibility profile change a vision-only VLM's grounding
 accuracy, relative to that same model's baseline?
 
+**`PROMPT_TEMPLATE_WITH_TREE`'s wording was harmonized to `PROMPT_TEMPLATE` on
+2026-07-29**, as part of the tree-mode remediation. It used to read "central **(x, y)
+pixel** coordinates" against `PROMPT_TEMPLATE`'s "central **pixel (x, y)** coordinates" —
+a word-order difference that meant a vision-vs-tree comparison varied two things (tree
+presence *and* wording) instead of one. Both templates now share the identical sentence
+(`vlm_eval/runner.py:21-40`). This is **mode 1's** `PROMPT_TEMPLATE`, unchanged by the
+fix — the vision-only wording used for `dataset/experiment_2/` is byte-identical to what
+mode 1 sends today, so that archive stays comparable. It matters only for mode 2, noted
+in §3.
+
 **Unit of analysis:** one paired observation is `(screen, target_text, model)` → a
 `co_present` (baseline_score, profile_score) pair. Reachability (§1.9-adjacent, really
 its own metric) is computed once per profile from a single model's label files, since it
@@ -359,12 +369,14 @@ targets, where per-model McNemar has almost nothing left to detect. The pooled t
 
 ## 3. Mode 2 — Tree-injected
 
-**Trigger:** `USE_A11Y_TREE=true`. Same runner, `use_a11y_tree=True`, prompting with
-`PROMPT_TEMPLATE_WITH_TREE`, which appends a partial accessibility tree
-(`build_tree_text`) to the prompt: each visible element's best label and pixel bounds.
-Results land in `dataset/evaluation_results_{model}_with_tree.csv`
-(`vlm_eval/config.get_results_csv`). Analysed identically to mode 1, pointed at the
-`_with_tree` files.
+**Trigger:** `USE_A11Y_TREE=true`. Same runner, `use_a11y_tree=True`. For hosted
+(vision-API) models, prompting with `PROMPT_TEMPLATE_WITH_TREE`, which appends a partial
+accessibility tree (`build_tree_text`) to the prompt: each visible element's best label
+and pixel bounds, `[x1,y1][x2,y2]`, absolute screenshot pixels. Results land in
+`dataset/evaluation_results_{model}_with_tree.csv` (`vlm_eval/config.get_results_csv`).
+Analysed by pointing `mcnemar_analysis.py` at the `_with_tree` files — either explicitly
+via `--csv`, or via `--mode tree` when discovering from `--data-dir` (see "Analysis file
+discovery" below).
 
 **Estimand:** the same question as mode 1 — does the profile change grounding accuracy —
 for a model that additionally receives a partial accessibility tree. Mode 2 alone does
@@ -376,6 +388,30 @@ for a model that additionally receives a partial accessibility tree. Mode 2 alon
 **Formulas applied:** identical machinery to mode 1 — §1's reachability, pooled
 permutation, per-model McNemar, and sign test all apply unchanged, run against the
 `_with_tree` CSVs.
+
+### Analysis file discovery: vision and tree results are never pooled automatically
+
+`mcnemar_analysis.py`'s default file discovery (`discover_result_csvs`,
+`mcnemar_analysis.py:166-179`) globs `evaluation_results_*.csv` under `--data-dir` and
+**excludes** anything ending in `_with_tree` unless `--mode tree` is passed. Before this
+was added, the glob matched both suffixes, and `model_name_from_path` turned
+`evaluation_results_local_ferret-ui-llama8b_with_tree.csv` into a distinct model id
+(`local_ferret-ui-llama8b_with_tree`) rather than recognising it as the same model's
+second arm. A default run after any tree collection would have fed both arms of the same
+model into §2's pooled cluster permutation test and §1.5's Holm family as if they were
+two independent models — but vision and tree rows for the same model, same targets, are
+maximally correlated, not independent measurements. Concretely: the sign test's "7/7
+models down" (§2 worked example) would silently become "14/14" with zero new evidence,
+and the per-model Holm family would grow from 28 tests to 56, both without a single new
+observation. Every CSV row now also carries its own `prompt_mode` column
+(`vision`/`tree`; `vlm_eval/results.py`) as a second line of defence, and
+`load_results` (`mcnemar_analysis.py`) defaults it to `vision` for archived CSVs that
+predate the column, so `dataset/experiment_2/`'s regression reproduction (CLAUDE.md §9)
+is unaffected.
+
+This does not remove the ability to compare arms — `run_cross_comparison` (mode 3, §4
+below) takes explicit file paths and is unaffected by the default glob; it remains the
+intended way to compare a model's vision-only CSV against its `_with_tree` counterpart.
 
 ### The target must be withheld from its own tree entry
 
@@ -413,6 +449,67 @@ file, **before** `build_tree_text` or any prompt is constructed. The tree cannot
 whether a target's node exists in a given profile's XML. Consequently mode 2's
 reachability table will be numerically identical to mode 1's for the same profile set —
 report it once, not as corroborating evidence from a second, independent measurement.
+
+### Per-model tree rendering: Ferret-UI required a native format, not the vision-model one
+
+`local/ferret-ui-llama8b` does not receive `PROMPT_TEMPLATE_WITH_TREE`'s rendered string.
+`vlm_provider.call_vlm` rewrites the prompt for this model regardless of mode (see mode 1
+for why — Ferret is fine-tuned on a fixed single-line grounding instruction, and the
+generic zero-shot prompt causes it to just repeat the target text back). Until 2026-07-29
+this rewrite **replaced the prompt outright**: the regex anchor it matched on
+(`click on the text element:`) also appears inside `PROMPT_TEMPLATE_WITH_TREE`, so the
+substitution fired in tree mode too, discarding the entire injected tree. Vision mode and
+tree mode sent **byte-identical input** to Ferret, while still being written to two
+differently-named CSVs and treated as separate experimental conditions. No tree-mode data
+was ever collected before this was caught, so nothing is contaminated by it — but the bug
+would have been invisible in the results themselves (both arms would simply show
+whatever vision-only grounding looked like) rather than raising an error.
+
+The fix (`vlm_provider.build_ferret_prompt`) augments instead of replacing, and renders
+the tree in Ferret's own input convention rather than the hosted-model one:
+
+- **Scale:** `ferret_ui/model_UI.py:126-140` reads an input box after multiplying by
+  `VOCAB_IMAGE_W / image_w` (`VOCAB_IMAGE_W = VOCAB_IMAGE_H = 1000`;
+  `ferret_ui/model_UI.py:16-17`), and the `ferret_llama_3` system prompt
+  (`ferret_ui/conversation.py:443-448`) tells the model "Image size: 1000x1000"
+  unconditionally. A tree rendered in absolute screenshot pixels — what
+  `PROMPT_TEMPLATE_WITH_TREE` sends hosted models — is out of distribution for Ferret:
+  e.g. a pixel y of 2000 on a 2274px screenshot would be read as roughly twice the image
+  height. `build_ferret_prompt` scales every box the same way Ferret's own code does
+  (`int()`-truncated, not rounded, matching `model_UI.py:131,136` exactly).
+- **Format:** single bracket, comma-space (`[x1, y1, x2, y2]`), matching
+  `model_UI.py:140`'s own formatting — not the hosted-model tree's `[x1,y1][x2,y2]`
+  double-bracket-pair shape.
+- **Order:** tree block first, the unchanged fine-tuned grounding line
+  (`Provide the bounding box of the text '{target}'.`) always last, since Ferret's
+  fine-tuning expects the instruction to be the final thing it reads.
+- **No "image is W×H pixels" sentence** for Ferret — it would contradict the system
+  prompt's fixed "Image size: 1000x1000".
+
+**Token budget.** Ferret is Llama-3-8B, `max_position_embeddings=8192`
+(`ferret_ui/config.json`). The image alone costs 2,304 tokens for every capture in this
+dataset (CLIP-ViT-L/14-336 `anyres`, base tile + a 1×3 grid — every screenshot's aspect
+ratio selects the same pinpoint, so this is constant across profiles). Measured against
+the real Llama-3 tokenizer over all 77 archived label files, the worst-case tree
+(gmail, 100 rows) is 2,299 tokens; worst-case total is 5,744 of 8,192 — 30% headroom.
+`ferret_server.py`'s `check_token_budget` enforces this server-side (where the tokenizer
+already lives; `transformers` is intentionally not installed in the main `.venv` per §
+"Ferret-UI needs a different prompt" in `CLAUDE.md`) and **raises rather than truncates**
+if a future capture would overflow it — truncating the tree would change the
+experimental condition being measured, which is worse than failing loudly. Accessibility
+profiles generally *shrink* trees (fewer elements fit at larger font/density — gmail's
+`elder_combo_max` tree is 924 tokens, 60% below its own baseline), so re-collection is
+expected to stay well inside budget; a screen would need to roughly double its element
+count to breach it.
+
+The leak-fix exclusion (`collect_tree_rows`, formerly folded into `build_tree_text`) is
+shared by both renderings: the hosted-model pixel format and Ferret's 0-1000 format are
+built from the same excluded row list, so the fix documented above holds for Ferret's
+prompt too, not just the hosted-model one. `tests/test_vlm_provider.py` covers this
+(`test_build_ferret_prompt_excludes_target_row`) since the tree tests in
+`tests/test_vlm_eval_runner.py` mock `call_vlm` at the runner boundary and therefore
+never observed what the wire format actually was for Ferret — the gap that let the
+discard bug go unnoticed for as long as it did.
 
 ### Illustrative worked example
 

@@ -87,7 +87,6 @@ python vlm_evaluator.py                       # evaluate; resumes by default
 python vlm_evaluator.py --fresh               # discard existing rows and restart
 python mcnemar_analysis.py                    # analyse dataset/
 python mcnemar_analysis.py --data-dir dataset/experiment_2   # re-analyse the archive
-python mcnemar_analysis.py --include-rtl      # only after RTL passes the mirror check
 ```
 
 Environment: Windows 11, PowerShell, venv at `.venv`. Activate with
@@ -115,8 +114,12 @@ unittest.TextTestRunner().run(unittest.defaultTestLoader.loadTestsFromNames( \
 | `elder_text_heavy` | 1.4 | default | off | off | text reflow |
 | `elder_zoom_heavy` | 1.0 | 480 | off | off | element inflation |
 | `elder_combo_max` | 1.6 | 520 | off | off | compounded worst case |
-| `elder_combo_rtl` | 1.5 | 480 | **on (BROKEN — see §6.2)** | off | mirroring |
+| `elder_combo_mid` | 1.5 | 480 | off | off | second geometry point |
 | `colorblind_deuteranomaly` | 1.0 | default | off | deuteranomaly | colour only |
+
+`elder_combo_mid` was `elder_combo_rtl` (RTL on) until re-collection measured 0%
+mirroring across every screen — see §6. The arm is dropped, not just unverified: no
+`ELDER_PROFILES` entry requests `rtl="1"` anymore.
 
 The colour filter is applied **in software to the PNG** (Machado et al. 2009 severity-1.0
 matrix, `screenshot_pipeline.COLOR_TRANSFORMS`) because `adb screencap` reads display
@@ -219,7 +222,7 @@ landed and covered by tests.
 | Off-screen targets auto-scored 0 without querying the model | `status` column; absent targets get `off_screen` and **no** score; analysis restricted to `co_present` | `vlm_eval/runner.py`, `vlm_eval/results.py`, `mcnemar_analysis.py` |
 | RTL setting key never read by Android | write `debug.force_rtl` as both setting and system property | `layout_modifier.apply_rtl` |
 | Nothing verified a profile applied | read all four vectors back; raise `ProfileVerificationError` | `layout_modifier.verify_profile` |
-| RTL mirroring never checked visually | mirror check on captured hierarchy, excluding centred elements | `capture_checks.rtl_applied` |
+| RTL mirroring never checked visually | mirror check added on captured hierarchy — then, on re-collection, measured 0% mirrored across every screen even with the corrected setting key; the arm was dropped and renamed `elder_combo_mid` rather than kept as a nominal RTL condition, and the now-pointless check was removed | `layout_modifier.ELDER_PROFILES`, was `capture_checks.rtl_applied` |
 | Colour transform could silently no-op | before/after diff inside the transform; raises on zero change | `screenshot_pipeline.apply_color_transform` |
 | Content drift never measured | baseline-open / baseline-close bracketing per screen | `orchestrator.measure_drift` |
 | Missing capture failed silently | completion manifest; run exits non-zero on any gap | `orchestrator.write_manifest` |
@@ -264,17 +267,16 @@ Everything else is done; this is the remaining work, and it needs the emulator.
    Maps opened once to clear first-run dialogs.
 2. `python orchestrator.py --dry-run` — logic path.
 3. `python orchestrator.py --screens settings_main` — confirm all four profile
-   assertions pass, especially RTL.
-4. **Open `dataset/images/settings_main_elder_combo_rtl.png` and confirm by eye that the
-   layout is mirrored.** The absence of this check is what caused the original bug.
-   Do not skip it because the automated check passed.
-5. Full run; confirm the manifest reports no problems and the run exits 0.
-6. Evaluate one model first; confirm `status` populates and resume works by interrupting
+   assertions pass.
+4. Full run; confirm the manifest reports no problems and the run exits 0.
+5. Evaluate one model first; confirm `status` populates and resume works by interrupting
    and restarting.
-7. `python mcnemar_analysis.py --include-rtl` — the flag is only valid once step 4 passes.
+6. `python mcnemar_analysis.py`.
 
-If RTL cannot be made to mirror, **drop the arm** and rename the profile to what it
-actually is (font 1.5 + density 480). Four honest profiles beat five with one unverified.
+RTL was already tried and dropped (§3, §6): no profile requests `rtl="1"` anymore, so
+there is no mirror-eyeball step left to run. If a future attempt revives an RTL arm,
+repeat the eyeball check this remediation skipped the first time before trusting any
+automated pass/fail.
 
 ---
 

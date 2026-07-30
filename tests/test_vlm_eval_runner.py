@@ -12,7 +12,12 @@ from vlm_eval.results import (
     STATUS_OFF_SCREEN,
     init_csv,
 )
-from vlm_eval.runner import build_tree_text, evaluate_screen, summarize_run
+from vlm_eval.runner import (
+    build_tree_text,
+    collect_tree_rows,
+    evaluate_screen,
+    summarize_run,
+)
 
 
 def write_png_header(path: Path, width: int, height: int) -> None:
@@ -326,6 +331,96 @@ class BuildTreeTextTests(unittest.TestCase):
         # ...while a neighbor stays as context, and the ask still names the target.
         self.assertIn('"Wi-Fi" [0,0][100,50]', prompt)
         self.assertIn("'Bluetooth'", prompt)
+
+    def test_collect_tree_rows_matches_build_tree_text_exclusion(self):
+        # collect_tree_rows is build_tree_text's single source of truth for
+        # the fallback/exclusion logic; every per-model rendering (e.g.
+        # Ferret's) is built on its output, so the two must never diverge.
+        labels = [
+            {"text": "Wi-Fi", "box": [0, 0, 100, 50]},
+            {"text": "Bluetooth", "box": [0, 60, 100, 110]},
+            {"text": "", "content_desc": "Back", "box": [0, 120, 40, 160]},
+        ]
+
+        rows = collect_tree_rows(labels, exclude_text="Bluetooth")
+
+        self.assertEqual(
+            [("Wi-Fi", [0, 0, 100, 50]), ("Back", [0, 120, 40, 160])],
+            rows,
+        )
+
+    @mock.patch("vlm_eval.runner.call_vlm", return_value="[50, 85]")
+    def test_call_vlm_receives_structured_tree_rows_and_target_text(
+        self, call_vlm_mock
+    ):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        images_dir = root / "images"
+        labels_dir = root / "labels"
+        images_dir.mkdir()
+        labels_dir.mkdir()
+        results_csv = root / "results.csv"
+        init_csv(results_csv)
+
+        write_png_header(images_dir / "net_baseline.png", 1080, 2274)
+        labels = [
+            {"text": "Wi-Fi", "box": [0, 0, 100, 50]},
+            {"text": "Bluetooth", "box": [0, 60, 100, 110]},
+        ]
+        (labels_dir / "net_baseline.json").write_text(
+            json.dumps(labels), encoding="utf-8"
+        )
+
+        evaluate_screen(
+            "test-model",
+            "net",
+            0,
+            results_csv,
+            images_dir=images_dir,
+            labels_dir=labels_dir,
+            profiles=["baseline"],
+            use_a11y_tree=True,
+        )
+
+        call_kwargs = call_vlm_mock.call_args.kwargs
+        self.assertEqual("Bluetooth", call_kwargs["target_text"])
+        self.assertEqual([("Wi-Fi", [0, 0, 100, 50])], call_kwargs["tree_rows"])
+        self.assertEqual(1080, call_kwargs["img_width"])
+        self.assertEqual(2274, call_kwargs["img_height"])
+
+    @mock.patch("vlm_eval.runner.call_vlm", return_value="[50, 85]")
+    def test_call_vlm_gets_none_tree_rows_in_vision_mode(self, call_vlm_mock):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        images_dir = root / "images"
+        labels_dir = root / "labels"
+        images_dir.mkdir()
+        labels_dir.mkdir()
+        results_csv = root / "results.csv"
+        init_csv(results_csv)
+
+        write_png_header(images_dir / "net_baseline.png", 1080, 2274)
+        labels = [{"text": "Bluetooth", "box": [0, 60, 100, 110]}]
+        (labels_dir / "net_baseline.json").write_text(
+            json.dumps(labels), encoding="utf-8"
+        )
+
+        evaluate_screen(
+            "test-model",
+            "net",
+            0,
+            results_csv,
+            images_dir=images_dir,
+            labels_dir=labels_dir,
+            profiles=["baseline"],
+            use_a11y_tree=False,
+        )
+
+        call_kwargs = call_vlm_mock.call_args.kwargs
+        self.assertEqual("Bluetooth", call_kwargs["target_text"])
+        self.assertIsNone(call_kwargs["tree_rows"])
 
 
 if __name__ == "__main__":

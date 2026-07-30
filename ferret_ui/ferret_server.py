@@ -11,6 +11,72 @@ from model_UI import (
     conv_templates, disable_torch_init, load_pretrained_model,
     tokenizer_image_token, process_images, get_model_name_from_path
 )
+from mm_utils import get_anyres_image_grid_shape
+
+# CLIP-ViT-L/14-336 (this model's mm_vision_tower) tokenizes a 336x336 tile
+# into a 24x24 patch grid, i.e. 576 tokens per tile.
+CLIP_336_PATCH_TOKENS = 576
+CLIP_336_PATCH_SIZE = 336
+
+
+class TokenBudgetExceeded(ValueError):
+    pass
+
+
+def estimate_image_tokens(image_size, model_config):
+    """
+    Estimate how many tokens the vision tower contributes for one image.
+
+    For 'anyres' (this model's configured image_aspect_ratio), the image is
+    split into a base tile plus a grid of sub-tiles chosen by
+    get_anyres_image_grid_shape -- the same function process_images() uses to
+    actually build the tensor, so this stays in sync with what really gets
+    fed to the model. Other aspect-ratio modes fall back to a single tile;
+    accurate for 'square_nocrop', an underestimate for any other mode, but no
+    other mode is configured for this model.
+    """
+    aspect_ratio = getattr(model_config, "image_aspect_ratio", None)
+    if aspect_ratio == "anyres":
+        pinpoints = model_config.image_grid_pinpoints
+        grid_w, grid_h = get_anyres_image_grid_shape(
+            image_size, pinpoints, CLIP_336_PATCH_SIZE
+        )
+        tiles = grid_w * grid_h
+        return CLIP_336_PATCH_TOKENS * (tiles + 1)
+    return CLIP_336_PATCH_TOKENS
+
+
+def check_token_budget(input_ids, image_size, model_config, max_new_tokens):
+    """
+    Raise TokenBudgetExceeded if this request would overflow the model's
+    context window.
+
+    input_ids contains exactly one IMAGE_TOKEN_INDEX placeholder standing in
+    for the whole image (see tokenizer_image_token), so the real image
+    expansion is added on top of the text tokens rather than counted twice.
+
+    This exists so a tree too large for the context window fails loudly with
+    a clear cause, instead of either being silently truncated (which would
+    change the experimental condition being measured) or crashing deep inside
+    generate() with an opaque CUDA/index error.
+    """
+    context_limit = getattr(model_config, "max_position_embeddings", None)
+    if context_limit is None:
+        return
+
+    text_tokens = input_ids.shape[-1] - 1
+    image_tokens = estimate_image_tokens(image_size, model_config)
+    total = text_tokens + image_tokens + max_new_tokens
+
+    if total > context_limit:
+        raise TokenBudgetExceeded(
+            f"Request would use ~{total} tokens (text={text_tokens}, "
+            f"image={image_tokens}, max_new_tokens={max_new_tokens}), "
+            f"exceeding the model's {context_limit}-token context window. "
+            "Reduce max_new_tokens (the generation budget is usually the "
+            "cheapest lever) or the size of the injected accessibility tree."
+        )
+
 
 class FerretServerHandler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -52,7 +118,20 @@ class FerretServerHandler(BaseHTTPRequestHandler):
             
             device = 'cuda' if torch.cuda.is_available() else 'cpu'
             input_ids = tokenizer_image_token(full_prompt, self.server.tokenizer, IMAGE_TOKEN_INDEX, return_tensors='pt').unsqueeze(0).to(device)
-            
+
+            try:
+                check_token_budget(
+                    input_ids, image_size, self.server.model.config,
+                    self.server.max_new_tokens,
+                )
+            except TokenBudgetExceeded as e:
+                print(f"[ERROR] {e}")
+                self.send_response(400)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+                return
+
             # Image tensor preparation
             if self.server.model.config.image_aspect_ratio == "square_nocrop":
                 image_tensor = self.server.image_processor.preprocess(img, return_tensors='pt', do_resize=True, 
@@ -94,7 +173,7 @@ class FerretServerHandler(BaseHTTPRequestHandler):
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
             
-            response_data = {"text": outputs}
+            response_data = {"text": outputs, "max_new_tokens": self.server.max_new_tokens}
             self.wfile.write(json.dumps(response_data).encode('utf-8'))
             
         except Exception as e:

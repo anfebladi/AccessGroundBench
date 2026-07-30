@@ -10,6 +10,7 @@ CSV_COLUMNS = [
     "x_min", "y_min", "x_max", "y_max",
     "score",
     "trials", "trial_scores", "parse_method",
+    "prompt_mode", "tree_rows_sent",
 ]
 
 # Row statuses. Only co_present rows carry a meaningful score; the others record
@@ -18,6 +19,12 @@ CSV_COLUMNS = [
 STATUS_CO_PRESENT = "co_present"
 STATUS_OFF_SCREEN = "off_screen"
 STATUS_API_ERROR = "api_error"
+
+# What prompt shape produced this row. The filename (evaluation_results_*.csv
+# vs *_with_tree.csv) used to be the only record of this; putting it in the
+# row itself lets a mixed file be detected instead of silently misread.
+PROMPT_MODE_VISION = "vision"
+PROMPT_MODE_TREE = "tree"
 
 
 def init_csv(results_csv: Path) -> None:
@@ -53,7 +60,11 @@ def load_completed_keys(results_csv: Path) -> set[tuple[str, str, str]]:
     return completed
 
 
-def prepare_csv(results_csv: Path, fresh: bool = False) -> set[tuple[str, str, str]]:
+def prepare_csv(
+    results_csv: Path,
+    fresh: bool = False,
+    expected_prompt_mode: str | None = None,
+) -> set[tuple[str, str, str]]:
     """
     Ready a results CSV for writing and report what is already done.
 
@@ -63,6 +74,11 @@ def prepare_csv(results_csv: Path, fresh: bool = False) -> set[tuple[str, str, s
 
     Resume matters because a full run is ~1000 paid API calls per model; the
     previous truncate-on-start behaviour discarded all of them on any crash.
+
+    expected_prompt_mode, when given, guards against resuming into a mixed
+    file: the resume key is (screen, target_text, profile) only, so a vision
+    row would otherwise silently suppress the corresponding tree query (and
+    vice versa) with nothing in the schema to reveal the mismatch afterwards.
     """
     if fresh or not results_csv.is_file():
         init_csv(results_csv)
@@ -78,6 +94,24 @@ def prepare_csv(results_csv: Path, fresh: bool = False) -> set[tuple[str, str, s
         print(f"  [CSV] {results_csv.name} uses an older schema; starting fresh.")
         init_csv(results_csv)
         return set()
+
+    if expected_prompt_mode is not None:
+        with open(results_csv, "r", newline="", encoding="utf-8") as f:
+            modes_present = {
+                row.get("prompt_mode")
+                for row in csv.DictReader(f)
+                if row.get("prompt_mode")
+            }
+        conflicting = modes_present - {expected_prompt_mode}
+        if conflicting:
+            raise ValueError(
+                f"{results_csv} already contains prompt_mode={sorted(conflicting)} "
+                f"rows, but this run is prompt_mode={expected_prompt_mode!r}. "
+                "Vision and tree results must not share a file: resuming would "
+                "silently skip queries whose (screen, target_text, profile) key "
+                "already exists under the other mode. Use --fresh or a separate "
+                "CSV path."
+            )
 
     print(f"  [CSV] Resuming {results_csv} ({len(completed)} rows already done)")
     return completed

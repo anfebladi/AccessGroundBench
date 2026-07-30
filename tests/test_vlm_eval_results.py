@@ -5,6 +5,8 @@ from pathlib import Path
 
 from vlm_eval.results import (
     CSV_COLUMNS,
+    PROMPT_MODE_TREE,
+    PROMPT_MODE_VISION,
     STATUS_API_ERROR,
     STATUS_CO_PRESENT,
     append_result,
@@ -31,6 +33,8 @@ def sample_row(**overrides) -> dict:
         "trials": 1,
         "trial_scores": "1",
         "parse_method": "bracket",
+        "prompt_mode": PROMPT_MODE_VISION,
+        "tree_rows_sent": 0,
     }
     row.update(overrides)
     return row
@@ -61,7 +65,7 @@ class VlmEvalResultsTests(unittest.TestCase):
         self.assertEqual(CSV_COLUMNS, rows[0])
         self.assertEqual(
             ["clock", "Timer", "baseline", STATUS_CO_PRESENT, "[1, 2]", "1", "2",
-             "0", "0", "10", "10", "1", "1", "1", "bracket"],
+             "0", "0", "10", "10", "1", "1", "1", "bracket", PROMPT_MODE_VISION, "0"],
             rows[1],
         )
 
@@ -107,6 +111,37 @@ class ResumeTests(unittest.TestCase):
         append_result(self.csv_path, sample_row(status=STATUS_API_ERROR, score=""))
 
         self.assertEqual(set(), load_completed_keys(self.csv_path))
+
+    def test_prepare_csv_allows_resuming_matching_prompt_mode(self):
+        init_csv(self.csv_path)
+        append_result(self.csv_path, sample_row(prompt_mode=PROMPT_MODE_VISION))
+
+        completed = prepare_csv(
+            self.csv_path, expected_prompt_mode=PROMPT_MODE_VISION
+        )
+
+        self.assertEqual({("clock", "Timer", "baseline")}, completed)
+
+    def test_prepare_csv_rejects_resuming_into_mixed_prompt_mode_file(self):
+        # Resume keys on (screen, target_text, profile) only, so a vision row
+        # would otherwise silently suppress the corresponding tree query for
+        # the same key (and vice versa) with nothing in the schema to reveal
+        # the mismatch afterwards.
+        init_csv(self.csv_path)
+        append_result(self.csv_path, sample_row(prompt_mode=PROMPT_MODE_VISION))
+
+        with self.assertRaisesRegex(ValueError, "prompt_mode"):
+            prepare_csv(self.csv_path, expected_prompt_mode=PROMPT_MODE_TREE)
+
+    def test_prepare_csv_expected_prompt_mode_is_optional(self):
+        # Callers that don't pass expected_prompt_mode (e.g. pre-existing
+        # scripts) keep the old unguarded resume behaviour.
+        init_csv(self.csv_path)
+        append_result(self.csv_path, sample_row(prompt_mode=PROMPT_MODE_TREE))
+
+        completed = prepare_csv(self.csv_path)
+
+        self.assertEqual({("clock", "Timer", "baseline")}, completed)
 
     def test_older_schema_is_restarted_rather_than_resumed(self):
         # A pre-status CSV cannot be resumed safely: its columns differ.

@@ -55,10 +55,10 @@ ELDER_PROFILES: dict[str, dict[str, str]] = {
         "rtl":        "0",
         "daltonizer": "off",
     },
-    "elder_combo_rtl": {
+    "elder_combo_mid": {
         "font_scale": "1.5",
         "density":    "480",
-        "rtl":        "1",
+        "rtl":        "0",
         "daltonizer": "off",
     },
     # Color vector only: geometry stays at baseline so the color remap is
@@ -124,8 +124,13 @@ def apply_density(adb: str, serial: str, value: str) -> None:
 #
 # An earlier revision wrote "development_settings_force_rtl", which is not a key
 # Android reads. Verified against the resulting captures: 0 of 68 off-centre
-# elements mirrored. Hence verify_rtl_applied() below, and the empirical mirror
-# check the orchestrator runs on the captured layout.
+# elements mirrored. Hence verify_rtl_applied() below -- but even with the
+# correct key, re-collection still measured 0% mirroring across every screen,
+# so no ELDER_PROFILES entry requests rtl="1" anymore. The reflow this key is
+# meant to trigger likely needs a full app/process restart to take effect,
+# which nothing in this pipeline currently does; a real fix would need that,
+# not just the correct setting key. See CLAUDE.md's profile history for the
+# dropped elder_combo_rtl arm (now elder_combo_mid, RTL-free).
 RTL_SETTING_KEY = "debug.force_rtl"
 
 

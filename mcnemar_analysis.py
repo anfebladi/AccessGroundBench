@@ -64,22 +64,36 @@ FLOOR_ACC_THRESHOLD = 50.0
 # exists to prevent, mirrored at the top of the scale.
 CEILING_ACC_THRESHOLD = 95.0
 
-# elder_combo_rtl is excluded by default: the RTL setting key used during
-# collection was never read by Android, so that profile is a second geometry
-# condition rather than a mirroring condition. See dataset/experiment_2/README.md.
+# elder_combo_rtl was dropped and renamed to elder_combo_mid: even with the
+# correct RTL setting key, re-collection still measured 0% mirroring across
+# every screen, so the profile is now honestly labelled as a second geometry
+# condition (font 1.5 / density 480) rather than a mirroring condition. See
+# dataset/experiment_2/README.md for the historical unverified arm.
 EXPERIMENTAL_PROFILES = [
     "elder_text_heavy",
     "elder_zoom_heavy",
     "elder_combo_max",
+    "elder_combo_mid",
     "colorblind_deuteranomaly",
 ]
-
-UNVERIFIED_PROFILES = ["elder_combo_rtl"]
 
 # Row statuses. Only co_present rows carry a meaningful score.
 STATUS_CO_PRESENT = "co_present"
 STATUS_OFF_SCREEN = "off_screen"
 STATUS_API_ERROR = "api_error"
+
+# Prompt modes (see vlm_eval.results). Archived CSVs predate this column;
+# treated as vision, matching what was actually run before tree mode existed.
+PROMPT_MODE_VISION = "vision"
+PROMPT_MODE_TREE = "tree"
+
+# Suffix get_results_csv() (vlm_eval/config.py) appends to a tree-mode
+# model's filename. Excluded from the default glob so a tree run can never
+# be silently pooled into the vision-only pipeline as a phantom extra model
+# -- the pooled permutation test and sign test both assume independent
+# measurement streams, and vision/tree rows for the same model are maximally
+# correlated, not independent.
+WITH_TREE_SUFFIX = "_with_tree"
 
 
 # ---------------------------------------------------------------------------
@@ -111,7 +125,13 @@ def derive_status(row: dict) -> str:
 
 
 def load_results(csv_path: Path) -> list[dict]:
-    """Load an evaluation CSV, normalising the status column."""
+    """Load an evaluation CSV, normalising the status column.
+
+    prompt_mode/tree_rows_sent were added after the archived experiment_2
+    run, so older CSVs lack those columns entirely; default them to vision/0
+    rather than letting downstream code see missing keys, so the archived
+    dataset's regression reproduction (CLAUDE.md #9) keeps working unchanged.
+    """
     if not csv_path.is_file():
         print(f"[ERROR] Results CSV not found: {csv_path}")
         sys.exit(1)
@@ -121,6 +141,10 @@ def load_results(csv_path: Path) -> list[dict]:
 
     for row in rows:
         row["status"] = derive_status(row)
+        if not row.get("prompt_mode"):
+            row["prompt_mode"] = PROMPT_MODE_VISION
+        if not row.get("tree_rows_sent"):
+            row["tree_rows_sent"] = "0"
 
     print(f"[LOADED] {len(rows)} rows from {csv_path.name}")
     return rows
@@ -138,6 +162,23 @@ def model_name_from_path(csv_path: Path) -> str:
     """Recover the model id from an evaluation_results_*.csv filename."""
     name = csv_path.stem.replace("evaluation_results_", "")
     return "default" if name == "evaluation_results" else name
+
+
+def discover_result_csvs(data_dir: Path, mode: str) -> list[Path]:
+    """
+    Find evaluation_results_*.csv files for one prompt-mode arm.
+
+    Vision and tree results for the same model are correlated, not
+    independent measurements (the tree run repeats the same queries with
+    context added), so the default glob must never pool a model's *.csv with
+    its *_with_tree.csv counterpart -- doing so would feed both arms into the
+    pooled cluster permutation test and the sign test as if they were two
+    independent models, silently doubling the effective sample.
+    """
+    all_csv_files = sorted(data_dir.glob("evaluation_results_*.csv"))
+    if mode == "tree":
+        return [p for p in all_csv_files if p.stem.endswith(WITH_TREE_SUFFIX)]
+    return [p for p in all_csv_files if not p.stem.endswith(WITH_TREE_SUFFIX)]
 
 
 # ---------------------------------------------------------------------------
@@ -570,20 +611,22 @@ def main() -> None:
                         help="Directory holding evaluation_results_*.csv")
     parser.add_argument("--csv", type=Path, default=None,
                         help="Analyse a single evaluation CSV")
-    parser.add_argument("--include-rtl", action="store_true",
-                        help="Include elder_combo_rtl (only valid once the RTL "
-                             "setting is verified to apply; see CLAUDE.md)")
     parser.add_argument("--permutations", type=int, default=DEFAULT_PERMUTATIONS,
                         help="Permutation draws for the pooled test")
     parser.add_argument("--seed", type=int, default=0,
                         help="RNG seed for the permutation test")
     parser.add_argument("--compare-a", type=Path, default=None)
     parser.add_argument("--compare-b", type=Path, default=None)
+    parser.add_argument("--mode", choices=["vision", "tree"], default="vision",
+                        help="Which prompt-mode arm to analyse when discovering "
+                             "CSVs from --data-dir (default: vision). Vision and "
+                             "tree results for the same model are correlated, not "
+                             "independent measurements, so they are never pooled "
+                             "together automatically -- use --compare-a/--compare-b "
+                             "for a paired vision-vs-tree comparison instead.")
     args = parser.parse_args()
 
     profiles = list(EXPERIMENTAL_PROFILES)
-    if args.include_rtl:
-        profiles.extend(UNVERIFIED_PROFILES)
 
     if bool(args.compare_a) != bool(args.compare_b):
         print("[ERROR] --compare-a and --compare-b must be given together.")
@@ -598,20 +641,21 @@ def main() -> None:
         data_dir = args.csv.parent
     else:
         data_dir = args.data_dir
-        csv_files = sorted(data_dir.glob("evaluation_results_*.csv"))
+        csv_files = discover_result_csvs(data_dir, args.mode)
         if not csv_files:
-            print(f"[ERROR] No evaluation_results_*.csv files found in {data_dir}")
+            print(f"[ERROR] No evaluation_results_*.csv files for mode={args.mode!r} "
+                  f"found in {data_dir}")
             sys.exit(1)
 
     print("=" * 78)
     print("  AccessGroundBench -- Statistical Analysis")
     print(f"  Data dir : {data_dir}")
+    print(f"  Mode     : {args.mode}")
     print(f"  Models   : {len(csv_files)}")
+    for path in csv_files:
+        print(f"             {path.name}")
     print(f"  Profiles : {', '.join(profiles)}")
     print(f"  alpha    : {ALPHA} (Holm-Bonferroni corrected)")
-    if not args.include_rtl:
-        print(f"  Excluded : {', '.join(UNVERIFIED_PROFILES)} "
-              f"(RTL setting never applied during collection)")
     print("=" * 78)
 
     indices = {
@@ -621,6 +665,19 @@ def main() -> None:
 
     # Reachability depends only on the captures, so any one model's rows show it.
     first_index = next(iter(indices.values()))
+
+    # A profile can be in EXPERIMENTAL_PROFILES but absent from this specific
+    # dataset -- e.g. an archived run predating a profile rename, or a
+    # --screens subset. Without this filter every section below would print a
+    # spurious present=0/total=0 "0.0%" row for it, which reads as "measured
+    # and found unreachable" rather than "never captured here".
+    available_profiles = {prof for (_screen, _text, prof) in first_index}
+    missing_profiles = [p for p in profiles if p not in available_profiles]
+    profiles = [p for p in profiles if p in available_profiles]
+    if missing_profiles:
+        print(f"  Skipped  : {', '.join(missing_profiles)} "
+              f"(no captures for this profile in {data_dir})")
+
     reachability = report_reachability(first_index, profiles)
 
     pooled = report_pooled(indices, profiles, args.permutations, args.seed)

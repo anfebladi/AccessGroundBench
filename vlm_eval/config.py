@@ -19,7 +19,7 @@ ALL_PROFILES = [
     "elder_text_heavy",
     "elder_zoom_heavy",
     "elder_combo_max",
-    "elder_combo_rtl",
+    "elder_combo_mid",
     "colorblind_deuteranomaly",
 ]
 
@@ -45,14 +45,30 @@ def resolve_models(cli_model: str | None) -> list[str]:
     raise SystemExit(1)
 
 
+_A11Y_TREE_TRUE_VALUES = ("true", "1", "yes")
+_A11Y_TREE_FALSE_VALUES = ("false", "0", "no", "")
+
+
 def resolve_use_a11y_tree() -> bool:
     """Resolve the accessibility tree toggle from USE_A11Y_TREE env var.
 
-    Returns True when the env var is set to a truthy value (true/1/yes).
-    Defaults to False when unset or empty.
+    Returns True when the env var is set to a truthy value (true/1/yes),
+    False when unset, empty, or a recognised falsy value (false/0/no).
+
+    Unrecognised values exit rather than silently defaulting to False: a typo
+    like USE_A11Y_TREE=on would otherwise run a full, expensive vision-only
+    evaluation while the operator believes tree mode is active, with no
+    _with_tree marker on the output file to reveal the mismatch afterwards.
     """
     raw = os.environ.get(A11Y_TREE_ENV_VAR, "").strip().lower()
-    return raw in ("true", "1", "yes")
+    if raw in _A11Y_TREE_TRUE_VALUES:
+        return True
+    if raw in _A11Y_TREE_FALSE_VALUES:
+        return False
+
+    print(f"[ERROR] {A11Y_TREE_ENV_VAR} must be one of "
+          f"{_A11Y_TREE_TRUE_VALUES + _A11Y_TREE_FALSE_VALUES}, got: {raw!r}")
+    raise SystemExit(1)
 
 
 def resolve_trials(model: str) -> int:

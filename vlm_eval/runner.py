@@ -10,6 +10,8 @@ from vlm_provider import call_vlm
 
 from .config import ALL_PROFILES, IMAGES_DIR, LABELS_DIR
 from .results import (
+    PROMPT_MODE_TREE,
+    PROMPT_MODE_VISION,
     STATUS_API_ERROR,
     STATUS_CO_PRESENT,
     STATUS_OFF_SCREEN,
@@ -34,27 +36,27 @@ PROMPT_TEMPLATE_WITH_TREE = (
     "{tree_text}\n"
     "The target element may not appear in this tree; use the surrounding "
     "elements' positions as spatial reference and the image to locate it. "
-    "Provide the exact central (x, y) pixel coordinates needed to click on the "
-    "text element: '{target_text}'. "
+    "Provide the exact central pixel (x, y) coordinates "
+    "needed to click on the text element: '{target_text}'. "
     "Return your response strictly in the bracket format: [x, y]"
 )
 
 
-def build_tree_text(
+def collect_tree_rows(
     profile_labels: list[dict],
     exclude_text: str | None = None,
-) -> str:
-    """Render a profile's label records into a compact accessibility-tree string.
+) -> list[tuple[str, list[int]]]:
+    """Collect a profile's label records into (label, box) rows.
 
-    Each line represents one UI element with its best available label and
-    pixel bounding box. Falls back through: text -> content_desc ->
-    resource_id -> class.
+    Each row is one UI element with its best available label and pixel
+    bounding box. Falls back through: text -> content_desc -> resource_id ->
+    class.
 
     When exclude_text is provided, any element whose RENDERED LABEL matches it
-    is withheld from the tree. This prevents the tree from leaking the
-    target's exact pixel bounds (which would reduce grounding to a parsing
-    task): the model still gets the surrounding elements' positions as
-    spatial context, but must locate the target itself from the image.
+    is withheld. This prevents the tree from leaking the target's exact pixel
+    bounds (which would reduce grounding to a parsing task): the model still
+    gets the surrounding elements' positions as spatial context, but must
+    locate the target itself from the image.
 
     The exclusion must be checked against the same fallback chain used to
     build the label, not against `text` alone: a node with empty `text` but
@@ -63,8 +65,14 @@ def build_tree_text(
     this leaked 22 of 168 targets (13.1%) -- typically a parent tab container
     whose bounds enclose the ground-truth box, so the model could score a hit
     by reading the tree instead of looking at the image.
+
+    This is the single source of truth for the exclusion; every rendering of
+    the tree (per-model prompt formats included) must be built from this
+    function's output rather than re-deriving the fallback/exclusion logic,
+    or the leak fix can silently regress in one rendering while holding in
+    another.
     """
-    lines = []
+    rows = []
     for rec in profile_labels:
         box = rec.get("box")
         if not box:
@@ -79,11 +87,25 @@ def build_tree_text(
         )
         if (
             exclude_text is not None
-            and label.strip() == exclude_text
+            and label.strip() == exclude_text.strip()
         ):
             continue
-        x1, y1, x2, y2 = box
-        lines.append(f'- "{label}" [{x1},{y1}][{x2},{y2}]')
+        rows.append((label, list(box)))
+    return rows
+
+
+def build_tree_text(
+    profile_labels: list[dict],
+    exclude_text: str | None = None,
+) -> str:
+    """Render a profile's label records into a compact accessibility-tree string.
+
+    See collect_tree_rows for the fallback/exclusion rules this builds on.
+    """
+    lines = [
+        f'- "{label}" [{x1},{y1}][{x2},{y2}]'
+        for label, (x1, y1, x2, y2) in collect_tree_rows(profile_labels, exclude_text)
+    ]
     return "\n".join(lines)
 
 def get_png_dimensions(image_path: Path) -> tuple[int, int]:
@@ -208,15 +230,29 @@ def evaluate_screen(
                     "x_min": "", "y_min": "", "x_max": "", "y_max": "",
                     "score": "",
                     "trials": 0, "trial_scores": "", "parse_method": "",
+                    "prompt_mode": PROMPT_MODE_TREE if use_a11y_tree else PROMPT_MODE_VISION,
+                    "tree_rows_sent": 0,
                 })
                 count += 1
                 print(f"    [OFF-SCREEN] '{target_text}' -> no measurement")
                 continue
 
+            # Withhold the target's own row so any tree rendering (of any
+            # model's prompt format) provides spatial context without
+            # leaking the answer's bounds. Collected unconditionally so it
+            # can be passed to call_vlm as structured context even when the
+            # shared hosted-model prompt below doesn't need it rendered.
+            tree_rows = (
+                collect_tree_rows(profile_labels, exclude_text=target_text)
+                if use_a11y_tree
+                else None
+            )
+
             if use_a11y_tree:
-                # Withhold the target's own row so the tree provides
-                # spatial context without leaking the answer's bounds.
-                tree_text = build_tree_text(profile_labels, exclude_text=target_text)
+                tree_text = "\n".join(
+                    f'- "{label}" [{x1},{y1}][{x2},{y2}]'
+                    for label, (x1, y1, x2, y2) in tree_rows
+                )
                 prompt = PROMPT_TEMPLATE_WITH_TREE.format(
                     img_width=img_width,
                     img_height=img_height,
@@ -235,7 +271,15 @@ def evaluate_screen(
 
             for _ in range(max(1, trials)):
                 try:
-                    raw_response = call_vlm(model, image_path, prompt)
+                    raw_response = call_vlm(
+                        model,
+                        image_path,
+                        prompt,
+                        target_text=target_text,
+                        tree_rows=tree_rows,
+                        img_width=img_width,
+                        img_height=img_height,
+                    )
                 except Exception as exc:
                     api_error = exc
                     break
@@ -261,6 +305,8 @@ def evaluate_screen(
                     "score": "",
                     "trials": len(trial_results), "trial_scores": "",
                     "parse_method": "",
+                    "prompt_mode": PROMPT_MODE_TREE if use_a11y_tree else PROMPT_MODE_VISION,
+                    "tree_rows_sent": 0,
                 })
                 count += 1
                 continue
@@ -289,6 +335,8 @@ def evaluate_screen(
                 "trials": len(scores),
                 "trial_scores": "".join(str(s) for s in scores),
                 "parse_method": parse_method,
+                "prompt_mode": PROMPT_MODE_TREE if use_a11y_tree else PROMPT_MODE_VISION,
+                "tree_rows_sent": len(tree_rows) if tree_rows else 0,
             })
             count += 1
 

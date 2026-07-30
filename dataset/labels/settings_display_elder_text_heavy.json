@@ -1,0 +1,710 @@
+[
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "content_parent",
+    "box": [
+      0,
+      0,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "app_bar",
+    "box": [
+      0,
+      0,
+      1080,
+      147
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Display & touch",
+    "resource_id": "collapsing_toolbar",
+    "box": [
+      0,
+      0,
+      1080,
+      147
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "action_bar",
+    "box": [
+      21,
+      0,
+      1080,
+      147
+    ]
+  },
+  {
+    "class": "ImageButton",
+    "text": null,
+    "content_desc": "Navigate up",
+    "resource_id": null,
+    "box": [
+      42,
+      0,
+      189,
+      147
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      210,
+      0,
+      1059,
+      147
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "content_frame",
+    "box": [
+      0,
+      147,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      147,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "main_content",
+    "box": [
+      0,
+      147,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "container_material",
+    "box": [
+      0,
+      147,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "list_container",
+    "box": [
+      0,
+      147,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "RecyclerView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "recycler_view",
+    "box": [
+      0,
+      147,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      147,
+      1080,
+      304
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      42,
+      189,
+      1038,
+      304
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Brightness",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      63,
+      210,
+      1038,
+      283
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      309,
+      1080,
+      543
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      84,
+      309,
+      996,
+      543
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      84,
+      309,
+      996,
+      543
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Brightness level",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      84,
+      351,
+      484,
+      428
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "83%",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      84,
+      428,
+      184,
+      501
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      548,
+      1080,
+      705
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      42,
+      590,
+      1038,
+      705
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Lock display",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      63,
+      611,
+      1038,
+      684
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      710,
+      1080,
+      944
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      84,
+      710,
+      996,
+      944
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      84,
+      710,
+      996,
+      944
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Lock screen",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      84,
+      752,
+      390,
+      829
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Show all notification content",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      84,
+      829,
+      767,
+      902
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      949,
+      1080,
+      1183
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      84,
+      949,
+      996,
+      1183
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      84,
+      949,
+      996,
+      1183
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Screen timeout",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      84,
+      991,
+      468,
+      1068
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Not set",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      84,
+      1068,
+      260,
+      1141
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1188,
+      1080,
+      1345
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      42,
+      1230,
+      1038,
+      1345
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Appearance",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      63,
+      1251,
+      1038,
+      1324
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1350,
+      1080,
+      1647
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      84,
+      1350,
+      996,
+      1647
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      84,
+      1350,
+      714,
+      1647
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Dark theme",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      84,
+      1392,
+      374,
+      1469
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Will turn on when Bedtime starts",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      84,
+      1469,
+      672,
+      1605
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "two_target_divider",
+    "box": [
+      714,
+      1350,
+      859,
+      1647
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      756,
+      1475,
+      824,
+      1522
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      824,
+      1446,
+      827,
+      1551
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "widget_frame",
+    "box": [
+      859,
+      1350,
+      996,
+      1647
+    ]
+  },
+  {
+    "class": "Switch",
+    "text": null,
+    "content_desc": "Dark theme",
+    "resource_id": "switchWidget",
+    "box": [
+      859,
+      1435,
+      996,
+      1561
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1652,
+      1080,
+      1949
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      84,
+      1652,
+      996,
+      1949
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      84,
+      1652,
+      996,
+      1949
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Display size & text",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      84,
+      1694,
+      542,
+      1771
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Font size, display size, bold text, outline text",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      84,
+      1771,
+      954,
+      1907
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1954,
+      1080,
+      2188
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      84,
+      1954,
+      996,
+      2188
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      84,
+      1954,
+      996,
+      2188
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Navigation mode",
+    "content_desc": null,
+    "resource_id": "title",
+    "box": [
+      84,
+      1996,
+      517,
+      2073
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Gesture navigation",
+    "content_desc": null,
+    "resource_id": "summary",
+    "box": [
+      84,
+      2073,
+      535,
+      2146
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2193,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      84,
+      2193,
+      996,
+      2219
+    ]
+  },
+  {
+    "class": "RelativeLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      84,
+      2193,
+      996,
+      2219
+    ]
+  }
+]
