@@ -1,7 +1,6 @@
 """Evaluation loop for VLM grounding benchmark runs."""
 
 import json
-import struct
 import time
 from collections import Counter
 from pathlib import Path
@@ -14,11 +13,13 @@ from .results import (
     PROMPT_MODE_VISION,
     STATUS_API_ERROR,
     STATUS_CO_PRESENT,
+    STATUS_LABEL_CHANGED,
+    STATUS_OFF_FRAME,
     STATUS_OFF_SCREEN,
     append_result,
 )
-from .scoring import PARSE_FAILED, hit_test, parse_coordinates_detailed
-from .targets import find_element_in_profile, harvest_targets
+from .scoring import PARSE_FAILED, get_png_dimensions, hit_test, parse_coordinates_detailed
+from .targets import MATCH_EXACT, harvest_targets, locate_element
 
 PROMPT_TEMPLATE = (
     "You are an autonomous mobile agent navigating an Android user interface. "
@@ -45,6 +46,8 @@ PROMPT_TEMPLATE_WITH_TREE = (
 def collect_tree_rows(
     profile_labels: list[dict],
     exclude_text: str | None = None,
+    target_box: list[int] | None = None,
+    baseline_box: list[int] | None = None,
 ) -> list[tuple[str, list[int]]]:
     """Collect a profile's label records into (label, box) rows.
 
@@ -52,26 +55,47 @@ def collect_tree_rows(
     bounding box. Falls back through: text -> content_desc -> resource_id ->
     class.
 
-    When exclude_text is provided, any element whose RENDERED LABEL matches it
-    is withheld. This prevents the tree from leaking the target's exact pixel
-    bounds (which would reduce grounding to a parsing task): the model still
-    gets the surrounding elements' positions as spatial context, but must
-    locate the target itself from the image.
+    Two independent exclusions keep the tree from handing the model the answer.
+    Both only ever REMOVE rows, so neither can inflate a tree-mode result: a
+    withheld row can make the task harder, never easier.
 
-    The exclusion must be checked against the same fallback chain used to
-    build the label, not against `text` alone: a node with empty `text` but
-    `content_desc == exclude_text` still renders the target's name, so
-    checking `text` alone let it through. Measured on the archived dataset,
-    this leaked 22 of 168 targets (13.1%) -- typically a parent tab container
-    whose bounds enclose the ground-truth box, so the model could score a hit
-    by reading the tree instead of looking at the image.
+    1. LABEL exclusion (exclude_text). Any element whose RENDERED LABEL matches
+       the target is withheld, so the tree never names the thing being asked
+       about. This must be checked against the same fallback chain used to
+       build the label, not against `text` alone: a node with empty `text` but
+       `content_desc == exclude_text` still renders the target's name, so
+       checking `text` alone let it through. Measured on the archived dataset,
+       that leaked 22 of 168 targets (13.1%).
 
-    This is the single source of truth for the exclusion; every rendering of
+    2. BOUNDS exclusion (target_box + baseline_box). Any row whose box CENTRE
+       would score a hit under scoring.hit_test is withheld, regardless of its
+       label. The label exclusion alone does not cover this: a parent
+       container labelled e.g. "navigation_bar_item_content_container" never
+       renders the target's name, but its centre can sit inside the target's
+       scoring box, so a model could score by reading the tree rather than
+       looking at the image. Measured on the current dataset, the label
+       exclusion alone left 575 of 853 target x profile pairs (67.4%) with at
+       least one such row -- mean 2.12 hitting rows out of a ~74-row tree.
+
+       Removing them costs ~3% of spatial context. Without it a tree-mode
+       improvement is uninterpretable, because "the tree helped the model
+       locate the element" and "the model read a nearby container's centre off
+       the tree" predict the same result, and the confound points the same way
+       as the hypothesis.
+
+    Both boxes are required for the bounds exclusion, since hit_test scores a
+    baseline-sized box centred on the current profile's box (see
+    scoring.hit_test). When either is None only the label exclusion applies,
+    which keeps existing non-tree callers working unchanged.
+
+    This is the single source of truth for the exclusions; every rendering of
     the tree (per-model prompt formats included) must be built from this
     function's output rather than re-deriving the fallback/exclusion logic,
     or the leak fix can silently regress in one rendering while holding in
     another.
     """
+    check_bounds = target_box is not None and baseline_box is not None
+
     rows = []
     for rec in profile_labels:
         box = rec.get("box")
@@ -90,6 +114,11 @@ def collect_tree_rows(
             and label.strip() == exclude_text.strip()
         ):
             continue
+        if check_bounds:
+            centre_x = (box[0] + box[2]) // 2
+            centre_y = (box[1] + box[3]) // 2
+            if hit_test(centre_x, centre_y, target_box, baseline_box):
+                continue
         rows.append((label, list(box)))
     return rows
 
@@ -97,6 +126,8 @@ def collect_tree_rows(
 def build_tree_text(
     profile_labels: list[dict],
     exclude_text: str | None = None,
+    target_box: list[int] | None = None,
+    baseline_box: list[int] | None = None,
 ) -> str:
     """Render a profile's label records into a compact accessibility-tree string.
 
@@ -104,17 +135,11 @@ def build_tree_text(
     """
     lines = [
         f'- "{label}" [{x1},{y1}][{x2},{y2}]'
-        for label, (x1, y1, x2, y2) in collect_tree_rows(profile_labels, exclude_text)
+        for label, (x1, y1, x2, y2) in collect_tree_rows(
+            profile_labels, exclude_text, target_box, baseline_box
+        )
     ]
     return "\n".join(lines)
-
-def get_png_dimensions(image_path: Path) -> tuple[int, int]:
-    """Extract width and height from a PNG file without external libraries."""
-    with open(image_path, "rb") as f:
-        f.read(16)
-        width, height = struct.unpack(">II", f.read(8))
-        return width, height
-
 
 def score_one_trial(
     raw_response: str,
@@ -214,12 +239,12 @@ def evaluate_screen(
             if (screen_name, target_text, profile_name) in already_done:
                 continue
 
-            box = find_element_in_profile(profile_labels, target_text)
+            match = locate_element(profile_labels, target_text)
 
-            if box is None:
-                # Not a model failure: the element does not exist in this
-                # layout, so there is nothing to ground. Score is left empty
-                # so the analysis cannot mistake it for a wrong answer.
+            if match is None:
+                # Not a model failure: nothing in this layout plausibly
+                # corresponds to the target, exact or relaxed. Score is left
+                # empty so the analysis cannot mistake it for a wrong answer.
                 append_result(results_csv, {
                     "screen": screen_name,
                     "target_text": target_text,
@@ -237,13 +262,82 @@ def evaluate_screen(
                 print(f"    [OFF-SCREEN] '{target_text}' -> no measurement")
                 continue
 
-            # Withhold the target's own row so any tree rendering (of any
-            # model's prompt format) provides spatial context without
-            # leaking the answer's bounds. Collected unconditionally so it
+            box, matched_text, match_kind = match
+
+            box_cx = (box[0] + box[2]) / 2.0
+            box_cy = (box[1] + box[3]) / 2.0
+            if not (0 <= box_cx <= img_width and 0 <= box_cy <= img_height):
+                # The element is genuinely present in the layout, but its
+                # recorded box's center falls outside the screenshot -- a
+                # clipped/partially-off-screen node whose extent exceeds the
+                # crop (see bound_extractor.extract's clamping, which
+                # prevents this for newly-extracted labels; this is a
+                # defensive check for label files extracted before that fix,
+                # or any other source of an out-of-frame box). hit_test
+                # cannot score a point that is not on the image, so this is
+                # unscoreable rather than a grounding failure -- it must not
+                # be silently counted as a miss.
+                append_result(results_csv, {
+                    "screen": screen_name,
+                    "target_text": target_text,
+                    "profile": profile_name,
+                    "status": STATUS_OFF_FRAME,
+                    "raw_response": "",
+                    "x_pred": "", "y_pred": "",
+                    "x_min": box[0], "y_min": box[1],
+                    "x_max": box[2], "y_max": box[3],
+                    "score": "",
+                    "trials": 0, "trial_scores": "", "parse_method": "",
+                    "prompt_mode": PROMPT_MODE_TREE if use_a11y_tree else PROMPT_MODE_VISION,
+                    "tree_rows_sent": 0,
+                })
+                count += 1
+                print(f"    [OFF-FRAME] '{target_text}' -> box center outside "
+                      f"image, no measurement")
+                continue
+
+            if match_kind != MATCH_EXACT:
+                # The element is still rendered, but reflow changed its label
+                # text enough that the exact-string lookup missed it. This is
+                # not "off screen" and not a model answer -- it is a distinct,
+                # deliberately unscored category. Whether/how to query it is
+                # an open sample-definition decision (see CLAUDE.md's
+                # remediation plan); recording it here makes the category
+                # visible and countable without pre-deciding that question.
+                safe_matched = matched_text.encode("ascii", "replace").decode("ascii")
+                append_result(results_csv, {
+                    "screen": screen_name,
+                    "target_text": target_text,
+                    "profile": profile_name,
+                    "status": STATUS_LABEL_CHANGED,
+                    "raw_response": f"[LABEL-CHANGED: {matched_text}]",
+                    "x_pred": "", "y_pred": "",
+                    "x_min": box[0], "y_min": box[1],
+                    "x_max": box[2], "y_max": box[3],
+                    "score": "",
+                    "trials": 0, "trial_scores": "", "parse_method": "",
+                    "prompt_mode": PROMPT_MODE_TREE if use_a11y_tree else PROMPT_MODE_VISION,
+                    "tree_rows_sent": 0,
+                })
+                count += 1
+                print(f"    [LABEL-CHANGED] '{target_text}' -> now rendered as "
+                      f"'{safe_matched}'")
+                continue
+
+            # Withhold both the target's own row AND any row whose centre
+            # would score a hit on it, so any tree rendering (of any model's
+            # prompt format) provides spatial context without handing over a
+            # point that scores. See collect_tree_rows for why the label
+            # exclusion alone is not enough. Collected unconditionally so it
             # can be passed to call_vlm as structured context even when the
             # shared hosted-model prompt below doesn't need it rendered.
             tree_rows = (
-                collect_tree_rows(profile_labels, exclude_text=target_text)
+                collect_tree_rows(
+                    profile_labels,
+                    exclude_text=target_text,
+                    target_box=box,
+                    baseline_box=baseline_box,
+                )
                 if use_a11y_tree
                 else None
             )

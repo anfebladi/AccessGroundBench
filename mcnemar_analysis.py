@@ -34,10 +34,13 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import sys
 from collections import defaultdict
 from pathlib import Path
 
+from vlm_eval.scoring import get_png_dimensions
+from vlm_eval.targets import locate_element
 from vlm_eval.stats import (
     DEFAULT_PERMUTATIONS,
     cluster_permutation_test,
@@ -82,6 +85,35 @@ STATUS_CO_PRESENT = "co_present"
 STATUS_OFF_SCREEN = "off_screen"
 STATUS_API_ERROR = "api_error"
 
+# The element is still rendered under this profile, but its label text
+# changed enough that the collection-time exact-string lookup missed it (see
+# vlm_eval.targets.locate_element / vlm_eval.results.STATUS_LABEL_CHANGED).
+# Excluded from every scored table (build_clusters, compute_contingency, the
+# per-model tables) automatically, because those all gate on
+# status == STATUS_CO_PRESENT and a label_changed row is never that -- no
+# separate exclusion code is needed there. It only affects reachability,
+# where --label-changed controls how it is counted (see compute_reachability).
+STATUS_LABEL_CHANGED = "label_changed"
+
+# How compute_reachability treats STATUS_LABEL_CHANGED rows. All three are
+# free (no new API calls): the element's presence is known from the label
+# JSON regardless of whether it was ever queried. This does NOT affect the
+# scored/contingency tables -- those never contain label_changed rows, since
+# such a target was never queried (see STATUS_LABEL_CHANGED above), so there
+# is no score to include there under any mode.
+LABEL_CHANGED_MODES = ("exclude", "unreachable", "reachable")
+DEFAULT_LABEL_CHANGED_MODE = "unreachable"  # matches pre-reclassification behaviour
+
+# The element is on screen -- reachability must count it as present -- but
+# its recorded box's center falls outside the screenshot, so there is no
+# valid point to score against (see bound_extractor.extract's clamping and
+# vlm_eval.results.STATUS_OFF_FRAME). Unlike STATUS_LABEL_CHANGED there is no
+# open question about how to count it for reachability: the element exists,
+# so it counts as present unconditionally. It is excluded from every scored
+# table for the same structural reason label_changed rows are: neither ever
+# satisfies status == STATUS_CO_PRESENT.
+STATUS_OFF_FRAME = "off_frame"
+
 # Prompt modes (see vlm_eval.results). Archived CSVs predate this column;
 # treated as vision, matching what was actually run before tree mode existed.
 PROMPT_MODE_VISION = "vision"
@@ -94,6 +126,138 @@ PROMPT_MODE_TREE = "tree"
 # measurement streams, and vision/tree rows for the same model are maximally
 # correlated, not independent.
 WITH_TREE_SUFFIX = "_with_tree"
+
+
+# ---------------------------------------------------------------------------
+# Stage B: sample exclusion sets
+#
+# B1 (screen, condition) contamination exclusions and B2 task-validity target
+# exclusions, composed into named samples that are all reported side by side
+# -- never silently replacing the unrestricted numbers. See CLAUDE.md's
+# remediation plan, Stage B, for the evidence behind each set.
+# ---------------------------------------------------------------------------
+
+_FONT_DENSITY_PROFILES = (
+    "elder_text_heavy", "elder_zoom_heavy", "elder_combo_max", "elder_combo_mid",
+)
+
+# B1-minimal: the one cell with measured contamination (see B0 -- a colour-only
+# profile's captured text set differing from baseline with no geometry vector
+# changed). settings_display's font/density losses are pure contiguous tails
+# in document order, i.e. ordinary scroll-off with no measured contamination,
+# so they are NOT excluded here.
+B1_MINIMAL: frozenset[tuple[str, str]] = frozenset({
+    ("settings_display", "colorblind_deuteranomaly"),
+})
+
+# B1-precautionary: also drop both settings pages from every font/density
+# condition regardless of demonstrated contamination, on the grounds that a
+# page displaying the manipulated setting should not be measured under it.
+# A sensitivity row, not the primary sample -- the drop-pattern evidence does
+# not support it as the default.
+B1_PRECAUTIONARY: frozenset[tuple[str, str]] = B1_MINIMAL | frozenset({
+    (screen, profile)
+    for screen in ("settings_display", "settings_accessibility")
+    for profile in _FONT_DENSITY_PROFILES
+})
+
+# B1-uniform: both settings pages out of every condition, including colour --
+# where settings_accessibility is demonstrably clean. Included only so a
+# reviewer who wants one consistent pool across all five conditions has it.
+B1_UNIFORM: frozenset[tuple[str, str]] = frozenset({
+    (screen, profile)
+    for screen in ("settings_display", "settings_accessibility")
+    for profile in (*_FONT_DENSITY_PROFILES, "colorblind_deuteranomaly")
+})
+
+# B2: length cap for the task-validity exclusion (container nodes are always
+# excluded regardless of length; see compute_b2_targets). Sits in an empty
+# band in the length distribution (134-200 chars have zero targets between
+# 134 and 200), so the exact value only matters for the 134-char boundary
+# case -- 100 additionally excludes it as a deliberate stricter choice.
+B2_LENGTH_CAP = 100
+
+SAMPLES: dict[str, dict] = {
+    "full":          {"b1": frozenset(), "b2": False},
+    "primary":       {"b1": B1_MINIMAL, "b2": True},
+    "precautionary": {"b1": B1_PRECAUTIONARY, "b2": True},
+    "uniform":       {"b1": B1_UNIFORM, "b2": True},
+}
+SAMPLE_NAMES = list(SAMPLES)  # preserves definition order for output ordering
+DEFAULT_SAMPLE = "primary"
+
+
+def _box_contains(outer: list[int], inner: list[int]) -> bool:
+    """True when `outer` fully encloses `inner` (and they are not the same box)."""
+    return (
+        outer[0] <= inner[0] and outer[1] <= inner[1]
+        and outer[2] >= inner[2] and outer[3] >= inner[3]
+        and outer != inner
+    )
+
+
+def compute_b2_targets(baseline_rows: list[dict]) -> frozenset[tuple[str, str]]:
+    """
+    Compute B2's excluded (screen, target_text) set from this run's own
+    baseline rows, rather than hardcoding target strings -- so it reproduces
+    correctly against any dataset (a different collection run's Gmail
+    content, or the archived experiment_2) instead of silently excluding
+    nothing on data it was not written against.
+
+    Excludes a target when it is a container whose box fully encloses another
+    target's box on the same screen, or when its text exceeds B2_LENGTH_CAP
+    characters. Both are the shape of Gmail's row-level nodes: a whole-email
+    summary crammed into one label, enclosing its own sender/subject/preview
+    as separate targets.
+    """
+    by_screen: dict[str, list[tuple[str, list[int]]]] = defaultdict(list)
+    for r in baseline_rows:
+        if r.get("status") != STATUS_CO_PRESENT:
+            continue
+        try:
+            box = [int(r[k]) for k in ("x_min", "y_min", "x_max", "y_max")]
+        except (KeyError, ValueError):
+            continue
+        by_screen[r["screen"]].append((r["target_text"], box))
+
+    excluded: set[tuple[str, str]] = set()
+    for screen, items in by_screen.items():
+        for text, box in items:
+            if len(text) > B2_LENGTH_CAP:
+                excluded.add((screen, text))
+                continue
+            if any(_box_contains(box, other_box) for other_text, other_box in items
+                   if other_text != text):
+                excluded.add((screen, text))
+    return frozenset(excluded)
+
+
+def target_excluded_for_condition(
+    sample: str,
+    screen: str,
+    target_text: str,
+    profile: str,
+    b2_targets: frozenset[tuple[str, str]],
+) -> bool:
+    """
+    True when (target, profile) should be dropped from `sample`'s pool for
+    this one condition's tables.
+
+    B2 exclusions apply to a target across every condition, baseline
+    included, since the target itself is task-invalid regardless of what it
+    is compared against -- the b2_targets check does not depend on `profile`.
+
+    B1 exclusions apply only to the named (screen, profile) cell: the same
+    target's baseline reading, and its readings under every OTHER condition,
+    are unaffected. This is deliberate -- settings_display is contaminated
+    under colorblind_deuteranomaly specifically, not under every condition it
+    appears in.
+    """
+    if sample not in SAMPLES:
+        raise ValueError(f"Unknown sample: {sample!r}")
+    if (screen, target_text) in b2_targets and SAMPLES[sample]["b2"]:
+        return True
+    return (screen, profile) in SAMPLES[sample]["b1"]
 
 
 # ---------------------------------------------------------------------------
@@ -121,6 +285,8 @@ def derive_status(row: dict) -> str:
         return STATUS_OFF_SCREEN
     if raw.startswith("[API-ERROR"):
         return STATUS_API_ERROR
+    if raw.startswith("[LABEL-CHANGED:"):
+        return STATUS_LABEL_CHANGED
     return STATUS_CO_PRESENT
 
 
@@ -158,6 +324,153 @@ def index_rows(rows: list[dict]) -> dict[tuple[str, str, str], dict]:
     }
 
 
+def _load_profile_labels(labels_dir: Path, screen: str, profile: str) -> list[dict]:
+    """Load one screen/profile's label JSON, or [] if it is not on disk."""
+    path = labels_dir / f"{screen}_{profile}.json"
+    if not path.is_file():
+        return []
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def reclassify_label_changed(
+    rows: list[dict],
+    labels_dir: Path,
+) -> list[dict]:
+    """
+    Recover the label_changed / off_screen distinction for CSVs collected
+    before this distinction existed in the pipeline.
+
+    A row written STATUS_OFF_SCREEN before vlm_eval.runner started using
+    locate_element's relaxed match may actually be an element whose label
+    text reflowed but is still on screen -- the collection-time code could
+    not tell the two apart. This re-checks each such row against the current
+    label JSON (unchanged since collection; no re-capture or API call
+    involved) and, when a relaxed match resolves it, rewrites the row's
+    status to STATUS_LABEL_CHANGED in memory only. Rows already written with
+    an explicit status (including STATUS_LABEL_CHANGED, from a run using the
+    updated runner) are left untouched -- exact matches at collection time are
+    authoritative and never revisited here.
+
+    This is purely a reachability-side correction: STATUS_LABEL_CHANGED rows
+    never satisfy status == STATUS_CO_PRESENT, so every scored/contingency
+    table already excludes them without any change on their part.
+
+    Mutates and returns `rows`. Also returns nothing else -- callers that want
+    the breakdown should scan the returned rows for STATUS_LABEL_CHANGED
+    themselves (see report_label_changed_breakdown).
+    """
+    if not labels_dir.is_dir():
+        print(f"  [WARN] Labels directory not found: {labels_dir} "
+              "-- skipping label_changed reclassification.")
+        return rows
+
+    label_cache: dict[tuple[str, str], list[dict]] = {}
+    reclassified = 0
+
+    for row in rows:
+        if row.get("status") != STATUS_OFF_SCREEN:
+            continue
+
+        screen = row.get("screen", "")
+        profile = row.get("profile", "")
+        target_text = row.get("target_text", "")
+
+        key = (screen, profile)
+        if key not in label_cache:
+            label_cache[key] = _load_profile_labels(labels_dir, screen, profile)
+        profile_labels = label_cache[key]
+        if not profile_labels:
+            continue
+
+        match = locate_element(profile_labels, target_text)
+        if match is None:
+            continue
+
+        box, matched_text, _match_kind = match
+        row["status"] = STATUS_LABEL_CHANGED
+        row["_label_changed_matched_text"] = matched_text
+        row["_label_changed_box"] = box
+        reclassified += 1
+
+    if reclassified:
+        print(f"  [RECLASSIFY] {reclassified} off_screen row(s) recovered as "
+              f"label_changed against {labels_dir}")
+
+    return rows
+
+
+def reclassify_off_frame(rows: list[dict], images_dir: Path) -> list[dict]:
+    """
+    Recover the off_frame distinction for rows collected before
+    bound_extractor.extract clamped bounds to the visible content area.
+
+    A row with a box whose center falls outside its screenshot (a node
+    clipped at the crop edge but retained at full, uncropped size) could not
+    have been meaningfully scored -- hit_test compared the model's answer to
+    a point that was never on the image. This re-checks every row that
+    carries a box (STATUS_CO_PRESENT or STATUS_LABEL_CHANGED; off_screen rows
+    have none) against the actual screenshot dimensions on disk (unchanged
+    since collection; no re-capture or API call involved) and rewrites the
+    status to STATUS_OFF_FRAME in memory when the center lands outside it.
+
+    Purely a scoring-side correction: STATUS_OFF_FRAME rows never satisfy
+    status == STATUS_CO_PRESENT, so every scored/contingency table already
+    excludes them without any change on their part. Reachability is
+    unaffected in the other direction -- the element genuinely exists in the
+    layout, so it must keep counting as present; compute_reachability's
+    `status != STATUS_OFF_SCREEN` check already does this correctly for any
+    status other than off_screen, off_frame included.
+
+    Mutates and returns `rows`.
+    """
+    if not images_dir.is_dir():
+        print(f"  [WARN] Images directory not found: {images_dir} "
+              "-- skipping off_frame reclassification.")
+        return rows
+
+    dim_cache: dict[tuple[str, str], tuple[int, int] | None] = {}
+    reclassified = 0
+
+    for row in rows:
+        if row.get("status") not in (STATUS_CO_PRESENT, STATUS_LABEL_CHANGED):
+            continue
+
+        x_min, y_min = row.get("x_min", ""), row.get("y_min", "")
+        x_max, y_max = row.get("x_max", ""), row.get("y_max", "")
+        if not (x_min and y_min and x_max and y_max):
+            continue
+        try:
+            x_min, y_min, x_max, y_max = int(x_min), int(y_min), int(x_max), int(y_max)
+        except ValueError:
+            continue
+
+        screen = row.get("screen", "")
+        profile = row.get("profile", "")
+        key = (screen, profile)
+        if key not in dim_cache:
+            png_path = images_dir / f"{screen}_{profile}.png"
+            dim_cache[key] = get_png_dimensions(png_path) if png_path.is_file() else None
+        dims = dim_cache[key]
+        if dims is None:
+            continue
+        img_w, img_h = dims
+
+        cx = (x_min + x_max) / 2.0
+        cy = (y_min + y_max) / 2.0
+        if 0 <= cx <= img_w and 0 <= cy <= img_h:
+            continue
+
+        row["status"] = STATUS_OFF_FRAME
+        reclassified += 1
+
+    if reclassified:
+        print(f"  [RECLASSIFY] {reclassified} row(s) recovered as off_frame "
+              f"against {images_dir}")
+
+    return rows
+
+
 def model_name_from_path(csv_path: Path) -> str:
     """Recover the model id from an evaluation_results_*.csv filename."""
     name = csv_path.stem.replace("evaluation_results_", "")
@@ -185,47 +498,137 @@ def discover_result_csvs(data_dir: Path, mode: str) -> list[Path]:
 # Section 1: reachability
 # ---------------------------------------------------------------------------
 
-def compute_reachability(index: dict, profile: str) -> tuple[int, int]:
+def compute_reachability(
+    index: dict,
+    profile: str,
+    label_changed_mode: str = DEFAULT_LABEL_CHANGED_MODE,
+    sample: str = "full",
+    b2_targets: frozenset[tuple[str, str]] = frozenset(),
+) -> tuple[int, int]:
     """
     Count how many baseline targets still exist in a profile's layout.
 
     Returns (present, total). Model-independent: it depends only on which
     targets the capture found, never on a model's answer.
+
+    label_changed_mode controls how STATUS_LABEL_CHANGED rows are counted
+    (see LABEL_CHANGED_MODES): "exclude" removes them from both present and
+    total (the target is dropped from the pool for this profile);
+    "unreachable" counts them in total but not present (the pre-reclassification
+    behaviour, since they used to be indistinguishable from off_screen);
+    "reachable" counts them in both. All three are free -- reachability only
+    needs presence, never a score.
+
+    sample/b2_targets apply Stage B's exclusions (see target_excluded_for_condition):
+    an excluded (target, profile) pair is dropped from both present and total,
+    same as label_changed_mode="exclude" -- the target is removed from the
+    pool for this profile, not counted as unreachable.
     """
+    if label_changed_mode not in LABEL_CHANGED_MODES:
+        raise ValueError(f"Unknown label_changed_mode: {label_changed_mode!r}")
+
     present = total = 0
     for (screen, text, prof) in index:
         if prof != "baseline":
             continue
+        if target_excluded_for_condition(sample, screen, text, profile, b2_targets):
+            continue
         row = index.get((screen, text, profile))
         if row is None:
             continue
+
+        if row["status"] == STATUS_LABEL_CHANGED:
+            if label_changed_mode == "exclude":
+                continue
+            total += 1
+            if label_changed_mode == "reachable":
+                present += 1
+            continue
+
         total += 1
         if row["status"] != STATUS_OFF_SCREEN:
             present += 1
     return present, total
 
 
-def report_reachability(index: dict, profiles: list[str]) -> list[dict]:
+def report_reachability(
+    index: dict,
+    profiles: list[str],
+    label_changed_mode: str = DEFAULT_LABEL_CHANGED_MODE,
+    sample: str = "full",
+    b2_targets: frozenset[tuple[str, str]] = frozenset(),
+) -> list[dict]:
     """Print and return the reachability table for one model's captures."""
     print("\n" + "=" * 78)
-    print("  SECTION 1 -- REACHABILITY (model-independent)")
+    print(f"  SECTION 1 -- REACHABILITY (model-independent)  [sample={sample}]")
     print("  Share of baseline targets still present in the modified layout.")
+    print(f"  label_changed rows counted as: {label_changed_mode}")
     print("=" * 78)
     print(f"  {'Profile':<28}{'Present':>9}{'Total':>7}{'Reachable':>12}   95% CI")
     print(f"  {'-' * 28}{'-' * 9:>9}{'-' * 7:>7}{'-' * 12:>12}   {'-' * 18}")
 
     table = []
     for profile in profiles:
-        present, total = compute_reachability(index, profile)
+        present, total = compute_reachability(
+            index, profile, label_changed_mode, sample, b2_targets
+        )
         rate = present / total if total else 0.0
         low, high = wilson_interval(present, total)
         print(f"  {profile:<28}{present:>9}{total:>7}{rate * 100:>11.1f}%   "
               f"[{low * 100:5.1f}%, {high * 100:5.1f}%]")
         table.append({
-            "profile": profile, "present": present, "total": total,
+            "sample": sample, "profile": profile, "present": present, "total": total,
             "rate": rate, "ci_low": low, "ci_high": high,
         })
     return table
+
+
+def report_label_changed_breakdown(index: dict, profiles: list[str]) -> list[dict]:
+    """
+    Print and return every STATUS_LABEL_CHANGED row: which target, under
+    which profile, and what it now renders as.
+
+    This is the input to the still-open decision (see CLAUDE.md's
+    remediation plan) of how label_changed targets should be treated -- this
+    function only measures and reports, it does not decide.
+    """
+    rows_out = []
+    for (screen, text, profile), row in sorted(index.items()):
+        if profile == "baseline" or row["status"] != STATUS_LABEL_CHANGED:
+            continue
+        matched = row.get("_label_changed_matched_text", "")
+        rows_out.append({
+            "screen": screen, "profile": profile,
+            "baseline_text": text, "matched_text": matched,
+        })
+
+    print("\n" + "=" * 78)
+    print("  SECTION 1b -- LABEL_CHANGED BREAKDOWN")
+    print("  Elements still on screen whose label text no longer matches")
+    print("  the baseline string exactly (relaxed match). Not queried, not")
+    print("  scored -- reported here so the category is visible before any")
+    print("  decision is made about how to treat it.")
+    print("=" * 78)
+    if not rows_out:
+        print("  (none)")
+        return rows_out
+
+    by_screen_profile: dict[tuple[str, str], int] = defaultdict(int)
+    for r in rows_out:
+        by_screen_profile[(r["screen"], r["profile"])] += 1
+
+    print(f"  {'Screen':<26}{'Profile':<24}{'Count':>7}")
+    print(f"  {'-' * 26}{'-' * 24}{'-' * 7}")
+    for (screen, profile), n in sorted(by_screen_profile.items()):
+        print(f"  {screen:<26}{profile:<24}{n:>7}")
+
+    print(f"\n  {len(rows_out)} label_changed row(s) total. Matched pairs:")
+    for r in rows_out:
+        base_safe = r["baseline_text"][:60].encode("ascii", "replace").decode("ascii")
+        matched_safe = r["matched_text"][:60].encode("ascii", "replace").decode("ascii")
+        print(f"    [{r['screen']}/{r['profile']}] {base_safe!r} -> {matched_safe!r}")
+
+    return rows_out
 
 
 # ---------------------------------------------------------------------------
@@ -235,19 +638,24 @@ def report_reachability(index: dict, profiles: list[str]) -> list[dict]:
 def build_clusters(
     indices: dict[str, dict],
     profile: str,
+    sample: str = "full",
+    b2_targets: frozenset[tuple[str, str]] = frozenset(),
 ) -> dict[tuple[str, str], list[tuple[int, int]]]:
     """
     Group paired outcomes by target across every model.
 
     One cluster is one (screen, target_text); its list holds that target's
     (baseline_score, profile_score) under each model. Only co_present rows in
-    both arms are included.
+    both arms are included, and only targets not excluded by `sample` for
+    this `profile` (see target_excluded_for_condition).
     """
     clusters: dict[tuple[str, str], list[tuple[int, int]]] = defaultdict(list)
 
     for index in indices.values():
         for (screen, text, prof), baseline_row in index.items():
             if prof != "baseline" or baseline_row["status"] != STATUS_CO_PRESENT:
+                continue
+            if target_excluded_for_condition(sample, screen, text, profile, b2_targets):
                 continue
             exp_row = index.get((screen, text, profile))
             if exp_row is None or exp_row["status"] != STATUS_CO_PRESENT:
@@ -264,10 +672,12 @@ def report_pooled(
     profiles: list[str],
     permutations: int,
     seed: int,
+    sample: str = "full",
+    b2_targets: frozenset[tuple[str, str]] = frozenset(),
 ) -> list[dict]:
     """Run and print the pooled cluster permutation test for each profile."""
     print("\n" + "=" * 78)
-    print("  SECTION 2 -- GROUNDING, POOLED ACROSS MODELS  [PRIMARY TEST]")
+    print(f"  SECTION 2 -- GROUNDING, POOLED ACROSS MODELS  [PRIMARY TEST]  [sample={sample}]")
     print(f"  Cluster permutation, {permutations} draws, resampling unit = target.")
     print("  Co-present targets only. A target's outcomes across all models are")
     print("  relabelled together, preserving the correlation from target reuse.")
@@ -276,10 +686,10 @@ def report_pooled(
     raw = {}
     rows = []
     for profile in profiles:
-        clusters = build_clusters(indices, profile)
+        clusters = build_clusters(indices, profile, sample, b2_targets)
         result = cluster_permutation_test(clusters, permutations, seed)
         raw[profile] = result["p_value"]
-        rows.append({"profile": profile, **result})
+        rows.append({"sample": sample, "profile": profile, **result})
 
     corrected = holm_bonferroni(raw, ALPHA)
 
@@ -310,12 +720,18 @@ def report_pooled(
 # Section 3: per-model McNemar (secondary)
 # ---------------------------------------------------------------------------
 
-def compute_contingency(index: dict, profile: str) -> tuple[int, int, int, int]:
+def compute_contingency(
+    index: dict,
+    profile: str,
+    sample: str = "full",
+    b2_targets: frozenset[tuple[str, str]] = frozenset(),
+) -> tuple[int, int, int, int]:
     """
     Build the 2x2 contingency table for baseline vs one profile.
 
     Restricted to co_present rows in both arms, so off-screen targets and API
-    failures never enter the table.
+    failures never enter the table. `sample`/`b2_targets` additionally drop
+    targets excluded for this profile (see target_excluded_for_condition).
 
     Returns (a, b, c, d):
       a both pass, b broke it, c fluke recovery, d both fail.
@@ -324,6 +740,8 @@ def compute_contingency(index: dict, profile: str) -> tuple[int, int, int, int]:
 
     for (screen, text, prof), baseline_row in index.items():
         if prof != "baseline" or baseline_row["status"] != STATUS_CO_PRESENT:
+            continue
+        if target_excluded_for_condition(sample, screen, text, profile, b2_targets):
             continue
         exp_row = index.get((screen, text, profile))
         if exp_row is None or exp_row["status"] != STATUS_CO_PRESENT:
@@ -356,10 +774,12 @@ def power_flag(base_acc: float) -> str:
 def report_per_model(
     indices: dict[str, dict],
     profiles: list[str],
+    sample: str = "full",
+    b2_targets: frozenset[tuple[str, str]] = frozenset(),
 ) -> list[dict]:
     """Run per-model McNemar with Holm correction across the whole family."""
     print("\n" + "=" * 78)
-    print("  SECTION 3 -- GROUNDING, PER MODEL  [SECONDARY]")
+    print(f"  SECTION 3 -- GROUNDING, PER MODEL  [SECONDARY]  [sample={sample}]")
     print(f"  McNemar on co-present targets. Holm-Bonferroni across all "
           f"{len(indices) * len(profiles)} tests.")
     print("=" * 78)
@@ -368,7 +788,7 @@ def report_per_model(
     raw = {}
     for model, index in indices.items():
         for profile in profiles:
-            a, b, c, d = compute_contingency(index, profile)
+            a, b, c, d = compute_contingency(index, profile, sample, b2_targets)
             total = a + b + c + d
             result = mcnemar_test(b, c)
             base_acc = (a + b) / total * 100 if total else 0.0
@@ -379,7 +799,7 @@ def report_per_model(
             key = f"{model}|{profile}"
             raw[key] = result["p_value"]
             rows.append({
-                "model": model, "profile": profile, "key": key,
+                "sample": sample, "model": model, "profile": profile, "key": key,
                 "a": a, "b": b, "c": c, "d": d, "total": total,
                 "base_acc": base_acc, "exp_acc": exp_acc,
                 "test": result["test"], "statistic": result["statistic"],
@@ -430,10 +850,14 @@ def report_per_model(
 # Section 4: sign test across models
 # ---------------------------------------------------------------------------
 
-def report_sign_test(per_model_rows: list[dict], profiles: list[str]) -> list[dict]:
+def report_sign_test(
+    per_model_rows: list[dict],
+    profiles: list[str],
+    sample: str = "full",
+) -> list[dict]:
     """Check that a pooled effect is consistent across models, not driven by one."""
     print("\n" + "=" * 78)
-    print("  SECTION 4 -- DIRECTION CONSISTENCY ACROSS MODELS  [DESCRIPTIVE]")
+    print(f"  SECTION 4 -- DIRECTION CONSISTENCY ACROSS MODELS  [DESCRIPTIVE]  [sample={sample}]")
     print("  Models are not a random sample of a population, so this corroborates")
     print("  the pooled result rather than testing an independent hypothesis.")
     print("=" * 78)
@@ -449,7 +873,7 @@ def report_sign_test(per_model_rows: list[dict], profiles: list[str]) -> list[di
         p_value = sign_test(down, up)
         print(f"  {profile:<28}{down:>6}{up:>5}{tied:>6}{p_value:>10.5f}")
         table.append({
-            "profile": profile, "down": down, "up": up,
+            "sample": sample, "profile": profile, "down": down, "up": up,
             "tied": tied, "p_value": p_value,
         })
     return table
@@ -474,28 +898,29 @@ def write_outputs(
     pooled: list[dict],
     per_model: list[dict],
     signs: list[dict],
+    label_changed: list[dict] | None = None,
 ) -> None:
-    """Write the four result tables to CSV."""
+    """Write the result tables to CSV."""
     data_dir.mkdir(parents=True, exist_ok=True)
 
     reach_path = data_dir / "reachability_results.csv"
     with open(reach_path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["Profile", "Targets_Present", "Targets_Total",
+        w.writerow(["Sample", "Profile", "Targets_Present", "Targets_Total",
                     "Reachability", "CI_Low", "CI_High"])
         for r in reachability:
-            w.writerow([r["profile"], r["present"], r["total"],
+            w.writerow([r["sample"], r["profile"], r["present"], r["total"],
                         _fmt(r["rate"], ".4f"), _fmt(r["ci_low"], ".4f"),
                         _fmt(r["ci_high"], ".4f")])
 
     pooled_path = data_dir / "pooled_permutation_results.csv"
     with open(pooled_path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["Profile", "Target_Clusters", "Observations", "Statistic",
+        w.writerow(["Sample", "Profile", "Target_Clusters", "Observations", "Statistic",
                     "Broke_It_b", "Fluke_Recovery_c", "Permutations",
                     "P_Value", "Holm_Threshold", "Significant"])
         for r in pooled:
-            w.writerow([r["profile"], r["n_clusters"], r["n_observations"],
+            w.writerow([r["sample"], r["profile"], r["n_clusters"], r["n_observations"],
                         _fmt(r["statistic"], ".1f"), r["b"], r["c"],
                         r["n_permutations"], _fmt(r["p_value"]),
                         _fmt(r["holm_threshold"]),
@@ -504,7 +929,7 @@ def write_outputs(
     per_model_path = data_dir / "mcnemar_results_per_model.csv"
     with open(per_model_path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["Model", "Profile", "Total_Pairs", "Both_Pass_a", "Broke_It_b",
+        w.writerow(["Sample", "Model", "Profile", "Total_Pairs", "Both_Pass_a", "Broke_It_b",
                     "Fluke_Recovery_c", "Both_Fail_d", "Discordant_Pairs",
                     "Baseline_Acc", "Exp_Acc", "Risk_Diff", "Risk_Diff_CI_Low",
                     "Risk_Diff_CI_High", "Odds_Ratio", "OR_CI_Low", "OR_CI_High",
@@ -512,7 +937,7 @@ def write_outputs(
                     "Significant", "Power_Limit"])
         for r in per_model:
             w.writerow([
-                r["model"], r["profile"], r["total"], r["a"], r["b"], r["c"], r["d"],
+                r["sample"], r["model"], r["profile"], r["total"], r["a"], r["b"], r["c"], r["d"],
                 r["b"] + r["c"], f"{r['base_acc']:.1f}%", f"{r['exp_acc']:.1f}%",
                 _fmt(r["diff"], ".4f"), _fmt(r["diff_low"], ".4f"),
                 _fmt(r["diff_high"], ".4f"), _fmt(r["odds"], ".3f"),
@@ -525,12 +950,24 @@ def write_outputs(
     sign_path = data_dir / "direction_consistency.csv"
     with open(sign_path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["Profile", "Models_Down", "Models_Up", "Models_Tied", "Sign_P_Value"])
+        w.writerow(["Sample", "Profile", "Models_Down", "Models_Up", "Models_Tied", "Sign_P_Value"])
         for r in signs:
-            w.writerow([r["profile"], r["down"], r["up"], r["tied"], _fmt(r["p_value"])])
+            w.writerow([r["sample"], r["profile"], r["down"], r["up"], r["tied"], _fmt(r["p_value"])])
+
+    written = [reach_path, pooled_path, per_model_path, sign_path]
+
+    if label_changed:
+        label_changed_path = data_dir / "label_changed_breakdown.csv"
+        with open(label_changed_path, "w", newline="", encoding="utf-8") as f:
+            w = csv.writer(f)
+            w.writerow(["Screen", "Profile", "Baseline_Text", "Matched_Text"])
+            for r in label_changed:
+                w.writerow([r["screen"], r["profile"], r["baseline_text"],
+                            r["matched_text"]])
+        written.append(label_changed_path)
 
     print("\n[WROTE]")
-    for path in (reach_path, pooled_path, per_model_path, sign_path):
+    for path in written:
         print(f"  {path}")
 
 
@@ -538,21 +975,46 @@ def write_outputs(
 # Cross-file comparison (vision-only vs tree-injected)
 # ---------------------------------------------------------------------------
 
-def run_cross_comparison(csv_a: Path, csv_b: Path, profiles: list[str]) -> None:
-    """Compare two evaluation runs of the same profiles, target by target."""
+def run_cross_comparison(
+    csv_a: Path,
+    csv_b: Path,
+    profiles: list[str],
+    sample: str = DEFAULT_SAMPLE,
+    data_dir: Path | None = None,
+) -> None:
+    """Compare two evaluation runs of the same profiles, target by target.
+
+    Applies the same corrections as the main analysis path, which it used to
+    skip entirely: both reclassification passes (A1 label_changed, A2
+    off_frame) and the Stage B sample exclusions. Without them the headline
+    vision-vs-tree number would be computed on the uncorrected `full` sample
+    -- scoring the 2 unscoreable out-of-frame targets as misses and including
+    the 7 degenerate Gmail targets -- while every other table in the repo
+    reports `primary`.
+    """
     print("=" * 78)
     print("  CROSS-FILE COMPARISON")
     print(f"  A (vision-only): {csv_a.name}")
     print(f"  B (with tree):   {csv_b.name}")
+    print(f"  Sample         : {sample}")
     print("=" * 78)
 
     index_a = index_rows(load_results(csv_a))
     index_b = index_rows(load_results(csv_b))
 
+    if data_dir is None:
+        data_dir = csv_a.parent
+    for index in (index_a, index_b):
+        reclassify_label_changed(list(index.values()), data_dir / "labels")
+        reclassify_off_frame(list(index.values()), data_dir / "images")
+
+    baseline_rows = [row for (_s, _t, prof), row in index_a.items() if prof == "baseline"]
+    b2_targets = compute_b2_targets(baseline_rows)
+
     out_path = csv_a.parent / f"mcnemar_compare_{csv_a.stem.replace('evaluation_results_', '')}.csv"
     with open(out_path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["Profile", "Total_Pairs", "Both_Pass_a", "Tree_Hurt_b",
+        w.writerow(["Sample", "Profile", "Total_Pairs", "Both_Pass_a", "Tree_Hurt_b",
                     "Tree_Helped_c", "Both_Fail_d", "Discordant_Pairs",
                     "VisionOnly_Acc", "WithTree_Acc", "Test_Used", "Statistic",
                     "P_Value", "Significant"])
@@ -565,7 +1027,10 @@ def run_cross_comparison(csv_a: Path, csv_b: Path, profiles: list[str]) -> None:
         for profile in profiles:
             a = b = c = d = 0
             for key, row_a in index_a.items():
-                if key[2] != profile or row_a["status"] != STATUS_CO_PRESENT:
+                screen, text, prof = key
+                if prof != profile or row_a["status"] != STATUS_CO_PRESENT:
+                    continue
+                if target_excluded_for_condition(sample, screen, text, profile, b2_targets):
                     continue
                 row_b = index_b.get(key)
                 if row_b is None or row_b["status"] != STATUS_CO_PRESENT:
@@ -590,7 +1055,7 @@ def run_cross_comparison(csv_a: Path, csv_b: Path, profiles: list[str]) -> None:
             print(f"  {profile:<28}{total:>5}{acc_a:>7.1f}%{acc_b:>7.1f}%"
                   f"{b:>4}{c:>4}{result['p_value']:>10.5f}  {verdict}")
 
-            w.writerow([profile, total, a, b, c, d, b + c,
+            w.writerow([sample, profile, total, a, b, c, d, b + c,
                         f"{acc_a:.1f}%", f"{acc_b:.1f}%", result["test"],
                         _fmt(result["statistic"], ".4f"),
                         _fmt(result["p_value"]),
@@ -617,6 +1082,16 @@ def main() -> None:
                         help="RNG seed for the permutation test")
     parser.add_argument("--compare-a", type=Path, default=None)
     parser.add_argument("--compare-b", type=Path, default=None)
+    parser.add_argument("--label-changed", choices=LABEL_CHANGED_MODES,
+                        default=DEFAULT_LABEL_CHANGED_MODE,
+                        help="How to count targets whose element is still on "
+                             "screen but whose label text changed under "
+                             "reflow (see STATUS_LABEL_CHANGED). Affects "
+                             "reachability only -- these targets are never "
+                             "queried, so they never enter the scored "
+                             "McNemar/permutation tables regardless of this "
+                             f"flag. Default: {DEFAULT_LABEL_CHANGED_MODE!r} "
+                             "(matches pre-reclassification behaviour).")
     parser.add_argument("--mode", choices=["vision", "tree"], default="vision",
                         help="Which prompt-mode arm to analyse when discovering "
                              "CSVs from --data-dir (default: vision). Vision and "
@@ -624,6 +1099,16 @@ def main() -> None:
                              "independent measurements, so they are never pooled "
                              "together automatically -- use --compare-a/--compare-b "
                              "for a paired vision-vs-tree comparison instead.")
+    parser.add_argument("--sample", choices=[*SAMPLE_NAMES, "all"], default="all",
+                        help="Which Stage B exclusion set(s) to report (see "
+                             "CLAUDE.md's remediation plan, Stage B). 'full' is "
+                             "no exclusions; 'primary' is the recommended sample "
+                             "(B1-minimal + B2); 'precautionary' and 'uniform' "
+                             "are sensitivity variants. Default 'all' runs every "
+                             "sample and writes them side by side in one set of "
+                             "output CSVs, distinguished by a Sample column -- "
+                             "restricted numbers never replace the unrestricted "
+                             "ones.")
     args = parser.parse_args()
 
     profiles = list(EXPERIMENTAL_PROFILES)
@@ -633,7 +1118,13 @@ def main() -> None:
         sys.exit(1)
 
     if args.compare_a and args.compare_b:
-        run_cross_comparison(args.compare_a, args.compare_b, profiles)
+        # "all" is meaningful for the main path (it writes one row per sample
+        # into shared output files) but not here, where each run produces a
+        # single comparison table; fall back to the recommended sample.
+        sample = DEFAULT_SAMPLE if args.sample == "all" else args.sample
+        run_cross_comparison(
+            args.compare_a, args.compare_b, profiles, sample, args.data_dir
+        )
         return
 
     if args.csv:
@@ -678,13 +1169,58 @@ def main() -> None:
         print(f"  Skipped  : {', '.join(missing_profiles)} "
               f"(no captures for this profile in {data_dir})")
 
-    reachability = report_reachability(first_index, profiles)
+    reclassify_label_changed(list(first_index.values()), data_dir / "labels")
 
-    pooled = report_pooled(indices, profiles, args.permutations, args.seed)
-    per_model = report_per_model(indices, profiles)
-    signs = report_sign_test(per_model, profiles)
+    # Off-frame reclassification must depend on each model's own rows: a box
+    # is a property of the (screen, profile) capture, identical across
+    # models, but the stored x_min..y_max only exists on rows that were
+    # actually queried -- so every model's index needs the same check, not
+    # just first_index (unlike label_changed, which only feeds the
+    # model-independent reachability/breakdown reports).
+    for index in indices.values():
+        reclassify_off_frame(list(index.values()), data_dir / "images")
 
-    write_outputs(data_dir, reachability, pooled, per_model, signs)
+    label_changed_breakdown = report_label_changed_breakdown(first_index, profiles)
+
+    # B2's target set is computed once from this run's own baseline rows (not
+    # hardcoded), so it reproduces correctly against any dataset -- see
+    # compute_b2_targets. Baseline is identical across models, so first_index
+    # is representative.
+    baseline_rows = [row for (_s, _t, prof), row in first_index.items() if prof == "baseline"]
+    b2_targets = compute_b2_targets(baseline_rows)
+
+    samples_to_run = SAMPLE_NAMES if args.sample == "all" else [args.sample]
+
+    reachability_all: list[dict] = []
+    pooled_all: list[dict] = []
+    per_model_all: list[dict] = []
+    signs_all: list[dict] = []
+
+    for sample in samples_to_run:
+        reachability_all += report_reachability(
+            first_index, profiles, args.label_changed, sample, b2_targets
+        )
+        pooled = report_pooled(
+            indices, profiles, args.permutations, args.seed, sample, b2_targets
+        )
+        per_model = report_per_model(indices, profiles, sample, b2_targets)
+        signs = report_sign_test(per_model, profiles, sample)
+        pooled_all += pooled
+        per_model_all += per_model
+        signs_all += signs
+
+    if len(samples_to_run) > 1:
+        print("\n" + "=" * 78)
+        print("  SAMPLE SIZES  (paired observations, summed across profiles)")
+        print("=" * 78)
+        print(f"  {'Sample':<16}{'obs (all models)':>18}{'obs/model':>12}")
+        n_models = len(indices)
+        for sample in samples_to_run:
+            total_obs = sum(r["n_observations"] for r in pooled_all if r["sample"] == sample)
+            print(f"  {sample:<16}{total_obs:>18}{total_obs / n_models:>12.0f}")
+
+    write_outputs(data_dir, reachability_all, pooled_all, per_model_all, signs_all,
+                  label_changed_breakdown)
     print()
 
 

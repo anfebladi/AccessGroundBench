@@ -9,6 +9,8 @@ from unittest import mock
 from vlm_eval.results import (
     STATUS_API_ERROR,
     STATUS_CO_PRESENT,
+    STATUS_LABEL_CHANGED,
+    STATUS_OFF_FRAME,
     STATUS_OFF_SCREEN,
     init_csv,
 )
@@ -153,6 +155,87 @@ class VlmEvalRunnerTests(unittest.TestCase):
         self.assertEqual(STATUS_OFF_SCREEN, row["status"])
         self.assertEqual("", row["score"])
         call_vlm_mock.assert_not_called()
+
+    @mock.patch("vlm_eval.runner.call_vlm", return_value="[215, 286]")
+    def test_relabeled_target_is_recorded_label_changed_without_querying_model(
+        self, call_vlm_mock
+    ):
+        # The element is still on screen, but reflow changed its rendered
+        # text enough that the exact lookup misses it. This must not be
+        # folded into off_screen (the element didn't leave the layout) or
+        # co_present (the model was never asked), and must not be scored.
+        write_png_header(self.images_dir / "clock_elder_text_heavy.png", 1080, 2274)
+        (self.labels_dir / "clock_elder_text_heavy.json").write_text(
+            json.dumps([{"text": "8:30 AM​͏͏", "box": [90, 240, 430, 420]}]),
+            encoding="utf-8",
+        )
+
+        evaluate_screen(
+            "test-model",
+            "clock",
+            0,
+            self.results_csv,
+            images_dir=self.images_dir,
+            labels_dir=self.labels_dir,
+            profiles=["elder_text_heavy"],
+        )
+
+        row = self.read_result()
+        self.assertEqual(STATUS_LABEL_CHANGED, row["status"])
+        self.assertEqual("", row["score"])
+        self.assertEqual("90", row["x_min"])
+        self.assertIn("LABEL-CHANGED", row["raw_response"])
+        call_vlm_mock.assert_not_called()
+
+    @mock.patch("vlm_eval.runner.call_vlm", return_value="[215, 286]")
+    def test_off_frame_box_is_recorded_without_querying_model(self, call_vlm_mock):
+        # A box whose center falls outside the screenshot cannot be scored --
+        # hit_test would compare against a point that isn't on the image.
+        # The element is genuinely present (unlike off_screen), so it must
+        # not be silently treated as a miss, and the model must not be asked
+        # a question with no answerable point.
+        write_png_header(self.images_dir / "clock_elder_combo_max.png", 1080, 2274)
+        (self.labels_dir / "clock_elder_combo_max.json").write_text(
+            json.dumps([{"text": "8:30 AM", "box": [90, 2200, 430, 2400]}]),
+            encoding="utf-8",
+        )
+
+        evaluate_screen(
+            "test-model",
+            "clock",
+            0,
+            self.results_csv,
+            images_dir=self.images_dir,
+            labels_dir=self.labels_dir,
+            profiles=["elder_combo_max"],
+        )
+
+        row = self.read_result()
+        self.assertEqual(STATUS_OFF_FRAME, row["status"])
+        self.assertEqual("", row["score"])
+        self.assertEqual("2200", row["y_min"])
+        call_vlm_mock.assert_not_called()
+
+    @mock.patch("vlm_eval.runner.call_vlm", return_value="[215, 286]")
+    def test_box_center_on_image_boundary_is_not_off_frame(self, call_vlm_mock):
+        # A box whose center sits exactly at the image's bottom-right corner
+        # is still a valid, answerable point -- the boundary check must be
+        # inclusive (<=), not exclusive, or a legitimately edge-flush element
+        # would be wrongly excluded.
+        (self.labels_dir / "clock_baseline.json").write_text(
+            json.dumps([{"text": "8:30 AM", "box": [1080, 2274, 1080, 2274]}]),
+            encoding="utf-8",
+        )
+
+        evaluate_screen(
+            "test-model", "clock", 0, self.results_csv,
+            images_dir=self.images_dir, labels_dir=self.labels_dir,
+            profiles=["baseline"],
+        )
+
+        row = self.read_result()
+        self.assertNotEqual(STATUS_OFF_FRAME, row["status"])
+        call_vlm_mock.assert_called_once()
 
     @mock.patch("vlm_eval.runner.call_vlm", return_value="[215, 286]")
     def test_present_target_is_marked_co_present(self, call_vlm_mock):
@@ -331,6 +414,103 @@ class BuildTreeTextTests(unittest.TestCase):
         # ...while a neighbor stays as context, and the ask still names the target.
         self.assertIn('"Wi-Fi" [0,0][100,50]', prompt)
         self.assertIn("'Bluetooth'", prompt)
+
+    def test_row_whose_centre_would_hit_is_withheld(self):
+        # A parent container never renders the target's name, so the label
+        # exclusion cannot catch it -- but its centre sits inside the
+        # target's scoring box, so a model could score by reading the tree
+        # instead of looking at the image. Measured at 67.4% of pairs before
+        # this exclusion existed.
+        target_box = [100, 100, 200, 140]
+        labels = [
+            {"text": "", "resource_id": "container", "box": [90, 90, 210, 150]},
+            {"text": "Far Away", "box": [0, 900, 100, 950]},
+        ]
+
+        rows = collect_tree_rows(
+            labels, exclude_text="Target",
+            target_box=target_box, baseline_box=target_box,
+        )
+
+        labels_kept = [label for label, _box in rows]
+        self.assertNotIn("container", labels_kept)
+        self.assertIn("Far Away", labels_kept)
+
+    def test_non_hitting_rows_are_kept_as_context(self):
+        # The exclusion must be surgical: only rows that would actually score
+        # are withheld, so the model keeps its spatial context (~3% cost).
+        target_box = [100, 100, 200, 140]
+        labels = [
+            {"text": "Above", "box": [100, 0, 200, 40]},
+            {"text": "Below", "box": [100, 900, 200, 940]},
+        ]
+
+        rows = collect_tree_rows(
+            labels, exclude_text="Target",
+            target_box=target_box, baseline_box=target_box,
+        )
+
+        self.assertEqual(["Above", "Below"], [label for label, _box in rows])
+
+    def test_label_exclusion_still_fires_without_a_hitting_centre(self):
+        # A row can render the target's name while sitting far away -- still
+        # a leak (it confirms the label exists), so the label rule must not
+        # be subsumed by the bounds rule.
+        target_box = [100, 100, 200, 140]
+        labels = [{"text": "Bluetooth", "box": [0, 900, 100, 950]}]
+
+        rows = collect_tree_rows(
+            labels, exclude_text="Bluetooth",
+            target_box=target_box, baseline_box=target_box,
+        )
+
+        self.assertEqual([], rows)
+
+    def test_bounds_exclusion_is_skipped_when_boxes_are_absent(self):
+        # Backwards compatibility: non-tree callers pass no boxes and must
+        # keep getting label-only exclusion behaviour.
+        labels = [
+            {"text": "", "resource_id": "container", "box": [90, 90, 210, 150]},
+        ]
+
+        rows = collect_tree_rows(labels, exclude_text="Target")
+
+        self.assertEqual(["container"], [label for label, _box in rows])
+
+    @mock.patch("vlm_eval.runner.call_vlm", return_value="[50, 85]")
+    def test_evaluate_screen_withholds_hitting_rows_from_the_prompt(self, call_vlm_mock):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        images_dir = root / "images"
+        labels_dir = root / "labels"
+        images_dir.mkdir()
+        labels_dir.mkdir()
+        results_csv = root / "results.csv"
+        init_csv(results_csv)
+
+        write_png_header(images_dir / "net_baseline.png", 1080, 2274)
+        labels = [
+            {"text": "Bluetooth", "box": [100, 100, 200, 140]},
+            # Encloses Bluetooth -- centre lands inside its scoring box.
+            {"text": "", "resource_id": "row_container", "box": [90, 90, 210, 150]},
+            {"text": "Wi-Fi", "box": [100, 900, 200, 940]},
+        ]
+        (labels_dir / "net_baseline.json").write_text(
+            json.dumps(labels), encoding="utf-8"
+        )
+
+        evaluate_screen(
+            "test-model", "net", 0, results_csv,
+            images_dir=images_dir, labels_dir=labels_dir,
+            profiles=["baseline"], use_a11y_tree=True,
+        )
+
+        prompts = [c.args[2] for c in call_vlm_mock.call_args_list]
+        bluetooth_prompt = next(p for p in prompts if "'Bluetooth'" in p)
+        self.assertNotIn("row_container", bluetooth_prompt)
+        self.assertNotIn("[90,90][210,150]", bluetooth_prompt)
+        self.assertIn("Wi-Fi", bluetooth_prompt)
 
     def test_collect_tree_rows_matches_build_tree_text_exclusion(self):
         # collect_tree_rows is build_tree_text's single source of truth for

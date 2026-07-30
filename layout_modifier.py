@@ -194,6 +194,26 @@ def apply_daltonizer(adb: str, serial: str, value: str) -> None:
     )
 
 
+def is_geometry_preserving(profile_name: str, baseline_name: str = "baseline") -> bool:
+    """
+    True when a profile changes no layout vector relative to baseline.
+
+    font_scale, density, and rtl are the vectors that can move or remove an
+    element; daltonizer is a display-level colour transform that cannot.
+    A geometry-preserving profile's captured text set must therefore equal
+    baseline's exactly -- see capture_checks.colour_only_contamination, which
+    this drives so the check is never hand-maintained against a hardcoded
+    profile name (currently `colorblind_deuteranomaly`, but this must keep
+    working if a future colour-only profile is added or renamed).
+    """
+    profile = ELDER_PROFILES[profile_name]
+    baseline = ELDER_PROFILES[baseline_name]
+    return all(
+        profile[vector] == baseline[vector]
+        for vector in ("font_scale", "density", "rtl")
+    )
+
+
 # ---------------------------------------------------------------------------
 # Post-condition Verification
 #

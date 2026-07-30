@@ -249,11 +249,34 @@ landed and covered by tests.
   51.2% over all 168 targets but 67.9% on combo_max's 112. **Do not report "the
   combined profile does not harm grounding"** — that null is measured on the easiest
   third that survived. Full numbers and rationale in `METHODS.md` §1.2.1.
-- **`play_store` drift.** Its rotating carousel produced 5 of 11 drifted texts in the
-  archive. Decide whether to drop the screen once re-collection reports measured drift.
-- **`settings_display` self-interference.** Enabling the daltonizer changes the text of
-  the Display settings page being measured. Either exclude that screen from the
-  colorblind arm or document it.
+- **`play_store` drift, resolved.** Its rotating carousel produced 5 of 11 drifted
+  texts in the archive; re-collection's offline drift rebuild (`orchestrator.py
+  --rebuild-manifest`, 2026-07-30) measures 0.0% for `play_store` in the current
+  dataset — the carousel did not rotate during this run's capture window. Not
+  guaranteed to stay that way on a future re-collection; re-check rather than assume.
+- **`maps` drift, newly found.** The same rebuild flags `maps` at 40.0% (`'Hello'`
+  vanished, `'Local vibe'` appeared between the opening and closing baseline) — well
+  above the 5% warning threshold and not previously visible, because the manifest
+  that would have caught it only covered `settings_main` until the rebuild. Decide
+  whether to exclude `maps` or accept it; not yet decided.
+- **`settings_display` colorblind drift, mechanism confirmed.** Enabling the
+  daltonizer removes `'Color'`/`'Colors'` from that screen and shifts every other
+  element down — and the shift is *not* a crop-offset artifact: raw (uncropped) XML
+  bounds show a uniform 323px shift for every element between `baseline` and
+  `colorblind_deuteranomaly`, with image dimensions unchanged. It also persists into
+  `baseline_close`, which applies the `baseline` profile (daltonizer off) beforehand.
+  Investigated as a possible teardown leak in `layout_modifier.py` — it is not one:
+  `apply_profile("baseline")` and `reset_all` both correctly write
+  `accessibility_display_daltonizer_enabled=0` and it verifies clean, including in
+  the exact colorblind→baseline sequence the orchestrator runs (regression tests in
+  `tests/test_layout_modifier.py::DaltonizerTeardownTests`). The actual mechanism is
+  an Android Settings-app UI side effect: toggling an accessibility setting
+  out-of-band via `adb shell settings put` (rather than through the Settings UI)
+  appears to trigger a persistent banner on the Display page that a value revert
+  alone does not clear — the same category of problem as the RTL reflow issue in
+  `layout_modifier.py` (needs a full app restart, which nothing in this pipeline
+  currently does). Exclude `settings_display` from the colorblind arm; this is not
+  fixable by reordering or re-verifying the setting.
 - **Ferret-UI parse robustness.** 15 unparsed replies in the archive, versus 0–1 for
   hosted models. Its `[[x1,y1,x2,y2]]` regex may not cover every reply shape.
 

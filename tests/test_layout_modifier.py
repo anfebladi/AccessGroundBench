@@ -102,6 +102,98 @@ class DaltonizerVerificationTests(unittest.TestCase):
             self.verify(["0", lm.DALTONIZER_MODES["deuteranomaly"]], "deuteranomaly")
 
 
+class ApplyDaltonizerTests(unittest.TestCase):
+    def test_off_writes_enabled_zero(self):
+        with mock.patch.object(lm, "run_adb") as run_adb_mock:
+            lm.apply_daltonizer("adb", "emulator-5554", "off")
+
+        run_adb_mock.assert_called_once_with(
+            "adb", "emulator-5554", "shell", "settings", "put", "secure",
+            "accessibility_display_daltonizer_enabled", "0",
+        )
+
+    def test_enabled_mode_writes_both_enabled_and_mode(self):
+        with mock.patch.object(lm, "run_adb") as run_adb_mock:
+            lm.apply_daltonizer("adb", "emulator-5554", "deuteranomaly")
+
+        calls = [c.args for c in run_adb_mock.call_args_list]
+        self.assertIn(
+            ("adb", "emulator-5554", "shell", "settings", "put", "secure",
+             "accessibility_display_daltonizer_enabled", "1"),
+            calls,
+        )
+        self.assertIn(
+            ("adb", "emulator-5554", "shell", "settings", "put", "secure",
+             "accessibility_display_daltonizer", lm.DALTONIZER_MODES["deuteranomaly"]),
+            calls,
+        )
+
+
+class DaltonizerTeardownTests(unittest.TestCase):
+    """
+    Regression coverage from investigating settings_display's baseline_close
+    drift (the missing 'Color'/'Colors' rows). That drift was suspected to be
+    a daltonizer-teardown leak in this module -- it is not: comparing raw
+    (uncropped) XML bounds shows every element shifts by an identical 323px
+    between baseline and colorblind_deuteranomaly, with image dimensions
+    unchanged, which rules out a crop-offset artifact and points to a
+    persistent Settings-app UI side effect of toggling an accessibility
+    setting out-of-band via ADB (the same category as the already-documented
+    RTL reflow issue) -- not a value that failed to reset. These tests lock
+    in that the setting-level teardown is, and remains, correct.
+    """
+
+    def test_apply_profile_baseline_turns_daltonizer_off(self):
+        with mock.patch.object(lm, "resolve_adb", return_value="adb"), \
+             mock.patch.object(lm, "get_device_serial", return_value="emulator-5554"), \
+             mock.patch.object(lm, "run_adb") as run_adb_mock, \
+             mock.patch.object(lm, "capture_adb", return_value=""), \
+             mock.patch.object(lm.time, "sleep"):
+            lm.apply_profile("baseline")
+
+        calls = [c.args for c in run_adb_mock.call_args_list]
+        self.assertIn(
+            ("adb", "emulator-5554", "shell", "settings", "put", "secure",
+             "accessibility_display_daltonizer_enabled", "0"),
+            calls,
+        )
+
+    def test_reset_all_turns_daltonizer_off(self):
+        with mock.patch.object(lm, "run_adb") as run_adb_mock:
+            lm.reset_all("adb", "emulator-5554")
+
+        calls = [c.args for c in run_adb_mock.call_args_list]
+        self.assertIn(
+            ("adb", "emulator-5554", "shell", "settings", "put", "secure",
+             "accessibility_display_daltonizer_enabled", "0"),
+            calls,
+        )
+
+    def test_applying_baseline_after_colorblind_still_turns_daltonizer_off(self):
+        # The exact sequence the orchestrator runs for every screen:
+        # colorblind_deuteranomaly immediately followed by the baseline
+        # profile for the closing drift probe. The teardown write must not
+        # depend on, or be skipped because of, the daltonizer's prior state.
+        with mock.patch.object(lm, "resolve_adb", return_value="adb"), \
+             mock.patch.object(lm, "get_device_serial", return_value="emulator-5554"), \
+             mock.patch.object(lm, "run_adb") as run_adb_mock, \
+             mock.patch.object(lm, "capture_adb", return_value=""), \
+             mock.patch.object(lm.time, "sleep"):
+            # Simulate the daltonizer being left on from the immediately
+            # preceding colorblind_deuteranomaly capture.
+            lm.apply_daltonizer("adb", "emulator-5554", "deuteranomaly")
+            run_adb_mock.reset_mock()
+
+            lm.apply_profile("baseline")
+
+        calls = [c.args for c in run_adb_mock.call_args_list]
+        self.assertIn(
+            ("adb", "emulator-5554", "shell", "settings", "put", "secure",
+             "accessibility_display_daltonizer_enabled", "0"),
+            calls,
+        )
+
+
 class ProfileMatrixTests(unittest.TestCase):
     def test_every_profile_declares_all_four_vectors(self):
         for name, profile in lm.ELDER_PROFILES.items():
@@ -115,6 +207,39 @@ class ProfileMatrixTests(unittest.TestCase):
         for vector in ("font_scale", "density", "rtl"):
             self.assertEqual(baseline[vector], colourblind[vector])
         self.assertNotEqual(baseline["daltonizer"], colourblind["daltonizer"])
+
+
+class IsGeometryPreservingTests(unittest.TestCase):
+    def test_colorblind_is_geometry_preserving(self):
+        self.assertTrue(lm.is_geometry_preserving("colorblind_deuteranomaly"))
+
+    def test_baseline_is_trivially_geometry_preserving(self):
+        self.assertTrue(lm.is_geometry_preserving("baseline"))
+
+    def test_font_scaling_profiles_are_not_geometry_preserving(self):
+        for name in ("elder_text_heavy", "elder_zoom_heavy",
+                     "elder_combo_max", "elder_combo_mid"):
+            self.assertFalse(
+                lm.is_geometry_preserving(name),
+                f"{name} changes font_scale or density and must not read as "
+                "geometry-preserving",
+            )
+
+    def test_driven_by_elder_profiles_not_hardcoded(self):
+        # If a future colour-only profile is added under a different name,
+        # this must recognise it without the function itself changing --
+        # the whole point of B0 is that the check is mechanical, not a
+        # hardcoded profile-name comparison.
+        original = dict(lm.ELDER_PROFILES)
+        try:
+            lm.ELDER_PROFILES["colorblind_protanomaly"] = {
+                "font_scale": "1.0", "density": "reset", "rtl": "0",
+                "daltonizer": "protanomaly",
+            }
+            self.assertTrue(lm.is_geometry_preserving("colorblind_protanomaly"))
+        finally:
+            lm.ELDER_PROFILES.clear()
+            lm.ELDER_PROFILES.update(original)
 
 
 if __name__ == "__main__":

@@ -20,6 +20,27 @@ STATUS_CO_PRESENT = "co_present"
 STATUS_OFF_SCREEN = "off_screen"
 STATUS_API_ERROR = "api_error"
 
+# The element is still rendered somewhere in the modified layout, but its
+# label text no longer matches the baseline string exactly -- reflow
+# truncated or re-worded it (see vlm_eval.targets.locate_element). This is
+# neither "the model looked in the wrong place" (co_present) nor "the element
+# left the screen" (off_screen), so it gets its own status rather than being
+# folded into either. Not queried or scored: whether/how to query it is an
+# open sample-definition decision, not a settled part of the pipeline (see
+# CLAUDE.md's remediation plan). No new CSV column is added for the matched
+# text -- it is recorded in raw_response as "[LABEL-CHANGED: <matched text>]",
+# following the existing sentinel convention derive_status already parses for
+# "[OFF-SCREEN]" and "[API-ERROR...]", so no schema version bump is needed and
+# resuming an in-progress run is unaffected.
+STATUS_LABEL_CHANGED = "label_changed"
+
+# The element is present on screen -- reachability must count it -- but its
+# recorded box's center falls outside the screenshot, so hit_test has no
+# valid point to score against (see bound_extractor.extract's clamping and
+# vlm_eval.runner.evaluate_screen's defensive check). Not the model's fault
+# and not a missing element, so it is neither co_present nor off_screen.
+STATUS_OFF_FRAME = "off_frame"
+
 # What prompt shape produced this row. The filename (evaluation_results_*.csv
 # vs *_with_tree.csv) used to be the only record of this; putting it in the
 # row itself lets a mixed file be detected instead of silently misread.
