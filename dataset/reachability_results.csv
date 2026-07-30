@@ -1,0 +1,6 @@
+Profile,Targets_Present,Targets_Total,Reachability,CI_Low,CI_High
+elder_text_heavy,144,162,0.8889,0.8312,0.9286
+elder_zoom_heavy,149,162,0.9198,0.8676,0.9525
+elder_combo_max,113,162,0.6975,0.6229,0.7630
+elder_combo_mid,125,162,0.7716,0.7011,0.8295
+colorblind_deuteranomaly,160,162,0.9877,0.9561,0.9966
