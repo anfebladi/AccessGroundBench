@@ -240,10 +240,14 @@ Six layout profiles are applied programmatically to the emulator before each scr
 | `elder_text_heavy` | 1.4× | Default | Off | None |
 | `elder_zoom_heavy` | 1.0× | 480 dpi | Off | None |
 | `elder_combo_max` | 1.6× | 520 dpi | Off | None |
-| `elder_combo_rtl` | 1.5× | 480 dpi | On | None |
+| `elder_combo_mid` | 1.5× | 480 dpi | Off | None |
 | `colorblind_deuteranomaly` | 1.0× | Default | Off | Deuteranomaly (green-weak) |
 
 > The deuteranomaly color filter is applied in software to the saved PNG (using a 3×3 RGB matrix via Pillow) because `adb screencap` captures display buffers before Android's hardware daltonizer transform is applied.
+
+> `elder_combo_mid` was `elder_combo_rtl` (Force RTL on) until re-collection measured
+> 0% mirroring across every screen, even with the corrected setting key. The RTL arm
+> was dropped rather than kept unverified; no profile requests RTL anymore.
 
 ### Profile verification
 
@@ -375,7 +379,6 @@ Analyzes all `evaluation_results_*.csv` files in `dataset/` automatically.
 ```bash
 python mcnemar_analysis.py --csv dataset/evaluation_results_openai_gpt-4o-mini.csv
 python mcnemar_analysis.py --data-dir dataset/experiment_2   # re-analyse the archive
-python mcnemar_analysis.py --include-rtl                     # only once RTL is verified
 ```
 
 The script reports four sections:
@@ -394,8 +397,8 @@ corroboration that a pooled effect is not driven by one model.
 **Output:** `reachability_results.csv`, `pooled_permutation_results.csv`,
 `mcnemar_results_per_model.csv`, `direction_consistency.csv`
 
-`elder_combo_rtl` is excluded by default because the RTL setting never applied during the
-archived collection; pass `--include-rtl` once a run has passed the mirror check.
+`elder_combo_rtl` (the archived RTL arm, `dataset/experiment_2/`) was renamed
+`elder_combo_mid` and folded into the default profile set — see the profile table above.
 
 ---
 

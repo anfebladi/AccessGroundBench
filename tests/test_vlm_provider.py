@@ -322,6 +322,217 @@ class VlmProviderTests(unittest.TestCase):
         self.assertEqual(2, completion_mock.call_count)
         sleep_mock.assert_called_once_with(0.249)
 
+    def test_build_ferret_prompt_vision_mode_matches_original_string(self):
+        # Regression lock: this exact string is what Ferret-UI was fine-tuned
+        # on, and must be byte-identical whether or not tree mode exists.
+        self.assertEqual(
+            "Provide the bounding box of the text 'Bluetooth'.",
+            vlm_provider.build_ferret_prompt("Bluetooth", None, 1080, 2219),
+        )
+        self.assertEqual(
+            "Provide the bounding box of the text 'Bluetooth'.",
+            vlm_provider.build_ferret_prompt("Bluetooth", [], 1080, 2219),
+        )
+
+    def test_build_ferret_prompt_tree_mode_ends_with_vision_line(self):
+        rows = [("Wi-Fi", [0, 0, 100, 50])]
+        prompt = vlm_provider.build_ferret_prompt("Bluetooth", rows, 1080, 2219)
+
+        self.assertTrue(
+            prompt.endswith("Provide the bounding box of the text 'Bluetooth'.")
+        )
+        self.assertTrue(prompt.startswith("Nearby elements:\n"))
+
+    def test_build_ferret_prompt_scales_boxes_to_vocab_1000(self):
+        # Matches ferret_ui/model_UI.py:126-140's own scaling: multiply by
+        # VOCAB_IMAGE_W/img_w (and H analogously), then int()-truncate --
+        # not round.
+        rows = [("Wi-Fi", [10, 20, 1070, 2200])]
+        prompt = vlm_provider.build_ferret_prompt("Bluetooth", rows, 1080, 2219)
+
+        ratio_w = 1000 / 1080
+        ratio_h = 1000 / 2219
+        expected = (
+            f'"Wi-Fi" [{int(10 * ratio_w)}, {int(20 * ratio_h)}, '
+            f'{int(1070 * ratio_w)}, {int(2200 * ratio_h)}]'
+        )
+        self.assertIn(expected, prompt)
+        # Single bracket, comma-space -- Ferret's own input convention, not
+        # the hosted-model tree's "[x1,y1][x2,y2]" pixel format.
+        self.assertNotIn("][", prompt)
+
+    def test_build_ferret_prompt_excludes_target_row(self):
+        # The leak-fix exclusion (collect_tree_rows) must hold through this
+        # rendering too, including the content_desc-only fallback case.
+        rows = [("World Clock", [216, 2051, 432, 2219]), ("8:30 AM", [84, 231, 429, 414])]
+        # Simulate collect_tree_rows(..., exclude_text="World Clock") having
+        # already dropped the excluded row before it reaches the prompt builder.
+        rows = [r for r in rows if r[0] != "World Clock"]
+
+        prompt = vlm_provider.build_ferret_prompt("World Clock", rows, 1080, 2219)
+
+        self.assertNotIn("[216,", prompt)
+        self.assertIn('"8:30 AM"', prompt)
+
+    def test_build_ferret_prompt_preserves_apostrophes_in_target(self):
+        prompt = vlm_provider.build_ferret_prompt("Today's Deals", None, 1080, 2219)
+        self.assertEqual(
+            "Provide the bounding box of the text 'Today's Deals'.",
+            prompt,
+        )
+
+    def test_build_ferret_prompt_sanitizes_image_token_and_newlines(self):
+        rows = [("weird <image>\nlabel", [0, 0, 10, 10])]
+        prompt = vlm_provider.build_ferret_prompt("Bluetooth", rows, 1080, 2219)
+        self.assertNotIn("<image>", prompt)
+        self.assertNotIn("weird \nlabel", prompt)
+
+    def test_parse_ferret_bbox_prefers_double_bracket(self):
+        self.assertEqual(
+            (100.0, 200.0, 300.0, 400.0),
+            vlm_provider._parse_ferret_bbox("The box is [[100, 200, 300, 400]]"),
+        )
+
+    def test_parse_ferret_bbox_falls_back_to_single_bracket(self):
+        self.assertEqual(
+            (10.0, 20.0, 30.5, 40.0),
+            vlm_provider._parse_ferret_bbox("sure, [10, 20, 30.5, 40]"),
+        )
+
+    def test_parse_ferret_bbox_prefers_last_single_bracket_match(self):
+        # Once the prompt itself can contain bracketed boxes (an injected
+        # tree), a model that echoes context must not have that echoed box
+        # mistaken for its actual answer.
+        self.assertEqual(
+            (50.0, 60.0, 70.0, 80.0),
+            vlm_provider._parse_ferret_bbox(
+                "context had [1, 2, 3, 4], my answer is [50, 60, 70, 80]"
+            ),
+        )
+
+    def test_parse_ferret_bbox_returns_none_when_unparseable(self):
+        self.assertIsNone(vlm_provider._parse_ferret_bbox("no bounding box here"))
+
+    @mock.patch("vlm_provider.urllib.request.urlopen")
+    def test_call_vlm_ferret_vision_mode_sends_unchanged_prompt(self, urlopen_mock):
+        import json as _json
+
+        response = mock.MagicMock()
+        response.read.return_value = _json.dumps(
+            {"text": "[[100, 200, 300, 400]]", "max_new_tokens": 1024}
+        ).encode("utf-8")
+        response.__enter__.return_value = response
+        urlopen_mock.return_value = response
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            image_path = Path(tmp_dir) / "screen.png"
+            image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
+
+            vlm_provider.call_vlm(
+                "local/ferret-ui-llama8b",
+                image_path,
+                "irrelevant when target_text is provided",
+                target_text="Bluetooth",
+                tree_rows=None,
+                img_width=1080,
+                img_height=2219,
+            )
+
+        sent_request = urlopen_mock.call_args.args[0]
+        sent_body = _json.loads(sent_request.data.decode("utf-8"))
+        self.assertEqual(
+            "Provide the bounding box of the text 'Bluetooth'.",
+            sent_body["prompt"],
+        )
+
+    @mock.patch("vlm_provider.urllib.request.urlopen")
+    def test_call_vlm_ferret_tree_mode_includes_tree_text(self, urlopen_mock):
+        import json as _json
+
+        response = mock.MagicMock()
+        response.read.return_value = _json.dumps(
+            {"text": "[[100, 200, 300, 400]]", "max_new_tokens": 1024}
+        ).encode("utf-8")
+        response.__enter__.return_value = response
+        urlopen_mock.return_value = response
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            image_path = Path(tmp_dir) / "screen.png"
+            image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
+
+            vlm_provider.call_vlm(
+                "local/ferret-ui-llama8b",
+                image_path,
+                "irrelevant when target_text is provided",
+                target_text="Bluetooth",
+                tree_rows=[("Wi-Fi", [0, 0, 100, 50])],
+                img_width=1080,
+                img_height=2219,
+            )
+
+        sent_request = urlopen_mock.call_args.args[0]
+        sent_body = _json.loads(sent_request.data.decode("utf-8"))
+        self.assertIn("Nearby elements:", sent_body["prompt"])
+        self.assertIn('"Wi-Fi"', sent_body["prompt"])
+        self.assertTrue(
+            sent_body["prompt"].endswith(
+                "Provide the bounding box of the text 'Bluetooth'."
+            )
+        )
+
+    @mock.patch("vlm_provider.urllib.request.urlopen")
+    def test_call_vlm_ferret_converts_vocab_scale_response_to_pixel_center(
+        self, urlopen_mock
+    ):
+        import json as _json
+
+        response = mock.MagicMock()
+        response.read.return_value = _json.dumps(
+            {"text": "[[0, 0, 1000, 1000]]", "max_new_tokens": 1024}
+        ).encode("utf-8")
+        response.__enter__.return_value = response
+        urlopen_mock.return_value = response
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            image_path = Path(tmp_dir) / "screen.png"
+            image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
+
+            result = vlm_provider.call_vlm(
+                "local/ferret-ui-llama8b",
+                image_path,
+                "irrelevant when target_text is provided",
+                target_text="Bluetooth",
+                img_width=1080,
+                img_height=2219,
+            )
+
+        self.assertEqual("[540.0, 1109.5]", result)
+
+    @mock.patch("vlm_provider.urllib.request.urlopen")
+    def test_call_vlm_ferret_surfaces_server_budget_error(self, urlopen_mock):
+        import urllib.error
+
+        error_body = mock.MagicMock()
+        error_body.read.return_value = b'{"error": "context window exceeded"}'
+        urlopen_mock.side_effect = urllib.error.HTTPError(
+            "http://localhost:8000/", 400, "Bad Request", {}, error_body
+        )
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            image_path = Path(tmp_dir) / "screen.png"
+            image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
+
+            with self.assertRaisesRegex(RuntimeError, "context window exceeded"):
+                vlm_provider.call_vlm(
+                    "local/ferret-ui-llama8b",
+                    image_path,
+                    "irrelevant when target_text is provided",
+                    target_text="Bluetooth",
+                    tree_rows=[("Wi-Fi", [0, 0, 100, 50])],
+                    img_width=1080,
+                    img_height=2219,
+                )
+
     @mock.patch("vlm_provider.time.sleep")
     @mock.patch("vlm_provider._completion")
     def test_call_vlm_raises_after_repeated_rate_limits(self, completion_mock, sleep_mock):

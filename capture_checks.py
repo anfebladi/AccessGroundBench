@@ -7,7 +7,6 @@ A device setting can be accepted and still have no effect. These functions
 verify the *observable outcome* of a profile in the pixels and the hierarchy,
 rather than trusting that a write to a settings key did something:
 
-  - mirror_ratio      did the layout actually flip for an RTL profile?
   - text_drift        did the app's own content change between two captures?
   - image_difference  how far apart are two captures, in pixels?
 
@@ -26,18 +25,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-# Elements whose centre is within this many pixels of the screen's vertical
-# midline are ignored by the mirror check: mirroring barely moves them, so they
-# cannot distinguish a mirrored layout from an unmirrored one.
-CENTRE_EXCLUSION_PX = 150
-
-# How far a mirrored centre may sit from its predicted position and still count.
-MIRROR_TOLERANCE_PX = 70
-
-# Fraction of off-centre elements that must mirror for an RTL profile to pass.
-MIRROR_PASS_RATIO = 0.5
-
-
 
 def load_labels(path: str | Path) -> list[dict]:
     """Read a bound_extractor label JSON file."""
@@ -54,63 +41,6 @@ def text_boxes(labels: list[dict]) -> dict[str, list[int]]:
             continue
         boxes.setdefault(text.strip(), record["box"])
     return boxes
-
-
-def mirror_ratio(
-    reference_labels: list[dict],
-    rtl_labels: list[dict],
-    screen_width: int,
-) -> tuple[int, int]:
-    """
-    Compare a non-RTL capture with an RTL capture of the same screen.
-
-    Returns (mirrored, comparable): how many shared off-centre text elements
-    moved to their mirrored x position, out of how many were testable.
-
-    An element at centre x should appear at (screen_width - x) once the layout
-    direction flips. Centred elements are excluded because the mirror maps them
-    onto themselves.
-    """
-    reference = text_boxes(reference_labels)
-    rtl = text_boxes(rtl_labels)
-
-    midline = screen_width / 2.0
-    mirrored = comparable = 0
-
-    for text in set(reference) & set(rtl):
-        ref_box, rtl_box = reference[text], rtl[text]
-        ref_centre = (ref_box[0] + ref_box[2]) / 2.0
-        rtl_centre = (rtl_box[0] + rtl_box[2]) / 2.0
-
-        if abs(ref_centre - midline) < CENTRE_EXCLUSION_PX:
-            continue
-
-        comparable += 1
-        if abs(rtl_centre - (screen_width - ref_centre)) < MIRROR_TOLERANCE_PX:
-            mirrored += 1
-
-    return mirrored, comparable
-
-
-def rtl_applied(
-    reference_labels: list[dict],
-    rtl_labels: list[dict],
-    screen_width: int,
-) -> tuple[bool, str]:
-    """
-    Decide whether an RTL capture really is mirrored.
-
-    Returns (passed, human-readable detail). When no off-centre elements are
-    shared the check cannot conclude, and reports that rather than passing.
-    """
-    mirrored, comparable = mirror_ratio(reference_labels, rtl_labels, screen_width)
-
-    if comparable == 0:
-        return False, "no shared off-centre elements to compare"
-
-    ratio = mirrored / comparable
-    detail = f"{mirrored}/{comparable} off-centre elements mirrored ({ratio:.0%})"
-    return ratio >= MIRROR_PASS_RATIO, detail
 
 
 def image_difference(png_a: str | Path, png_b: str | Path) -> float:

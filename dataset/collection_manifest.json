@@ -1,0 +1,99 @@
+{
+  "collected_at": "2026-07-30T05:25:53+00:00",
+  "screens": [
+    "settings_main"
+  ],
+  "profiles": [
+    "baseline",
+    "elder_text_heavy",
+    "elder_zoom_heavy",
+    "elder_combo_max",
+    "elder_combo_mid",
+    "colorblind_deuteranomaly"
+  ],
+  "drift_probe": "baseline_close",
+  "expected_captures": 7,
+  "successful_captures": 7,
+  "captures": [
+    {
+      "screen": "settings_main",
+      "profile": "baseline",
+      "stem": "settings_main_baseline",
+      "ok": true,
+      "png": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\images\\settings_main_baseline.png",
+      "xml": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\raw_xml\\settings_main_baseline.xml",
+      "labels": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\labels\\settings_main_baseline.json",
+      "label_count": 72
+    },
+    {
+      "screen": "settings_main",
+      "profile": "elder_text_heavy",
+      "stem": "settings_main_elder_text_heavy",
+      "ok": true,
+      "png": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\images\\settings_main_elder_text_heavy.png",
+      "xml": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\raw_xml\\settings_main_elder_text_heavy.xml",
+      "labels": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\labels\\settings_main_elder_text_heavy.json",
+      "label_count": 60
+    },
+    {
+      "screen": "settings_main",
+      "profile": "elder_zoom_heavy",
+      "stem": "settings_main_elder_zoom_heavy",
+      "ok": true,
+      "png": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\images\\settings_main_elder_zoom_heavy.png",
+      "xml": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\raw_xml\\settings_main_elder_zoom_heavy.xml",
+      "labels": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\labels\\settings_main_elder_zoom_heavy.json",
+      "label_count": 63
+    },
+    {
+      "screen": "settings_main",
+      "profile": "elder_combo_max",
+      "stem": "settings_main_elder_combo_max",
+      "ok": true,
+      "png": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\images\\settings_main_elder_combo_max.png",
+      "xml": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\raw_xml\\settings_main_elder_combo_max.xml",
+      "labels": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\labels\\settings_main_elder_combo_max.json",
+      "label_count": 43
+    },
+    {
+      "screen": "settings_main",
+      "profile": "elder_combo_mid",
+      "stem": "settings_main_elder_combo_mid",
+      "ok": true,
+      "png": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\images\\settings_main_elder_combo_mid.png",
+      "xml": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\raw_xml\\settings_main_elder_combo_mid.xml",
+      "labels": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\labels\\settings_main_elder_combo_mid.json",
+      "label_count": 49
+    },
+    {
+      "screen": "settings_main",
+      "profile": "colorblind_deuteranomaly",
+      "stem": "settings_main_colorblind_deuteranomaly",
+      "ok": true,
+      "png": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\images\\settings_main_colorblind_deuteranomaly.png",
+      "xml": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\raw_xml\\settings_main_colorblind_deuteranomaly.xml",
+      "labels": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\labels\\settings_main_colorblind_deuteranomaly.json",
+      "label_count": 72
+    },
+    {
+      "screen": "settings_main",
+      "profile": "baseline",
+      "stem": "settings_main_baseline_close",
+      "ok": true,
+      "png": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\images\\settings_main_baseline_close.png",
+      "xml": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\raw_xml\\settings_main_baseline_close.xml",
+      "labels": "C:\\Users\\anfeb\\Desktop\\research\\dataset\\labels\\settings_main_baseline_close.json",
+      "label_count": 72
+    }
+  ],
+  "drift": [
+    {
+      "screen": "settings_main",
+      "drift_rate": 0.0,
+      "vanished": [],
+      "appeared": [],
+      "flagged": false
+    }
+  ],
+  "problems": []
+}

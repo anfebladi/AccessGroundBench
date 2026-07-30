@@ -20,11 +20,11 @@ rotating carousel or a ticking clock. An earlier run captured baselines days
 away from their comparison profiles and never measured this, leaving a 6.3%
 drift silently mixed into every result.
 
-**Verification.** Each profile is read back from the device, and profiles with a
-visible signature (RTL mirroring, colour filtering) are additionally checked
-against the captured assets. An earlier run wrote an RTL settings key Android
-does not read; because nothing checked, the entire RTL arm turned out to be a
-plain font-and-density condition.
+**Verification.** Each profile is read back from the device, and colour filtering is
+additionally checked against the captured PNG (before/after diff inside the colour
+transform). An earlier run wrote an RTL settings key Android does not read; even after
+that was fixed and empirically checked against captures, RTL still measured 0% mirrored
+on every screen, so the arm was dropped -- see `elder_combo_mid` in `layout_modifier.py`.
 
 Assets are written to:
   dataset/images/{screen}_{profile}.png
@@ -128,6 +128,8 @@ def capture_one(screen_name: str, profile_name: str, stem: str) -> dict:
             y_offset=status_bar_h,
             bottom_crop=nav_bar_h,
         )
+        with open(label_path, encoding="utf-8") as f:
+            label_count = len(json.load(f))
     except RuntimeError as e:
         entry["error"] = str(e)
         print(f"  [ERROR] Capture failed for {stem}: {e}")
@@ -138,52 +140,10 @@ def capture_one(screen_name: str, profile_name: str, stem: str) -> dict:
         "png": str(png_path),
         "xml": str(xml_path),
         "labels": str(label_path),
+        "label_count": label_count,
     })
     print(f"  [DONE] {stem}")
     return entry
-
-
-def check_profile_effect(screen_name: str, profile_name: str, entry: dict) -> None:
-    """
-    Confirm a profile's visible signature is present in the captured assets.
-
-    Settings can be accepted and do nothing, so profiles with an observable
-    consequence are checked against the files rather than the device state.
-    Results are attached to the manifest entry as `effect_ok` / `effect_detail`.
-
-    Only RTL is checked here. The colour transform is verified inside
-    screenshot_pipeline.apply_color_transform, which compares the image before
-    and after the matrix is applied -- exact, and immune to the content drift
-    that would contaminate a comparison against a separate baseline capture.
-    """
-    profile = layout_modifier.ELDER_PROFILES[profile_name]
-    baseline_labels_path = LABELS_DIR / f"{screen_name}_baseline.json"
-
-    if profile["rtl"] == "1":
-        # Compare against the geometry-matched non-RTL profile where one
-        # exists, otherwise against baseline. Only the layout direction should
-        # differ between the two.
-        reference_stem = f"{screen_name}_elder_zoom_heavy"
-        reference_path = LABELS_DIR / f"{reference_stem}.json"
-        if not reference_path.is_file():
-            reference_path = baseline_labels_path
-        if not reference_path.is_file():
-            entry["effect_ok"] = None
-            entry["effect_detail"] = "no reference capture for mirror check"
-            return
-
-        from PIL import Image
-        with Image.open(entry["png"]) as img:
-            width = img.size[0]
-
-        passed, detail = capture_checks.rtl_applied(
-            capture_checks.load_labels(reference_path),
-            capture_checks.load_labels(entry["labels"]),
-            width,
-        )
-        entry["effect_ok"] = passed
-        entry["effect_detail"] = f"RTL mirror: {detail}"
-        print(f"  [{'OK' if passed else 'FAIL'}] {entry['effect_detail']}")
 
 
 def measure_drift(screen_name: str, entries: list[dict]) -> dict | None:
@@ -255,8 +215,6 @@ def run_screen(screen_name: str, dry_run: bool = False) -> tuple[list[dict], dic
             continue
 
         entry = capture_one(screen_name, applied_profile, stem)
-        if entry["ok"] and profile_name not in ("baseline", DRIFT_PROBE):
-            check_profile_effect(screen_name, applied_profile, entry)
         entries.append(entry)
 
     print(f"\n  [RESET] Reverting emulator to baseline for screen: {screen_name}")
@@ -287,9 +245,11 @@ def write_manifest(
 
     problems = [f"missing capture: {stem}" for stem in expected if stem not in captured]
     problems += [
-        f"profile effect not confirmed: {e['stem']} ({e.get('effect_detail', '')})"
+        f"empty extraction: {e['stem']} (uiautomator dump returned no usable nodes "
+        f"despite a successful capture -- see settings_main_baseline in the archive "
+        f"for the known failure mode)"
         for e in entries
-        if e.get("effect_ok") is False
+        if e["ok"] and e.get("label_count") == 0
     ]
     problems += [
         f"high content drift: {d['screen']} at {d['drift_rate']:.1%}"

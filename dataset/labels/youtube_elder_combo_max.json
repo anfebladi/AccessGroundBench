@@ -1,0 +1,806 @@
+[
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_divider_frame",
+    "box": [
+      0,
+      -169,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "global_slim_status_bar_container",
+    "box": [
+      0,
+      -169,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "accessibility_layer_container",
+    "box": [
+      0,
+      -169,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "next_gen_watch_container_layout",
+    "box": [
+      0,
+      -169,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "watch_while_layout_coordinator_layout",
+    "box": [
+      0,
+      -169,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "fab_container",
+    "box": [
+      0,
+      -169,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "pane_fragment_container",
+    "box": [
+      0,
+      -169,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "browse_fragment_layout_coordinator_layout",
+    "box": [
+      0,
+      -169,
+      1080,
+      2033
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "appbar_layout",
+    "box": [
+      0,
+      -169,
+      1080,
+      156
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "toolbar_container",
+    "box": [
+      0,
+      -169,
+      1080,
+      156
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "toolbar",
+    "box": [
+      0,
+      0,
+      1080,
+      156
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      0,
+      768,
+      156
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": "YouTube",
+    "resource_id": "youtube_logo",
+    "box": [
+      0,
+      0,
+      397,
+      156
+    ]
+  },
+  {
+    "class": "LinearLayoutCompat",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      768,
+      0,
+      1080,
+      150
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "menu_item_0",
+    "box": [
+      768,
+      0,
+      924,
+      150
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      768,
+      0,
+      924,
+      150
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": "Notifications",
+    "resource_id": "menu_item_view",
+    "box": [
+      768,
+      0,
+      924,
+      150
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "menu_item_1",
+    "box": [
+      924,
+      0,
+      1080,
+      150
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      924,
+      0,
+      1080,
+      150
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": "Search",
+    "resource_id": "menu_item_view",
+    "box": [
+      924,
+      0,
+      1080,
+      150
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "pane_fragment_contents",
+    "box": [
+      0,
+      156,
+      1080,
+      2033
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "loading_layout",
+    "box": [
+      0,
+      156,
+      1080,
+      2033
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      156,
+      1080,
+      2033
+    ]
+  },
+  {
+    "class": "RecyclerView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "results",
+    "box": [
+      0,
+      156,
+      1080,
+      2033
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      156,
+      1080,
+      1493
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": "Sponsored - Automate workflows tailored to your business needs with the Gemini Enterprise app - 16 seconds - Streamline daily reporting, staff scheduling, and more with the Gemini Enterprise app. - Google Cloud - play video",
+    "resource_id": null,
+    "box": [
+      0,
+      156,
+      1080,
+      1493
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      156,
+      1080,
+      763
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      156,
+      1080,
+      763
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      924,
+      607,
+      1054,
+      737
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      763,
+      1080,
+      1285
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      763,
+      1080,
+      1285
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      39,
+      802,
+      156,
+      919
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      195,
+      802,
+      950,
+      981
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": "More options",
+    "resource_id": null,
+    "box": [
+      950,
+      802,
+      1028,
+      880
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      541,
+      1163,
+      910,
+      1246
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      39,
+      1285,
+      1041,
+      1415
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": "Watch",
+    "resource_id": null,
+    "box": [
+      39,
+      1285,
+      527,
+      1415
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": "Watch",
+    "resource_id": null,
+    "box": [
+      39,
+      1285,
+      527,
+      1415
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": "Sign up",
+    "resource_id": null,
+    "box": [
+      553,
+      1285,
+      1041,
+      1415
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": "Sign up",
+    "resource_id": null,
+    "box": [
+      553,
+      1285,
+      1041,
+      1415
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1519,
+      1080,
+      2033
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": "800+ hours of Learning Claude Code in 8 minutes (2026 tutorial / unknown tricks / newest model) - 8 minutes, 1 second - Go to channel Edmund Yong - Edmund Yong - 910 thousand views - 9 months ago - play video",
+    "resource_id": null,
+    "box": [
+      0,
+      1519,
+      1080,
+      2033
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1519,
+      1080,
+      2033
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1519,
+      1080,
+      2033
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1519,
+      1080,
+      2033
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      1519,
+      1080,
+      2033
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "bottom_bar_container",
+    "box": [
+      0,
+      2033,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "HorizontalScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "pivot_bar",
+    "box": [
+      0,
+      2033,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2033,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "Home",
+    "resource_id": null,
+    "box": [
+      0,
+      2033,
+      216,
+      2177
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "thumbnail_layout",
+    "box": [
+      69,
+      2043,
+      147,
+      2121
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "image",
+    "box": [
+      69,
+      2043,
+      147,
+      2121
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Home",
+    "content_desc": null,
+    "resource_id": "text",
+    "box": [
+      60,
+      2128,
+      156,
+      2167
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "Shorts",
+    "resource_id": null,
+    "box": [
+      216,
+      2033,
+      432,
+      2177
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "thumbnail_layout",
+    "box": [
+      285,
+      2043,
+      363,
+      2121
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "image",
+    "box": [
+      285,
+      2043,
+      363,
+      2121
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Shorts",
+    "content_desc": null,
+    "resource_id": "text",
+    "box": [
+      273,
+      2128,
+      376,
+      2167
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "Create",
+    "resource_id": null,
+    "box": [
+      432,
+      2033,
+      648,
+      2177
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "image",
+    "box": [
+      482,
+      2048,
+      599,
+      2165
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "Subscriptions",
+    "resource_id": null,
+    "box": [
+      648,
+      2033,
+      864,
+      2177
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "thumbnail_layout",
+    "box": [
+      717,
+      2043,
+      795,
+      2121
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "image",
+    "box": [
+      717,
+      2043,
+      795,
+      2121
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Subscriptions",
+    "content_desc": null,
+    "resource_id": "text",
+    "box": [
+      652,
+      2128,
+      860,
+      2167
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "You",
+    "resource_id": null,
+    "box": [
+      864,
+      2033,
+      1080,
+      2177
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "thumbnail_layout",
+    "box": [
+      933,
+      2043,
+      1011,
+      2121
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "pivot_bar_thumbnail",
+    "box": [
+      933,
+      2043,
+      1011,
+      2121
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "You",
+    "content_desc": null,
+    "resource_id": "text",
+    "box": [
+      941,
+      2128,
+      1003,
+      2167
+    ]
+  }
+]

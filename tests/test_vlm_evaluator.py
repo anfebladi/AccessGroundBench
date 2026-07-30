@@ -54,6 +54,36 @@ class VlmEvaluatorConfigTests(unittest.TestCase):
 
         self.assertEqual(1, exc.exception.code)
 
+    @mock.patch.dict("vlm_eval.config.os.environ", {}, clear=True)
+    def test_resolve_use_a11y_tree_defaults_to_false_when_unset(self):
+        self.assertFalse(config.resolve_use_a11y_tree())
+
+    def test_resolve_use_a11y_tree_accepts_truthy_values(self):
+        for value in ("true", "TRUE", "True", "1", "yes", "YES"):
+            with self.subTest(value=value):
+                with mock.patch.dict(
+                    "vlm_eval.config.os.environ", {"USE_A11Y_TREE": value}, clear=True
+                ):
+                    self.assertTrue(config.resolve_use_a11y_tree())
+
+    def test_resolve_use_a11y_tree_accepts_falsy_values(self):
+        for value in ("false", "FALSE", "0", "no", ""):
+            with self.subTest(value=value):
+                with mock.patch.dict(
+                    "vlm_eval.config.os.environ", {"USE_A11Y_TREE": value}, clear=True
+                ):
+                    self.assertFalse(config.resolve_use_a11y_tree())
+
+    @mock.patch.dict("vlm_eval.config.os.environ", {"USE_A11Y_TREE": "on"}, clear=True)
+    def test_resolve_use_a11y_tree_exits_for_unrecognised_value(self):
+        # A typo like "on" must not silently fall back to vision-only: that
+        # would run a full, expensive evaluation under the wrong mode with
+        # nothing in the output filename to reveal the mismatch.
+        with self.assertRaises(SystemExit) as exc:
+            config.resolve_use_a11y_tree()
+
+        self.assertEqual(1, exc.exception.code)
+
 
 class VlmEvaluatorMainTests(unittest.TestCase):
     @mock.patch("vlm_evaluator.summarize_run", return_value={})

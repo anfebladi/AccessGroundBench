@@ -1,0 +1,830 @@
+[
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "root",
+    "box": [
+      0,
+      -142,
+      1080,
+      2050
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "contacts_list_container",
+    "box": [
+      0,
+      -142,
+      1080,
+      2050
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "nav_host_container",
+    "box": [
+      0,
+      -142,
+      1080,
+      2050
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "nav_host_container",
+    "box": [
+      0,
+      -142,
+      1080,
+      2050
+    ]
+  },
+  {
+    "class": "SlidingPaneLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      -142,
+      1080,
+      2050
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "contact_list_fragment",
+    "box": [
+      0,
+      -142,
+      1080,
+      2050
+    ]
+  },
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "contact_list",
+    "box": [
+      0,
+      -142,
+      1080,
+      2050
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "app_bar_layout",
+    "box": [
+      0,
+      -142,
+      1080,
+      336
+    ]
+  },
+  {
+    "class": "EditText",
+    "text": "Search contacts",
+    "content_desc": null,
+    "resource_id": "open_search_bar",
+    "box": [
+      42,
+      21,
+      1038,
+      147
+    ]
+  },
+  {
+    "class": "ImageButton",
+    "text": null,
+    "content_desc": "Search",
+    "resource_id": null,
+    "box": [
+      53,
+      21,
+      179,
+      147
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "open_search_bar_text_view_container",
+    "box": [
+      179,
+      53,
+      485,
+      115
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Search contacts",
+    "content_desc": null,
+    "resource_id": "open_search_bar_text_view",
+    "box": [
+      179,
+      53,
+      485,
+      115
+    ]
+  },
+  {
+    "class": "LinearLayoutCompat",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      904,
+      21,
+      1038,
+      147
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Signed in as Andres anfebladi5@gmail.com\nGoogle One account.\nAccount and settings.",
+    "resource_id": "selected_account_disc",
+    "box": [
+      904,
+      21,
+      1038,
+      147
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "og_selected_account_disc_apd",
+    "box": [
+      904,
+      21,
+      1030,
+      147
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "og_apd_internal_image_view",
+    "box": [
+      912,
+      29,
+      1022,
+      139
+    ]
+  },
+  {
+    "class": "ComposeView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "app_bar_compose_view",
+    "box": [
+      0,
+      168,
+      1080,
+      336
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      168,
+      1080,
+      336
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      168,
+      1080,
+      336
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      42,
+      189,
+      442,
+      315
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "All contacts",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      142,
+      226,
+      342,
+      279
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      42,
+      189,
+      442,
+      315
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      786,
+      189,
+      912,
+      315
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      787,
+      190,
+      913,
+      316
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "View labels",
+    "resource_id": null,
+    "box": [
+      818,
+      221,
+      881,
+      284
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      797,
+      200,
+      902,
+      305
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      912,
+      189,
+      1038,
+      315
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      913,
+      190,
+      1039,
+      316
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "Show list filters",
+    "resource_id": null,
+    "box": [
+      944,
+      221,
+      1007,
+      284
+    ]
+  },
+  {
+    "class": "CheckBox",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      923,
+      200,
+      1028,
+      305
+    ]
+  },
+  {
+    "class": "ComposeView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "contact_list_compose_view",
+    "box": [
+      0,
+      336,
+      1080,
+      2050
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      336,
+      1080,
+      2282
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      336,
+      1080,
+      2282
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      42,
+      357,
+      1038,
+      526
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      42,
+      357,
+      1038,
+      526
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      84,
+      389,
+      189,
+      494
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Your info",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      221,
+      389,
+      346,
+      431
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Andres",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      221,
+      431,
+      365,
+      494
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      902,
+      379,
+      1028,
+      505
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": "Share",
+    "resource_id": null,
+    "box": [
+      933,
+      410,
+      996,
+      473
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      912,
+      389,
+      1017,
+      494
+    ]
+  },
+  {
+    "class": "ScrollView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      526,
+      1080,
+      2050
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      879,
+      1080,
+      1404
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "No contacts yet",
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      317,
+      1446,
+      763,
+      1530
+    ]
+  },
+  {
+    "class": "FloatingActionButton",
+    "text": null,
+    "content_desc": "Create contact",
+    "resource_id": "floating_action_button",
+    "box": [
+      870,
+      1861,
+      1017,
+      2008
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "bottom_nav",
+    "box": [
+      0,
+      2050,
+      1080,
+      2282
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      0,
+      2050,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Contacts",
+    "resource_id": "contacts",
+    "box": [
+      0,
+      2050,
+      360,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      106,
+      2066,
+      253,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      106,
+      2066,
+      253,
+      2150
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_active_indicator_view",
+    "box": [
+      106,
+      2066,
+      253,
+      2150
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      148,
+      2076,
+      211,
+      2139
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      148,
+      2076,
+      211,
+      2139
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_labels_group",
+    "box": [
+      110,
+      2161,
+      248,
+      2219
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Contacts",
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_large_label_view",
+    "box": [
+      110,
+      2161,
+      248,
+      2203
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Highlights",
+    "resource_id": "highlights",
+    "box": [
+      360,
+      2050,
+      720,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      463,
+      2066,
+      616,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      466,
+      2066,
+      613,
+      2150
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      508,
+      2076,
+      571,
+      2139
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      508,
+      2076,
+      571,
+      2139
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_labels_group",
+    "box": [
+      463,
+      2161,
+      616,
+      2219
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Highlights",
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_small_label_view",
+    "box": [
+      463,
+      2161,
+      616,
+      2203
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Organize",
+    "resource_id": "nav_organize",
+    "box": [
+      720,
+      2050,
+      1080,
+      2219
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_content_container",
+    "box": [
+      826,
+      2066,
+      973,
+      2219
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_container",
+    "box": [
+      826,
+      2066,
+      973,
+      2150
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_inner_content_container",
+    "box": [
+      868,
+      2076,
+      931,
+      2139
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_icon_view",
+    "box": [
+      868,
+      2076,
+      931,
+      2139
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_labels_group",
+    "box": [
+      831,
+      2161,
+      968,
+      2219
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Organize",
+    "content_desc": null,
+    "resource_id": "navigation_bar_item_small_label_view",
+    "box": [
+      831,
+      2161,
+      968,
+      2203
+    ]
+  }
+]

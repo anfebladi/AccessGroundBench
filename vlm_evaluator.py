@@ -24,7 +24,7 @@ from vlm_eval.config import (
     resolve_trials,
     resolve_use_a11y_tree,
 )
-from vlm_eval.results import prepare_csv
+from vlm_eval.results import PROMPT_MODE_TREE, PROMPT_MODE_VISION, prepare_csv
 from vlm_eval.runner import evaluate_screen, summarize_run
 from vlm_provider import model_configuration_error
 
@@ -117,7 +117,11 @@ def main(argv: list[str] | None = None) -> None:
         print(f"  Trials per query: {trials}")
         print("=" * 60)
 
-        completed = prepare_csv(results_csv, fresh=args.fresh)
+        completed = prepare_csv(
+            results_csv,
+            fresh=args.fresh,
+            expected_prompt_mode=PROMPT_MODE_TREE if use_a11y_tree else PROMPT_MODE_VISION,
+        )
 
         for screen_name in screens:
             print(f"\n  -- Screen: {screen_name} --")

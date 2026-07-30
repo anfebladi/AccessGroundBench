@@ -8,9 +8,12 @@ vision-capable model and return the raw text response.
 """
 
 import base64
+import json
 import os
 import re
 import time
+import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -32,6 +35,23 @@ NINEROUTER_BASE_URL_ENV_VAR = "NINEROUTER_BASE_URL"
 NINEROUTER_API_KEY_ENV_VAR = "NINEROUTER_API_KEY"
 OPENAI_COMPATIBLE_BASE_URL_ENV_VAR = "OPENAI_COMPATIBLE_BASE_URL"
 OPENAI_COMPATIBLE_API_KEY_ENV_VAR = "OPENAI_COMPATIBLE_API_KEY"
+
+FERRET_MODEL_ID = "local/ferret-ui-llama8b"
+FERRET_SERVER_URL = "http://localhost:8000/"
+# ferret_ui/model_UI.py:16-17 (VOCAB_IMAGE_W/H) and the ferret_llama_3 system
+# prompt in ferret_ui/conversation.py:443-448 ("Image size: 1000x1000") both
+# fix Ferret's coordinate space at 1000x1000, independent of the real
+# screenshot's pixel dimensions.
+FERRET_VOCAB_SIZE = 1000
+
+_FERRET_DOUBLE_BRACKET_RE = re.compile(
+    r"\[\[\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*,"
+    r"\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\]\]"
+)
+_FERRET_SINGLE_BRACKET_RE = re.compile(
+    r"\[\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*,"
+    r"\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\]"
+)
 
 
 def image_to_data_url(image_path: Path) -> str:
@@ -315,73 +335,148 @@ def _extract_response_text(response: Any) -> str:
     return "" if content is None else str(content)
 
 
-def call_vlm(
-    model: str,
-    image_path: Path,
-    prompt: str,
-    max_retries: int | None = None,
-    max_tokens: int | None = None,
-    request_timeout: float | None = None,
-    temperature: float | None = None,
+def _sanitize_for_ferret(text: str) -> str:
+    """
+    Strip characters that would confuse ferret_server.py's prompt parsing.
+
+    ferret_server.py:40-41 does `if "<image>" in qs: qs = qs.split('\\n')[1]`,
+    so a UI label containing that literal token would silently shred the
+    prompt down to a single line. Newlines are flattened too, so a tree row
+    label can never masquerade as that split point.
+    """
+    return text.replace("<image>", "").replace("\n", " ").replace("\r", " ")
+
+
+def build_ferret_prompt(
+    target_text: str,
+    tree_rows: list[tuple[str, list[int]]] | None,
+    img_width: int,
+    img_height: int,
 ) -> str:
     """
-    Send image + prompt to a LiteLLM vision model and return raw text.
+    Build the prompt Ferret-UI expects.
 
-    Model examples:
-      - openai/gpt-4o-mini
-      - gemini/gemini-2.5-flash
-      - anthropic/claude-3-5-sonnet-latest
+    Vision mode (tree_rows falsy) returns exactly the fine-tuned grounding
+    line Ferret was trained on -- unchanged from before tree mode existed, so
+    the two modes only ever differ by the tree block.
+
+    Tree mode prepends nearby elements, scaled to Ferret's own 0-1000
+    "vocabulary" coordinate space (see FERRET_VOCAB_SIZE), formatted the way
+    ferret_ui/model_UI.py:126-140 formats an input box: single bracket,
+    comma-space, `int()`-truncated (not rounded) after scaling -- matching
+    ferret_ui/model_UI.py:131,136 exactly. The grounding line always comes
+    last, since Ferret's fine-tuning expects the instruction to be the final
+    thing it reads.
     """
-    if model == "local/ferret-ui-llama8b":
-        import urllib.request
-        import urllib.error
-        import json
-        import re
-        from PIL import Image
-        
-        # Rewrite prompt for Ferret-UI to trigger bounding box grounding.
-        # The generic zero-shot prompt confuses Ferret, causing it to just repeat the text.
-        target_match = re.search(r"click on the text element:\s*'([^']+)'", prompt)
-        ferret_prompt = prompt
-        if target_match:
-            target_text = target_match.group(1)
-            ferret_prompt = f"Provide the bounding box of the text '{target_text}'."
-            
-        data = {
-            "image_path": str(image_path),
-            "prompt": ferret_prompt
-        }
-        
-        req = urllib.request.Request(
-            "http://localhost:8000/", 
-            data=json.dumps(data).encode('utf-8'), 
-            headers={'Content-Type': 'application/json'},
-            method='POST'
+    grounding_line = f"Provide the bounding box of the text '{_sanitize_for_ferret(target_text)}'."
+    if not tree_rows:
+        return grounding_line
+
+    ratio_w = FERRET_VOCAB_SIZE / img_width
+    ratio_h = FERRET_VOCAB_SIZE / img_height
+    lines = []
+    for label, box in tree_rows:
+        x1, y1, x2, y2 = box
+        vx1, vy1 = int(x1 * ratio_w), int(y1 * ratio_h)
+        vx2, vy2 = int(x2 * ratio_w), int(y2 * ratio_h)
+        lines.append(
+            f'"{_sanitize_for_ferret(label)}" [{vx1}, {vy1}, {vx2}, {vy2}]'
         )
-        
+
+    return "Nearby elements:\n" + "\n".join(lines) + "\n\n" + grounding_line
+
+
+def _parse_ferret_bbox(ferret_text: str) -> tuple[float, float, float, float] | None:
+    """
+    Extract an [x1, y1, x2, y2] box from a Ferret-UI reply.
+
+    Prefers the anchored double-bracket [[...]] form the model is fine-tuned
+    to emit. Falls back to the LAST single-bracket 4-tuple (int or float) in
+    the reply -- "last" matters once the prompt itself can contain bracketed
+    boxes (the injected tree) that the model might echo back before its
+    actual answer.
+    """
+    match = _FERRET_DOUBLE_BRACKET_RE.search(ferret_text)
+    if match:
+        return tuple(float(v) for v in match.groups())
+
+    matches = _FERRET_SINGLE_BRACKET_RE.findall(ferret_text)
+    if matches:
+        return tuple(float(v) for v in matches[-1])
+
+    return None
+
+
+def _call_ferret(
+    image_path: Path,
+    prompt: str,
+    target_text: str | None,
+    tree_rows: list[tuple[str, list[int]]] | None,
+    img_width: int | None,
+    img_height: int | None,
+    max_retries: int | None,
+    request_timeout: float | None,
+) -> str:
+    """Send a request to the local Ferret-UI inference server."""
+    from PIL import Image
+
+    resolved_target = target_text
+    if resolved_target is None:
+        # Fallback for callers that don't pass structured target_text.
+        # Apostrophes in the target text truncate the capture here, which is
+        # why every in-repo caller now passes target_text explicitly instead.
+        match = re.search(r"click on the text element:\s*'([^']+)'", prompt)
+        if match:
+            resolved_target = match.group(1)
+            print(
+                "    [WARN] call_vlm invoked for Ferret-UI without "
+                "target_text; falling back to regex extraction from the "
+                "prompt string."
+            )
+
+    if img_width is not None and img_height is not None:
+        w, h = img_width, img_height
+    else:
+        with Image.open(image_path) as img:
+            w, h = img.size
+
+    if resolved_target is None:
+        # No target could be determined at all; send the raw prompt through
+        # rather than fabricate a grounding line (this will confuse Ferret,
+        # but that is a caller bug this fallback cannot repair).
+        ferret_prompt = prompt
+    else:
+        ferret_prompt = build_ferret_prompt(resolved_target, tree_rows, w, h)
+
+    data = {
+        "image_path": str(image_path),
+        "prompt": ferret_prompt,
+    }
+    body = json.dumps(data).encode("utf-8")
+
+    retries = _resolve_max_retries(max_retries)
+    timeout = _resolve_request_timeout(request_timeout)
+    delay = DEFAULT_RATE_LIMIT_BACKOFF_SECONDS
+
+    attempt = 0
+    while True:
+        req = urllib.request.Request(
+            FERRET_SERVER_URL,
+            data=body,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
         try:
-            with urllib.request.urlopen(req) as response:
-                result = json.loads(response.read().decode('utf-8'))
-                ferret_text = result.get('text', '')
-                
-                bbox_match = re.search(r'\[\[(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\]\]', ferret_text)
-                if bbox_match:
-                    try:
-                        with Image.open(image_path) as img:
-                            w, h = img.size
-                    except:
-                        w, h = 1000, 1000 # Fallback
-                        
-                    x1, y1, x2, y2 = map(float, bbox_match.groups())
-                    
-                    # Convert from 1000-scale to absolute pixels and find center
-                    cx = ((x1 + x2) / 2.0 / 1000.0) * w
-                    cy = ((y1 + y2) / 2.0 / 1000.0) * h
-                    
-                    return f"[{cx:.1f}, {cy:.1f}]"
-                
-                return ferret_text
-                
+            with urllib.request.urlopen(req, timeout=timeout) as response:
+                result = json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            try:
+                detail = json.loads(e.read().decode("utf-8")).get("error", "")
+            except Exception:
+                detail = ""
+            raise RuntimeError(
+                f"Ferret-UI server rejected the request (HTTP {e.code}): {detail}"
+            ) from e
         except urllib.error.URLError as e:
             if isinstance(e.reason, ConnectionRefusedError):
                 print("\n[ERROR] Could not connect to the Ferret-UI inference server!")
@@ -391,9 +486,73 @@ def call_vlm(
                 print("  python ferret_server.py")
                 print("Wait for 'Model loaded successfully!' before running the evaluator.\n")
                 raise SystemExit(1)
-            else:
-                print(f"Error communicating with local ferret model: {e}")
-                raise e
+            if _is_retryable_error(e) and attempt < retries:
+                sleep_seconds = delay
+                print(
+                    f"    [RETRY] Ferret-UI request failed; sleeping "
+                    f"{sleep_seconds:.2f}s before retry {attempt + 1}/{retries}"
+                )
+                time.sleep(sleep_seconds)
+                delay = max(delay * 2, DEFAULT_RATE_LIMIT_BACKOFF_SECONDS)
+                attempt += 1
+                continue
+            print(f"Error communicating with local ferret model: {e}")
+            raise e
+        break
+
+    ferret_text = result.get("text", "")
+    bbox = _parse_ferret_bbox(ferret_text)
+    if bbox is None:
+        return ferret_text
+
+    x1, y1, x2, y2 = bbox
+    # Convert from Ferret's 0-1000 vocabulary scale to absolute pixels.
+    cx = ((x1 + x2) / 2.0 / FERRET_VOCAB_SIZE) * w
+    cy = ((y1 + y2) / 2.0 / FERRET_VOCAB_SIZE) * h
+    return f"[{cx:.1f}, {cy:.1f}]"
+
+
+def call_vlm(
+    model: str,
+    image_path: Path,
+    prompt: str,
+    max_retries: int | None = None,
+    max_tokens: int | None = None,
+    request_timeout: float | None = None,
+    temperature: float | None = None,
+    *,
+    target_text: str | None = None,
+    tree_rows: list[tuple[str, list[int]]] | None = None,
+    img_width: int | None = None,
+    img_height: int | None = None,
+) -> str:
+    """
+    Send image + prompt to a vision model and return raw text.
+
+    Model examples:
+      - openai/gpt-4o-mini
+      - gemini/gemini-2.5-flash
+      - anthropic/claude-3-5-sonnet-latest
+      - local/ferret-ui-llama8b
+
+    target_text and tree_rows are structured context for models whose wire
+    format is rewritten from `prompt` rather than sent verbatim (currently
+    only local/ferret-ui-llama8b). Hosted models ignore them and send
+    `prompt` unchanged. tree_rows is the collect_tree_rows() output in
+    cropped-image pixel space; each model-specific rewrite is responsible for
+    converting to its own coordinate convention.
+    """
+    if model == FERRET_MODEL_ID:
+        return _call_ferret(
+            image_path,
+            prompt,
+            target_text,
+            tree_rows,
+            img_width,
+            img_height,
+            max_retries,
+            request_timeout,
+        )
 
     data_url = image_to_data_url(image_path)
     retries = _resolve_max_retries(max_retries)
