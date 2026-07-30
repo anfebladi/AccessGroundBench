@@ -1,0 +1,557 @@
+# METHODS
+
+The mathematics behind AccessGroundBench's three evaluation modes, in one place. Each
+mode asks a different question of the same underlying data, and two of them have
+validity constraints that are invisible from the CSV output alone. This document states,
+per mode: the estimand, the unit of analysis, which formulas apply, a worked example,
+and — just as important — what the mode cannot tell you.
+
+The three modes:
+
+1. **Vision-only** (`USE_A11Y_TREE=false`) — does an accessibility profile change a
+   VLM's grounding accuracy?
+2. **Tree-injected** (`USE_A11Y_TREE=true`) — the same question, with a partial
+   accessibility tree given to the model alongside the image.
+3. **Cross-file comparison** (`mcnemar_analysis.py --compare-a --compare-b`) — a direct
+   comparison between any two result files, most often used to compare mode 1 against
+   mode 2.
+
+All formulas below are implemented in `vlm_eval/scoring.py`, `vlm_eval/stats.py`, and
+`mcnemar_analysis.py`. Every number in the worked examples is regenerated from
+`dataset/experiment_2/` at the time this document is written, not copied from elsewhere.
+
+---
+
+## 0. Symbol table
+
+| Symbol | Meaning |
+|---|---|
+| *a* | both baseline and comparison arm scored a hit (concordant pass) |
+| *b* | baseline hit, comparison arm miss ("broke it") |
+| *c* | baseline miss, comparison arm hit ("recovered" / "helped") |
+| *d* | both arms missed (concordant fail) |
+| *n* | total paired observations, *n = a+b+c+d* unless stated otherwise |
+| *b+c* | discordant pairs — the only pairs a McNemar-family test can use |
+| α | significance threshold, 0.05 throughout |
+| *p̂* | observed proportion (accuracy) |
+| *T* | the pooled permutation test statistic |
+
+---
+
+## 1. Shared foundations
+
+Everything in this section is common machinery. Each mode below states which parts of it
+apply.
+
+### 1.1 Ground truth and the hit test
+
+For a target with ground-truth box `[x_min, y_min, x_max, y_max]` and a baseline box
+`baseline_box`, a predicted point `(x_pred, y_pred)` scores a hit when it falls within the
+**baseline** box's width and height (not the current, possibly reflowed, box), centred on
+the current box's centre, expanded by a ±30 px touch tolerance (`vlm_eval/scoring.py:44`,
+`TOLERANCE = 30`):
+
+```
+w = (baseline_x_max - baseline_x_min) + 2·TOLERANCE
+h = (baseline_y_max - baseline_y_min) + 2·TOLERANCE
+cx, cy = centre of the CURRENT box
+hit  iff  |x_pred - cx| ≤ w/2  and  |y_pred - cy| ≤ h/2
+```
+
+Using the baseline's *size* but the current profile's *centre* holds scoring strictness
+constant across profiles: an element that visually inflates under `elder_zoom_heavy`
+does not become an easier target just because it is bigger on screen.
+
+### 1.2 Row status
+
+Every evaluated row carries one of three statuses (`vlm_eval/results.py`):
+
+| Status | Meaning | Carries a score? |
+|---|---|---|
+| `co_present` | target exists in both the baseline and the comparison layout; the model was queried | Yes |
+| `off_screen` | target absent from the comparison layout; the model was **never queried** | No — empty |
+| `api_error` | the provider call failed | No — retried on resume |
+
+This split exists because an earlier revision scored `off_screen` targets as misses
+without querying the model, which counted "the element left the screen" as "the model
+looked in the wrong place" — a confound that inflated significant results from 4 tests to
+24. All grounding statistics below operate on `co_present` rows only.
+
+### 1.2.1 Cross-profile comparability of the co-present set
+
+**Across models the sample is identical.** `off_screen` is decided by
+`find_element_in_profile` (`vlm_eval/targets.py:40`), which reads only the captured
+label JSON — no model is involved. In `dataset/experiment_2/` all 7 models carry
+exactly 865 `co_present` and 140 `off_screen` rows with the same per-profile split, so
+the pooled and per-model tests share one sample. Per-model `n` can only diverge through
+`api_error`, of which the archive has none.
+
+**Across profiles it is not.** Survival into a profile is a *post-treatment* variable,
+so restricting to `co_present` conditions on an outcome of the manipulation. The
+targets evicted are systematically the ones the models were already worst at:
+
+| Profile | n kept | baseline acc (kept) | n dropped | baseline acc (dropped) | mean text length kept → dropped |
+|---|---:|---:|---:|---:|---|
+| `elder_text_heavy` | 146 | 81.2% | 19 | 68.4% | 22 → 53 chars |
+| `elder_zoom_heavy` | 151 | 81.1% | 17 | 69.7% | 23 → 48 chars |
+| `elder_combo_max` | 112 | 85.3% | 56 | 69.1% | 12 → 52 chars |
+| `colorblind_deuteranomaly` | 162 | 81.0% | 6 | 50.0% | 26 → 21 chars |
+
+Kept + dropped is 168 on every row except `elder_text_heavy`, which sums to 165: the
+`photos_elder_text_heavy` capture is missing from the archive entirely, so that
+screen's 3 targets generated no rows at all in that profile. Going forward
+`orchestrator.write_manifest` exits non-zero on exactly this kind of gap.
+
+The mechanism is that harsher layouts evict long text first, and long text is what
+grounding fails on. Because the pairing is within-target, this moves the **baseline arm
+itself**: the same model reports a different baseline accuracy depending on which
+profile it is being compared against.
+
+| Model | all 168 | `elder_text_heavy` | `elder_zoom_heavy` | `elder_combo_max` |
+|---|---:|---:|---:|---:|
+| `gpt-5.4` | 51.2% | 53.4% | 53.0% | 67.9% |
+| `gpt-5.6-luna` | 94.6% | 96.6% | 96.0% | 99.1% |
+| `gpt-5.5` | 98.2% | 97.9% | 98.0% | 99.1% |
+
+**Consequence for interpretation.** A profile's grounding result estimates the effect
+*on the targets that survive that profile*, not on the original 168. Pooled p-values
+and effect sizes are therefore comparable **across models but not across profiles**.
+`elder_combo_max` is the case that matters: it discards 56 of 168 targets, its null
+grounding result (pooled p = 0.313) is measured on the 112 easiest, and the `ceiling`
+flags it earns are partly produced by the exclusion rather than observed. Its real
+finding lives in reachability (§2), which is computed over all 168 baseline targets and
+is unaffected by this bias.
+
+This is a known, accepted limitation rather than a defect: correcting it would require
+either scoring `off_screen` as failure — reintroducing the confound above — or
+restricting every profile to the 109 targets present in all of them, which changes the
+estimand. Neither is done; the bias is reported instead.
+
+### 1.3 The 2×2 contingency table
+
+For a set of paired (baseline, comparison) scores, `compute_contingency`
+(`mcnemar_analysis.py:272`) counts:
+
+|  | Comparison PASS | Comparison FAIL |
+|---|---:|---:|
+| **Baseline PASS** | *a* | *b* |
+| **Baseline FAIL** | *c* | *d* |
+
+### 1.4 McNemar's test and test selection
+
+McNemar's test asks whether the discordant pairs favour one direction — whether *b* and
+*c* differ from what a fair coin would produce. `mcnemar_test` (`vlm_eval/stats.py:119`)
+picks the variant by discordant count:
+
+- **n = b+c < 25** — exact two-tailed binomial: discordant pairs ~ Binomial(*n*, 0.5).
+  ```
+  p = 2 · P(X ≥ max(b, c))    where X ~ Binomial(n, 0.5)
+  ```
+  Implemented via `scipy.stats.binomtest`.
+- **n ≥ 25** — asymptotic χ² with Edwards' continuity correction:
+  ```
+  χ² = (|b - c| - 1)² / n         p = 1 - CDF_χ²,df=1(χ²)
+  ```
+
+The threshold (`ASYMPTOTIC_THRESHOLD = 25`) is unchanged from the original benchmark
+design.
+
+**The exact test's hard floor.** The smallest achievable two-tailed exact-binomial
+p-value is `2 · 0.5ⁿ` (all discordant pairs in one direction, i.e. `c = 0`). This matters
+directly for Section 2: `n = 10` gives `p = 0.00195`, still short of the worked example's
+rank-1-of-28 Holm threshold of `0.00179` (§2); `n = 11` gives `p = 0.00098`, which clears
+it. So on a 28-test family at this stringency, a per-model comparison needs **at least 11
+discordant pairs, all in one direction**, before Holm correction can call it significant
+at all — regardless of how lopsided the model's actual behaviour is below that count.
+
+### 1.5 Holm–Bonferroni correction
+
+`holm_bonferroni` (`vlm_eval/stats.py:183`) corrects a family of *m* tests: sort
+p-values ascending, test rank *i* (0-indexed) against `α / (m - i)`, and stop rejecting
+at the first failure — every later (larger) p-value is retained regardless of its own
+value. Chosen over plain Bonferroni because it is uniformly more powerful at the same
+family-wise error rate, and over Benjamini–Hochberg because it needs no independence
+assumption — these tests share underlying data (the same targets, screens, and baseline
+arm).
+
+### 1.6 Confidence intervals
+
+**Wilson score interval** (`wilson_interval`, `vlm_eval/stats.py:39`) — for a single
+proportion *k/n*:
+
+```
+z = Φ⁻¹(1 - α/2)
+centre    = (p̂ + z²/2n) / (1 + z²/n)
+halfwidth = (z / (1 + z²/n)) · √(p̂(1-p̂)/n + z²/4n²)
+```
+
+Used for reachability (§1.9) and any other single-proportion report. Preferred over the
+Wald interval `p̂ ± z√(p̂(1-p̂)/n)` because Wald can run outside [0, 1] and has poor
+coverage near the boundary — exactly where this benchmark sits, with baseline
+accuracies of 88–99%.
+
+**Newcombe method-10 interval** (`paired_difference_interval`, `vlm_eval/stats.py:62`) —
+for the *difference* between two proportions computed on the **same** paired sample
+(baseline accuracy − comparison accuracy). An ordinary two-sample interval assumes
+independence; these two arms share every target, so their outcomes are correlated and an
+unpaired interval would overstate the uncertainty. Newcombe combines each arm's own
+Wilson interval with the observed correlation *φ* across the 2×2 table:
+
+```
+p1 = (a+b)/n,  p2 = (a+c)/n,  diff = p1 - p2
+φ  = (ad - bc) / √((a+b)(c+d)(a+c)(b+d))
+[l1,u1] = Wilson(a+b, n),  [l2,u2] = Wilson(a+c, n)
+lower = diff - √((p1-l1)² - 2φ(p1-l1)(u2-p2) + (u2-p2)²)
+upper = diff + √((u1-p1)² - 2φ(u1-p1)(p2-l2) + (p2-l2)²)
+```
+
+### 1.7 Conditional odds ratio
+
+`conditional_odds_ratio` (`vlm_eval/stats.py:144`) reports the size of an effect, since a
+p-value alone says only that one exists:
+
+```
+OR = b / c
+```
+
+with an exact interval obtained by treating *b* as Binomial(*n*, *p*), taking the
+Clopper–Pearson interval for *p* via the Beta distribution, and transforming through
+`OR = p/(1-p)`. `OR = 2` means a target was twice as likely to break as to recover.
+`c = 0` gives `OR = ∞`, which is the correct value, not an error — the informative part
+of that result is the interval's finite *lower* bound.
+
+### 1.8 The cluster permutation test
+
+`cluster_permutation_test` (`vlm_eval/stats.py:213`) is the primary grounding test in
+mode 1 (and, once tree data exists, mode 2). It pools every model's paired outcome for a
+given profile into one test.
+
+**Statistic.** For each target (a `(screen, target_text)` cluster), sum
+`baseline_score − comparison_score` across every model that produced a `co_present` pair
+for that target. Sum those cluster totals into `T`.
+
+**Null distribution.** Under H0 the baseline/comparison label is exchangeable *per
+target*. Build the null by, 20,000 times (`DEFAULT_PERMUTATIONS`), independently flipping
+the sign of each cluster's contribution and recomputing `T`. The reported p-value is
+
+```
+p = (#{|T_null| ≥ |T_observed|} + 1) / (n_permutations + 1)
+```
+
+— the `+1` in both numerator and denominator accounts for the observed labelling being
+itself one of the equally likely permutations, so p can never be exactly 0.
+
+**Why clustering, not per-model independence.** The same ~13 targets per screen are
+reused across every model, so a target's outcome under model A and under model B are
+correlated — an intrinsically hard target is hard for everyone. Flipping *whole target
+clusters* (every model's outcome for that target, together) preserves that correlation.
+Pooling naively into one large McNemar table would instead treat 7 correlated
+observations as 7 independent ones and manufacture confidence that isn't there.
+
+**Why pooling is necessary, not optional.** Per §1.4, an exact-binomial test needs ≥ 11
+one-directional discordant pairs to clear a Holm threshold across ~28 tests. Several
+per-model, per-profile cells have far fewer — one has `b=0, c=0`. Those comparisons
+cannot reach significance *by construction*, regardless of what the model does. Pooling
+supplies enough discordant observations for the question to be answerable at all.
+
+**Estimand, precisely.** This tests whether a profile degrades grounding *averaged over
+the models evaluated*. It is not a claim about any individual model — that is §1.4's job,
+run per model in Section 3 of `mcnemar_analysis.py`.
+
+### 1.9 Floor and ceiling power flags
+
+`power_flag` (`mcnemar_analysis.py:306`) marks a per-model comparison as uninformative
+in either direction:
+
+- **`floor`** — baseline accuracy < 50% (`FLOOR_ACC_THRESHOLD`). Most targets already
+  fail before any profile is applied, so only `a+b` of them could ever register as
+  "broken" — the test is starved of material to detect degradation in.
+- **`ceiling`** — baseline accuracy > 95% (`CEILING_ACC_THRESHOLD`). Almost nothing is
+  left to break, so a null result means *underpowered*, not *resilient*. This mirrors the
+  floor flag at the opposite end of the accuracy scale.
+
+A flagged comparison's p-value is real, but its non-significance must not be reported as
+evidence of anything.
+
+---
+
+## 2. Mode 1 — Vision-only
+
+**Trigger:** `USE_A11Y_TREE=false` (the default). Evaluated via
+`vlm_evaluator.py` → `vlm_eval/runner.evaluate_screen` with `use_a11y_tree=False`,
+prompting with `PROMPT_TEMPLATE` (image only). Results land in
+`dataset/evaluation_results_{model}.csv`. Analysed with `python mcnemar_analysis.py`.
+
+**Estimand:** does an accessibility profile change a vision-only VLM's grounding
+accuracy, relative to that same model's baseline?
+
+**Unit of analysis:** one paired observation is `(screen, target_text, model)` → a
+`co_present` (baseline_score, profile_score) pair. Reachability (§1.9-adjacent, really
+its own metric) is computed once per profile from a single model's label files, since it
+depends only on the capture, not on any model's answer.
+
+**Formulas applied — all of them.** This is the mode the analysis pipeline was built for.
+
+| Section in `mcnemar_analysis.py` | What it reports |
+|---|---|
+| §1 Reachability | Wilson interval on targets-present / targets-total |
+| §2 Pooled permutation (**primary**) | §1.8 above, per profile |
+| §3 Per-model McNemar (secondary) | §1.4 + §1.5 + §1.6 + §1.7 + §1.9, per model × profile |
+| §4 Sign test (descriptive) | direction consistency across models — see below |
+
+**The sign test** (`sign_test`, `vlm_eval/stats.py:291`) counts, per profile, how many
+models' per-model McNemar favoured degradation (`b > c`) versus improvement (`c > b`),
+and runs an exact binomial on that count. It is explicitly **descriptive, not
+inferential**: the 7 evaluated models are not a random sample of "all VLMs," so this
+cannot license a population-level claim. Its purpose is narrower — showing that a pooled
+effect is not one model dragging the average.
+
+### Worked example (regenerated from `dataset/experiment_2/`)
+
+**Reachability**, `elder_text_heavy`: 146/165 targets present, 88.5% [82.7%, 92.5%].
+
+**Pooled permutation (primary)**, `elder_text_heavy`, pooling all 7 models:
+
+```
+146 target clusters, 1022 total co-present observations
+b = 61 (degraded), c = 13 (improved)
+T = 48,  p = 0.00005,  Holm threshold at this rank = 0.01250
+-> SIGNIFICANT (degradation)
+```
+
+The other three profiles are not significant after correction — `elder_zoom_heavy`
+(b=37, c=54, p=0.172, trending *toward improvement*), `elder_combo_max` (b=44, c=33,
+p=0.313), `colorblind_deuteranomaly` (b=22, c=29, p=0.395).
+
+**Per-model McNemar (secondary)**, `9router_cx_gpt-5.4-mini` / `elder_text_heavy` —
+the only per-model cell that survives Holm correction across the 28-test family:
+
+```
+a=38  b=14  c=1  d=93   n=146   n_discordant=15
+Baseline acc 35.6%   Experimental acc 26.7%
+Test: Exact Binomial (n=15)   p = 0.000977
+Holm threshold (rank 1 of 28) = 0.001786   -> SIGNIFICANT
+Risk difference: 0.0890  [0.0390, 0.1395]      (Newcombe)
+Odds ratio:      14.000  [2.130, 591.968]      (b/c, exact interval)
+Power flag: floor (baseline 35.6% < 50%)
+```
+
+Read together: `gpt-5.4-mini` is the only model whose *individual* result clears
+correction — but it is also flagged `floor`, so its baseline was already failing most
+targets before any distortion. Every strong model in this dataset is flagged `ceiling`
+instead: `gpt-5.5` and `9router/cx/gpt-5.6-sol` sit at 97–99% baseline on co-present
+targets, where per-model McNemar has almost nothing left to detect. The pooled test in
+§1.8 exists precisely because those per-model cells cannot answer the question alone.
+
+### What mode 1 cannot tell you
+
+- Nothing about whether an accessibility tree would help — that requires mode 2 or 3.
+- A per-model verdict of "ns" or a `ceiling`/`floor` flag is not evidence that model is
+  resilient or broken; it states the comparison lacked material to detect an effect.
+- The pooled test's estimand is an average over the 7 evaluated models. It does not
+  license a claim about any specific model, or about VLMs in general beyond this sample.
+- Profiles cannot be ranked against one another by p-value or effect size. Each is
+  estimated on its own surviving target set (§1.2.1), and the harsher the profile the
+  easier that set becomes. Reachability and grounding must be read together, never as
+  independent verdicts on the same profile.
+
+---
+
+## 3. Mode 2 — Tree-injected
+
+**Trigger:** `USE_A11Y_TREE=true`. Same runner, `use_a11y_tree=True`, prompting with
+`PROMPT_TEMPLATE_WITH_TREE`, which appends a partial accessibility tree
+(`build_tree_text`) to the prompt: each visible element's best label and pixel bounds.
+Results land in `dataset/evaluation_results_{model}_with_tree.csv`
+(`vlm_eval/config.get_results_csv`). Analysed identically to mode 1, pointed at the
+`_with_tree` files.
+
+**Estimand:** the same question as mode 1 — does the profile change grounding accuracy —
+for a model that additionally receives a partial accessibility tree. Mode 2 alone does
+**not** test whether the tree *helps*; that comparison is mode 3's job.
+
+**Unit of analysis:** identical to mode 1 — `(screen, target_text, model)` pairs,
+`co_present` only.
+
+**Formulas applied:** identical machinery to mode 1 — §1's reachability, pooled
+permutation, per-model McNemar, and sign test all apply unchanged, run against the
+`_with_tree` CSVs.
+
+### The target must be withheld from its own tree entry
+
+`build_tree_text(profile_labels, exclude_text=target_text)` removes the target's own row
+from the injected tree before the prompt is built, so the model cannot simply read the
+answer's coordinates off the tree — it must still locate the element from the image, using
+the tree only as spatial context for neighbouring elements.
+
+**A leak existed in this exclusion and has been fixed.** The tree renders each element's
+label via a fallback chain (`text` → `content_desc` → `resource_id` → `class`), but the
+exclusion previously checked only `text`. A node with empty `text` and
+`content_desc == target_text` still rendered the target's name — with its bounding box —
+because the fallback wasn't consulted for the exclusion check, only for the label itself.
+Measured on `dataset/experiment_2/labels`: **22 of 168 targets (13.1%)** leaked this way,
+typically a parent tab container whose bounds enclose the ground-truth box closely enough
+to score a hit under the ±30 px tolerance:
+
+```
+clock / 'World Clock'   leaked node  [216,2051][432,2219]  centre (324, 2135)
+                         true target [221,2162][426,2202]  centre (324, 2182)
+                         -> within tolerance: a hit sourced from the tree, not the image
+```
+
+The fix computes the rendered label first and excludes on *that*, matching what is
+actually printed. Re-measured with the same method after the fix: **0/168 (0.0%)**.
+Regression-tested in `tests/test_vlm_eval_runner.py`
+(`test_excludes_target_reached_only_via_content_desc_fallback` and
+`test_excludes_target_reached_only_via_resource_id_fallback`). No tree-mode data existed
+before this fix landed, so nothing collected so far is contaminated by it.
+
+### Reachability is not an independent finding in this mode
+
+`off_screen` status is decided by `find_element_in_profile` against the profile's label
+file, **before** `build_tree_text` or any prompt is constructed. The tree cannot change
+whether a target's node exists in a given profile's XML. Consequently mode 2's
+reachability table will be numerically identical to mode 1's for the same profile set —
+report it once, not as corroborating evidence from a second, independent measurement.
+
+### Illustrative worked example
+
+No tree-mode evaluation has been run yet — `dataset/` contains no `*_with_tree.csv`
+files. The numbers below are a small **synthetic illustration** of the pooled-permutation
+mechanics (§1.8), clearly not benchmark data, to show the shape of a mode-2 report before
+real data exists:
+
+```
+Illustrative only -- 3 targets, 2 models, elder_text_heavy
+cluster A: model1 (1,0) model2 (1,0)     both models degrade on A
+cluster B: model1 (1,1) model2 (1,1)     both models hold on B
+cluster C: model1 (0,1) model2 (0,0)     mixed outcome on C
+
+cluster_permutation_test({...}, n_permutations=2000, seed=0) ->
+  statistic=1.0  b=2  c=1  n_clusters=3  n_observations=6  p_value=1.0
+```
+
+This block exists only to mark the report shape; it is deliberately not styled as a
+result and must not be cited as one.
+
+### What mode 2 cannot tell you
+
+- **Whether the tree helps.** A significant degradation under mode 2 does not mean the
+  tree failed to help — without a comparison against mode 1 on the same targets, there is
+  no baseline for "how bad would this have been without the tree." That comparison is
+  mode 3.
+- Anything about reachability beyond what mode 1 already reports (see above).
+- Whether format compliance (the tree changes the expected reply format) rather than
+  grounding difficulty drives any observed difference from mode 1 — the two are
+  confounded unless tested via the per-target change scores described in §4.
+
+---
+
+## 4. Mode 3 — Cross-file comparison
+
+**Trigger:** `python mcnemar_analysis.py --compare-a <fileA> --compare-b <fileB>`, which
+calls `run_cross_comparison` (`mcnemar_analysis.py:500`). Designed for, but not limited
+to, comparing a mode-1 CSV against a mode-2 CSV for the same model.
+
+**Estimand, as currently implemented:** for a **given profile**, and for targets present
+and `co_present` in both files, is file B's score different from file A's score? This is
+answered independently per profile with a plain McNemar test — it is *not* a comparison
+against baseline within this mode, and it is *not* a test of whether B protects against a
+profile's degradation (see below).
+
+**Unit of analysis:** one paired observation is a `(screen, target_text)` key that is
+`co_present` in *both* files for the *same* profile. File A's score and file B's score for
+that key form the pair — contrast this with modes 1–2, where the pair is
+(baseline, profile) *within* one file.
+
+```
+a = both files hit        b = A hit, B missed ("B hurt")
+c = A missed, B hit ("B helped")     d = both files missed
+```
+
+**Formulas applied — a strict subset of §1.** Only `mcnemar_test` (§1.4) with a flat
+`α = 0.05`. Cross-file mode does **not** apply Holm correction across its profile family,
+does not compute floor/ceiling flags, and does not compute risk difference or odds ratio.
+Output columns (`Tree_Hurt_b`, `Tree_Helped_c` in the CSV header) presume a
+vision-vs-tree use case even though the function accepts any two files.
+
+**`baseline` is never compared.** `main()` builds the profile list from
+`EXPERIMENTAL_PROFILES`, which excludes `"baseline"`
+(`mcnemar_analysis.py:70-75`), and passes that same list into
+`run_cross_comparison`. Consequently "does file B differ from file A on the *undistorted*
+screen" is never tested by this mode as it stands — only the five experimental profiles
+are compared.
+
+### Illustrative worked example
+
+No `_with_tree` file exists yet, so cross-file mode has never been run against real data.
+A small **synthetic illustration** of the mechanics:
+
+```
+Illustrative only -- elder_text_heavy, file A (vision) vs file B (tree), 20 co-present pairs
+a=14 (both hit)  b=2 (A hit, B missed)  c=3 (A missed, B hit)  d=1 (both missed)
+mcnemar_test(b=2, c=3) -> Exact Binomial (n=5), p = 1.0  -> ns
+```
+
+This illustrates the *shape* of a cross-file report only; it is not a claim about any
+real model.
+
+### What mode 3 cannot tell you — and the test it is missing
+
+The question that motivates comparing vision-only against tree-injected results is
+usually: **"does the tree protect against a profile's degradation?"** That is an
+**interaction** — whether the size of the baseline→profile drop *differs* between the two
+conditions (a difference-in-differences design) — and mode 3 as implemented does not test
+it.
+
+Running mode 1's McNemar separately on file A and file B, then comparing which came out
+significant, is the classic *"the difference between significant and not-significant is
+not itself significant"* error: a comparison that is significant in one file and not in
+the other has not been shown to differ from that comparison in the other file — the two
+p-values were never compared to each other.
+
+**The test this requires** (not implemented — recommended future work): for each target
+present and `co_present` under `baseline` and under the profile, in *both* files, form a
+per-target vision *and* tree change score,
+
+```
+Δ_vision(target) = baseline_score_A - profile_score_A     (mode 1's per-cluster term, §1.8)
+Δ_tree(target)   = baseline_score_B - profile_score_B
+```
+
+then run the §1.8 cluster permutation machinery on the paired difference
+`Δ_vision(target) − Δ_tree(target)` directly, rather than on either arm alone. A nonzero
+result there — not a difference between two separately-reported p-values — is what would
+license the claim "the tree changes how much this profile degrades grounding." The
+existing `cluster_permutation_test` function (§1.8) needs no modification to run this;
+only the input construction differs — a straightforward addition once mode 2 has real
+data.
+
+---
+
+## 5. Mode comparison at a glance
+
+| | Mode 1: vision-only | Mode 2: tree-injected | Mode 3: cross-file |
+|---|---|---|---|
+| Pairs | baseline vs. profile, same model | baseline vs. profile, same model, tree given | file A vs. file B, same profile |
+| Primary test | pooled cluster permutation | pooled cluster permutation (unrun) | plain McNemar |
+| Multiple-comparison correction | Holm, 28-test family | Holm, 28-test family (unrun) | **none** |
+| Floor/ceiling flags | yes | yes (unrun) | **no** |
+| Effect sizes (risk diff, OR) | yes | yes (unrun) | **no** |
+| Reachability | computed | identical to mode 1 — do not double-count | not applicable |
+| Tests "does context help"? | no | no | **no — see §4's missing interaction test** |
+| Data currently on disk | `dataset/experiment_2/` (archived) | none | none |
+
+---
+
+## 6. File reference
+
+| File | Written by | Contents |
+|---|---|---|
+| `dataset/evaluation_results_{model}.csv` | mode 1 | raw per-query rows, `status` column |
+| `dataset/evaluation_results_{model}_with_tree.csv` | mode 2 | same schema, tree-injected |
+| `dataset/reachability_results.csv` | §1 (either mode) | Profile, Present, Total, Reachability, CI |
+| `dataset/pooled_permutation_results.csv` | §1.8 (either mode) | Profile, clusters, b, c, p, Holm threshold |
+| `dataset/mcnemar_results_per_model.csv` | §1.4+§1.5+§1.6+§1.7+§1.9 | one row per model × profile |
+| `dataset/direction_consistency.csv` | sign test | Profile, down, up, tied, p |
+| `dataset/mcnemar_compare_{model}.csv` | mode 3 | one row per profile compared |

@@ -12,7 +12,18 @@ import subprocess
 import sys
 import time
 
-from adb_utils import get_device_serial, resolve_adb, run_adb
+from adb_utils import capture_adb, get_device_serial, resolve_adb, run_adb
+
+
+class ProfileVerificationError(RuntimeError):
+    """Raised when an applied profile cannot be confirmed on the device.
+
+    Collection must abort rather than continue: an unverified profile silently
+    produces data that looks valid but measures the wrong condition. A previous
+    run of this benchmark wrote an RTL setting key that Android never reads, and
+    because nothing checked, an entire study's RTL arm turned out to be a plain
+    font-and-density condition.
+    """
 
 # ---------------------------------------------------------------------------
 # Profile Matrix
@@ -105,6 +116,19 @@ def apply_density(adb: str, serial: str, value: str) -> None:
         _run(adb, serial, "shell", "wm", "density", value)
 
 
+# AOSP exposes the developer "Force RTL layout direction" toggle as
+# Settings.Global.DEVELOPMENT_FORCE_RTL, whose string value is "debug.force_rtl".
+# The Settings app writes BOTH the global setting and the matching system
+# property, so we do the same -- writing only the setting is not enough to make
+# the framework reflow.
+#
+# An earlier revision wrote "development_settings_force_rtl", which is not a key
+# Android reads. Verified against the resulting captures: 0 of 68 off-centre
+# elements mirrored. Hence verify_rtl_applied() below, and the empirical mirror
+# check the orchestrator runs on the captured layout.
+RTL_SETTING_KEY = "debug.force_rtl"
+
+
 def apply_rtl(adb: str, serial: str, value: str) -> None:
     """
     Vector 3 — Layout Reversal (RTL Mirroring).
@@ -113,9 +137,15 @@ def apply_rtl(adb: str, serial: str, value: str) -> None:
     print(f"  [V3] RTL        -> {'ON' if value == '1' else 'OFF'}")
     _run(
         adb, serial,
-        "shell", "settings", "put", "global",
-        "development_settings_force_rtl", value,
+        "shell", "settings", "put", "global", RTL_SETTING_KEY, value,
     )
+    # The framework reads the system property; the setting alone does not
+    # trigger a reflow. setprop can fail on locked-down images, so a failure
+    # here is reported but left for verification to catch.
+    try:
+        _run(adb, serial, "shell", "setprop", RTL_SETTING_KEY, value)
+    except subprocess.CalledProcessError as exc:
+        print(f"  [WARN] setprop {RTL_SETTING_KEY} failed: {exc.stderr.strip()}")
 
 
 def apply_daltonizer(adb: str, serial: str, value: str) -> None:
@@ -160,6 +190,109 @@ def apply_daltonizer(adb: str, serial: str, value: str) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Post-condition Verification
+#
+# Every vector is read back from the device after it is applied. These check
+# that the *setting* landed; the orchestrator additionally checks that the
+# setting had the intended *visual* effect, because a setting can be accepted
+# and still do nothing.
+# ---------------------------------------------------------------------------
+
+def _setting_value(adb: str, serial: str, namespace: str, key: str) -> str:
+    """Read one Android setting, returning '' when unset."""
+    raw = capture_adb(adb, serial, "shell", "settings", "get", namespace, key).strip()
+    return "" if raw in ("null", "None") else raw
+
+
+def verify_font_scale(adb: str, serial: str, expected: str) -> None:
+    """Confirm font_scale reads back as requested."""
+    actual = _setting_value(adb, serial, "system", "font_scale")
+    # Android reports the default 1.0 as unset rather than "1.0".
+    if not actual and float(expected) == 1.0:
+        return
+    if not actual or abs(float(actual) - float(expected)) > 1e-6:
+        raise ProfileVerificationError(
+            f"font_scale is {actual or 'unset'}, expected {expected}"
+        )
+
+
+def verify_density(adb: str, serial: str, expected: str) -> None:
+    """Confirm the density override matches the profile (or is absent when reset)."""
+    output = capture_adb(adb, serial, "shell", "wm", "density")
+    override = None
+    for line in output.splitlines():
+        if "Override density:" in line:
+            override = line.split(":", 1)[1].strip()
+
+    if expected.lower() == "reset":
+        if override is not None:
+            raise ProfileVerificationError(
+                f"density override is {override}, expected no override"
+            )
+        return
+
+    if override != expected:
+        raise ProfileVerificationError(
+            f"density override is {override or 'none'}, expected {expected}"
+        )
+
+
+def verify_rtl_applied(adb: str, serial: str, expected: str) -> None:
+    """
+    Confirm the force-RTL flag landed in both the setting and the property.
+
+    This checks only that the flag was written. Whether the layout actually
+    mirrored is checked empirically by the orchestrator against the captured
+    hierarchy, because writing an accepted-but-ignored key is exactly the
+    failure mode this benchmark already suffered once.
+    """
+    setting = _setting_value(adb, serial, "global", RTL_SETTING_KEY)
+    prop = capture_adb(adb, serial, "shell", "getprop", RTL_SETTING_KEY).strip()
+
+    normalised_setting = setting or "0"
+    normalised_prop = prop or "0"
+
+    if normalised_setting != expected or normalised_prop != expected:
+        raise ProfileVerificationError(
+            f"force-RTL mismatch: setting={normalised_setting} "
+            f"prop={normalised_prop}, expected {expected}"
+        )
+
+
+def verify_daltonizer(adb: str, serial: str, expected: str) -> None:
+    """Confirm the on-device colour filter matches the profile."""
+    enabled = _setting_value(
+        adb, serial, "secure", "accessibility_display_daltonizer_enabled"
+    )
+
+    if expected == "off":
+        if enabled == "1":
+            raise ProfileVerificationError("daltonizer is enabled, expected off")
+        return
+
+    mode = _setting_value(adb, serial, "secure", "accessibility_display_daltonizer")
+    want = DALTONIZER_MODES[expected]
+    if enabled != "1" or mode != want:
+        raise ProfileVerificationError(
+            f"daltonizer is enabled={enabled or '0'} mode={mode or 'none'}, "
+            f"expected enabled=1 mode={want} ({expected})"
+        )
+
+
+def verify_profile(adb: str, serial: str, profile_name: str) -> None:
+    """Read every vector of a profile back from the device, raising on mismatch."""
+    profile = ELDER_PROFILES[profile_name]
+    print(f"\n[VERIFY] Confirming '{profile_name}' applied on device...")
+
+    verify_font_scale(adb, serial, profile["font_scale"])
+    verify_density(adb, serial, profile["density"])
+    verify_rtl_applied(adb, serial, profile["rtl"])
+    verify_daltonizer(adb, serial, profile["daltonizer"])
+
+    print("[VERIFY] All four display vectors confirmed.")
+
+
+# ---------------------------------------------------------------------------
 # Global Failsafe Reset
 # ---------------------------------------------------------------------------
 
@@ -188,19 +321,24 @@ def reset_all(adb: str | None = None, serial: str | None = None) -> None:
 # Core Profile Applicator
 # ---------------------------------------------------------------------------
 
-def apply_profile(profile_name: str) -> None:
+def apply_profile(profile_name: str, verify: bool = True) -> None:
     """
     Apply a named accessibility profile to the active emulator.
 
     Steps:
       1. Validate the profile name against ELDER_PROFILES.
       2. Resolve ADB and detect the active device serial.
-      3. Apply all three vectors sequentially.
+      3. Apply all four vectors sequentially.
       4. Block for SETTLE_DELAY seconds so the Android rendering loop
          finishes reflow before any downstream capture tool fires.
+      5. Read every vector back from the device and raise if any did not land.
 
     Args:
         profile_name: Key into ELDER_PROFILES (e.g. "elder_combo_max").
+        verify: Read the applied vectors back and raise
+            ProfileVerificationError on mismatch. Only disable for offline
+            testing -- collecting unverified data is how the RTL arm of an
+            earlier run was silently invalidated.
     """
     if profile_name not in ELDER_PROFILES:
         valid = ", ".join(ELDER_PROFILES.keys())
@@ -238,6 +376,10 @@ def apply_profile(profile_name: str) -> None:
     print(f"\n[SETTLE] Waiting {SETTLE_DELAY}s for Android rendering loop to stabilize...")
     time.sleep(SETTLE_DELAY)
     print("[SETTLE] Reflow complete. Ready for capture.\n")
+
+    if verify:
+        verify_profile(adb, serial, profile_name)
+
     print("=" * 60)
     print(f"  Profile '{profile_name}' applied successfully.")
     print("=" * 60)

@@ -6,9 +6,11 @@ Command-line entrypoint for VLM grounding evaluation.
 Runs fully offline against the saved dataset (no emulator required).
 
 Usage:
-  python vlm_evaluator.py                           # run full evaluation
+  python vlm_evaluator.py                # run (resumes an interrupted run)
+  python vlm_evaluator.py --fresh        # discard existing rows and restart
 """
 
+import argparse
 import os
 import sys
 
@@ -19,10 +21,11 @@ from vlm_eval.config import (
     get_results_csv,
     resolve_models,
     resolve_pace_seconds,
+    resolve_trials,
     resolve_use_a11y_tree,
 )
-from vlm_eval.results import init_csv
-from vlm_eval.runner import evaluate_screen
+from vlm_eval.results import prepare_csv
+from vlm_eval.runner import evaluate_screen, summarize_run
 from vlm_provider import model_configuration_error
 
 load_dotenv()
@@ -60,10 +63,20 @@ def api_key_exists(model_name: str) -> bool:
     return True
 
 
-def main() -> None:
-    import sys
+def main(argv: list[str] | None = None) -> None:
     sys.stdout.reconfigure(encoding='utf-8')
-    
+
+    parser = argparse.ArgumentParser(
+        description="AccessGroundBench -- VLM grounding evaluator"
+    )
+    parser.add_argument(
+        "--fresh",
+        action="store_true",
+        help="Discard existing result rows and restart from scratch "
+             "(default resumes an interrupted run)",
+    )
+    args = parser.parse_args(argv)
+
     models = resolve_models(None)
     pace_seconds = resolve_pace_seconds(None)
     use_a11y_tree = resolve_use_a11y_tree()
@@ -81,6 +94,7 @@ def main() -> None:
     print("  Note    : Does not navigate or capture the emulator")
     print(f"  Models  : {', '.join(models)}")
     print(f"  Pace    : {pace_seconds}s")
+    print(f"  Resume  : {'no (--fresh)' if args.fresh else 'yes'}")
     print(f"  Screens : {', '.join(screens)}")
     print("=" * 60)
 
@@ -95,24 +109,40 @@ def main() -> None:
             continue
 
         results_csv = get_results_csv(model, use_a11y_tree)
-        init_csv(results_csv)
-        
+        trials = resolve_trials(model)
+
         print(f"\n" + "=" * 60)
         print(f"  Evaluating Model: {model}")
         print(f"  Output CSV:       {results_csv}")
+        print(f"  Trials per query: {trials}")
         print("=" * 60)
+
+        completed = prepare_csv(results_csv, fresh=args.fresh)
 
         for screen_name in screens:
             print(f"\n  -- Screen: {screen_name} --")
             rows = evaluate_screen(
                 model, screen_name, pace_seconds, results_csv,
                 use_a11y_tree=use_a11y_tree,
+                trials=trials,
+                completed=completed,
             )
             total_rows += rows
 
+        summary = summarize_run(results_csv)
+        if summary:
+            print(f"\n  [SUMMARY] {model}")
+            for status, count in sorted(summary["statuses"].items()):
+                print(f"    {status or '(blank)':<14} {count}")
+            print(f"    parse failures {summary['parse_failures']}")
+            if summary["flip_rate"] is not None:
+                print(f"    trial flip rate {summary['flip_rate'] * 100:.1f}% "
+                      f"({summary['flipped_rows']}/{summary['multi_trial_rows']} "
+                      f"multi-trial targets disagreed)")
+
     print("\n" + "=" * 60)
     print("  Evaluation complete!")
-    print(f"  Total rows logged: {total_rows}")
+    print(f"  Total rows logged this run: {total_rows}")
     print("=" * 60)
 
 

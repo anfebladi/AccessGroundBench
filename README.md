@@ -6,7 +6,33 @@ The pipeline has three stages:
 
 1. **Collect** — capture screenshots and UI hierarchy XML from an Android emulator under a baseline layout and five accessibility-stress profiles.
 2. **Evaluate** — send grounding queries to a VLM for each captured screen and score the predictions against ground-truth bounding boxes.
-3. **Analyze** — compare baseline vs. experimental accuracy using McNemar's paired statistical test.
+3. **Analyze** — report reachability and grounding separately, using a pooled cluster permutation test plus per-model McNemar tests.
+
+> **Reading results from before 2026-07-29:** the archived run in `dataset/experiment_2/`
+> contains three defects that invalidate its headline finding — off-screen targets were
+> auto-scored as model failures, the RTL setting never applied, and content drift was
+> never measured. See `dataset/experiment_2/README.md`. Those numbers must not be cited.
+
+> **Full mathematics reference:** [`METHODS.md`](METHODS.md) documents every formula in
+> this section in detail — plus the two other evaluation modes (accessibility-tree
+> injection and cross-file comparison) that aren't covered below — with worked examples
+> regenerated from `dataset/experiment_2/` and an explicit statement of what each mode
+> can and cannot support.
+
+### Two distinct measurements
+
+The benchmark deliberately keeps these apart, because conflating them inflated an earlier
+run's significant results from 4 tests to 24:
+
+- **Reachability** — the share of baseline targets that still *exist* in a modified
+  layout. A property of Android under that setting, identical for every model. Large
+  fonts at high density push a third of interactive text off the screen entirely.
+- **Grounding accuracy** — whether the model can locate a target that *is* on screen.
+  Measured only on targets present in both layouts.
+
+A target that scrolled off the screen has not been mislocated by the model; the model was
+never asked. Scoring it 0 also penalises accurate models hardest, since a target can only
+be counted as "broken" if the model got it right at baseline.
 
 ---
 
@@ -50,20 +76,22 @@ AccessGroundBench/
 ├── orchestrator.py           # Master collection driver — runs all screens × profiles
 ├── app_navigator.py          # Android app launching, permission handling, XML validation
 ├── adb_utils.py              # Shared ADB helper functions (resolve, run, retry)
-├── layout_modifier.py        # Apply/reset accessibility profiles via ADB settings commands
+├── layout_modifier.py        # Apply/verify/reset accessibility profiles via ADB
 ├── screenshot_pipeline.py    # Capture screenshot + UI XML, crop system bars, color filter
+├── capture_checks.py         # Empirical checks on captured assets (mirroring, drift)
 ├── bound_extractor.py        # Parse XML → JSON bounding-box label files
 ├── vlm_evaluator.py          # Entry point: load labels, query VLM, score predictions
 ├── vlm_provider.py           # LiteLLM + Ferret-UI server calls with retry handling
-├── mcnemar_analysis.py       # Paired McNemar's test over evaluation CSVs
+├── mcnemar_analysis.py       # Reachability, pooled permutation, per-model McNemar
 ├── main.py                   # Minimal package entry point
 │
 ├── vlm_eval/
-│   ├── config.py             # VLM model / pacing / retry settings from .env
+│   ├── config.py             # VLM model / pacing / retry / trials settings from .env
 │   ├── runner.py             # Per-screen evaluation loop and prompt templates
 │   ├── targets.py            # Harvest unambiguous text targets from baseline labels
-│   ├── scoring.py            # Hit-test logic (point-in-box with ±30 px tolerance)
-│   └── results.py            # CSV read/write helpers
+│   ├── scoring.py            # Coordinate parsing and ±30 px hit-test
+│   ├── stats.py              # Statistical primitives (permutation, Holm, CIs)
+│   └── results.py            # CSV read/write, resume support
 │
 ├── ferret_ui/                # Local Ferret-UI inference server (optional)
 │   ├── ferret_server.py      # FastAPI server wrapping the Ferret-UI model
@@ -217,6 +245,33 @@ Six layout profiles are applied programmatically to the emulator before each scr
 
 > The deuteranomaly color filter is applied in software to the saved PNG (using a 3×3 RGB matrix via Pillow) because `adb screencap` captures display buffers before Android's hardware daltonizer transform is applied.
 
+### Profile verification
+
+Every profile is read back from the device after it is applied
+(`layout_modifier.verify_profile`), and a mismatch aborts that capture rather than
+producing data that measures the wrong condition. Profiles with a visible signature are
+additionally checked against the captured assets:
+
+- **RTL** — the captured hierarchy is compared with the geometry-matched non-RTL profile;
+  at least half of the shared off-centre text elements must appear at their mirrored x
+  position. Elements within 150 px of the screen midline are excluded, since mirroring
+  maps them onto themselves.
+- **Colour** — verified inside `apply_color_transform` by diffing the image before and
+  after the matrix is applied, which is exact and immune to content drift.
+
+This exists because an earlier run wrote `development_settings_force_rtl`, a key Android
+does not read. Nothing checked, so the entire RTL arm was silently a font-and-density
+condition. The mirror check flags all 13 of those archived captures.
+
+**RTL setting key:** the developer "Force RTL layout direction" toggle is
+`Settings.Global.DEVELOPMENT_FORCE_RTL`, whose value is `debug.force_rtl`. Both the
+global setting and the matching system property must be written:
+
+```bash
+adb shell settings put global debug.force_rtl 1
+adb shell setprop debug.force_rtl 1
+```
+
 ---
 
 ## End-to-End Workflow
@@ -227,21 +282,38 @@ Six layout profiles are applied programmatically to the emulator before each scr
 python orchestrator.py
 ```
 
-For each of the 13 target screens × 6 profiles the orchestrator will:
+For each of the 13 target screens the orchestrator captures **7 assets** — an opening
+baseline, the 5 experimental profiles, then a closing baseline — and for each one will:
 - Apply the accessibility profile via ADB settings commands
+- Verify all four display vectors read back correctly from the device
 - Launch the target app and confirm it is in the foreground
 - Capture the UI hierarchy XML and screenshot
 - Crop system bars (status bar + navigation bar)
 - Apply software color filters where required
-- Extract interactive text elements to a JSON label file
+- Extract text elements to a JSON label file
 - Reset the emulator to baseline
+
+**Baseline bracketing.** The opening and closing baselines are captured minutes apart
+around the same screen, so diffing them measures how much the app changed its own content
+during the sweep. That per-screen **drift rate** is the empirical noise floor: an effect
+smaller than the drift cannot be told apart from a rotating carousel or a ticking clock.
+Screens exceeding 5% drift are flagged in the manifest. The archived run captured
+baselines days from their comparison profiles and never measured this, leaving 6.3% drift
+mixed into every result.
 
 **Output:**
 ```
 dataset/images/{screen}_{profile}.png
 dataset/raw_xml/{screen}_{profile}.xml
 dataset/labels/{screen}_{profile}.json
+dataset/collection_manifest.json
 ```
+
+The manifest lists every expected versus actual capture, each profile's verification
+result, and per-screen drift. **The run exits non-zero if anything is missing or
+unverified** — an earlier run lost `photos_elder_text_heavy` to a caught-and-ignored
+exception, shrinking that profile from 168 to 165 targets with nothing in the output to
+say so.
 
 **Dry run (no emulator needed):**
 ```bash
@@ -274,9 +346,25 @@ The evaluator:
 
 Example: `VLM_MODEL=openai/gpt-4o-mini` → `dataset/evaluation_results_openai_gpt-4o-mini.csv`
 
+**Row status.** Every row carries a `status`, and only `co_present` rows have a score:
+
+| Status | Meaning |
+|---|---|
+| `co_present` | Target exists in both layouts; the model was queried and scored |
+| `off_screen` | Target absent from this layout — no measurement, **not** a failure |
+| `api_error` | Provider failed; the row is retried on resume rather than scored |
+
+**Resume.** Runs append and skip already-completed `(screen, target, profile)` keys, so an
+interrupted run does not discard ~1000 paid API calls. Use `--fresh` to start over.
+
+**Determinism.** `VLM_TEMPERATURE` defaults to 0. Set `VLM_TRIALS=3` to send each query
+three times and score by majority vote; the run then reports a **flip rate**, letting you
+answer "how do you know this isn't sampling noise?" with a measurement. Repeats do not
+add statistical power. `VLM_TRIALS_MODELS` restricts repeats to specific models.
+
 ---
 
-### Stage 3 — Run McNemar's analysis
+### Stage 3 — Run statistical analysis
 
 ```bash
 python mcnemar_analysis.py
@@ -284,17 +372,30 @@ python mcnemar_analysis.py
 
 Analyzes all `evaluation_results_*.csv` files in `dataset/` automatically.
 
-To analyze a single file:
 ```bash
 python mcnemar_analysis.py --csv dataset/evaluation_results_openai_gpt-4o-mini.csv
+python mcnemar_analysis.py --data-dir dataset/experiment_2   # re-analyse the archive
+python mcnemar_analysis.py --include-rtl                     # only once RTL is verified
 ```
 
-For each model and profile, the script:
-- Builds a paired contingency table (both-pass, broke-it, fluke-recovery, both-fail)
-- Uses asymptotic McNemar's χ² when discordant pairs *n* ≥ 25, exact binomial otherwise
-- Flags results as `Floor_Limited` when baseline accuracy < 55%
+The script reports four sections:
 
-**Output:** `dataset/mcnemar_results_{model_id}.csv`
+**1. Reachability** — `targets_present / targets_baseline` per profile, with Wilson
+confidence intervals. Model-independent, no hypothesis test needed.
+
+**2. Grounding, pooled across models (primary)** — a cluster permutation test per profile.
+
+**3. Grounding, per model (secondary)** — McNemar on co-present rows only, with
+Holm–Bonferroni across the whole family, plus power flags.
+
+**4. Direction consistency** — a sign test over how many models degraded, as descriptive
+corroboration that a pooled effect is not driven by one model.
+
+**Output:** `reachability_results.csv`, `pooled_permutation_results.csv`,
+`mcnemar_results_per_model.csv`, `direction_consistency.csv`
+
+`elder_combo_rtl` is excluded by default because the RTL setting never applied during the
+archived collection; pass `--include-rtl` once a run has passed the mirror check.
 
 ---
 
@@ -389,9 +490,16 @@ other compatible gateways, set both `OPENAI_COMPATIBLE_BASE_URL` and
 VLM_MODEL=openai/gpt-4o-mini python vlm_evaluator.py
 ```
 
-### McNemar results show `Floor_Limited=Yes`
+### Analysis shows a `floor` or `ceiling` power flag
 
-This means baseline accuracy is below 55%. It is caused by the model failing to ground most elements even under the unmodified baseline layout. Possible causes:
+Both mean the comparison cannot detect degradation, so its p-value says nothing either way.
+
+**`ceiling`** — baseline accuracy above 95%. Almost every target already passes, so there
+is nothing left to break. Report as underpowered, never as resilience. This is the normal
+state for frontier models on this benchmark and is not a bug.
+
+**`floor`** — baseline accuracy below 50%. The model fails to ground most elements even
+under the unmodified baseline layout. Possible causes:
 - Prompt format mismatch (especially for Ferret-UI — it requires its specific training prompt)
 - Model has no vision capability
 - Bounding boxes are too small relative to model prediction precision (increase `TOLERANCE` in `vlm_eval/scoring.py`)
@@ -424,7 +532,9 @@ Six profiles were applied via ADB `settings` commands:
 
 - **Font scale:** `adb shell settings put system font_scale <value>`
 - **Screen density:** `adb shell wm density <value>` / `wm density reset`
-- **RTL layout:** `adb shell settings put global force_rtl_layout_direction <0|1>`
+- **RTL layout:** `adb shell settings put global debug.force_rtl <0|1>` plus
+  `adb shell setprop debug.force_rtl <0|1>` — this is `Settings.Global.DEVELOPMENT_FORCE_RTL`.
+  Writing the setting without the system property does not trigger a reflow.
 - **Color filter:** Android's daltonizer toggled via `accessibility_display_daltonizer_enabled` and `accessibility_display_daltonizer` secure settings. Applied in software to the PNG because `adb screencap` captures pre-daltonizer buffers.
 - A 2.5-second stabilization delay followed each profile application.
 
@@ -439,7 +549,9 @@ For each screen × profile pair:
 5. `adb pull` both files to host
 6. Crop status bar and navigation bar heights (detected from `dumpsys window displays`)
 7. Apply software deuteranomaly matrix (colorblind profile only)
-8. Parse XML → extract interactive nodes with non-empty, non-zero-bounds `text` → save JSON
+8. Parse XML → extract every node with non-empty, non-zero-bounds `text`, excluding
+   full-screen containers → save JSON. Note this is not filtered by clickability: the
+   benchmark grounds text, not only interactive controls.
 9. Reset all four display vectors to baseline
 
 ### 5. Target Harvesting
@@ -470,7 +582,46 @@ Ferret-UI was fine-tuned on this exact format. The general-purpose prompt caused
 
 ### 7. Statistical Analysis
 
-McNemar's paired test over the contingency table for each screen × profile:
+All grounding tests are restricted to **co-present** targets. Off-screen targets are
+reported separately as reachability.
+
+#### 7.1 Reachability
+
+Per profile, the share of baseline targets still present in the modified layout, with a
+**Wilson score interval**. Wilson rather than Wald because the benchmark operates near the
+boundary (baseline accuracies of 98–99%), where Wald intervals run outside [0, 1].
+
+#### 7.2 Pooled cluster permutation test (primary)
+
+Per profile, pooled across models. The statistic is net degradation
+*T* = Σ(baseline − experimental) over every target × model. The null distribution is built
+by randomly flipping each **target cluster** — all of that target's outcomes across every
+model, relabelled together — 20,000 times and recomputing *T*. The p-value is the share of
+shuffles reaching |*T*| as extreme as observed, computed as (count + 1)/(*n* + 1) since the
+observed labelling is itself one of the equally likely permutations.
+
+Two reasons this replaces per-model McNemar as the primary test:
+
+1. **Power.** The smallest achievable two-tailed exact binomial p-value is 2·0.5ⁿ, so
+   after Holm correction across ~28 tests a model needs ≥ 11 one-directional discordant
+   pairs to reach significance. Several models cannot produce that even in principle —
+   one has *b* = 0, *c* = 0 on a profile. Pooling supplies enough discordant observations
+   to test at all.
+2. **Non-independence.** The same targets are reused for every model, so a target's
+   per-model outcomes are correlated: an intrinsically hard target is hard for everyone.
+   Pooling into one large McNemar would treat those as independent and manufacture
+   confidence. Permuting whole clusters preserves the correlation exactly.
+
+A permutation test is preferred to a logistic mixed model here because it adds no
+distributional assumptions (link function, normally distributed random effects) and needs
+only numpy/scipy. The RNG seed is fixed for reproducibility.
+
+**Estimand:** this tests whether a profile degrades grounding *averaged over the models
+evaluated*. It does not model per-model differences — §7.3 does.
+
+#### 7.3 Per-model McNemar (secondary)
+
+Contingency table per model × profile:
 
 | | Exp Pass | Exp Fail |
 |---|---|---|
@@ -478,6 +629,57 @@ McNemar's paired test over the contingency table for each screen × profile:
 | **Baseline Fail** | *c* (Fluke recovery) | *d* |
 
 - *n* = *b* + *c* (discordant pairs)
-- *n* ≥ 25 → asymptotic χ² with continuity correction
+- *n* ≥ 25 → asymptotic χ² with Edwards' continuity correction
 - *n* < 25 → exact two-tailed binomial (H₀: P(b) = 0.5)
-- `Floor_Limited = Yes` when baseline accuracy < 55%
+- **Holm–Bonferroni** across the whole family. Holm is uniformly more powerful than plain
+  Bonferroni at the same family-wise error rate and, unlike Benjamini–Hochberg, assumes no
+  independence — these tests share data.
+
+**Power flags.** A comparison is marked `floor` when baseline accuracy < 50% and `ceiling`
+when it exceeds 95%. Both mean the test is uninformative rather than negative: at 99%
+baseline there is almost nothing left to break, so a null result is **underpowered, not
+evidence of resilience**. The ceiling flag mirrors the floor flag, which earlier revisions
+had only at the bottom of the scale.
+
+#### 7.4 Effect sizes
+
+p-values state whether an effect exists, not how large it is. Each comparison also reports:
+
+- **Risk difference** (baseline − experimental accuracy) with a **Newcombe method-10**
+  interval. Newcombe rather than an unpaired interval because both arms share the same
+  targets and are correlated, so an unpaired interval would be too wide.
+- **Conditional odds ratio** *b*/*c* with an exact Clopper–Pearson-derived interval. An
+  odds ratio of 2 means a target was twice as likely to break as to recover.
+
+#### 7.5 Direction consistency (descriptive)
+
+A two-tailed sign test over how many models degraded under each profile. Reported as
+corroboration only — models are not a random sample of a population, so this checks that a
+pooled effect is consistent rather than driven by one model, and is not an independent
+inferential claim.
+
+#### 7.6 Content drift
+
+The symmetric difference of text sets between a screen's opening and closing baselines,
+as a share of baseline texts. This is the empirical noise floor; effects below it are not
+interpretable.
+
+#### 7.7 Other evaluation modes
+
+Sections 7.1–7.6 describe the vision-only mode (`USE_A11Y_TREE=false`, the default).
+AccessGroundBench also supports **accessibility-tree injection**
+(`USE_A11Y_TREE=true`, prompts the model with a partial a11y tree alongside the image)
+and **cross-file comparison** (`mcnemar_analysis.py --compare-a --compare-b`, typically
+used to compare a vision-only run against a tree-injected run of the same model).
+
+The same machinery in 7.1–7.5 applies to tree-injected results unchanged, run against
+`evaluation_results_{model}_with_tree.csv`. Cross-file comparison currently applies only
+a plain McNemar test with no Holm correction, no floor/ceiling flags, and no effect
+sizes — and it does not test whether the tree *protects* against a profile's
+degradation, since that is an interaction (difference-in-differences) that is not yet
+implemented.
+
+See [`METHODS.md`](METHODS.md) for the complete treatment of both modes, including the
+tree's target-exclusion mechanism (and a leak in it that was found and fixed on
+2026-07-29), what reachability means when a tree is injected, and the interaction test
+recommended for a future cross-file comparison.

@@ -40,12 +40,33 @@ class ApplyColorTransformTests(unittest.TestCase):
         self.assertEqual(r, g)
         self.assertEqual(g, b)
 
-    def test_unknown_mode_leaves_image_unchanged(self):
+    def test_unknown_mode_raises_instead_of_saving_untransformed_pixels(self):
+        # Previously this warned and returned, which would save a "colorblind"
+        # capture identical to baseline and quietly turn the profile into a
+        # duplicate of the control condition.
         original = (123, 45, 67)
         path = self._make_png([original])
         with contextlib.redirect_stdout(io.StringIO()):
-            sp.apply_color_transform(path, "not_a_mode")
+            with self.assertRaises(RuntimeError) as ctx:
+                sp.apply_color_transform(path, "not_a_mode")
+        self.assertIn("not_a_mode", str(ctx.exception))
         self.assertEqual(original, Image.open(path).convert("RGB").getpixel((0, 0)))
+
+    def test_transform_reports_the_magnitude_of_the_change(self):
+        path = self._make_png([(255, 0, 0)])
+        with contextlib.redirect_stdout(io.StringIO()):
+            delta = sp.apply_color_transform(path, "deuteranomaly")
+        self.assertGreater(delta, 0.0)
+
+    def test_transform_that_changes_nothing_is_rejected(self):
+        # A pure grey pixel is a fixed point of the monochromacy matrix, so the
+        # transform leaves it untouched -- the pipeline must refuse to record
+        # that as a successfully filtered capture.
+        path = self._make_png([(128, 128, 128)])
+        with contextlib.redirect_stdout(io.StringIO()):
+            with self.assertRaises(RuntimeError) as ctx:
+                sp.apply_color_transform(path, "monochromacy")
+        self.assertIn("changed nothing", str(ctx.exception))
 
     def test_all_declared_modes_are_12_convertible(self):
         # Every matrix must be a valid 3x3 (9 coefficients) so the pipeline can

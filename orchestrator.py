@@ -3,27 +3,45 @@ orchestrator.py
 ---------------
 Master data-collection driver for AccessGroundBench.
 
-Automates the full Phase 1 pipeline:
-  For each target screen x each accessibility profile ->
-    1. Apply the accessibility profile via layout_modifier
-    2. Launch and validate the target app via app_navigator
-    3. Capture screenshot + UI hierarchy via screenshot_pipeline
-    4. Validate the captured XML belongs to the requested screen
-    5. Extract bounding-box labels via bound_extractor
-    6. Reset the emulator to baseline
+For each target screen:
+  1. Capture an opening baseline
+  2. For each experimental profile: apply -> verify -> navigate -> capture ->
+     validate -> extract labels
+  3. Capture a closing baseline
+  4. Reset the emulator
 
-All assets are routed into the deterministic dataset/ directory structure:
+Two things about that order matter.
+
+**Baseline bracketing.** The opening and closing baselines are captured minutes
+apart around the same screen, so diffing them measures how much the app changed
+its own content during the sweep. That per-screen *drift rate* is the empirical
+noise floor: an effect smaller than the drift cannot be told apart from a
+rotating carousel or a ticking clock. An earlier run captured baselines days
+away from their comparison profiles and never measured this, leaving a 6.3%
+drift silently mixed into every result.
+
+**Verification.** Each profile is read back from the device, and profiles with a
+visible signature (RTL mirroring, colour filtering) are additionally checked
+against the captured assets. An earlier run wrote an RTL settings key Android
+does not read; because nothing checked, the entire RTL arm turned out to be a
+plain font-and-density condition.
+
+Assets are written to:
   dataset/images/{screen}_{profile}.png
   dataset/raw_xml/{screen}_{profile}.xml
   dataset/labels/{screen}_{profile}.json
+  dataset/collection_manifest.json
 
 Usage:
-  python orchestrator.py                  # interactive run (requires emulator)
-  python orchestrator.py --dry-run        # validate logic without emulator
+  python orchestrator.py                  # full run (requires emulator)
+  python orchestrator.py --dry-run        # validate logic without an emulator
+  python orchestrator.py --screens clock  # subset
 """
 
 import argparse
+import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -34,6 +52,7 @@ DATASET_DIR = PROJECT_ROOT / "dataset"
 IMAGES_DIR = DATASET_DIR / "images"
 RAW_XML_DIR = DATASET_DIR / "raw_xml"
 LABELS_DIR = DATASET_DIR / "labels"
+MANIFEST_PATH = DATASET_DIR / "collection_manifest.json"
 
 # ---------------------------------------------------------------------------
 # Target screen list -- add screens here as needed
@@ -45,13 +64,22 @@ SCREENS: list[str] = [
     "gmail", "youtube", "photos",
 ]
 
+# The closing baseline, captured after a screen's profiles, used only to measure
+# drift. It is not an experimental condition.
+DRIFT_PROBE = "baseline_close"
+
+# Screens whose drift exceeds this share of their baseline texts are flagged:
+# their effects are not separable from the app changing its own content.
+DRIFT_WARN_RATIO = 0.05
+
 # ---------------------------------------------------------------------------
 # Imports from sibling scripts (used as libraries)
 # ---------------------------------------------------------------------------
-import layout_modifier
 import app_navigator
-import screenshot_pipeline
 import bound_extractor
+import capture_checks
+import layout_modifier
+import screenshot_pipeline
 
 
 def ensure_dirs() -> None:
@@ -61,83 +89,231 @@ def ensure_dirs() -> None:
         print(f"  [DIR] {d}")
 
 
-def run_screen(screen_name: str, dry_run: bool = False) -> None:
+def capture_one(screen_name: str, profile_name: str, stem: str) -> dict:
     """
-    Run all accessibility profile captures for a single target screen.
+    Navigate to a screen and capture its assets under the current profile.
 
-    Steps:
-      1. Iterate through every profile in ELDER_PROFILES
-      2. Apply profile -> navigate -> capture -> validate -> extract labels
-      3. Reset emulator to baseline when all profiles are done
+    Returns a manifest entry describing what happened. Failures are recorded
+    rather than raised so one bad screen does not abandon the run -- but they
+    are recorded, which is what makes the final manifest able to fail the run.
+    """
+    entry = {"screen": screen_name, "profile": profile_name, "stem": stem, "ok": False}
+
+    print(f"\n  [NAV] Navigating to {screen_name}...")
+    try:
+        app_navigator.navigate_to_screen(screen_name)
+    except SystemExit:
+        entry["error"] = "navigation failed"
+        print(f"  [ERROR] Navigation failed for {stem}")
+        return entry
+
+    color_mode = layout_modifier.ELDER_PROFILES.get(
+        profile_name, layout_modifier.ELDER_PROFILES["baseline"]
+    ).get("daltonizer", "off")
+
+    print(f"  [CAP] Capturing {stem}...")
+    try:
+        xml_path, png_path, status_bar_h, nav_bar_h = screenshot_pipeline.run_pipeline(
+            output_name=stem,
+            image_dir=IMAGES_DIR,
+            xml_dir=RAW_XML_DIR,
+            color_mode=color_mode,
+        )
+        app_navigator.validate_xml_package(xml_path, screen_name)
+
+        label_path = LABELS_DIR / f"{stem}.json"
+        bound_extractor.run(
+            str(xml_path),
+            output_path=str(label_path),
+            y_offset=status_bar_h,
+            bottom_crop=nav_bar_h,
+        )
+    except RuntimeError as e:
+        entry["error"] = str(e)
+        print(f"  [ERROR] Capture failed for {stem}: {e}")
+        return entry
+
+    entry.update({
+        "ok": True,
+        "png": str(png_path),
+        "xml": str(xml_path),
+        "labels": str(label_path),
+    })
+    print(f"  [DONE] {stem}")
+    return entry
+
+
+def check_profile_effect(screen_name: str, profile_name: str, entry: dict) -> None:
+    """
+    Confirm a profile's visible signature is present in the captured assets.
+
+    Settings can be accepted and do nothing, so profiles with an observable
+    consequence are checked against the files rather than the device state.
+    Results are attached to the manifest entry as `effect_ok` / `effect_detail`.
+
+    Only RTL is checked here. The colour transform is verified inside
+    screenshot_pipeline.apply_color_transform, which compares the image before
+    and after the matrix is applied -- exact, and immune to the content drift
+    that would contaminate a comparison against a separate baseline capture.
+    """
+    profile = layout_modifier.ELDER_PROFILES[profile_name]
+    baseline_labels_path = LABELS_DIR / f"{screen_name}_baseline.json"
+
+    if profile["rtl"] == "1":
+        # Compare against the geometry-matched non-RTL profile where one
+        # exists, otherwise against baseline. Only the layout direction should
+        # differ between the two.
+        reference_stem = f"{screen_name}_elder_zoom_heavy"
+        reference_path = LABELS_DIR / f"{reference_stem}.json"
+        if not reference_path.is_file():
+            reference_path = baseline_labels_path
+        if not reference_path.is_file():
+            entry["effect_ok"] = None
+            entry["effect_detail"] = "no reference capture for mirror check"
+            return
+
+        from PIL import Image
+        with Image.open(entry["png"]) as img:
+            width = img.size[0]
+
+        passed, detail = capture_checks.rtl_applied(
+            capture_checks.load_labels(reference_path),
+            capture_checks.load_labels(entry["labels"]),
+            width,
+        )
+        entry["effect_ok"] = passed
+        entry["effect_detail"] = f"RTL mirror: {detail}"
+        print(f"  [{'OK' if passed else 'FAIL'}] {entry['effect_detail']}")
+
+
+def measure_drift(screen_name: str, entries: list[dict]) -> dict | None:
+    """Diff the opening and closing baselines to get this screen's noise floor."""
+    open_path = LABELS_DIR / f"{screen_name}_baseline.json"
+    close_path = LABELS_DIR / f"{screen_name}_{DRIFT_PROBE}.json"
+    if not (open_path.is_file() and close_path.is_file()):
+        return None
+
+    opening = capture_checks.load_labels(open_path)
+    closing = capture_checks.load_labels(close_path)
+    vanished, appeared = capture_checks.text_drift(opening, closing)
+    rate = capture_checks.drift_rate(opening, closing)
+
+    flagged = rate > DRIFT_WARN_RATIO
+    marker = "WARN" if flagged else "OK"
+    print(f"\n  [{marker}] Drift for {screen_name}: {rate:.1%} "
+          f"({len(vanished)} vanished, {len(appeared)} appeared)")
+    if flagged:
+        print("         Effects smaller than this are not separable from the app "
+              "changing its own content.")
+
+    return {
+        "screen": screen_name,
+        "drift_rate": rate,
+        "vanished": sorted(vanished),
+        "appeared": sorted(appeared),
+        "flagged": flagged,
+    }
+
+
+def run_screen(screen_name: str, dry_run: bool = False) -> tuple[list[dict], dict | None]:
+    """
+    Capture every profile for one screen, bracketed by two baselines.
+
+    Returns (capture entries, drift record).
     """
     app_navigator.get_screen_target(screen_name)
-    profiles = layout_modifier.ELDER_PROFILES
 
-    for profile_name in profiles:
+    experimental = [p for p in layout_modifier.ELDER_PROFILES if p != "baseline"]
+    # baseline first, profiles, then baseline again as a drift probe.
+    sequence = ["baseline", *experimental, DRIFT_PROBE]
+
+    if dry_run:
+        for profile_name in sequence:
+            stem = f"{screen_name}_{profile_name}"
+            applied = "baseline" if profile_name == DRIFT_PROBE else profile_name
+            print(f"  [DRY-RUN] {stem:<50} (applies profile '{applied}')")
+        print(f"  [DRY-RUN] Would diff baseline vs {DRIFT_PROBE} for drift")
+        return [], None
+
+    entries = []
+    for profile_name in sequence:
         stem = f"{screen_name}_{profile_name}"
+        applied_profile = "baseline" if profile_name == DRIFT_PROBE else profile_name
+
         print(f"\n{'-' * 60}")
         print(f"  Screen: {screen_name}  |  Profile: {profile_name}")
-        print(f"  Stem:   {stem}")
         print(f"{'-' * 60}")
 
-        if dry_run:
-            print(f"  [DRY-RUN] Would apply profile: {profile_name}")
-            print(f"  [DRY-RUN] Would navigate to screen: {screen_name}")
-            print(f"  [DRY-RUN] Would capture -> {IMAGES_DIR / f'{stem}.png'}")
-            print(f"  [DRY-RUN] Would dump XML -> {RAW_XML_DIR / f'{stem}.xml'}")
-            print(f"  [DRY-RUN] Would validate XML package for: {screen_name}")
-            print(f"  [DRY-RUN] Would extract  -> {LABELS_DIR / f'{stem}.json'}")
-            continue
-
-        # Step 1: Apply the accessibility profile
-        print(f"\n  [1/4] Applying profile: {profile_name}")
-        layout_modifier.apply_profile(profile_name)
-
-        # Step 2: Navigate to the requested screen after profile reflow
-        print(f"\n  [2/4] Navigating to target screen...")
         try:
-            app_navigator.navigate_to_screen(screen_name)
-        except SystemExit:
-            print(f"  [ERROR] Navigation failed for {stem}. Skipping...")
+            layout_modifier.apply_profile(applied_profile)
+        except layout_modifier.ProfileVerificationError as exc:
+            print(f"  [ABORT] Profile '{applied_profile}' did not apply: {exc}")
+            entries.append({
+                "screen": screen_name, "profile": profile_name, "stem": stem,
+                "ok": False, "error": f"profile verification failed: {exc}",
+            })
             continue
 
-        # Step 3: Capture screenshot + UI hierarchy
-        # The on-device daltonizer is not captured by screencap, so apply the
-        # profile's color-vision transform to the PNG in software instead.
-        color_mode = layout_modifier.ELDER_PROFILES[profile_name].get("daltonizer", "off")
-        print(f"\n  [3/4] Capturing screen assets...")
-        try:
-            xml_path, png_path, status_bar_h, nav_bar_h = screenshot_pipeline.run_pipeline(
-                output_name=stem,
-                image_dir=IMAGES_DIR,
-                xml_dir=RAW_XML_DIR,
-                color_mode=color_mode,
-            )
-            app_navigator.validate_xml_package(xml_path, screen_name)
+        entry = capture_one(screen_name, applied_profile, stem)
+        if entry["ok"] and profile_name not in ("baseline", DRIFT_PROBE):
+            check_profile_effect(screen_name, applied_profile, entry)
+        entries.append(entry)
 
-            # Step 4: Extract bounding-box labels from the XML
-            print(f"\n  [4/4] Extracting bounding-box labels...")
-            label_path = LABELS_DIR / f"{stem}.json"
-            bound_extractor.run(
-                str(xml_path),
-                output_path=str(label_path),
-                y_offset=status_bar_h,
-                bottom_crop=nav_bar_h,
-            )
-        except RuntimeError as e:
-            print(f"\n  [ERROR] Capture failed for {stem}: {e}")
-            print(f"  [ERROR] Skipping to next profile...")
-            continue
+    print(f"\n  [RESET] Reverting emulator to baseline for screen: {screen_name}")
+    layout_modifier.reset_all()
 
-        print(f"\n  [DONE] {stem}")
-        print(f"    PNG   -> {png_path}")
-        print(f"    XML   -> {xml_path}")
-        print(f"    JSON  -> {label_path}")
+    return entries, measure_drift(screen_name, entries)
 
-    # Safety reversion: reset emulator back to baseline after all profiles
-    if not dry_run:
-        print(f"\n  [RESET] Reverting emulator to baseline for screen: {screen_name}")
-        layout_modifier.reset_all()
+
+def write_manifest(
+    screens: list[str],
+    entries: list[dict],
+    drifts: list[dict],
+) -> list[str]:
+    """
+    Record what was collected and return the list of problems found.
+
+    A previous run lost one capture to a caught-and-ignored exception, which
+    shrank a profile from 168 to 165 targets with nothing in the output to say
+    so. The manifest exists so a gap cannot be silent.
+    """
+    experimental = [p for p in layout_modifier.ELDER_PROFILES if p != "baseline"]
+    expected = [
+        f"{screen}_{profile}"
+        for screen in screens
+        for profile in ["baseline", *experimental, DRIFT_PROBE]
+    ]
+    captured = {e["stem"] for e in entries if e["ok"]}
+
+    problems = [f"missing capture: {stem}" for stem in expected if stem not in captured]
+    problems += [
+        f"profile effect not confirmed: {e['stem']} ({e.get('effect_detail', '')})"
+        for e in entries
+        if e.get("effect_ok") is False
+    ]
+    problems += [
+        f"high content drift: {d['screen']} at {d['drift_rate']:.1%}"
+        for d in drifts
+        if d["flagged"]
+    ]
+
+    manifest = {
+        "collected_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "screens": screens,
+        "profiles": list(layout_modifier.ELDER_PROFILES),
+        "drift_probe": DRIFT_PROBE,
+        "expected_captures": len(expected),
+        "successful_captures": len(captured),
+        "captures": entries,
+        "drift": drifts,
+        "problems": problems,
+    }
+
+    MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with open(MANIFEST_PATH, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=2, ensure_ascii=False)
+
+    return problems
 
 
 def main() -> None:
@@ -164,21 +340,45 @@ def main() -> None:
     print("  AccessGroundBench -- Orchestrator")
     print(f"  Mode    : {'DRY-RUN' if dry_run else 'LIVE'}")
     print(f"  Screens : {', '.join(screens)}")
-    print(f"  Profiles: {', '.join(layout_modifier.ELDER_PROFILES.keys())}")
+    print(f"  Profiles: {', '.join(layout_modifier.ELDER_PROFILES)}")
+    print(f"  Probe   : {DRIFT_PROBE} (closing baseline, drift measurement only)")
     print("=" * 60)
 
-    # Ensure dataset directories exist
     ensure_dirs()
 
+    all_entries: list[dict] = []
+    all_drifts: list[dict] = []
     for screen_name in screens:
-        run_screen(screen_name, dry_run=dry_run)
+        entries, drift = run_screen(screen_name, dry_run=dry_run)
+        all_entries.extend(entries)
+        if drift is not None:
+            all_drifts.append(drift)
+
+    if dry_run:
+        per_screen = len(layout_modifier.ELDER_PROFILES) + 1
+        print("\n" + "=" * 60)
+        print(f"  Dry run complete. Would capture "
+              f"{len(screens) * per_screen} assets "
+              f"({len(screens)} screens x {per_screen} captures).")
+        print("=" * 60)
+        return
+
+    problems = write_manifest(screens, all_entries, all_drifts)
 
     print("\n" + "=" * 60)
-    total = len(screens) * len(layout_modifier.ELDER_PROFILES)
-    print(f"  Orchestrator complete!")
-    print(f"  Total captures: {total} ({len(screens)} screens x "
-          f"{len(layout_modifier.ELDER_PROFILES)} profiles)")
-    print(f"  Dataset dir:    {DATASET_DIR}")
+    print("  Collection complete")
+    print(f"  Captures : {sum(1 for e in all_entries if e['ok'])} of "
+          f"{len(screens) * (len(layout_modifier.ELDER_PROFILES) + 1)}")
+    print(f"  Manifest : {MANIFEST_PATH}")
+
+    if problems:
+        print(f"\n  {len(problems)} PROBLEM(S) -- this dataset is not ready to use:")
+        for problem in problems:
+            print(f"    - {problem}")
+        print("=" * 60)
+        sys.exit(1)
+
+    print("  No problems found.")
     print("=" * 60)
 
 

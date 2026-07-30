@@ -19,6 +19,12 @@ DEFAULT_MAX_RETRIES = 3
 DEFAULT_RATE_LIMIT_BACKOFF_SECONDS = 0.5
 REQUEST_TIMEOUT_ENV_VAR = "VLM_REQUEST_TIMEOUT_SECONDS"
 DEFAULT_REQUEST_TIMEOUT_SECONDS = 120.0
+TEMPERATURE_ENV_VAR = "VLM_TEMPERATURE"
+DEFAULT_TEMPERATURE = 0.0
+
+# Models whose provider rejected `temperature`; retried without it thereafter so
+# one rejection does not cost an extra failed call on every later query.
+_TEMPERATURE_UNSUPPORTED: set[str] = set()
 
 NINEROUTER_PREFIX = "9router/"
 OPENAI_COMPATIBLE_PREFIX = "openai_compatible/"
@@ -175,6 +181,35 @@ def resolve_completion_config(model: str) -> dict[str, str]:
     return {"model": model}
 
 
+def _resolve_temperature(temperature: float | None = None) -> float | None:
+    """
+    Resolve the sampling temperature, defaulting to 0 for reproducibility.
+
+    Scores were previously single draws at the provider's default temperature,
+    so a marginal result could not be distinguished from a coin flip. Set
+    VLM_TEMPERATURE to an empty string to omit the parameter entirely.
+    """
+    if temperature is not None:
+        return temperature
+
+    raw = os.environ.get(TEMPERATURE_ENV_VAR)
+    if raw is None:
+        return DEFAULT_TEMPERATURE
+    raw = raw.strip()
+    if not raw:
+        return None
+    return float(raw)
+
+
+def _is_temperature_rejection(exc: Exception) -> bool:
+    """Detect providers that refuse an explicit temperature (some reasoning models)."""
+    message = str(exc).lower()
+    return "temperature" in message and any(
+        token in message
+        for token in ("unsupported", "not supported", "does not support", "invalid", "unrecognized")
+    )
+
+
 def _resolve_max_retries(max_retries: int | None = None) -> int:
     """Resolve retry count from explicit argument or VLM_MAX_RETRIES."""
     if max_retries is not None:
@@ -287,6 +322,7 @@ def call_vlm(
     max_retries: int | None = None,
     max_tokens: int | None = None,
     request_timeout: float | None = None,
+    temperature: float | None = None,
 ) -> str:
     """
     Send image + prompt to a LiteLLM vision model and return raw text.
@@ -362,10 +398,12 @@ def call_vlm(
     data_url = image_to_data_url(image_path)
     retries = _resolve_max_retries(max_retries)
     timeout = _resolve_request_timeout(request_timeout)
+    resolved_temperature = _resolve_temperature(temperature)
     _register_compatible_model(model)
     delay = DEFAULT_RATE_LIMIT_BACKOFF_SECONDS
 
-    for attempt in range(retries + 1):
+    attempt = 0
+    while attempt <= retries:
         try:
             kwargs = dict(
                 **resolve_completion_config(model),
@@ -384,10 +422,28 @@ def call_vlm(
             )
             if max_tokens is not None:
                 kwargs["max_tokens"] = max_tokens
+            if resolved_temperature is not None and model not in _TEMPERATURE_UNSUPPORTED:
+                kwargs["temperature"] = resolved_temperature
             kwargs["timeout"] = timeout
             response = _completion(**kwargs)
             return _extract_response_text(response)
         except Exception as exc:
+            # Some reasoning models reject an explicit temperature. Drop it for
+            # this model and retry rather than failing the whole run.
+            if (
+                _is_temperature_rejection(exc)
+                and model not in _TEMPERATURE_UNSUPPORTED
+            ):
+                _TEMPERATURE_UNSUPPORTED.add(model)
+                print(f"    [INFO] {model} rejects an explicit temperature; "
+                      f"continuing without it (results are not guaranteed "
+                      f"deterministic for this model).")
+                # Deliberately does not advance `attempt`: dropping an
+                # unsupported parameter is a correction, not a failed try, and
+                # must not consume the retry budget (nor exhaust it when
+                # retries == 0).
+                continue
+
             if not _is_retryable_error(exc) or attempt >= retries:
                 raise
 
@@ -399,5 +455,6 @@ def call_vlm(
             )
             time.sleep(sleep_seconds)
             delay = max(sleep_seconds * 2, DEFAULT_RATE_LIMIT_BACKOFF_SECONDS)
+            attempt += 1
 
     raise RuntimeError("unreachable retry state")
