@@ -11,6 +11,8 @@ LABELS_DIR = DATASET_DIR / "labels"
 MODEL_ENV_VAR: str = "VLM_MODEL"
 PACE_ENV_VAR: str = "VLM_PACE_SECONDS"
 A11Y_TREE_ENV_VAR: str = "USE_A11Y_TREE"
+TRIALS_ENV_VAR: str = "VLM_TRIALS"
+TRIALS_MODELS_ENV_VAR: str = "VLM_TRIALS_MODELS"
 
 ALL_PROFILES = [
     "baseline",
@@ -51,6 +53,42 @@ def resolve_use_a11y_tree() -> bool:
     """
     raw = os.environ.get(A11Y_TREE_ENV_VAR, "").strip().lower()
     return raw in ("true", "1", "yes")
+
+
+def resolve_trials(model: str) -> int:
+    """Resolve how many times each query is repeated for a given model.
+
+    VLM_TRIALS sets the repeat count (default 1). VLM_TRIALS_MODELS optionally
+    restricts repeats to a comma-separated subset of models, so budget can be
+    spent on the models a claim depends on while the rest run once.
+
+    Repeats do not increase statistical power; they measure how stable a single
+    stochastic draw is, which is what lets a marginal result be defended as
+    something other than sampling noise.
+    """
+    raw = os.environ.get(TRIALS_ENV_VAR, "").strip()
+    if not raw:
+        return 1
+
+    try:
+        trials = int(raw)
+    except ValueError:
+        print(f"[ERROR] {TRIALS_ENV_VAR} must be an integer, got: {raw}")
+        raise SystemExit(1)
+
+    if trials < 1:
+        print(f"[ERROR] {TRIALS_ENV_VAR} must be >= 1, got: {raw}")
+        raise SystemExit(1)
+
+    subset = [
+        m.strip()
+        for m in os.environ.get(TRIALS_MODELS_ENV_VAR, "").split(",")
+        if m.strip()
+    ]
+    if subset and model not in subset:
+        return 1
+
+    return trials
 
 
 def resolve_pace_seconds(cli_pace_seconds: str | None) -> float:

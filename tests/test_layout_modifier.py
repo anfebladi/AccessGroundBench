@@ -1,0 +1,121 @@
+import unittest
+from unittest import mock
+
+import layout_modifier as lm
+
+
+class FontScaleVerificationTests(unittest.TestCase):
+    def verify(self, reported: str, expected: str) -> None:
+        with mock.patch.object(lm, "capture_adb", return_value=reported):
+            lm.verify_font_scale("adb", "emulator-5554", expected)
+
+    def test_matching_scale_passes(self):
+        self.verify("1.4", "1.4")
+
+    def test_unset_scale_counts_as_the_default(self):
+        # Android reports the default 1.0 as "null" rather than "1.0".
+        self.verify("null", "1.0")
+
+    def test_mismatch_raises(self):
+        with self.assertRaises(lm.ProfileVerificationError):
+            self.verify("1.0", "1.6")
+
+    def test_unset_scale_is_not_accepted_for_a_scaled_profile(self):
+        with self.assertRaises(lm.ProfileVerificationError):
+            self.verify("null", "1.4")
+
+
+class DensityVerificationTests(unittest.TestCase):
+    OVERRIDDEN = "Physical density: 420\nOverride density: 480\n"
+    PHYSICAL_ONLY = "Physical density: 420\n"
+
+    def verify(self, reported: str, expected: str) -> None:
+        with mock.patch.object(lm, "capture_adb", return_value=reported):
+            lm.verify_density("adb", "emulator-5554", expected)
+
+    def test_matching_override_passes(self):
+        self.verify(self.OVERRIDDEN, "480")
+
+    def test_reset_requires_no_override(self):
+        self.verify(self.PHYSICAL_ONLY, "reset")
+
+    def test_reset_fails_when_an_override_lingers(self):
+        with self.assertRaises(lm.ProfileVerificationError):
+            self.verify(self.OVERRIDDEN, "reset")
+
+    def test_wrong_override_raises(self):
+        with self.assertRaises(lm.ProfileVerificationError):
+            self.verify(self.OVERRIDDEN, "520")
+
+    def test_missing_override_raises_when_one_is_expected(self):
+        with self.assertRaises(lm.ProfileVerificationError):
+            self.verify(self.PHYSICAL_ONLY, "480")
+
+
+class RtlVerificationTests(unittest.TestCase):
+    def verify(self, setting: str, prop: str, expected: str) -> None:
+        # capture_adb serves the setting read first, then the getprop read.
+        with mock.patch.object(lm, "capture_adb", side_effect=[setting, prop]):
+            lm.verify_rtl_applied("adb", "emulator-5554", expected)
+
+    def test_both_flags_set_passes(self):
+        self.verify("1", "1", "1")
+
+    def test_both_flags_unset_passes_when_rtl_is_off(self):
+        self.verify("null", "", "0")
+
+    def test_setting_written_but_property_missing_raises(self):
+        # The exact failure that invalidated the archived RTL arm: the write is
+        # accepted, but the framework never reflows.
+        with self.assertRaises(lm.ProfileVerificationError):
+            self.verify("1", "", "1")
+
+    def test_flag_not_set_at_all_raises(self):
+        with self.assertRaises(lm.ProfileVerificationError):
+            self.verify("null", "", "1")
+
+    def test_uses_the_key_android_actually_reads(self):
+        self.assertEqual("debug.force_rtl", lm.RTL_SETTING_KEY)
+
+
+class DaltonizerVerificationTests(unittest.TestCase):
+    def verify(self, reads: list[str], expected: str) -> None:
+        with mock.patch.object(lm, "capture_adb", side_effect=reads):
+            lm.verify_daltonizer("adb", "emulator-5554", expected)
+
+    def test_off_passes_when_disabled(self):
+        self.verify(["0"], "off")
+
+    def test_off_raises_when_still_enabled(self):
+        with self.assertRaises(lm.ProfileVerificationError):
+            self.verify(["1"], "off")
+
+    def test_enabled_mode_passes(self):
+        self.verify(["1", lm.DALTONIZER_MODES["deuteranomaly"]], "deuteranomaly")
+
+    def test_wrong_mode_raises(self):
+        with self.assertRaises(lm.ProfileVerificationError):
+            self.verify(["1", lm.DALTONIZER_MODES["protanomaly"]], "deuteranomaly")
+
+    def test_correct_mode_but_disabled_raises(self):
+        with self.assertRaises(lm.ProfileVerificationError):
+            self.verify(["0", lm.DALTONIZER_MODES["deuteranomaly"]], "deuteranomaly")
+
+
+class ProfileMatrixTests(unittest.TestCase):
+    def test_every_profile_declares_all_four_vectors(self):
+        for name, profile in lm.ELDER_PROFILES.items():
+            for vector in ("font_scale", "density", "rtl", "daltonizer"):
+                self.assertIn(vector, profile, f"{name} is missing {vector}")
+
+    def test_colorblind_profile_isolates_the_colour_vector(self):
+        # Geometry must match baseline so colour is the only difference.
+        baseline = lm.ELDER_PROFILES["baseline"]
+        colourblind = lm.ELDER_PROFILES["colorblind_deuteranomaly"]
+        for vector in ("font_scale", "density", "rtl"):
+            self.assertEqual(baseline[vector], colourblind[vector])
+        self.assertNotEqual(baseline["daltonizer"], colourblind["daltonizer"])
+
+
+if __name__ == "__main__":
+    unittest.main()

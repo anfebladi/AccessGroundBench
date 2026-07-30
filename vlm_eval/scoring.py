@@ -2,15 +2,43 @@
 
 import re
 
+# Bracketed pair, e.g. "[540, 300]" -- the format the prompt asks for. Tried
+# first because a loose scan can latch onto an earlier incidental pair: a reply
+# like "row 3, column 2 ... so [540, 300]" would otherwise score (3, 2).
+BRACKET_REGEX = re.compile(
+    r"[\[(]\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*[\])]"
+)
+
+# Fallback: the first bare "number, number" anywhere in the reply.
 COORD_REGEX = re.compile(r"(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)")
+
+# Parse method labels, recorded per row so parse quality stays auditable.
+PARSE_BRACKET = "bracket"
+PARSE_LOOSE = "loose"
+PARSE_FAILED = "failed"
+
+
+def parse_coordinates_detailed(response_text: str) -> tuple[float, float, str]:
+    """
+    Extract (x, y) from a model reply, reporting which pattern matched.
+
+    Returns (x, y, method). On failure returns (-1.0, -1.0, PARSE_FAILED).
+    """
+    match = BRACKET_REGEX.search(response_text)
+    if match:
+        return float(match.group(1)), float(match.group(2)), PARSE_BRACKET
+
+    match = COORD_REGEX.search(response_text)
+    if match:
+        return float(match.group(1)), float(match.group(2)), PARSE_LOOSE
+
+    return -1.0, -1.0, PARSE_FAILED
 
 
 def parse_coordinates(response_text: str) -> tuple[float, float]:
     """Extract (x, y) coordinates from model response text."""
-    match = COORD_REGEX.search(response_text)
-    if match:
-        return float(match.group(1)), float(match.group(2))
-    return -1.0, -1.0
+    x_coord, y_coord, _ = parse_coordinates_detailed(response_text)
+    return x_coord, y_coord
 
 
 TOLERANCE = 30
@@ -26,10 +54,10 @@ def hit_test(x_pred: int, y_pred: int, box: list[int], baseline_box: list[int] |
         # Constant strictness: use baseline size, but current center
         w_base = baseline_box[2] - baseline_box[0] + (TOLERANCE * 2)
         h_base = baseline_box[3] - baseline_box[1] + (TOLERANCE * 2)
-        
+
         cx = (box[0] + box[2]) / 2.0
         cy = (box[1] + box[3]) / 2.0
-        
+
         if abs(x_pred - cx) <= (w_base / 2.0) and abs(y_pred - cy) <= (h_base / 2.0):
             return 1
         return 0

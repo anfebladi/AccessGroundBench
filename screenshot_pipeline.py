@@ -197,7 +197,7 @@ def crop_screenshot(
     print(f"  [OK]  Cropped {png_path.name}: {width}x{height} -> {width}x{height - top_crop - bottom_crop}")
 
 
-def apply_color_transform(png_path: Path, color_mode: str) -> None:
+def apply_color_transform(png_path: Path, color_mode: str) -> float:
     """
     Phase 3.6 — Remap a screenshot's colors in-place to emulate a color-vision
     deficiency, using the matrices in COLOR_TRANSFORMS.
@@ -205,18 +205,29 @@ def apply_color_transform(png_path: Path, color_mode: str) -> None:
     This is what makes a colorblind profile visible in the saved pixels, since
     `adb screencap` does not capture Android's on-device daltonizer.
 
+    Returns the mean absolute per-channel change, and raises RuntimeError if
+    the transform left the pixels untouched. Verifying here rather than by
+    diffing against a separate baseline capture keeps the check exact: the
+    comparison is before-and-after on the same bytes, so app content drift
+    cannot mask a transform that silently did nothing.
+
+    Note the magnitude scales with how colourful the screen is -- a green-weak
+    transform barely moves a dark, near-monochrome UI -- so only "changed at
+    all" is a meaningful pass condition, not any particular delta.
+
     Args:
         png_path:   Path to the PNG file to transform.
         color_mode: Key into COLOR_TRANSFORMS (e.g. "deuteranomaly").
     """
-    from PIL import Image
+    from PIL import Image, ImageChops, ImageStat
 
     matrix = COLOR_TRANSFORMS.get(color_mode)
     if matrix is None:
         valid = ", ".join(COLOR_TRANSFORMS)
-        print(f"  [WARN] Unknown color_mode '{color_mode}' (valid: {valid}); "
-              f"leaving colors unchanged.")
-        return
+        raise RuntimeError(
+            f"Unknown color_mode '{color_mode}' (valid: {valid}). Refusing to "
+            f"save an untransformed image under a colorblind profile."
+        )
 
     print(f"  [3.6] Applying color transform: {color_mode}")
 
@@ -228,10 +239,22 @@ def apply_color_transform(png_path: Path, color_mode: str) -> None:
         matrix[6], matrix[7], matrix[8], 0.0,
     )
     with Image.open(png_path) as img:
-        transformed = img.convert("RGB").convert("RGB", tuple_12)
+        original = img.convert("RGB")
+        transformed = original.convert("RGB", tuple_12)
+        stat = ImageStat.Stat(ImageChops.difference(original, transformed))
+        delta = sum(stat.mean) / len(stat.mean)
         transformed.save(png_path)
 
-    print(f"  [OK]  Color transform applied to {png_path.name}")
+    if delta == 0.0:
+        raise RuntimeError(
+            f"Color transform '{color_mode}' changed nothing in "
+            f"{png_path.name}; the colorblind profile would be identical to "
+            f"baseline."
+        )
+
+    print(f"  [OK]  Color transform applied to {png_path.name} "
+          f"(mean channel delta {delta:.2f})")
+    return delta
 
 
 
