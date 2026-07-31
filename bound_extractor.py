@@ -139,6 +139,21 @@ def extract(
         if y2 <= content_top or y1 >= content_bottom:
             continue
 
+        # Clamp to the visible content area rather than keeping a node's
+        # full, uncropped extent. A node that only partially overlaps the
+        # crop (e.g. a list row clipped at the bottom edge) was previously
+        # retained at full size, so its box's center could fall outside the
+        # final image entirely -- hit_test would then score against a point
+        # that is not on the screenshot. Clamping first, then shifting into
+        # cropped-image space, guarantees every retained box lies within it.
+        x1 = max(x1, 0)
+        x2 = min(x2, screen_w)
+        y1 = max(y1, content_top)
+        y2 = min(y2, content_bottom)
+
+        if x2 <= x1 or y2 <= y1:
+            continue
+
         # Shift Y coordinates into the cropped image's coordinate space
         adjusted_bounds = (x1, y1 - y_offset, x2, y2 - y_offset)
 

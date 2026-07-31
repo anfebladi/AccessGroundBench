@@ -85,3 +85,69 @@ def drift_rate(labels_a: list[dict], labels_b: list[dict]) -> float:
         return 0.0
     vanished, appeared = text_drift(labels_a, labels_b)
     return len(vanished | appeared) / len(texts_a)
+
+
+def colour_only_contamination(
+    baseline_labels: list[dict],
+    profile_labels: list[dict],
+) -> tuple[set[str], set[str]]:
+    """
+    Detect instrument contamination on a profile that changes colour only.
+
+    A profile whose font_scale/density/rtl all equal baseline's changes no
+    layout by definition -- the colour filter is applied in software to the
+    PNG (screenshot_pipeline.COLOR_TRANSFORMS), never to the accessibility
+    tree. Its captured text set must therefore equal baseline's exactly,
+    unlike a geometry-changing profile where losing some tail of texts is
+    ordinary scroll-off.
+
+    Found via investigation of settings_display: toggling the on-device
+    daltonizer via ADB (rather than through the Settings UI) triggers a
+    persistent Settings-app banner that survives even after the setting is
+    reverted -- see layout_modifier.py's RTL comment for the same category of
+    problem. This is not a layout_modifier bug (the setting itself verifies
+    clean); it is a UI side effect this check exists to catch mechanically,
+    so a replicator's run gets the same exclusion this one does instead of an
+    author's judgement call.
+
+    Returns (vanished, appeared) exactly like text_drift -- any non-empty
+    result is contamination, not the ordinary partial drift a geometry-
+    changing profile is expected to show.
+    """
+    return text_drift(baseline_labels, profile_labels)
+
+
+def loss_shape(baseline_labels: list[dict], profile_labels: list[dict]) -> dict | None:
+    """
+    Classify how a profile's texts lost relative to baseline are distributed
+    in baseline's document order. Diagnostic only -- see orchestrator.py's
+    manifest wiring, which records this for review and never fails a run on
+    it.
+
+    A geometry-changing profile is expected to lose some tail of texts to
+    ordinary scroll-off, which shows up as a contiguous block at the end of
+    document order. Scattered losses suggest the app's content changed rather
+    than merely scrolling out of view -- but this is a heuristic, not a hard
+    signal: a container node's box can span its children, so document order
+    and visual (scroll) order diverge on a screen like Gmail, which reads as
+    scattered for that structural reason rather than genuine content change.
+
+    Returns None when nothing was lost, else a dict with the counts, whether
+    the loss forms a contiguous tail, and the document-order indices lost.
+    """
+    baseline_texts = list(text_boxes(baseline_labels))
+    profile_texts = set(text_boxes(profile_labels))
+    lost_indices = sorted(
+        i for i, text in enumerate(baseline_texts) if text not in profile_texts
+    )
+    if not lost_indices:
+        return None
+
+    n = len(baseline_texts)
+    is_tail = lost_indices == list(range(n - len(lost_indices), n))
+    return {
+        "lost_count": len(lost_indices),
+        "baseline_count": n,
+        "is_tail": is_tail,
+        "indices": lost_indices,
+    }

@@ -1,7 +1,9 @@
 import unittest
 
 from capture_checks import (
+    colour_only_contamination,
     drift_rate,
+    loss_shape,
     text_boxes,
     text_drift,
 )
@@ -46,6 +48,67 @@ class DriftTests(unittest.TestCase):
 
     def test_empty_baseline_has_no_drift(self):
         self.assertEqual(0.0, drift_rate([], [label("A", 0, 10)]))
+
+
+class ColourOnlyContaminationTests(unittest.TestCase):
+    def test_identical_text_sets_pass(self):
+        # A pure box shift (e.g. app content settling) with no text change
+        # must not be flagged -- only a changed text SET is contamination.
+        baseline = [label("Color", 0, 100), label("Colors", 0, 100, 60, 110)]
+        shifted = [label("Color", 0, 100, 20, 70), label("Colors", 0, 100, 80, 130)]
+
+        vanished, appeared = colour_only_contamination(baseline, shifted)
+
+        self.assertEqual((set(), set()), (vanished, appeared))
+
+    def test_vanished_label_is_flagged(self):
+        # The settings_display case: 'Color'/'Colors' disappear under the
+        # colour filter even though nothing about the profile should be able
+        # to remove a layout element.
+        baseline = [label("Brightness", 0, 100), label("Color", 0, 100, 60, 110),
+                    label("Colors", 0, 100, 120, 170)]
+        colorblind = [label("Brightness", 0, 100, 20, 70)]
+
+        vanished, appeared = colour_only_contamination(baseline, colorblind)
+
+        self.assertEqual({"Color", "Colors"}, vanished)
+        self.assertEqual(set(), appeared)
+
+    def test_empty_result_when_nothing_changed(self):
+        labels = [label("Wi-Fi", 0, 100)]
+        self.assertEqual((set(), set()), colour_only_contamination(labels, labels))
+
+
+class LossShapeTests(unittest.TestCase):
+    def test_no_loss_returns_none(self):
+        labels = [label("A", 0, 10), label("B", 0, 10, 20, 30)]
+        self.assertIsNone(loss_shape(labels, labels))
+
+    def test_contiguous_tail_loss_is_detected(self):
+        baseline = [label(t, 0, 10, i * 20, i * 20 + 10) for i, t in enumerate("ABCDE")]
+        profile = baseline[:3]  # C, D, E scrolled off the bottom
+
+        shape = loss_shape(baseline, profile)
+
+        self.assertIsNotNone(shape)
+        self.assertTrue(shape["is_tail"])
+        self.assertEqual(2, shape["lost_count"])
+        self.assertEqual([3, 4], shape["indices"])
+
+    def test_scattered_loss_is_not_a_tail(self):
+        baseline = [label(t, 0, 10, i * 20, i * 20 + 10) for i, t in enumerate("ABCDE")]
+        profile = [baseline[0], baseline[2], baseline[4]]  # B and D vanished, not a tail
+
+        shape = loss_shape(baseline, profile)
+
+        self.assertIsNotNone(shape)
+        self.assertFalse(shape["is_tail"])
+        self.assertEqual([1, 3], shape["indices"])
+
+    def test_losing_everything_is_still_a_tail(self):
+        baseline = [label(t, 0, 10, i * 20, i * 20 + 10) for i, t in enumerate("AB")]
+        shape = loss_shape(baseline, [])
+        self.assertTrue(shape["is_tail"])
 
 
 if __name__ == "__main__":

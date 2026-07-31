@@ -1,6 +1,21 @@
 """Coordinate parsing and bounding-box scoring helpers."""
 
 import re
+import struct
+from pathlib import Path
+
+
+def get_png_dimensions(image_path: str | Path) -> tuple[int, int]:
+    """Extract width and height from a PNG file without external libraries.
+
+    Lives here (no external deps) rather than in vlm_eval.runner so
+    mcnemar_analysis.py can reuse it for offline box-vs-image checks without
+    importing vlm_provider's litellm dependency chain.
+    """
+    with open(image_path, "rb") as f:
+        f.read(16)
+        width, height = struct.unpack(">II", f.read(8))
+        return width, height
 
 # Bracketed pair, e.g. "[540, 300]" -- the format the prompt asks for. Tried
 # first because a loose scan can latch onto an earlier incidental pair: a reply

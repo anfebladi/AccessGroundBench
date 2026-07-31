@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -84,6 +85,510 @@ class LoadResultsPromptModeDefaultTests(unittest.TestCase):
 
         self.assertEqual("tree", rows[0]["prompt_mode"])
         self.assertEqual("5", rows[0]["tree_rows_sent"])
+
+
+def make_row(status: str, **extra) -> dict:
+    return {"status": status, **extra}
+
+
+class ComputeReachabilityLabelChangedModeTests(unittest.TestCase):
+    def setUp(self):
+        self.index = {
+            ("clock", "8:30 AM", "baseline"): make_row("co_present"),
+            ("clock", "8:30 AM", "elder_text_heavy"): make_row("label_changed"),
+            ("clock", "Mon-Fri", "baseline"): make_row("co_present"),
+            ("clock", "Mon-Fri", "elder_text_heavy"): make_row("off_screen"),
+            ("clock", "Alarm", "baseline"): make_row("co_present"),
+            ("clock", "Alarm", "elder_text_heavy"): make_row("co_present"),
+        }
+
+    def test_exclude_mode_drops_label_changed_from_pool_entirely(self):
+        present, total = mcnemar_analysis.compute_reachability(
+            self.index, "elder_text_heavy", label_changed_mode="exclude"
+        )
+        self.assertEqual((1, 2), (present, total))
+
+    def test_unreachable_mode_counts_label_changed_as_lost(self):
+        # This is the pre-reclassification behaviour: label_changed rows
+        # were indistinguishable from off_screen, so this mode must
+        # reproduce the exact same numbers as before this feature existed.
+        present, total = mcnemar_analysis.compute_reachability(
+            self.index, "elder_text_heavy", label_changed_mode="unreachable"
+        )
+        self.assertEqual((1, 3), (present, total))
+
+    def test_reachable_mode_counts_label_changed_as_present(self):
+        present, total = mcnemar_analysis.compute_reachability(
+            self.index, "elder_text_heavy", label_changed_mode="reachable"
+        )
+        self.assertEqual((2, 3), (present, total))
+
+    def test_default_mode_matches_unreachable(self):
+        default = mcnemar_analysis.compute_reachability(self.index, "elder_text_heavy")
+        explicit = mcnemar_analysis.compute_reachability(
+            self.index, "elder_text_heavy", label_changed_mode="unreachable"
+        )
+        self.assertEqual(explicit, default)
+
+    def test_unknown_mode_raises(self):
+        with self.assertRaises(ValueError):
+            mcnemar_analysis.compute_reachability(
+                self.index, "elder_text_heavy", label_changed_mode="bogus"
+            )
+
+
+class ReclassifyLabelChangedTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.labels_dir = Path(self.tmp.name) / "labels"
+        self.labels_dir.mkdir()
+
+    def write_labels(self, screen: str, profile: str, records: list[dict]) -> None:
+        (self.labels_dir / f"{screen}_{profile}.json").write_text(
+            json.dumps(records), encoding="utf-8"
+        )
+
+    def test_relaxed_match_reclassifies_off_screen_to_label_changed(self):
+        self.write_labels("clock", "elder_text_heavy", [
+            {"text": "8:30 AM​͏͏", "box": [1, 2, 3, 4]},
+        ])
+        rows = [
+            {"screen": "clock", "target_text": "8:30 AM",
+             "profile": "elder_text_heavy", "status": "off_screen"},
+        ]
+
+        mcnemar_analysis.reclassify_label_changed(rows, self.labels_dir)
+
+        self.assertEqual("label_changed", rows[0]["status"])
+        self.assertIn("_label_changed_matched_text", rows[0])
+
+    def test_genuinely_absent_target_stays_off_screen(self):
+        self.write_labels("clock", "elder_text_heavy", [
+            {"text": "Something else entirely", "box": [1, 2, 3, 4]},
+        ])
+        rows = [
+            {"screen": "clock", "target_text": "8:30 AM",
+             "profile": "elder_text_heavy", "status": "off_screen"},
+        ]
+
+        mcnemar_analysis.reclassify_label_changed(rows, self.labels_dir)
+
+        self.assertEqual("off_screen", rows[0]["status"])
+
+    def test_non_off_screen_rows_are_left_untouched(self):
+        rows = [
+            {"screen": "clock", "target_text": "8:30 AM",
+             "profile": "baseline", "status": "co_present"},
+        ]
+
+        mcnemar_analysis.reclassify_label_changed(rows, self.labels_dir)
+
+        self.assertEqual("co_present", rows[0]["status"])
+
+    def test_missing_labels_directory_does_not_raise(self):
+        rows = [
+            {"screen": "clock", "target_text": "8:30 AM",
+             "profile": "elder_text_heavy", "status": "off_screen"},
+        ]
+
+        result = mcnemar_analysis.reclassify_label_changed(
+            rows, Path(self.tmp.name) / "does_not_exist"
+        )
+
+        self.assertEqual("off_screen", result[0]["status"])
+
+    def test_missing_label_file_for_screen_profile_leaves_row_off_screen(self):
+        rows = [
+            {"screen": "unknown_screen", "target_text": "X",
+             "profile": "elder_text_heavy", "status": "off_screen"},
+        ]
+
+        mcnemar_analysis.reclassify_label_changed(rows, self.labels_dir)
+
+        self.assertEqual("off_screen", rows[0]["status"])
+
+
+def write_png(path: Path, width: int, height: int) -> None:
+    import struct
+    path.write_bytes(
+        b"\x89PNG\r\n\x1a\n"
+        + struct.pack(">I", 13)
+        + b"IHDR"
+        + struct.pack(">II", width, height)
+    )
+
+
+class ReclassifyOffFrameTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.images_dir = Path(self.tmp.name) / "images"
+        self.images_dir.mkdir()
+        write_png(self.images_dir / "gmail_elder_text_heavy.png", 1080, 2219)
+
+    def test_box_center_outside_image_is_reclassified_off_frame(self):
+        rows = [{
+            "screen": "gmail", "target_text": "Claude Team",
+            "profile": "elder_text_heavy", "status": "co_present",
+            "x_min": "180", "y_min": "2195", "x_max": "260", "y_max": "2266",
+        }]
+
+        mcnemar_analysis.reclassify_off_frame(rows, self.images_dir)
+
+        self.assertEqual("off_frame", rows[0]["status"])
+
+    def test_box_center_inside_image_is_left_co_present(self):
+        rows = [{
+            "screen": "gmail", "target_text": "Compose",
+            "profile": "elder_text_heavy", "status": "co_present",
+            "x_min": "100", "y_min": "100", "x_max": "200", "y_max": "200",
+        }]
+
+        mcnemar_analysis.reclassify_off_frame(rows, self.images_dir)
+
+        self.assertEqual("co_present", rows[0]["status"])
+
+    def test_label_changed_rows_are_also_checked(self):
+        rows = [{
+            "screen": "gmail", "target_text": "X",
+            "profile": "elder_text_heavy", "status": "label_changed",
+            "x_min": "180", "y_min": "2195", "x_max": "260", "y_max": "2266",
+        }]
+
+        mcnemar_analysis.reclassify_off_frame(rows, self.images_dir)
+
+        self.assertEqual("off_frame", rows[0]["status"])
+
+    def test_off_screen_rows_have_no_box_and_are_skipped(self):
+        rows = [{
+            "screen": "gmail", "target_text": "X",
+            "profile": "elder_text_heavy", "status": "off_screen",
+            "x_min": "", "y_min": "", "x_max": "", "y_max": "",
+        }]
+
+        mcnemar_analysis.reclassify_off_frame(rows, self.images_dir)
+
+        self.assertEqual("off_screen", rows[0]["status"])
+
+    def test_missing_image_leaves_row_unchanged(self):
+        rows = [{
+            "screen": "unknown", "target_text": "X",
+            "profile": "elder_text_heavy", "status": "co_present",
+            "x_min": "180", "y_min": "2195", "x_max": "260", "y_max": "2266",
+        }]
+
+        mcnemar_analysis.reclassify_off_frame(rows, self.images_dir)
+
+        self.assertEqual("co_present", rows[0]["status"])
+
+    def test_missing_images_directory_does_not_raise(self):
+        rows = [{
+            "screen": "gmail", "target_text": "Claude Team",
+            "profile": "elder_text_heavy", "status": "co_present",
+            "x_min": "180", "y_min": "2195", "x_max": "260", "y_max": "2266",
+        }]
+
+        result = mcnemar_analysis.reclassify_off_frame(
+            rows, Path(self.tmp.name) / "does_not_exist"
+        )
+
+        self.assertEqual("co_present", result[0]["status"])
+
+    def test_reachability_counts_off_frame_as_present(self):
+        # The element genuinely exists on screen; only its scorability is
+        # affected, so reachability (which never needs a score) must not
+        # treat off_frame like off_screen.
+        index = {
+            ("gmail", "Claude Team", "baseline"): make_row("co_present"),
+            ("gmail", "Claude Team", "elder_text_heavy"): make_row("off_frame"),
+        }
+
+        present, total = mcnemar_analysis.compute_reachability(
+            index, "elder_text_heavy"
+        )
+
+        self.assertEqual((1, 1), (present, total))
+
+
+def baseline_row(screen: str, text: str, box: list[int]) -> dict:
+    return {
+        "screen": screen, "target_text": text, "profile": "baseline",
+        "status": "co_present",
+        "x_min": str(box[0]), "y_min": str(box[1]),
+        "x_max": str(box[2]), "y_max": str(box[3]),
+    }
+
+
+class ComputeB2TargetsTests(unittest.TestCase):
+    def test_container_enclosing_another_target_is_excluded(self):
+        rows = [
+            baseline_row("gmail", "Container", [0, 0, 500, 500]),
+            baseline_row("gmail", "Claude Team", [10, 10, 100, 100]),
+        ]
+
+        excluded = mcnemar_analysis.compute_b2_targets(rows)
+
+        self.assertIn(("gmail", "Container"), excluded)
+        self.assertNotIn(("gmail", "Claude Team"), excluded)
+
+    def test_target_over_length_cap_is_excluded(self):
+        long_text = "x" * (mcnemar_analysis.B2_LENGTH_CAP + 1)
+        rows = [baseline_row("gmail", long_text, [0, 0, 10, 10])]
+
+        excluded = mcnemar_analysis.compute_b2_targets(rows)
+
+        self.assertIn(("gmail", long_text), excluded)
+
+    def test_target_at_exactly_the_cap_is_not_excluded(self):
+        exact_text = "x" * mcnemar_analysis.B2_LENGTH_CAP
+        rows = [baseline_row("gmail", exact_text, [0, 0, 10, 10])]
+
+        excluded = mcnemar_analysis.compute_b2_targets(rows)
+
+        self.assertNotIn(("gmail", exact_text), excluded)
+
+    def test_ordinary_non_overlapping_short_targets_are_not_excluded(self):
+        rows = [
+            baseline_row("clock", "Alarm", [0, 0, 50, 50]),
+            baseline_row("clock", "Timer", [0, 60, 50, 110]),
+        ]
+
+        excluded = mcnemar_analysis.compute_b2_targets(rows)
+
+        self.assertEqual(frozenset(), excluded)
+
+    def test_containment_is_scoped_per_screen(self):
+        # A box on one screen must not be compared against a box on another --
+        # coordinates are only meaningful within the same capture.
+        rows = [
+            baseline_row("gmail", "A", [0, 0, 500, 500]),
+            baseline_row("clock", "B", [10, 10, 100, 100]),
+        ]
+
+        excluded = mcnemar_analysis.compute_b2_targets(rows)
+
+        self.assertEqual(frozenset(), excluded)
+
+    def test_non_co_present_rows_are_skipped(self):
+        row = baseline_row("gmail", "Ghost", [0, 0, 500, 500])
+        row["status"] = "off_screen"
+        rows = [row, baseline_row("gmail", "Claude Team", [10, 10, 100, 100])]
+
+        excluded = mcnemar_analysis.compute_b2_targets(rows)
+
+        self.assertEqual(frozenset(), excluded)
+
+
+class TargetExcludedForConditionTests(unittest.TestCase):
+    def test_full_sample_excludes_nothing(self):
+        b2 = frozenset({("gmail", "Long text")})
+        self.assertFalse(mcnemar_analysis.target_excluded_for_condition(
+            "full", "settings_display", "X", "colorblind_deuteranomaly", b2
+        ))
+        self.assertFalse(mcnemar_analysis.target_excluded_for_condition(
+            "full", "gmail", "Long text", "baseline", b2
+        ))
+
+    def test_b1_minimal_only_excludes_the_one_contaminated_cell(self):
+        excl = mcnemar_analysis.target_excluded_for_condition
+        self.assertTrue(excl("primary", "settings_display", "X",
+                              "colorblind_deuteranomaly", frozenset()))
+        # Same screen, different condition: not excluded -- font/density
+        # losses on settings_display are ordinary scroll-off, not measured
+        # contamination (see Stage B correction 2).
+        self.assertFalse(excl("primary", "settings_display", "X",
+                               "elder_text_heavy", frozenset()))
+
+    def test_b2_applies_regardless_of_profile_including_baseline(self):
+        b2 = frozenset({("gmail", "Long text")})
+        excl = mcnemar_analysis.target_excluded_for_condition
+        for profile in ("baseline", "elder_text_heavy", "colorblind_deuteranomaly"):
+            self.assertTrue(excl("primary", "gmail", "Long text", profile, b2),
+                             f"B2 must apply under {profile}")
+
+    def test_b2_ignored_when_sample_does_not_use_it(self):
+        b2 = frozenset({("gmail", "Long text")})
+        self.assertFalse(mcnemar_analysis.target_excluded_for_condition(
+            "full", "gmail", "Long text", "baseline", b2
+        ))
+
+    def test_precautionary_excludes_settings_accessibility_under_font_density(self):
+        excl = mcnemar_analysis.target_excluded_for_condition
+        self.assertTrue(excl("precautionary", "settings_accessibility", "X",
+                              "elder_combo_max", frozenset()))
+        self.assertFalse(excl("primary", "settings_accessibility", "X",
+                               "elder_combo_max", frozenset()))
+
+    def test_uniform_excludes_settings_accessibility_under_colour_too(self):
+        excl = mcnemar_analysis.target_excluded_for_condition
+        self.assertTrue(excl("uniform", "settings_accessibility", "X",
+                              "colorblind_deuteranomaly", frozenset()))
+        self.assertFalse(excl("precautionary", "settings_accessibility", "X",
+                               "colorblind_deuteranomaly", frozenset()))
+
+    def test_unknown_sample_raises(self):
+        with self.assertRaises(ValueError):
+            mcnemar_analysis.target_excluded_for_condition(
+                "bogus", "clock", "X", "baseline", frozenset()
+            )
+
+
+class SampleExclusionIntegrationTests(unittest.TestCase):
+    """compute_reachability / build_clusters / compute_contingency honoring sample."""
+
+    def setUp(self):
+        # settings_display has two targets, one of which is contaminated
+        # under colorblind_deuteranomaly (present in baseline, "off_screen"
+        # under colorblind due to the banner) and clean under text_heavy.
+        self.index = {
+            ("settings_display", "Brightness", "baseline"): make_row("co_present", score="1"),
+            ("settings_display", "Brightness", "colorblind_deuteranomaly"):
+                make_row("co_present", score="1"),
+            ("settings_display", "Brightness", "elder_text_heavy"):
+                make_row("co_present", score="1"),
+            ("settings_display", "Color", "baseline"): make_row("co_present", score="1"),
+            ("settings_display", "Color", "colorblind_deuteranomaly"):
+                make_row("off_screen"),
+            ("settings_display", "Color", "elder_text_heavy"): make_row("co_present", score="1"),
+        }
+
+    def test_full_sample_colour_reachability_is_contaminated(self):
+        present, total = mcnemar_analysis.compute_reachability(
+            self.index, "colorblind_deuteranomaly", sample="full"
+        )
+        self.assertEqual((1, 2), (present, total))
+
+    def test_primary_sample_colour_reachability_is_100_percent(self):
+        # This is the correctness check from the plan: with the contaminated
+        # cell excluded, colour reachability must read exactly 100% -- the
+        # value a software-only transform has to produce by construction.
+        present, total = mcnemar_analysis.compute_reachability(
+            self.index, "colorblind_deuteranomaly", sample="primary"
+        )
+        self.assertEqual((0, 0), (present, total))  # pool emptied: both targets removed
+
+    def test_primary_sample_does_not_affect_other_conditions(self):
+        # elder_text_heavy is not in B1's exclusion set for settings_display,
+        # so its pool must be untouched.
+        present, total = mcnemar_analysis.compute_reachability(
+            self.index, "elder_text_heavy", sample="primary"
+        )
+        self.assertEqual((2, 2), (present, total))
+
+    def test_build_clusters_excludes_contaminated_condition_only(self):
+        indices = {"model-a": self.index}
+        clusters_colour = mcnemar_analysis.build_clusters(
+            indices, "colorblind_deuteranomaly", sample="primary"
+        )
+        clusters_text = mcnemar_analysis.build_clusters(
+            indices, "elder_text_heavy", sample="primary"
+        )
+        self.assertEqual({}, clusters_colour)
+        self.assertEqual(2, len(clusters_text))
+
+    def test_compute_contingency_excludes_contaminated_condition_only(self):
+        a, b, c, d = mcnemar_analysis.compute_contingency(
+            self.index, "colorblind_deuteranomaly", sample="primary"
+        )
+        self.assertEqual((0, 0, 0, 0), (a, b, c, d))
+
+        a, b, c, d = mcnemar_analysis.compute_contingency(
+            self.index, "elder_text_heavy", sample="primary"
+        )
+        self.assertEqual(2, a + b + c + d)
+
+
+CROSS_HEADER = (
+    "screen,target_text,profile,status,raw_response,x_pred,y_pred,"
+    "x_min,y_min,x_max,y_max,score,trials,trial_scores,parse_method,"
+    "prompt_mode,tree_rows_sent\n"
+)
+
+
+class RunCrossComparisonTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.dir = Path(self.tmp.name)
+
+    def write_csv(self, name: str, rows: list[str]) -> Path:
+        path = self.dir / name
+        path.write_text(CROSS_HEADER + "".join(rows), encoding="utf-8")
+        return path
+
+    def read_out(self) -> list[dict]:
+        out = next(self.dir.glob("mcnemar_compare_*.csv"))
+        import csv as _csv
+        with open(out, encoding="utf-8") as f:
+            return list(_csv.DictReader(f))
+
+    def test_output_carries_a_sample_column(self):
+        row = ("clock,Alarm,elder_text_heavy,co_present,\"[1, 2]\",1,2,"
+               "0,0,10,10,1,1,1,bracket,vision,0\n")
+        base = ("clock,Alarm,baseline,co_present,\"[1, 2]\",1,2,"
+                "0,0,10,10,1,1,1,bracket,vision,0\n")
+        a = self.write_csv("evaluation_results_m.csv", [base, row])
+        b = self.write_csv("evaluation_results_m_with_tree.csv", [base, row])
+
+        mcnemar_analysis.run_cross_comparison(a, b, ["elder_text_heavy"])
+
+        out = self.read_out()
+        self.assertEqual("primary", out[0]["Sample"])
+
+    def test_identical_files_produce_no_discordant_pairs(self):
+        # Parity check: a file compared against itself cannot disagree, so
+        # every profile must read b=0 c=0. Any nonzero value means the
+        # pairing logic is mismatching rows.
+        base = ("clock,Alarm,baseline,co_present,\"[1, 2]\",1,2,"
+                "0,0,10,10,1,1,1,bracket,vision,0\n")
+        exp = ("clock,Alarm,elder_text_heavy,co_present,\"[1, 2]\",1,2,"
+               "0,0,10,10,1,1,1,bracket,vision,0\n")
+        a = self.write_csv("evaluation_results_m.csv", [base, exp])
+        b = self.write_csv("evaluation_results_m_with_tree.csv", [base, exp])
+
+        mcnemar_analysis.run_cross_comparison(a, b, ["elder_text_heavy"])
+
+        out = self.read_out()
+        self.assertEqual("0", out[0]["Tree_Hurt_b"])
+        self.assertEqual("0", out[0]["Tree_Helped_c"])
+
+    def test_b2_excluded_target_is_dropped_from_the_comparison(self):
+        long_text = "x" * (mcnemar_analysis.B2_LENGTH_CAP + 1)
+        base_keep = ("gmail,Short,baseline,co_present,\"[1, 2]\",1,2,"
+                     "0,0,10,10,1,1,1,bracket,vision,0\n")
+        exp_keep = ("gmail,Short,elder_text_heavy,co_present,\"[1, 2]\",1,2,"
+                    "0,0,10,10,1,1,1,bracket,vision,0\n")
+        base_drop = (f"gmail,{long_text},baseline,co_present,\"[1, 2]\",1,2,"
+                     "0,0,10,10,1,1,1,bracket,vision,0\n")
+        exp_drop = (f"gmail,{long_text},elder_text_heavy,co_present,\"[1, 2]\",1,2,"
+                    "0,0,10,10,1,1,1,bracket,vision,0\n")
+        rows = [base_keep, exp_keep, base_drop, exp_drop]
+        a = self.write_csv("evaluation_results_m.csv", rows)
+        b = self.write_csv("evaluation_results_m_with_tree.csv", rows)
+
+        mcnemar_analysis.run_cross_comparison(a, b, ["elder_text_heavy"], sample="primary")
+        primary_pairs = int(self.read_out()[0]["Total_Pairs"])
+
+        mcnemar_analysis.run_cross_comparison(a, b, ["elder_text_heavy"], sample="full")
+        full_pairs = int(self.read_out()[0]["Total_Pairs"])
+
+        self.assertEqual(1, primary_pairs, "B2 target must be excluded under primary")
+        self.assertEqual(2, full_pairs, "full sample must keep both targets")
+
+    def test_b1_contaminated_cell_is_dropped_under_primary(self):
+        base = ("settings_display,Color,baseline,co_present,\"[1, 2]\",1,2,"
+                "0,0,10,10,1,1,1,bracket,vision,0\n")
+        exp = ("settings_display,Color,colorblind_deuteranomaly,co_present,\"[1, 2]\",1,2,"
+               "0,0,10,10,1,1,1,bracket,vision,0\n")
+        a = self.write_csv("evaluation_results_m.csv", [base, exp])
+        b = self.write_csv("evaluation_results_m_with_tree.csv", [base, exp])
+
+        mcnemar_analysis.run_cross_comparison(
+            a, b, ["colorblind_deuteranomaly"], sample="primary"
+        )
+
+        self.assertEqual("0", self.read_out()[0]["Total_Pairs"])
 
 
 if __name__ == "__main__":
