@@ -1,0 +1,1360 @@
+screen,target_text,profile,status,raw_response,x_pred,y_pred,x_min,y_min,x_max,y_max,score,trials,trial_scores,parse_method,prompt_mode,tree_rows_sent
+clock,Mon-Fri,baseline,co_present,"[181, 249]",181,249,95,221,266,283,1,1,1,bracket,tree,62
+clock,8:30 AM,baseline,co_present,"[242, 350]",242,350,95,304,393,459,1,1,1,bracket,tree,62
+clock,Sun Sat,baseline,co_present,"[174, 601]",174,601,95,570,256,632,1,1,1,bracket,tree,62
+clock,9:00 AM,baseline,co_present,"[235, 675]",235,675,95,653,408,808,1,1,1,bracket,tree,62
+clock,Sun Sat,baseline,co_present,"[147, 602]",147,602,95,570,256,632,1,1,1,bracket,tree,62
+clock,9:00 AM,baseline,co_present,"[237, 698]",237,698,95,653,408,808,1,1,1,bracket,tree,62
+clock,World Clock,baseline,co_present,"[324, 2182]",324,2182,221,2162,426,2202,1,1,1,bracket,tree,59
+clock,World Clock,baseline,co_present,"[324, 2192]",324,2192,221,2162,426,2202,1,1,1,bracket,tree,59
+clock,Timers,baseline,co_present,"[540, 2181]",540,2181,482,2162,596,2202,1,1,1,bracket,tree,57
+clock,Timers,baseline,co_present,"[540, 2182]",540,2182,482,2162,596,2202,1,1,1,bracket,tree,57
+clock,Stopwatch,baseline,co_present,"[756, 2182]",756,2182,666,2162,845,2202,1,1,1,bracket,tree,59
+clock,Stopwatch,baseline,co_present,"[756, 2182]",756,2182,666,2162,845,2202,1,1,1,bracket,tree,59
+clock,Bedtime,baseline,co_present,"[972, 2182]",972,2182,900,2162,1042,2202,1,1,1,bracket,tree,59
+clock,Bedtime,baseline,co_present,"[972, 2190]",972,2190,900,2162,1042,2202,1,1,1,bracket,tree,59
+clock,Mon-Fri,elder_text_heavy,co_present,"[190, 239]",190,239,95,221,319,304,1,1,1,bracket,tree,62
+clock,Mon-Fri,elder_text_heavy,co_present,"[200, 252]",200,252,95,221,319,304,1,1,1,bracket,tree,62
+clock,8:30 AM,elder_text_heavy,co_present,"[245, 404]",245,404,95,325,393,480,1,1,1,bracket,tree,62
+clock,8:30 AM,elder_text_heavy,co_present,"[226, 385]",226,385,95,325,393,480,1,1,1,bracket,tree,62
+clock,Sun Sat,elder_text_heavy,co_present,"[190, 582]",190,582,95,591,309,674,1,1,1,bracket,tree,62
+clock,Sun Sat,elder_text_heavy,co_present,"[193, 632]",193,632,95,591,309,674,1,1,1,bracket,tree,62
+clock,9:00 AM,elder_text_heavy,co_present,"[234, 725]",234,725,95,695,408,850,1,1,1,bracket,tree,62
+clock,World Clock,elder_text_heavy,co_present,"[304, 2184]",304,2184,216,2160,432,2203,1,1,1,bracket,tree,59
+clock,9:00 AM,elder_text_heavy,co_present,"[244, 772]",244,772,95,695,408,850,1,1,1,bracket,tree,62
+clock,World Clock,elder_text_heavy,co_present,"[323, 2191]",323,2191,216,2160,432,2203,1,1,1,bracket,tree,59
+clock,Timers,elder_text_heavy,co_present,"[540, 2182]",540,2182,478,2160,600,2203,1,1,1,bracket,tree,57
+clock,Stopwatch,elder_text_heavy,co_present,"[756, 2190]",756,2190,660,2160,851,2203,1,1,1,bracket,tree,59
+clock,Timers,elder_text_heavy,co_present,"[540, 2190]",540,2190,478,2160,600,2203,1,1,1,bracket,tree,57
+clock,Bedtime,elder_text_heavy,co_present,"[972, 2181]",972,2181,896,2160,1047,2203,1,1,1,bracket,tree,59
+clock,Stopwatch,elder_text_heavy,co_present,"[756, 2190]",756,2190,660,2160,851,2203,1,1,1,bracket,tree,59
+clock,Mon-Fri,elder_zoom_heavy,co_present,"[190, 266]",190,266,108,252,303,322,1,1,1,bracket,tree,62
+clock,Bedtime,elder_text_heavy,co_present,"[951, 2181]",951,2181,896,2160,1047,2203,1,1,1,bracket,tree,59
+clock,Mon-Fri,elder_zoom_heavy,co_present,"[190, 267]",190,267,108,252,303,322,1,1,1,bracket,tree,62
+clock,8:30 AM,elder_zoom_heavy,co_present,"[262, 409]",262,409,108,346,448,523,1,1,1,bracket,tree,62
+clock,8:30 AM,elder_zoom_heavy,co_present,"[258, 414]",258,414,108,346,448,523,1,1,1,bracket,tree,62
+clock,Sun Sat,elder_zoom_heavy,co_present,"[200, 684]",200,684,108,649,293,719,1,1,1,bracket,tree,62
+clock,Sun Sat,elder_zoom_heavy,co_present,"[191, 684]",191,684,108,649,293,719,1,1,1,bracket,tree,62
+clock,9:00 AM,elder_zoom_heavy,co_present,"[257, 805]",257,805,108,743,466,920,1,1,1,bracket,tree,62
+clock,9:00 AM,elder_zoom_heavy,co_present,"[258, 778]",258,778,108,743,466,920,1,1,1,bracket,tree,62
+clock,World Clock,elder_zoom_heavy,co_present,"[324, 2150]",324,2150,221,2130,426,2170,1,1,1,bracket,tree,59
+clock,World Clock,elder_zoom_heavy,co_present,"[301, 2158]",301,2158,221,2130,426,2170,1,1,1,bracket,tree,59
+clock,Timers,elder_zoom_heavy,co_present,"[540, 2159]",540,2159,483,2130,597,2170,1,1,1,bracket,tree,57
+clock,Timers,elder_zoom_heavy,co_present,"[540, 2150]",540,2150,483,2130,597,2170,1,1,1,bracket,tree,57
+clock,Stopwatch,elder_zoom_heavy,co_present,"[756, 2150]",756,2150,666,2130,845,2170,1,1,1,bracket,tree,59
+clock,Stopwatch,elder_zoom_heavy,co_present,"[756, 2158]",756,2158,666,2130,845,2170,1,1,1,bracket,tree,59
+clock,Bedtime,elder_zoom_heavy,co_present,"[955, 2150]",955,2150,901,2130,1043,2170,1,1,1,bracket,tree,59
+clock,Mon-Fri,elder_combo_max,co_present,"[253, 322]",253,322,117,273,419,386,1,1,1,bracket,tree,62
+clock,Bedtime,elder_zoom_heavy,co_present,"[972, 2150]",972,2150,901,2130,1043,2170,1,1,1,bracket,tree,59
+clock,8:30 AM,elder_combo_max,co_present,"[286, 505]",286,505,117,412,495,609,1,1,1,bracket,tree,62
+clock,Mon-Fri,elder_combo_max,co_present,"[241, 307]",241,307,117,273,419,386,1,1,1,bracket,tree,62
+clock,Sun Sat,elder_combo_max,co_present,"[243, 784]",243,784,117,746,403,859,1,1,1,bracket,tree,62
+clock,8:30 AM,elder_combo_max,co_present,"[282, 479]",282,479,117,412,495,609,1,1,1,bracket,tree,62
+clock,9:00 AM,elder_combo_max,co_present,"[307, 985]",307,985,117,885,513,1082,1,1,1,bracket,tree,62
+clock,Sun Sat,elder_combo_max,co_present,"[220, 754]",220,754,117,746,403,859,1,1,1,bracket,tree,62
+clock,9:00 AM,elder_combo_max,co_present,"[288, 928]",288,928,117,885,513,1082,1,1,1,bracket,tree,62
+clock,World Clock,elder_combo_max,co_present,"[316, 2147]",316,2147,216,2106,432,2151,1,1,1,bracket,tree,59
+clock,Timers,elder_combo_max,co_present,"[540, 2128]",540,2128,476,2106,604,2151,1,1,1,bracket,tree,58
+clock,Stopwatch,elder_combo_max,co_present,"[756, 2128]",756,2128,654,2106,857,2151,1,1,1,bracket,tree,59
+clock,Bedtime,elder_combo_max,co_present,"[955, 2130]",955,2130,892,2106,1052,2151,1,1,1,bracket,tree,59
+clock,World Clock,elder_combo_max,co_present,"[324, 2147]",324,2147,216,2106,432,2151,1,1,1,bracket,tree,59
+clock,Mon-Fri,elder_combo_mid,co_present,"[225, 289]",225,289,108,252,378,352,1,1,1,bracket,tree,62
+clock,Timers,elder_combo_max,co_present,"[540, 2130]",540,2130,476,2106,604,2151,1,1,1,bracket,tree,58
+clock,Stopwatch,elder_combo_max,co_present,"[756, 2134]",756,2134,654,2106,857,2151,1,1,1,bracket,tree,59
+clock,8:30 AM,elder_combo_mid,co_present,"[263, 447]",263,447,108,376,448,553,1,1,1,bracket,tree,62
+clock,Bedtime,elder_combo_max,co_present,"[940, 2133]",940,2133,892,2106,1052,2151,1,1,1,bracket,tree,59
+clock,Sun Sat,elder_combo_mid,co_present,"[204, 683]",204,683,108,679,363,779,1,1,1,bracket,tree,62
+clock,Mon-Fri,elder_combo_mid,co_present,"[215, 279]",215,279,108,252,378,352,1,1,1,bracket,tree,62
+clock,9:00 AM,elder_combo_mid,co_present,"[259, 867]",259,867,108,803,466,980,1,1,1,bracket,tree,62
+clock,8:30 AM,elder_combo_mid,co_present,"[248, 432]",248,432,108,376,448,553,1,1,1,bracket,tree,62
+clock,Sun Sat,elder_combo_mid,co_present,"[204, 735]",204,735,108,679,363,779,1,1,1,bracket,tree,62
+clock,World Clock,elder_combo_mid,co_present,"[325, 2160]",325,2160,216,2130,432,2174,1,1,1,bracket,tree,59
+clock,9:00 AM,elder_combo_mid,co_present,"[256, 852]",256,852,108,803,466,980,1,1,1,bracket,tree,62
+clock,Timers,elder_combo_mid,co_present,"[540, 2160]",540,2160,477,2130,603,2174,1,1,1,bracket,tree,58
+clock,World Clock,elder_combo_mid,co_present,"[302, 2164]",302,2164,216,2130,432,2174,1,1,1,bracket,tree,59
+clock,Timers,elder_combo_mid,co_present,"[540, 2149]",540,2149,477,2130,603,2174,1,1,1,bracket,tree,58
+clock,Stopwatch,elder_combo_mid,co_present,"[756, 2160]",756,2160,658,2130,854,2174,1,1,1,bracket,tree,59
+clock,Stopwatch,elder_combo_mid,co_present,"[756, 2152]",756,2152,658,2130,854,2174,1,1,1,bracket,tree,59
+clock,Bedtime,elder_combo_mid,co_present,"[952, 2161]",952,2161,894,2130,1049,2174,1,1,1,bracket,tree,59
+clock,Mon-Fri,colorblind_deuteranomaly,co_present,"[164, 237]",164,237,95,221,266,283,1,1,1,bracket,tree,62
+clock,Bedtime,elder_combo_mid,co_present,"[939, 2158]",939,2158,894,2130,1049,2174,1,1,1,bracket,tree,59
+clock,Mon-Fri,colorblind_deuteranomaly,co_present,"[164, 229]",164,229,95,221,266,283,1,1,1,bracket,tree,62
+clock,8:30 AM,colorblind_deuteranomaly,co_present,"[226, 380]",226,380,95,304,393,459,1,1,1,bracket,tree,62
+clock,8:30 AM,colorblind_deuteranomaly,co_present,"[247, 381]",247,381,95,304,393,459,1,1,1,bracket,tree,62
+clock,Sun Sat,colorblind_deuteranomaly,co_present,"[168, 601]",168,601,95,570,256,632,1,1,1,bracket,tree,62
+clock,Sun Sat,colorblind_deuteranomaly,co_present,"[167, 601]",167,601,95,570,256,632,1,1,1,bracket,tree,62
+clock,9:00 AM,colorblind_deuteranomaly,co_present,"[235, 675]",235,675,95,653,408,808,1,1,1,bracket,tree,62
+clock,9:00 AM,colorblind_deuteranomaly,co_present,"[244, 731]",244,731,95,653,408,808,1,1,1,bracket,tree,62
+clock,World Clock,colorblind_deuteranomaly,co_present,"[320, 2184]",320,2184,221,2162,426,2202,1,1,1,bracket,tree,59
+clock,World Clock,colorblind_deuteranomaly,co_present,"[313, 2182]",313,2182,221,2162,426,2202,1,1,1,bracket,tree,59
+clock,Timers,colorblind_deuteranomaly,co_present,"[540, 2182]",540,2182,482,2162,596,2202,1,1,1,bracket,tree,57
+clock,Timers,colorblind_deuteranomaly,co_present,"[540, 2184]",540,2184,482,2162,596,2202,1,1,1,bracket,tree,57
+clock,Stopwatch,colorblind_deuteranomaly,co_present,"[756, 2182]",756,2182,666,2162,845,2202,1,1,1,bracket,tree,59
+clock,Stopwatch,colorblind_deuteranomaly,co_present,"[754, 2184]",754,2184,666,2162,845,2202,1,1,1,bracket,tree,59
+clock,Bedtime,colorblind_deuteranomaly,co_present,"[940, 2182]",940,2182,900,2162,1042,2202,1,1,1,bracket,tree,59
+clock,Bedtime,colorblind_deuteranomaly,co_present,"[911, 2190]",911,2190,900,2162,1042,2202,1,1,1,bracket,tree,59
+contacts,All contacts,baseline,co_present,"[236, 231]",236,231,142,226,342,279,1,1,1,bracket,tree,66
+contacts,All contacts,baseline,co_present,"[236, 230]",236,230,142,226,342,279,1,1,1,bracket,tree,66
+contacts,Your info,baseline,co_present,"[277, 385]",277,385,221,389,346,431,1,1,1,bracket,tree,68
+contacts,Your info,baseline,co_present,"[277, 386]",277,386,221,389,346,431,1,1,1,bracket,tree,68
+contacts,Andres,baseline,co_present,"[289, 424]",289,424,221,431,365,494,1,1,1,bracket,tree,67
+contacts,Andres,baseline,co_present,"[269, 430]",269,430,221,431,365,494,1,1,1,bracket,tree,67
+contacts,No contacts yet,baseline,co_present,"[540, 1372]",540,1372,317,1446,763,1530,0,1,0,bracket,tree,68
+contacts,No contacts yet,baseline,co_present,"[514, 1380]",514,1380,317,1446,763,1530,0,1,0,bracket,tree,68
+contacts,Contacts,baseline,co_present,"[166, 2140]",166,2140,110,2161,248,2203,1,1,1,bracket,tree,65
+contacts,Contacts,baseline,co_present,"[164, 2148]",164,2148,110,2161,248,2203,1,1,1,bracket,tree,65
+contacts,Highlights,baseline,co_present,"[540, 2184]",540,2184,463,2161,616,2203,1,1,1,bracket,tree,63
+contacts,Highlights,baseline,co_present,"[540, 2158]",540,2158,463,2161,616,2203,1,1,1,bracket,tree,63
+contacts,Organize,baseline,co_present,"[878, 2184]",878,2184,831,2161,968,2203,1,1,1,bracket,tree,65
+contacts,All contacts,elder_text_heavy,co_present,"[265, 233]",265,233,142,214,436,291,1,1,1,bracket,tree,66
+contacts,Organize,baseline,co_present,"[900, 2175]",900,2175,831,2161,968,2203,1,1,1,bracket,tree,65
+contacts,All contacts,elder_text_heavy,co_present,"[271, 228]",271,228,142,214,436,291,1,1,1,bracket,tree,66
+contacts,Your info,elder_text_heavy,co_present,"[300, 393]",300,393,221,389,400,448,1,1,1,bracket,tree,68
+contacts,Your info,elder_text_heavy,co_present,"[300, 394]",300,394,221,389,400,448,1,1,1,bracket,tree,68
+contacts,Andres,elder_text_heavy,co_present,"[304, 451]",304,451,221,448,412,534,1,1,1,bracket,tree,68
+contacts,Andres,elder_text_heavy,co_present,"[315, 463]",315,463,221,448,412,534,1,1,1,bracket,tree,68
+contacts,No contacts yet,elder_text_heavy,co_present,"[498, 1400]",498,1400,289,1453,792,1549,0,1,0,bracket,tree,68
+contacts,No contacts yet,elder_text_heavy,co_present,"[530, 1402]",530,1402,289,1453,792,1549,0,1,0,bracket,tree,68
+contacts,Contacts,elder_text_heavy,co_present,"[181, 2167]",181,2167,84,2147,275,2203,1,1,1,bracket,tree,65
+contacts,Contacts,elder_text_heavy,co_present,"[165, 2128]",165,2128,84,2147,275,2203,1,1,1,bracket,tree,65
+contacts,Highlights,elder_text_heavy,co_present,"[540, 2170]",540,2170,434,2147,646,2203,1,1,1,bracket,tree,63
+contacts,Highlights,elder_text_heavy,co_present,"[540, 2175]",540,2175,434,2147,646,2203,1,1,1,bracket,tree,63
+contacts,Organize,elder_text_heavy,co_present,"[850, 2178]",850,2178,805,2147,994,2203,1,1,1,bracket,tree,65
+contacts,Organize,elder_text_heavy,co_present,"[899, 2175]",899,2175,805,2147,994,2203,1,1,1,bracket,tree,65
+contacts,All contacts,elder_zoom_heavy,co_present,"[271, 276]",271,276,162,258,394,318,1,1,1,bracket,tree,66
+contacts,All contacts,elder_zoom_heavy,co_present,"[256, 269]",256,269,162,258,394,318,1,1,1,bracket,tree,66
+contacts,Your info,elder_zoom_heavy,co_present,"[319, 435]",319,435,252,444,396,492,1,1,1,bracket,tree,68
+contacts,Your info,elder_zoom_heavy,co_present,"[300, 434]",300,434,252,444,396,492,1,1,1,bracket,tree,68
+contacts,Andres,elder_zoom_heavy,co_present,"[313, 494]",313,494,252,492,415,564,1,1,1,bracket,tree,67
+contacts,Andres,elder_zoom_heavy,co_present,"[329, 494]",329,494,252,492,415,564,1,1,1,bracket,tree,67
+contacts,No contacts yet,elder_zoom_heavy,co_present,"[534, 1571]",534,1571,284,1482,796,1578,1,1,1,bracket,tree,68
+contacts,No contacts yet,elder_zoom_heavy,co_present,"[505, 1458]",505,1458,284,1482,796,1578,1,1,1,bracket,tree,68
+contacts,Contacts,elder_zoom_heavy,co_present,"[153, 2140]",153,2140,101,2130,258,2178,1,1,1,bracket,tree,65
+contacts,Contacts,elder_zoom_heavy,co_present,"[171, 2144]",171,2144,101,2130,258,2178,1,1,1,bracket,tree,65
+contacts,Highlights,elder_zoom_heavy,co_present,"[502, 2158]",502,2158,452,2130,627,2178,1,1,1,bracket,tree,64
+contacts,Highlights,elder_zoom_heavy,co_present,"[540, 2144]",540,2144,452,2130,627,2178,1,1,1,bracket,tree,64
+contacts,Organize,elder_zoom_heavy,co_present,"[900, 2146]",900,2146,822,2130,977,2178,1,1,1,bracket,tree,65
+contacts,Organize,elder_zoom_heavy,co_present,"[899, 2147]",899,2147,822,2130,977,2178,1,1,1,bracket,tree,65
+contacts,All contacts,elder_combo_max,co_present,"[378, 300]",378,300,176,260,584,366,1,1,1,bracket,tree,66
+contacts,All contacts,elder_combo_max,co_present,"[373, 295]",373,295,176,260,584,366,1,1,1,bracket,tree,66
+contacts,Your info,elder_combo_max,co_present,"[372, 493]",372,493,273,483,523,567,1,1,1,bracket,tree,68
+contacts,Your info,elder_combo_max,co_present,"[389, 507]",389,507,273,483,523,567,1,1,1,bracket,tree,68
+contacts,Andres,elder_combo_max,co_present,"[396, 611]",396,611,273,567,538,684,1,1,1,bracket,tree,68
+contacts,Andres,elder_combo_max,co_present,"[398, 586]",398,586,273,567,538,684,1,1,1,bracket,tree,68
+contacts,No contacts yet,elder_combo_max,co_present,"[493, 1493]",493,1493,199,1516,881,1645,0,1,0,bracket,tree,68
+contacts,No contacts yet,elder_combo_max,co_present,"[508, 1495]",508,1495,199,1516,881,1645,0,1,0,bracket,tree,68
+contacts,Contacts,elder_combo_max,co_present,"[151, 2134]",151,2134,46,2079,314,2157,1,1,1,bracket,tree,65
+contacts,Highlights,elder_combo_max,co_present,"[540, 2093]",540,2093,390,2079,690,2157,1,1,1,bracket,tree,64
+contacts,Contacts,elder_combo_max,co_present,"[167, 2100]",167,2100,46,2079,314,2157,1,1,1,bracket,tree,65
+contacts,Highlights,elder_combo_max,co_present,"[540, 2120]",540,2120,390,2079,690,2157,1,1,1,bracket,tree,64
+contacts,Organize,elder_combo_max,co_present,"[872, 2119]",872,2119,766,2079,1033,2157,1,1,1,bracket,tree,65
+contacts,Organize,elder_combo_max,co_present,"[848, 2105]",848,2105,766,2079,1033,2157,1,1,1,bracket,tree,65
+contacts,All contacts,elder_combo_mid,co_present,"[337, 283]",337,283,162,241,527,336,1,1,1,bracket,tree,66
+contacts,All contacts,elder_combo_mid,co_present,"[323, 283]",323,283,162,241,527,336,1,1,1,bracket,tree,66
+contacts,Your info,elder_combo_mid,co_present,"[341, 443]",341,443,252,444,470,516,1,1,1,bracket,tree,68
+contacts,Your info,elder_combo_mid,co_present,"[333, 444]",333,444,252,444,470,516,1,1,1,bracket,tree,68
+contacts,Andres,elder_combo_mid,co_present,"[361, 527]",361,527,252,516,486,620,1,1,1,bracket,tree,68
+contacts,No contacts yet,elder_combo_mid,co_present,"[507, 1563]",507,1563,242,1493,839,1605,1,1,1,bracket,tree,68
+contacts,Andres,elder_combo_mid,co_present,"[369, 531]",369,531,252,516,486,620,1,1,1,bracket,tree,68
+contacts,Contacts,elder_combo_mid,co_present,"[170, 2150]",170,2150,63,2111,297,2178,1,1,1,bracket,tree,65
+contacts,No contacts yet,elder_combo_mid,co_present,"[502, 1551]",502,1551,242,1493,839,1605,1,1,1,bracket,tree,68
+contacts,Contacts,elder_combo_mid,co_present,"[168, 2133]",168,2133,63,2111,297,2178,1,1,1,bracket,tree,65
+contacts,Highlights,elder_combo_mid,co_present,"[540, 2148]",540,2148,409,2111,671,2178,1,1,1,bracket,tree,64
+contacts,Highlights,elder_combo_mid,co_present,"[540, 2113]",540,2113,409,2111,671,2178,1,1,1,bracket,tree,64
+contacts,Organize,elder_combo_mid,co_present,"[899, 2149]",899,2149,784,2111,1016,2178,1,1,1,bracket,tree,65
+contacts,Organize,elder_combo_mid,co_present,"[885, 2155]",885,2155,784,2111,1016,2178,1,1,1,bracket,tree,65
+contacts,All contacts,colorblind_deuteranomaly,co_present,"[224, 232]",224,232,142,226,342,279,1,1,1,bracket,tree,66
+contacts,Your info,colorblind_deuteranomaly,co_present,"[260, 381]",260,381,221,389,346,431,1,1,1,bracket,tree,68
+contacts,All contacts,colorblind_deuteranomaly,co_present,"[220, 238]",220,238,142,226,342,279,1,1,1,bracket,tree,66
+contacts,Andres,colorblind_deuteranomaly,co_present,"[286, 435]",286,435,221,431,365,494,1,1,1,bracket,tree,67
+contacts,Your info,colorblind_deuteranomaly,co_present,"[258, 377]",258,377,221,389,346,431,1,1,1,bracket,tree,68
+contacts,No contacts yet,colorblind_deuteranomaly,co_present,"[540, 1735]",540,1735,317,1446,763,1530,0,1,0,bracket,tree,68
+contacts,Andres,colorblind_deuteranomaly,co_present,"[287, 428]",287,428,221,431,365,494,1,1,1,bracket,tree,67
+contacts,Contacts,colorblind_deuteranomaly,co_present,"[148, 2148]",148,2148,110,2161,248,2203,1,1,1,bracket,tree,65
+contacts,No contacts yet,colorblind_deuteranomaly,co_present,"[540, 1515]",540,1515,317,1446,763,1530,1,1,1,bracket,tree,68
+contacts,Highlights,colorblind_deuteranomaly,co_present,"[540, 2182]",540,2182,463,2161,616,2203,1,1,1,bracket,tree,63
+contacts,Contacts,colorblind_deuteranomaly,co_present,"[167, 2143]",167,2143,110,2161,248,2203,1,1,1,bracket,tree,65
+contacts,Organize,colorblind_deuteranomaly,co_present,"[844, 2188]",844,2188,831,2161,968,2203,1,1,1,bracket,tree,65
+contacts,Highlights,colorblind_deuteranomaly,co_present,"[540, 2140]",540,2140,463,2161,616,2203,1,1,1,bracket,tree,63
+dialer,Phone Number,baseline,co_present,"[241, 968]",241,968,147,900,933,1044,1,1,1,bracket,tree,89
+contacts,Organize,colorblind_deuteranomaly,co_present,"[831, 2143]",831,2143,831,2161,968,2203,1,1,1,bracket,tree,65
+dialer,1,baseline,co_present,"[173, 1055]",173,1055,169,1093,203,1197,0,1,0,bracket,tree,92
+dialer,2,baseline,co_present,"[540, 1171]",540,1171,518,1097,561,1201,1,1,1,bracket,tree,91
+dialer,Phone Number,baseline,co_present,"[540, 894]",540,894,147,900,933,1044,1,1,1,bracket,tree,89
+dialer,ABC,baseline,co_present,"[540, 1223]",540,1223,505,1201,574,1245,1,1,1,bracket,tree,92
+dialer,1,baseline,co_present,"[172, 1149]",172,1149,169,1093,203,1197,1,1,1,bracket,tree,92
+dialer,3,baseline,co_present,"[893, 1171]",893,1171,870,1097,914,1201,1,1,1,bracket,tree,92
+dialer,2,baseline,co_present,"[540, 1171]",540,1171,518,1097,561,1201,1,1,1,bracket,tree,91
+dialer,DEF,baseline,api_error,[API-ERROR: AuthenticationError],,,861,1201,924,1245,,0,,,tree,0
+dialer,ABC,baseline,co_present,"[540, 1223]",540,1223,505,1201,574,1245,1,1,1,bracket,tree,92
+dialer,4,baseline,co_present,"[187, 1363]",187,1363,163,1288,210,1392,1,1,1,bracket,tree,92
+dialer,3,baseline,co_present,"[893, 1171]",893,1171,870,1097,914,1201,1,1,1,bracket,tree,92
+dialer,GHI,baseline,co_present,"[187, 1414]",187,1414,157,1392,216,1436,1,1,1,bracket,tree,93
+dialer,DEF,baseline,co_present,"[893, 1223]",893,1223,861,1201,924,1245,1,1,1,bracket,tree,93
+dialer,5,baseline,co_present,"[540, 1363]",540,1363,516,1288,562,1392,1,1,1,bracket,tree,91
+dialer,4,baseline,co_present,"[187, 1363]",187,1363,163,1288,210,1392,1,1,1,bracket,tree,92
+dialer,JKL,baseline,co_present,"[540, 1414]",540,1414,510,1392,569,1436,1,1,1,bracket,tree,89
+dialer,6,baseline,co_present,"[893, 1363]",893,1363,869,1288,915,1392,1,1,1,bracket,tree,92
+dialer,GHI,baseline,co_present,"[186, 1414]",186,1414,157,1392,216,1436,1,1,1,bracket,tree,93
+dialer,5,baseline,co_present,"[540, 1363]",540,1363,516,1288,562,1392,1,1,1,bracket,tree,91
+dialer,MNO,baseline,co_present,"[893, 1414]",893,1414,852,1392,933,1436,1,1,1,bracket,tree,93
+dialer,7,baseline,co_present,"[187, 1532]",187,1532,166,1480,208,1584,1,1,1,bracket,tree,92
+dialer,JKL,baseline,co_present,"[540, 1414]",540,1414,510,1392,569,1436,1,1,1,bracket,tree,89
+dialer,6,baseline,co_present,"[893, 1363]",893,1363,869,1288,915,1392,1,1,1,bracket,tree,92
+dialer,PQRS,baseline,co_present,"[187, 1606]",187,1606,142,1584,232,1628,1,1,1,bracket,tree,93
+dialer,8,baseline,co_present,"[540, 1555]",540,1555,517,1480,562,1584,1,1,1,bracket,tree,83
+dialer,MNO,baseline,co_present,"[893, 1414]",893,1414,852,1392,933,1436,1,1,1,bracket,tree,93
+dialer,TUV,baseline,co_present,"[541, 1606]",541,1606,507,1584,573,1628,1,1,1,bracket,tree,92
+dialer,7,baseline,co_present,"[187, 1554]",187,1554,166,1480,208,1584,1,1,1,bracket,tree,92
+dialer,9,baseline,co_present,"[893, 1555]",893,1555,869,1480,915,1584,1,1,1,bracket,tree,92
+dialer,PQRS,baseline,co_present,"[173, 1606]",173,1606,142,1584,232,1628,1,1,1,bracket,tree,93
+dialer,8,baseline,co_present,"[540, 1532]",540,1532,517,1480,562,1584,1,1,1,bracket,tree,83
+dialer,WXYZ,baseline,co_present,"[893, 1606]",893,1606,846,1584,939,1628,1,1,1,bracket,tree,93
+dialer,∗,baseline,co_present,"[187, 1747]",187,1747,168,1668,206,1780,1,1,1,bracket,tree,93
+dialer,TUV,baseline,co_present,"[541, 1606]",541,1606,507,1584,573,1628,1,1,1,bracket,tree,92
+dialer,9,baseline,co_present,"[893, 1555]",893,1555,869,1480,915,1584,1,1,1,bracket,tree,92
+dialer,0,baseline,co_present,"[540, 1724]",540,1724,512,1672,567,1776,1,1,1,bracket,tree,91
+dialer,WXYZ,baseline,co_present,"[893, 1606]",893,1606,846,1584,939,1628,1,1,1,bracket,tree,93
+dialer,∗,baseline,co_present,"[187, 1747]",187,1747,168,1668,206,1780,1,1,1,bracket,tree,93
+dialer,+,baseline,co_present,"[540, 1842]",540,1842,529,1776,549,1820,1,1,1,bracket,tree,92
+dialer,0,baseline,co_present,"[540, 1747]",540,1747,512,1672,567,1776,1,1,1,bracket,tree,91
+dialer,#,baseline,co_present,"[893, 1746]",893,1746,865,1672,921,1776,1,1,1,bracket,tree,93
+dialer,Call,baseline,co_present,"[544, 1802]",544,1802,414,1871,666,2018,0,1,0,bracket,tree,94
+dialer,+,baseline,co_present,"[540, 1848]",540,1848,529,1776,549,1820,1,1,1,bracket,tree,92
+dialer,Home,baseline,co_present,"[133, 2179]",133,2179,135,2161,224,2203,1,1,1,bracket,tree,92
+dialer,#,baseline,co_present,"[893, 1747]",893,1747,865,1672,921,1776,1,1,1,bracket,tree,93
+dialer,Call,baseline,co_present,"[585, 1796]",585,1796,414,1871,666,2018,0,1,0,bracket,tree,94
+dialer,Keypad,baseline,co_present,"[539, 2182]",539,2182,481,2161,597,2203,1,1,1,bracket,tree,90
+dialer,Home,baseline,co_present,"[133, 2155]",133,2155,135,2161,224,2203,1,1,1,bracket,tree,92
+dialer,Voicemail,baseline,co_present,"[831, 2187]",831,2187,826,2161,972,2203,1,1,1,bracket,tree,92
+dialer,Keypad,baseline,co_present,"[540, 2188]",540,2188,481,2161,597,2203,1,1,1,bracket,tree,90
+dialer,Voicemail,baseline,co_present,"[901, 2171]",901,2171,826,2161,972,2203,1,1,1,bracket,tree,92
+dialer,Phone Number,elder_text_heavy,co_present,"[540, 850]",540,850,147,886,933,1030,0,1,0,bracket,tree,89
+dialer,Phone Number,elder_text_heavy,co_present,"[540, 843]",540,843,147,886,933,1030,0,1,0,bracket,tree,89
+dialer,1,elder_text_heavy,co_present,"[172, 1057]",172,1057,169,1079,203,1183,1,1,1,bracket,tree,92
+dialer,1,elder_text_heavy,co_present,"[187, 1135]",187,1135,169,1079,203,1183,1,1,1,bracket,tree,92
+dialer,2,elder_text_heavy,co_present,"[540, 1157]",540,1157,518,1083,561,1187,1,1,1,bracket,tree,91
+dialer,2,elder_text_heavy,co_present,"[540, 1157]",540,1157,518,1083,561,1187,1,1,1,bracket,tree,91
+dialer,ABC,elder_text_heavy,co_present,"[540, 1209]",540,1209,505,1187,574,1231,1,1,1,bracket,tree,92
+dialer,ABC,elder_text_heavy,co_present,"[540, 1209]",540,1209,505,1187,574,1231,1,1,1,bracket,tree,92
+dialer,3,elder_text_heavy,co_present,"[890, 1135]",890,1135,870,1083,914,1187,1,1,1,bracket,tree,92
+dialer,3,elder_text_heavy,co_present,"[893, 1157]",893,1157,870,1083,914,1187,1,1,1,bracket,tree,92
+dialer,DEF,elder_text_heavy,co_present,"[883, 1209]",883,1209,861,1187,924,1231,1,1,1,bracket,tree,93
+dialer,DEF,elder_text_heavy,co_present,"[893, 1209]",893,1209,861,1187,924,1231,1,1,1,bracket,tree,93
+dialer,4,elder_text_heavy,co_present,"[187, 1348]",187,1348,163,1274,210,1378,1,1,1,bracket,tree,92
+dialer,4,elder_text_heavy,co_present,"[187, 1348]",187,1348,163,1274,210,1378,1,1,1,bracket,tree,92
+dialer,GHI,elder_text_heavy,co_present,"[187, 1400]",187,1400,157,1378,216,1422,1,1,1,bracket,tree,93
+dialer,GHI,elder_text_heavy,co_present,"[186, 1400]",186,1400,157,1378,216,1422,1,1,1,bracket,tree,93
+dialer,5,elder_text_heavy,co_present,"[540, 1349]",540,1349,516,1274,562,1378,1,1,1,bracket,tree,91
+dialer,5,elder_text_heavy,co_present,"[540, 1349]",540,1349,516,1274,562,1378,1,1,1,bracket,tree,91
+dialer,JKL,elder_text_heavy,co_present,"[540, 1400]",540,1400,510,1378,569,1422,1,1,1,bracket,tree,89
+dialer,JKL,elder_text_heavy,co_present,"[540, 1400]",540,1400,510,1378,569,1422,1,1,1,bracket,tree,89
+dialer,6,elder_text_heavy,co_present,"[893, 1349]",893,1349,869,1274,915,1378,1,1,1,bracket,tree,92
+dialer,6,elder_text_heavy,co_present,"[892, 1326]",892,1326,869,1274,915,1378,1,1,1,bracket,tree,92
+dialer,MNO,elder_text_heavy,co_present,"[893, 1400]",893,1400,852,1378,933,1422,1,1,1,bracket,tree,93
+dialer,MNO,elder_text_heavy,co_present,"[893, 1400]",893,1400,852,1378,933,1422,1,1,1,bracket,tree,93
+dialer,7,elder_text_heavy,co_present,"[187, 1541]",187,1541,166,1466,208,1570,1,1,1,bracket,tree,92
+dialer,7,elder_text_heavy,co_present,"[187, 1518]",187,1518,166,1466,208,1570,1,1,1,bracket,tree,92
+dialer,PQRS,elder_text_heavy,co_present,"[172, 1592]",172,1592,142,1570,232,1614,1,1,1,bracket,tree,93
+dialer,8,elder_text_heavy,co_present,"[540, 1540]",540,1540,517,1466,562,1570,1,1,1,bracket,tree,83
+dialer,PQRS,elder_text_heavy,co_present,"[187, 1592]",187,1592,142,1570,232,1614,1,1,1,bracket,tree,93
+dialer,TUV,elder_text_heavy,co_present,"[540, 1592]",540,1592,507,1570,573,1614,1,1,1,bracket,tree,92
+dialer,8,elder_text_heavy,co_present,"[540, 1541]",540,1541,517,1466,562,1570,1,1,1,bracket,tree,83
+dialer,9,elder_text_heavy,co_present,"[891, 1518]",891,1518,869,1466,915,1570,1,1,1,bracket,tree,92
+dialer,TUV,elder_text_heavy,co_present,"[540, 1592]",540,1592,507,1570,573,1614,1,1,1,bracket,tree,92
+dialer,9,elder_text_heavy,co_present,"[893, 1541]",893,1541,869,1466,915,1570,1,1,1,bracket,tree,92
+dialer,WXYZ,elder_text_heavy,co_present,"[893, 1592]",893,1592,846,1570,939,1614,1,1,1,bracket,tree,93
+dialer,∗,elder_text_heavy,co_present,"[187, 1733]",187,1733,168,1654,206,1766,1,1,1,bracket,tree,93
+dialer,WXYZ,elder_text_heavy,co_present,"[893, 1592]",893,1592,846,1570,939,1614,1,1,1,bracket,tree,93
+dialer,0,elder_text_heavy,co_present,"[540, 1732]",540,1732,512,1658,567,1762,1,1,1,bracket,tree,91
+dialer,∗,elder_text_heavy,co_present,"[187, 1733]",187,1733,168,1654,206,1766,1,1,1,bracket,tree,93
+dialer,+,elder_text_heavy,co_present,"[540, 1848]",540,1848,529,1762,549,1806,0,1,0,bracket,tree,92
+dialer,0,elder_text_heavy,co_present,"[540, 1732]",540,1732,512,1658,567,1762,1,1,1,bracket,tree,91
+dialer,#,elder_text_heavy,co_present,"[893, 1733]",893,1733,865,1658,921,1762,1,1,1,bracket,tree,93
+dialer,Call,elder_text_heavy,co_present,"[529, 1783]",529,1783,400,1857,681,2004,0,1,0,bracket,tree,94
+dialer,Home,elder_text_heavy,co_present,"[136, 2175]",136,2175,118,2147,241,2203,1,1,1,bracket,tree,92
+dialer,+,elder_text_heavy,co_present,"[540, 1849]",540,1849,529,1762,549,1806,0,1,0,bracket,tree,92
+dialer,#,elder_text_heavy,co_present,"[893, 1733]",893,1733,865,1658,921,1762,1,1,1,bracket,tree,93
+dialer,Keypad,elder_text_heavy,co_present,"[540, 2189]",540,2189,461,2147,618,2203,1,1,1,bracket,tree,90
+dialer,Call,elder_text_heavy,co_present,"[540, 1763]",540,1763,400,1857,681,2004,0,1,0,bracket,tree,94
+dialer,Home,elder_text_heavy,co_present,"[134, 2160]",134,2160,118,2147,241,2203,1,1,1,bracket,tree,92
+dialer,Voicemail,elder_text_heavy,co_present,"[860, 2175]",860,2175,800,2147,1000,2203,1,1,1,bracket,tree,92
+dialer,Phone Number,elder_zoom_heavy,co_present,"[540, 340]",540,340,168,690,912,855,0,1,0,bracket,tree,93
+dialer,Keypad,elder_text_heavy,co_present,"[540, 2168]",540,2168,461,2147,618,2203,1,1,1,bracket,tree,90
+dialer,Voicemail,elder_text_heavy,co_present,"[831, 2183]",831,2183,800,2147,1000,2203,1,1,1,bracket,tree,92
+dialer,1,elder_zoom_heavy,co_present,"[187, 975]",187,975,168,911,207,1029,1,1,1,bracket,tree,93
+dialer,Phone Number,elder_zoom_heavy,co_present,"[540, 360]",540,360,168,690,912,855,0,1,0,bracket,tree,93
+dialer,2,elder_zoom_heavy,co_present,"[540, 970]",540,970,514,916,564,1034,1,1,1,bracket,tree,88
+dialer,1,elder_zoom_heavy,co_present,"[174, 907]",174,907,168,911,207,1029,1,1,1,bracket,tree,93
+dialer,ABC,elder_zoom_heavy,co_present,"[540, 1060]",540,1060,500,1034,579,1085,1,1,1,bracket,tree,95
+dialer,2,elder_zoom_heavy,co_present,"[540, 1001]",540,1001,514,916,564,1034,1,1,1,bracket,tree,88
+dialer,3,elder_zoom_heavy,co_present,"[892, 975]",892,975,866,916,916,1034,1,1,1,bracket,tree,93
+dialer,ABC,elder_zoom_heavy,co_present,"[540, 1060]",540,1060,500,1034,579,1085,1,1,1,bracket,tree,95
+dialer,DEF,elder_zoom_heavy,co_present,"[892, 1060]",892,1060,855,1034,928,1085,1,1,1,bracket,tree,95
+dialer,3,elder_zoom_heavy,co_present,"[892, 975]",892,975,866,916,916,1034,1,1,1,bracket,tree,93
+dialer,4,elder_zoom_heavy,co_present,"[188, 1220]",188,1220,160,1135,214,1253,1,1,1,bracket,tree,93
+dialer,GHI,elder_zoom_heavy,co_present,"[188, 1279]",188,1279,154,1253,221,1304,1,1,1,bracket,tree,95
+dialer,5,elder_zoom_heavy,co_present,"[540, 1219]",540,1219,514,1135,566,1253,1,1,1,bracket,tree,92
+dialer,DEF,elder_zoom_heavy,co_present,"[892, 1060]",892,1060,855,1034,928,1085,1,1,1,bracket,tree,95
+dialer,JKL,elder_zoom_heavy,co_present,"[540, 1278]",540,1278,506,1253,574,1304,1,1,1,bracket,tree,92
+dialer,4,elder_zoom_heavy,co_present,"[188, 1194]",188,1194,160,1135,214,1253,1,1,1,bracket,tree,93
+dialer,6,elder_zoom_heavy,co_present,"[890, 1194]",890,1194,865,1135,918,1253,1,1,1,bracket,tree,93
+dialer,GHI,elder_zoom_heavy,co_present,"[187, 1278]",187,1278,154,1253,221,1304,1,1,1,bracket,tree,95
+dialer,MNO,elder_zoom_heavy,co_present,"[892, 1279]",892,1279,845,1253,938,1304,1,1,1,bracket,tree,95
+dialer,5,elder_zoom_heavy,co_present,"[540, 1219]",540,1219,514,1135,566,1253,1,1,1,bracket,tree,92
+dialer,7,elder_zoom_heavy,co_present,"[188, 1439]",188,1439,163,1354,211,1472,1,1,1,bracket,tree,93
+dialer,PQRS,elder_zoom_heavy,co_present,"[188, 1498]",188,1498,136,1472,239,1523,1,1,1,bracket,tree,95
+dialer,JKL,elder_zoom_heavy,co_present,"[540, 1279]",540,1279,506,1253,574,1304,1,1,1,bracket,tree,92
+dialer,8,elder_zoom_heavy,co_present,"[540, 1413]",540,1413,514,1354,565,1472,1,1,1,bracket,tree,87
+dialer,6,elder_zoom_heavy,co_present,"[891, 1194]",891,1194,865,1135,918,1253,1,1,1,bracket,tree,93
+dialer,TUV,elder_zoom_heavy,co_present,"[540, 1498]",540,1498,502,1472,577,1523,1,1,1,bracket,tree,95
+dialer,MNO,elder_zoom_heavy,co_present,"[892, 1279]",892,1279,845,1253,938,1304,1,1,1,bracket,tree,95
+dialer,9,elder_zoom_heavy,co_present,"[892, 1413]",892,1413,865,1354,918,1472,1,1,1,bracket,tree,93
+dialer,7,elder_zoom_heavy,co_present,"[188, 1439]",188,1439,163,1354,211,1472,1,1,1,bracket,tree,93
+dialer,WXYZ,elder_zoom_heavy,co_present,"[892, 1498]",892,1498,839,1472,945,1523,1,1,1,bracket,tree,95
+dialer,∗,elder_zoom_heavy,co_present,"[188, 1657]",188,1657,166,1568,209,1696,1,1,1,bracket,tree,93
+dialer,PQRS,elder_zoom_heavy,co_present,"[188, 1498]",188,1498,136,1472,239,1523,1,1,1,bracket,tree,95
+dialer,0,elder_zoom_heavy,co_present,"[540, 1658]",540,1658,508,1573,571,1691,1,1,1,bracket,tree,92
+dialer,8,elder_zoom_heavy,co_present,"[540, 1413]",540,1413,514,1354,565,1472,1,1,1,bracket,tree,87
+dialer,+,elder_zoom_heavy,co_present,"[540, 1710]",540,1710,528,1691,551,1742,1,1,1,bracket,tree,95
+dialer,TUV,elder_zoom_heavy,co_present,"[540, 1498]",540,1498,502,1472,577,1523,1,1,1,bracket,tree,95
+dialer,#,elder_zoom_heavy,co_present,"[892, 1658]",892,1658,860,1573,924,1691,1,1,1,bracket,tree,93
+dialer,9,elder_zoom_heavy,co_present,"[892, 1439]",892,1439,865,1354,918,1472,1,1,1,bracket,tree,93
+dialer,Call,elder_zoom_heavy,co_present,"[551, 1790]",551,1790,396,1800,684,1968,1,1,1,bracket,tree,94
+dialer,WXYZ,elder_zoom_heavy,co_present,"[892, 1498]",892,1498,839,1472,945,1523,1,1,1,bracket,tree,95
+dialer,Home,elder_zoom_heavy,co_present,"[144, 2168]",144,2168,129,2130,230,2178,1,1,1,bracket,tree,92
+dialer,∗,elder_zoom_heavy,co_present,"[188, 1657]",188,1657,166,1568,209,1696,1,1,1,bracket,tree,93
+dialer,Keypad,elder_zoom_heavy,co_present,"[540, 2148]",540,2148,475,2130,605,2178,1,1,1,bracket,tree,91
+dialer,0,elder_zoom_heavy,co_present,"[540, 1658]",540,1658,508,1573,571,1691,1,1,1,bracket,tree,92
+dialer,Voicemail,elder_zoom_heavy,co_present,"[846, 2146]",846,2146,817,2130,982,2178,1,1,1,bracket,tree,92
+dialer,Phone Number,elder_combo_max,co_present,"[540, 275]",540,275,182,518,898,697,0,1,0,bracket,tree,93
+dialer,+,elder_zoom_heavy,co_present,"[540, 1710]",540,1710,528,1691,551,1742,1,1,1,bracket,tree,95
+dialer,#,elder_zoom_heavy,co_present,"[892, 1658]",892,1658,860,1573,924,1691,1,1,1,bracket,tree,93
+dialer,1,elder_combo_max,co_present,"[177, 772]",177,772,167,758,209,885,1,1,1,bracket,tree,93
+dialer,Call,elder_zoom_heavy,co_present,"[592, 1755]",592,1755,396,1800,684,1968,0,1,0,bracket,tree,94
+dialer,2,elder_combo_max,co_present,"[540, 822]",540,822,513,764,566,891,1,1,1,bracket,tree,90
+dialer,Home,elder_zoom_heavy,co_present,"[146, 2178]",146,2178,129,2130,230,2178,1,1,1,bracket,tree,92
+dialer,Keypad,elder_zoom_heavy,co_present,"[540, 2128]",540,2128,475,2130,605,2178,1,1,1,bracket,tree,91
+dialer,ABC,elder_combo_max,co_present,"[540, 918]",540,918,497,891,582,945,1,1,1,bracket,tree,93
+dialer,Voicemail,elder_zoom_heavy,co_present,"[870, 2154]",870,2154,817,2130,982,2178,1,1,1,bracket,tree,92
+dialer,Phone Number,elder_combo_max,co_present,"[540, 282]",540,282,182,518,898,697,0,1,0,bracket,tree,93
+dialer,3,elder_combo_max,co_present,"[891, 828]",891,828,863,764,917,891,1,1,1,bracket,tree,93
+dialer,1,elder_combo_max,co_present,"[176, 784]",176,784,167,758,209,885,1,1,1,bracket,tree,93
+dialer,DEF,elder_combo_max,co_present,"[891, 918]",891,918,851,891,930,945,1,1,1,bracket,tree,95
+dialer,2,elder_combo_max,co_present,"[540, 842]",540,842,513,764,566,891,1,1,1,bracket,tree,90
+dialer,4,elder_combo_max,co_present,"[177, 1064]",177,1064,159,1001,217,1128,1,1,1,bracket,tree,93
+dialer,GHI,elder_combo_max,co_present,"[188, 1166]",188,1166,152,1128,225,1182,1,1,1,bracket,tree,95
+dialer,ABC,elder_combo_max,co_present,"[540, 918]",540,918,497,891,582,945,1,1,1,bracket,tree,93
+dialer,5,elder_combo_max,co_present,"[540, 1092]",540,1092,511,1001,567,1128,1,1,1,bracket,tree,92
+dialer,3,elder_combo_max,co_present,"[891, 828]",891,828,863,764,917,891,1,1,1,bracket,tree,93
+dialer,JKL,elder_combo_max,co_present,"[540, 1155]",540,1155,503,1128,575,1182,1,1,1,bracket,tree,95
+dialer,DEF,elder_combo_max,co_present,"[891, 918]",891,918,851,891,930,945,1,1,1,bracket,tree,95
+dialer,6,elder_combo_max,co_present,"[890, 1065]",890,1065,862,1001,919,1128,1,1,1,bracket,tree,93
+dialer,4,elder_combo_max,co_present,"[188, 1065]",188,1065,159,1001,217,1128,1,1,1,bracket,tree,93
+dialer,MNO,elder_combo_max,co_present,"[891, 1155]",891,1155,841,1128,940,1182,1,1,1,bracket,tree,95
+dialer,GHI,elder_combo_max,co_present,"[189, 1155]",189,1155,152,1128,225,1182,1,1,1,bracket,tree,95
+dialer,7,elder_combo_max,co_present,"[188, 1302]",188,1302,162,1238,214,1365,1,1,1,bracket,tree,93
+dialer,PQRS,elder_combo_max,co_present,"[189, 1392]",189,1392,133,1365,244,1419,1,1,1,bracket,tree,95
+dialer,5,elder_combo_max,co_present,"[539, 1065]",539,1065,511,1001,567,1128,1,1,1,bracket,tree,92
+dialer,8,elder_combo_max,co_present,"[540, 1302]",540,1302,511,1238,566,1365,1,1,1,bracket,tree,87
+dialer,JKL,elder_combo_max,co_present,"[540, 1155]",540,1155,503,1128,575,1182,1,1,1,bracket,tree,95
+dialer,TUV,elder_combo_max,co_present,"[539, 1392]",539,1392,499,1365,579,1419,1,1,1,bracket,tree,95
+dialer,6,elder_combo_max,co_present,"[891, 1065]",891,1065,862,1001,919,1128,1,1,1,bracket,tree,93
+dialer,MNO,elder_combo_max,co_present,"[891, 1155]",891,1155,841,1128,940,1182,1,1,1,bracket,tree,95
+dialer,9,elder_combo_max,co_present,"[892, 1302]",892,1302,862,1238,919,1365,1,1,1,bracket,tree,93
+dialer,7,elder_combo_max,co_present,"[188, 1302]",188,1302,162,1238,214,1365,1,1,1,bracket,tree,93
+dialer,PQRS,elder_combo_max,co_present,"[188, 1392]",188,1392,133,1365,244,1419,1,1,1,bracket,tree,95
+dialer,WXYZ,elder_combo_max,co_present,"[891, 1392]",891,1392,834,1365,947,1419,1,1,1,bracket,tree,95
+dialer,8,elder_combo_max,co_present,"[540, 1329]",540,1329,511,1238,566,1365,1,1,1,bracket,tree,87
+dialer,∗,elder_combo_max,co_present,"[189, 1566]",189,1566,165,1470,212,1608,1,1,1,bracket,tree,93
+dialer,0,elder_combo_max,co_present,"[540, 1566]",540,1566,506,1475,573,1602,1,1,1,bracket,tree,92
+dialer,TUV,elder_combo_max,co_present,"[539, 1392]",539,1392,499,1365,579,1419,1,1,1,bracket,tree,95
+dialer,+,elder_combo_max,co_present,"[540, 1540]",540,1540,527,1602,552,1656,0,1,0,bracket,tree,95
+dialer,9,elder_combo_max,co_present,"[897, 1320]",897,1320,862,1238,919,1365,1,1,1,bracket,tree,93
+dialer,#,elder_combo_max,co_present,"[891, 1566]",891,1566,856,1475,925,1602,1,1,1,bracket,tree,93
+dialer,WXYZ,elder_combo_max,co_present,"[891, 1392]",891,1392,834,1365,947,1419,1,1,1,bracket,tree,95
+dialer,Call,elder_combo_max,co_present,"[594, 1707]",594,1707,360,1721,720,1903,0,1,0,bracket,tree,94
+dialer,∗,elder_combo_max,co_present,"[176, 1453]",176,1453,165,1470,212,1608,1,1,1,bracket,tree,93
+dialer,Home,elder_combo_max,co_present,"[140, 2122]",140,2122,93,2079,266,2157,1,1,1,bracket,tree,92
+dialer,Keypad,elder_combo_max,co_present,"[540, 2119]",540,2119,429,2079,651,2157,1,1,1,bracket,tree,91
+dialer,0,elder_combo_max,co_present,"[540, 1566]",540,1566,506,1475,573,1602,1,1,1,bracket,tree,92
+dialer,Voicemail,elder_combo_max,co_present,"[862, 2125]",862,2125,757,2079,1042,2157,1,1,1,bracket,tree,92
+dialer,+,elder_combo_max,co_present,"[540, 1543]",540,1543,527,1602,552,1656,0,1,0,bracket,tree,95
+dialer,#,elder_combo_max,co_present,"[891, 1566]",891,1566,856,1475,925,1602,1,1,1,bracket,tree,93
+dialer,Phone Number,elder_combo_mid,co_present,"[540, 564]",540,564,168,671,912,836,0,1,0,bracket,tree,93
+dialer,Call,elder_combo_max,co_present,"[584, 1701]",584,1701,360,1721,720,1903,0,1,0,bracket,tree,94
+dialer,1,elder_combo_mid,co_present,"[176, 944]",176,944,168,892,207,1010,1,1,1,bracket,tree,93
+dialer,Home,elder_combo_max,co_present,"[169, 2109]",169,2109,93,2079,266,2157,1,1,1,bracket,tree,92
+dialer,2,elder_combo_mid,co_present,"[540, 982]",540,982,514,897,564,1015,1,1,1,bracket,tree,88
+dialer,Keypad,elder_combo_max,co_present,"[510, 2120]",510,2120,429,2079,651,2157,1,1,1,bracket,tree,91
+dialer,ABC,elder_combo_mid,co_present,"[540, 1040]",540,1040,500,1015,579,1066,1,1,1,bracket,tree,93
+dialer,Voicemail,elder_combo_max,co_present,"[853, 2115]",853,2115,757,2079,1042,2157,1,1,1,bracket,tree,92
+dialer,Phone Number,elder_combo_mid,co_present,"[540, 749]",540,749,168,671,912,836,1,1,1,bracket,tree,93
+dialer,3,elder_combo_mid,co_present,"[892, 982]",892,982,866,897,916,1015,1,1,1,bracket,tree,93
+dialer,1,elder_combo_mid,co_present,"[176, 956]",176,956,168,892,207,1010,1,1,1,bracket,tree,93
+dialer,DEF,elder_combo_mid,co_present,"[892, 1041]",892,1041,855,1015,928,1066,1,1,1,bracket,tree,95
+dialer,2,elder_combo_mid,co_present,"[540, 982]",540,982,514,897,564,1015,1,1,1,bracket,tree,88
+dialer,4,elder_combo_mid,co_present,"[188, 1201]",188,1201,160,1116,214,1234,1,1,1,bracket,tree,93
+dialer,ABC,elder_combo_mid,co_present,"[540, 1041]",540,1041,500,1015,579,1066,1,1,1,bracket,tree,93
+dialer,GHI,elder_combo_mid,co_present,"[187, 1260]",187,1260,154,1234,221,1285,1,1,1,bracket,tree,95
+dialer,3,elder_combo_mid,co_present,"[892, 981]",892,981,866,897,916,1015,1,1,1,bracket,tree,93
+dialer,5,elder_combo_mid,co_present,"[540, 1201]",540,1201,514,1116,566,1234,1,1,1,bracket,tree,92
+dialer,JKL,elder_combo_mid,co_present,"[540, 1260]",540,1260,506,1234,574,1285,1,1,1,bracket,tree,92
+dialer,DEF,elder_combo_mid,co_present,"[892, 1041]",892,1041,855,1015,928,1066,1,1,1,bracket,tree,95
+dialer,6,elder_combo_mid,co_present,"[891, 1175]",891,1175,865,1116,918,1234,1,1,1,bracket,tree,93
+dialer,MNO,elder_combo_mid,co_present,"[892, 1260]",892,1260,845,1234,938,1285,1,1,1,bracket,tree,95
+dialer,4,elder_combo_mid,co_present,"[188, 1201]",188,1201,160,1116,214,1234,1,1,1,bracket,tree,93
+dialer,7,elder_combo_mid,co_present,"[188, 1420]",188,1420,163,1335,211,1453,1,1,1,bracket,tree,93
+dialer,GHI,elder_combo_mid,co_present,"[188, 1260]",188,1260,154,1234,221,1285,1,1,1,bracket,tree,95
+dialer,PQRS,elder_combo_mid,co_present,"[187, 1478]",187,1478,136,1453,239,1504,1,1,1,bracket,tree,95
+dialer,5,elder_combo_mid,co_present,"[540, 1175]",540,1175,514,1116,566,1234,1,1,1,bracket,tree,92
+dialer,JKL,elder_combo_mid,co_present,"[540, 1260]",540,1260,506,1234,574,1285,1,1,1,bracket,tree,92
+dialer,8,elder_combo_mid,co_present,"[540, 1394]",540,1394,514,1335,565,1453,1,1,1,bracket,tree,87
+dialer,6,elder_combo_mid,co_present,"[892, 1175]",892,1175,865,1116,918,1234,1,1,1,bracket,tree,93
+dialer,TUV,elder_combo_mid,co_present,"[540, 1479]",540,1479,502,1453,577,1504,1,1,1,bracket,tree,95
+dialer,MNO,elder_combo_mid,co_present,"[892, 1260]",892,1260,845,1234,938,1285,1,1,1,bracket,tree,95
+dialer,9,elder_combo_mid,co_present,"[892, 1394]",892,1394,865,1335,918,1453,1,1,1,bracket,tree,93
+dialer,7,elder_combo_mid,co_present,"[188, 1420]",188,1420,163,1335,211,1453,1,1,1,bracket,tree,93
+dialer,WXYZ,elder_combo_mid,co_present,"[892, 1478]",892,1478,839,1453,945,1504,1,1,1,bracket,tree,95
+dialer,∗,elder_combo_mid,co_present,"[173, 1518]",173,1518,166,1549,209,1677,0,1,0,bracket,tree,93
+dialer,PQRS,elder_combo_mid,co_present,"[188, 1479]",188,1479,136,1453,239,1504,1,1,1,bracket,tree,95
+dialer,0,elder_combo_mid,co_present,"[540, 1602]",540,1602,508,1554,571,1672,1,1,1,bracket,tree,92
+dialer,+,elder_combo_mid,co_present,"[540, 1711]",540,1711,528,1672,551,1723,1,1,1,bracket,tree,95
+dialer,#,elder_combo_mid,co_present,"[892, 1639]",892,1639,860,1554,924,1672,1,1,1,bracket,tree,93
+dialer,8,elder_combo_mid,co_present,"[540, 1394]",540,1394,514,1335,565,1453,1,1,1,bracket,tree,87
+dialer,Call,elder_combo_mid,co_present,"[543, 1724]",543,1724,377,1781,704,1949,0,1,0,bracket,tree,94
+dialer,TUV,elder_combo_mid,co_present,"[540, 1479]",540,1479,502,1453,577,1504,1,1,1,bracket,tree,95
+dialer,9,elder_combo_mid,co_present,"[892, 1394]",892,1394,865,1335,918,1453,1,1,1,bracket,tree,93
+dialer,Home,elder_combo_mid,co_present,"[180, 2145]",180,2145,104,2111,255,2178,1,1,1,bracket,tree,92
+dialer,Keypad,elder_combo_mid,co_present,"[540, 2127]",540,2127,443,2111,637,2178,1,1,1,bracket,tree,91
+dialer,WXYZ,elder_combo_mid,co_present,"[892, 1478]",892,1478,839,1453,945,1504,1,1,1,bracket,tree,95
+dialer,Voicemail,elder_combo_mid,co_present,"[900, 2140]",900,2140,776,2111,1024,2178,1,1,1,bracket,tree,92
+dialer,∗,elder_combo_mid,co_present,"[188, 1613]",188,1613,166,1549,209,1677,1,1,1,bracket,tree,93
+dialer,Phone Number,colorblind_deuteranomaly,co_present,"[540, 846]",540,846,147,900,933,1044,0,1,0,bracket,tree,89
+dialer,1,colorblind_deuteranomaly,co_present,"[187, 1171]",187,1171,169,1093,203,1197,1,1,1,bracket,tree,92
+dialer,2,colorblind_deuteranomaly,co_present,"[540, 1171]",540,1171,518,1097,561,1201,1,1,1,bracket,tree,91
+dialer,0,elder_combo_mid,co_present,"[540, 1613]",540,1613,508,1554,571,1672,1,1,1,bracket,tree,92
+dialer,+,elder_combo_mid,co_present,"[540, 1711]",540,1711,528,1672,551,1723,1,1,1,bracket,tree,95
+dialer,ABC,colorblind_deuteranomaly,co_present,"[540, 1223]",540,1223,505,1201,574,1245,1,1,1,bracket,tree,92
+dialer,#,elder_combo_mid,co_present,"[892, 1638]",892,1638,860,1554,924,1672,1,1,1,bracket,tree,93
+dialer,3,colorblind_deuteranomaly,co_present,"[893, 1171]",893,1171,870,1097,914,1201,1,1,1,bracket,tree,92
+dialer,Call,elder_combo_mid,co_present,"[561, 1746]",561,1746,377,1781,704,1949,0,1,0,bracket,tree,94
+dialer,DEF,colorblind_deuteranomaly,co_present,"[892, 1223]",892,1223,861,1201,924,1245,1,1,1,bracket,tree,93
+dialer,Home,elder_combo_mid,co_present,"[135, 2141]",135,2141,104,2111,255,2178,1,1,1,bracket,tree,92
+dialer,4,colorblind_deuteranomaly,co_present,"[187, 1362]",187,1362,163,1288,210,1392,1,1,1,bracket,tree,92
+dialer,Keypad,elder_combo_mid,co_present,"[540, 2145]",540,2145,443,2111,637,2178,1,1,1,bracket,tree,91
+dialer,Voicemail,elder_combo_mid,co_present,"[839, 2128]",839,2128,776,2111,1024,2178,1,1,1,bracket,tree,92
+dialer,GHI,colorblind_deuteranomaly,co_present,"[187, 1414]",187,1414,157,1392,216,1436,1,1,1,bracket,tree,93
+dialer,5,colorblind_deuteranomaly,co_present,"[540, 1363]",540,1363,516,1288,562,1392,1,1,1,bracket,tree,91
+dialer,Phone Number,colorblind_deuteranomaly,co_present,"[194, 891]",194,891,147,900,933,1044,1,1,1,bracket,tree,89
+dialer,JKL,colorblind_deuteranomaly,co_present,"[540, 1414]",540,1414,510,1392,569,1436,1,1,1,bracket,tree,89
+dialer,1,colorblind_deuteranomaly,co_present,"[172, 1149]",172,1149,169,1093,203,1197,1,1,1,bracket,tree,92
+dialer,6,colorblind_deuteranomaly,co_present,"[893, 1363]",893,1363,869,1288,915,1392,1,1,1,bracket,tree,92
+dialer,2,colorblind_deuteranomaly,co_present,"[540, 1147]",540,1147,518,1097,561,1201,1,1,1,bracket,tree,91
+dialer,MNO,colorblind_deuteranomaly,co_present,"[892, 1414]",892,1414,852,1392,933,1436,1,1,1,bracket,tree,93
+dialer,7,colorblind_deuteranomaly,co_present,"[187, 1555]",187,1555,166,1480,208,1584,1,1,1,bracket,tree,92
+dialer,ABC,colorblind_deuteranomaly,co_present,"[540, 1223]",540,1223,505,1201,574,1245,1,1,1,bracket,tree,92
+dialer,PQRS,colorblind_deuteranomaly,co_present,"[175, 1606]",175,1606,142,1584,232,1628,1,1,1,bracket,tree,93
+dialer,3,colorblind_deuteranomaly,co_present,"[893, 1171]",893,1171,870,1097,914,1201,1,1,1,bracket,tree,92
+dialer,8,colorblind_deuteranomaly,co_present,"[540, 1532]",540,1532,517,1480,562,1584,1,1,1,bracket,tree,83
+dialer,DEF,colorblind_deuteranomaly,co_present,"[893, 1223]",893,1223,861,1201,924,1245,1,1,1,bracket,tree,93
+dialer,4,colorblind_deuteranomaly,co_present,"[187, 1362]",187,1362,163,1288,210,1392,1,1,1,bracket,tree,92
+dialer,TUV,colorblind_deuteranomaly,co_present,"[540, 1606]",540,1606,507,1584,573,1628,1,1,1,bracket,tree,92
+dialer,9,colorblind_deuteranomaly,co_present,"[893, 1555]",893,1555,869,1480,915,1584,1,1,1,bracket,tree,92
+dialer,GHI,colorblind_deuteranomaly,co_present,"[176, 1414]",176,1414,157,1392,216,1436,1,1,1,bracket,tree,93
+dialer,5,colorblind_deuteranomaly,co_present,"[540, 1363]",540,1363,516,1288,562,1392,1,1,1,bracket,tree,91
+dialer,JKL,colorblind_deuteranomaly,co_present,"[540, 1419]",540,1419,510,1392,569,1436,1,1,1,bracket,tree,89
+dialer,WXYZ,colorblind_deuteranomaly,co_present,"[893, 1606]",893,1606,846,1584,939,1628,1,1,1,bracket,tree,93
+dialer,6,colorblind_deuteranomaly,co_present,"[893, 1363]",893,1363,869,1288,915,1392,1,1,1,bracket,tree,92
+dialer,∗,colorblind_deuteranomaly,co_present,"[187, 1747]",187,1747,168,1668,206,1780,1,1,1,bracket,tree,93
+dialer,MNO,colorblind_deuteranomaly,co_present,"[893, 1414]",893,1414,852,1392,933,1436,1,1,1,bracket,tree,93
+dialer,0,colorblind_deuteranomaly,co_present,"[540, 1747]",540,1747,512,1672,567,1776,1,1,1,bracket,tree,91
+dialer,+,colorblind_deuteranomaly,co_present,"[540, 1854]",540,1854,529,1776,549,1820,0,1,0,bracket,tree,92
+dialer,7,colorblind_deuteranomaly,co_present,"[187, 1555]",187,1555,166,1480,208,1584,1,1,1,bracket,tree,92
+dialer,#,colorblind_deuteranomaly,co_present,"[893, 1747]",893,1747,865,1672,921,1776,1,1,1,bracket,tree,93
+dialer,PQRS,colorblind_deuteranomaly,co_present,"[187, 1606]",187,1606,142,1584,232,1628,1,1,1,bracket,tree,93
+dialer,Call,colorblind_deuteranomaly,co_present,"[539, 1796]",539,1796,414,1871,666,2018,0,1,0,bracket,tree,94
+dialer,8,colorblind_deuteranomaly,co_present,"[540, 1555]",540,1555,517,1480,562,1584,1,1,1,bracket,tree,83
+dialer,Home,colorblind_deuteranomaly,co_present,"[145, 2175]",145,2175,135,2161,224,2203,1,1,1,bracket,tree,92
+dialer,TUV,colorblind_deuteranomaly,co_present,"[540, 1606]",540,1606,507,1584,573,1628,1,1,1,bracket,tree,92
+dialer,Keypad,colorblind_deuteranomaly,co_present,"[540, 2190]",540,2190,481,2161,597,2203,1,1,1,bracket,tree,90
+dialer,9,colorblind_deuteranomaly,co_present,"[892, 1532]",892,1532,869,1480,915,1584,1,1,1,bracket,tree,92
+dialer,Voicemail,colorblind_deuteranomaly,co_present,"[899, 2182]",899,2182,826,2161,972,2203,1,1,1,bracket,tree,92
+dialer,WXYZ,colorblind_deuteranomaly,co_present,"[890, 1606]",890,1606,846,1584,939,1628,1,1,1,bracket,tree,93
+dialer,∗,colorblind_deuteranomaly,co_present,"[187, 1747]",187,1747,168,1668,206,1780,1,1,1,bracket,tree,93
+gmail,Primary,baseline,co_present,"[89, 244]",89,244,42,226,175,279,1,1,1,bracket,tree,99
+dialer,0,colorblind_deuteranomaly,co_present,"[540, 1747]",540,1747,512,1672,567,1776,1,1,1,bracket,tree,91
+gmail,Tap a sender image to select that conversation.,baseline,co_present,"[471, 382]",471,382,210,307,773,494,1,1,1,bracket,tree,96
+dialer,+,colorblind_deuteranomaly,co_present,"[540, 1849]",540,1849,529,1776,549,1820,1,1,1,bracket,tree,92
+dialer,#,colorblind_deuteranomaly,co_present,"[893, 1747]",893,1747,865,1672,921,1776,1,1,1,bracket,tree,93
+gmail,Dismiss,baseline,co_present,"[883, 418]",883,418,786,330,1017,470,1,1,1,bracket,tree,99
+dialer,Call,colorblind_deuteranomaly,co_present,"[549, 1802]",549,1802,414,1871,666,2018,0,1,0,bracket,tree,94
+gmail,Welcome to your new Inbox,baseline,co_present,"[314, 543]",314,543,63,559,1017,622,1,1,1,bracket,tree,99
+dialer,Home,colorblind_deuteranomaly,co_present,"[137, 2187]",137,2187,135,2161,224,2203,1,1,1,bracket,tree,92
+dialer,Keypad,colorblind_deuteranomaly,co_present,"[540, 2184]",540,2184,481,2161,597,2203,1,1,1,bracket,tree,90
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,baseline,co_present,"[321, 660]",321,660,63,633,1017,799,1,1,1,bracket,tree,97
+dialer,Voicemail,colorblind_deuteranomaly,co_present,"[899, 2162]",899,2162,826,2161,972,2203,1,1,1,bracket,tree,92
+gmail,Social,baseline,co_present,"[230, 828]",230,828,179,864,909,924,0,1,0,bracket,tree,94
+gmail,Primary,baseline,co_present,"[88, 243]",88,243,42,226,175,279,1,1,1,bracket,tree,99
+gmail,Tap a sender image to select that conversation.,baseline,co_present,"[426, 371]",426,371,210,307,773,494,1,1,1,bracket,tree,96
+gmail,Promotions,baseline,co_present,"[290, 1000]",290,1000,179,969,909,1029,1,1,1,bracket,tree,95
+gmail,Dismiss,baseline,co_present,"[884, 411]",884,411,786,330,1017,470,1,1,1,bracket,tree,99
+gmail,OK,baseline,co_present,"[97, 1188]",97,1188,42,1063,221,1191,1,1,1,bracket,tree,99
+gmail,Change categories,baseline,co_present,"[430, 1047]",430,1047,242,1063,666,1191,1,1,1,bracket,tree,97
+gmail,Welcome to your new Inbox,baseline,co_present,"[315, 542]",315,542,63,559,1017,622,1,1,1,bracket,tree,99
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 13:51:10, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 1:51 PM",baseline,co_present,"[571, 1295]",571,1295,21,1235,1059,1482,1,1,1,bracket,tree,92
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,baseline,co_present,"[494, 710]",494,710,63,633,1017,799,1,1,1,bracket,tree,97
+gmail,1:51 PM,baseline,co_present,"[929, 1307]",929,1307,890,1287,1017,1327,1,1,1,bracket,tree,99
+gmail,Social,baseline,co_present,"[234, 827]",234,827,179,864,909,924,0,1,0,bracket,tree,94
+gmail,Your secure link to Claude.ai is here | 2026-07-29 13:51:10,baseline,co_present,"[572, 1362]",572,1362,210,1338,933,1385,1,1,1,bracket,tree,97
+gmail,Promotions,baseline,co_present,"[277, 924]",277,924,179,969,909,1029,0,1,0,bracket,tree,95
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 12:26:58, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 12:26 PM",baseline,co_present,"[540, 1494]",540,1494,21,1486,1059,1733,1,1,1,bracket,tree,92
+gmail,OK,baseline,co_present,"[106, 1042]",106,1042,42,1063,221,1191,1,1,1,bracket,tree,99
+gmail,12:26 PM,baseline,co_present,"[954, 1558]",954,1558,869,1538,1017,1578,1,1,1,bracket,tree,99
+gmail,Change categories,baseline,co_present,"[433, 1041]",433,1041,242,1063,666,1191,1,1,1,bracket,tree,97
+gmail,Your secure link to Claude.ai is here | 2026-07-29 12:26:58,baseline,co_present,"[572, 1613]",572,1613,210,1589,933,1636,1,1,1,bracket,tree,97
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 13:51:10, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 1:51 PM",baseline,co_present,"[516, 1260]",516,1260,21,1235,1059,1482,1,1,1,bracket,tree,92
+gmail,"Unread, , , Claude Team, , Welcome to Claude Code, , Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏, , ,  on Jul 28",baseline,co_present,"[476, 1757]",476,1757,21,1737,1059,1984,1,1,1,bracket,tree,89
+gmail,Claude Team,baseline,co_present,"[329, 1916]",329,1916,210,1779,861,1832,0,1,0,bracket,tree,96
+gmail,1:51 PM,baseline,co_present,"[947, 1300]",947,1300,890,1287,1017,1327,1,1,1,bracket,tree,99
+gmail,Welcome to Claude Code,baseline,co_present,"[392, 1736]",392,1736,210,1840,933,1887,0,1,0,bracket,tree,96
+gmail,Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏,baseline,co_present,"[474, 1774]",474,1774,210,1895,933,1942,0,1,0,bracket,tree,98
+gmail,Your secure link to Claude.ai is here | 2026-07-29 13:51:10,baseline,co_present,"[572, 1362]",572,1362,210,1338,933,1385,1,1,1,bracket,tree,97
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 12:26:58, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 12:26 PM",baseline,co_present,"[571, 1609]",571,1609,21,1486,1059,1733,1,1,1,bracket,tree,92
+gmail,", , , Anthropic, , Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39, , Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보, , ,  on Jul 28",baseline,co_present,"[572, 2109]",572,2109,21,1988,1059,2249,1,1,1,bracket,tree,72
+gmail,12:26 PM,baseline,co_present,"[954, 1559]",954,1559,869,1538,1017,1578,1,1,1,bracket,tree,99
+gmail,Your secure link to Claude.ai is here | 2026-07-29 12:26:58,baseline,co_present,"[572, 1613]",572,1613,210,1589,933,1636,1,1,1,bracket,tree,97
+gmail,"Unread, , , Claude Team, , Welcome to Claude Code, , Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏, , ,  on Jul 28",baseline,co_present,"[421, 1729]",421,1729,21,1737,1059,1984,1,1,1,bracket,tree,89
+gmail,Claude Team,baseline,co_present,"[299, 1665]",299,1665,210,1779,861,1832,0,1,0,bracket,tree,96
+gmail,Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39,baseline,co_present,"[572, 2115]",572,2115,210,2091,933,2145,1,1,1,bracket,tree,85
+gmail,Welcome to Claude Code,baseline,co_present,"[442, 1729]",442,1729,210,1840,933,1887,0,1,0,bracket,tree,96
+gmail,"Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보",baseline,co_present,"[572, 2174]",572,2174,210,2153,933,2207,1,1,1,bracket,tree,85
+gmail,Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏,baseline,co_present,"[408, 1934]",408,1934,210,1895,933,1942,1,1,1,bracket,tree,98
+gmail,Compose,baseline,co_present,"[818, 1836]",818,1836,662,1904,1017,2051,0,1,0,bracket,tree,97
+gmail,Primary,elder_text_heavy,co_present,"[142, 243]",142,243,42,214,236,291,1,1,1,bracket,tree,88
+gmail,Tap a sender image to select that conversation.,elder_text_heavy,co_present,"[339, 427]",339,427,210,307,729,606,1,1,1,bracket,tree,85
+gmail,", , , Anthropic, , Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39, , Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보, , ,  on Jul 28",baseline,co_present,"[316, 1906]",316,1906,21,1988,1059,2249,0,1,0,bracket,tree,72
+gmail,Dismiss,elder_text_heavy,co_present,"[816, 426]",816,426,742,374,1017,539,1,1,1,bracket,tree,88
+gmail,Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39,baseline,co_present,"[572, 2115]",572,2115,210,2091,933,2145,1,1,1,bracket,tree,85
+gmail,Welcome to your new Inbox,elder_text_heavy,co_present,"[429, 672]",429,672,63,671,1017,757,1,1,1,bracket,tree,88
+gmail,"Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보",baseline,co_present,"[572, 2180]",572,2180,210,2153,933,2207,1,1,1,bracket,tree,85
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,elder_text_heavy,co_present,"[502, 853]",502,853,63,768,1017,1074,1,1,1,bracket,tree,83
+gmail,Compose,baseline,co_present,"[818, 1834]",818,1834,662,1904,1017,2051,0,1,0,bracket,tree,97
+gmail,Social,elder_text_heavy,co_present,"[241, 1081]",241,1081,179,1126,909,1213,0,1,0,bracket,tree,85
+gmail,Primary,elder_text_heavy,co_present,"[147, 252]",147,252,42,214,236,291,1,1,1,bracket,tree,88
+gmail,Promotions,elder_text_heavy,co_present,"[319, 1178]",319,1178,179,1231,909,1318,0,1,0,bracket,tree,87
+gmail,OK,elder_text_heavy,co_present,"[105, 1305]",105,1305,42,1338,221,1491,0,1,0,bracket,tree,88
+gmail,Tap a sender image to select that conversation.,elder_text_heavy,co_present,"[358, 432]",358,432,210,307,729,606,1,1,1,bracket,tree,85
+gmail,Change categories,elder_text_heavy,co_present,"[500, 1312]",500,1312,242,1338,822,1491,0,1,0,bracket,tree,87
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 13:51:10, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 1:51 PM",elder_text_heavy,co_present,"[540, 1997]",540,1997,21,1535,1059,1840,0,1,0,bracket,tree,80
+gmail,Dismiss,elder_text_heavy,co_present,"[809, 480]",809,480,742,374,1017,539,1,1,1,bracket,tree,88
+gmail,1:51 PM,elder_text_heavy,co_present,"[919, 1617]",919,1617,850,1589,1017,1645,1,1,1,bracket,tree,88
+gmail,Welcome to your new Inbox,elder_text_heavy,co_present,"[424, 657]",424,657,63,671,1017,757,1,1,1,bracket,tree,88
+gmail,Your secure link to Claude.ai is here | 2026-07-29 13:51:10,elder_text_heavy,co_present,"[572, 1690]",572,1690,210,1656,933,1723,1,1,1,bracket,tree,86
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 12:26:58, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 12:26 PM",elder_text_heavy,co_present,"[564, 1972]",564,1972,21,1844,1059,2149,1,1,1,bracket,tree,79
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,elder_text_heavy,co_present,"[304, 848]",304,848,63,768,1017,1074,1,1,1,bracket,tree,83
+gmail,Social,elder_text_heavy,co_present,"[239, 1084]",239,1084,179,1126,909,1213,0,1,0,bracket,tree,85
+gmail,12:26 PM,elder_text_heavy,co_present,"[934, 1926]",934,1926,821,1898,1017,1954,1,1,1,bracket,tree,88
+gmail,Promotions,elder_text_heavy,co_present,"[320, 1180]",320,1180,179,1231,909,1318,0,1,0,bracket,tree,87
+gmail,Your secure link to Claude.ai is here | 2026-07-29 12:26:58,elder_text_heavy,co_present,"[572, 1999]",572,1999,210,1965,933,2032,1,1,1,bracket,tree,85
+gmail,OK,elder_text_heavy,co_present,"[107, 1303]",107,1303,42,1338,221,1491,0,1,0,bracket,tree,88
+gmail,"Unread, , , Claude Team, , Welcome to Claude Code, , Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏, , ,  on Jul 28",elder_text_heavy,co_present,"[571, 1688]",571,1688,21,2153,1059,2282,0,1,0,bracket,tree,63
+gmail,Claude Team,elder_text_heavy,off_frame,,,,210,2195,828,2266,,0,,,tree,0
+gmail,Welcome to Claude Code,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+gmail,Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+gmail,", , , Anthropic, , Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39, , Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보, , ,  on Jul 28",elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+gmail,Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+gmail,"Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보",elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+gmail,Change categories,elder_text_heavy,co_present,"[495, 1302]",495,1302,242,1338,822,1491,0,1,0,bracket,tree,87
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 13:51:10, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 1:51 PM",elder_text_heavy,api_error,[API-ERROR: AuthenticationError],,,21,1535,1059,1840,,0,,,tree,0
+gmail,Compose,elder_text_heavy,api_error,[API-ERROR: AuthenticationError],,,594,1898,1017,2051,,0,,,tree,0
+gmail,1:51 PM,elder_text_heavy,api_error,[API-ERROR: RateLimitError],,,850,1589,1017,1645,,0,,,tree,0
+gmail,Primary,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,48,258,201,318,,0,,,tree,0
+gmail,Your secure link to Claude.ai is here | 2026-07-29 13:51:10,elder_text_heavy,api_error,[API-ERROR: RateLimitError],,,210,1656,933,1723,,0,,,tree,0
+gmail,Tap a sender image to select that conversation.,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,240,351,729,564,,0,,,tree,0
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 12:26:58, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 12:26 PM",elder_text_heavy,api_error,[API-ERROR: RateLimitError],,,21,1844,1059,2149,,0,,,tree,0
+gmail,Dismiss,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,744,378,1008,537,,0,,,tree,0
+gmail,12:26 PM,elder_text_heavy,api_error,[API-ERROR: RateLimitError],,,821,1898,1017,1954,,0,,,tree,0
+gmail,Welcome to your new Inbox,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,72,639,1008,711,,0,,,tree,0
+gmail,Your secure link to Claude.ai is here | 2026-07-29 12:26:58,elder_text_heavy,api_error,[API-ERROR: RateLimitError],,,210,1965,933,2032,,0,,,tree,0
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,72,723,1008,911,,0,,,tree,0
+gmail,"Unread, , , Claude Team, , Welcome to Claude Code, , Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏, , ,  on Jul 28",elder_text_heavy,api_error,[API-ERROR: RateLimitError],,,21,2153,1059,2282,,0,,,tree,0
+gmail,Claude Team,elder_text_heavy,off_frame,,,,210,2195,828,2266,,0,,,tree,0
+gmail,Welcome to Claude Code,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+gmail,Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+gmail,", , , Anthropic, , Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39, , Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보, , ,  on Jul 28",elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+gmail,Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+gmail,"Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보",elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+gmail,Social,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,204,985,885,1052,,0,,,tree,0
+gmail,Compose,elder_text_heavy,api_error,[API-ERROR: BadRequestError],,,594,1898,1017,2051,,0,,,tree,0
+gmail,Promotions,elder_zoom_heavy,api_error,[API-ERROR: BadRequestError],,,204,1105,885,1172,,0,,,tree,0
+gmail,OK,elder_zoom_heavy,api_error,[API-ERROR: AuthenticationError],,,48,1211,252,1358,,0,,,tree,0
+gmail,Primary,elder_zoom_heavy,api_error,[API-ERROR: AuthenticationError],,,48,258,201,318,,0,,,tree,0
+gmail,Change categories,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,276,1211,758,1358,,0,,,tree,0
+gmail,Tap a sender image to select that conversation.,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,240,351,729,564,,0,,,tree,0
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 13:51:10, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 1:51 PM",elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,24,1409,1056,1689,,0,,,tree,0
+gmail,Dismiss,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,744,378,1008,537,,0,,,tree,0
+gmail,1:51 PM,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,864,1468,1008,1513,,0,,,tree,0
+gmail,Welcome to your new Inbox,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,72,639,1008,711,,0,,,tree,0
+gmail,Your secure link to Claude.ai is here | 2026-07-29 13:51:10,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,240,1526,912,1579,,0,,,tree,0
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,72,723,1008,911,,0,,,tree,0
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 12:26:58, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 12:26 PM",elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,24,1695,1056,1975,,0,,,tree,0
+gmail,Social,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,204,985,885,1052,,0,,,tree,0
+gmail,12:26 PM,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,841,1754,1008,1799,,0,,,tree,0
+gmail,Promotions,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,204,1105,885,1172,,0,,,tree,0
+gmail,OK,elder_zoom_heavy,api_error,[API-ERROR: BadRequestError],,,48,1211,252,1358,,0,,,tree,0
+gmail,Your secure link to Claude.ai is here | 2026-07-29 12:26:58,elder_zoom_heavy,api_error,[API-ERROR: BadRequestError],,,240,1812,912,1865,,0,,,tree,0
+gmail,Change categories,elder_zoom_heavy,api_error,[API-ERROR: AuthenticationError],,,276,1211,758,1358,,0,,,tree,0
+gmail,"Unread, , , Claude Team, , Welcome to Claude Code, , Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏, , ,  on Jul 28",elder_zoom_heavy,api_error,[API-ERROR: AuthenticationError],,,24,1981,1056,2261,,0,,,tree,0
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 13:51:10, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 1:51 PM",elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,24,1409,1056,1689,,0,,,tree,0
+gmail,Claude Team,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,240,2029,833,2089,,0,,,tree,0
+gmail,1:51 PM,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,864,1468,1008,1513,,0,,,tree,0
+gmail,Welcome to Claude Code,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,240,2098,912,2151,,0,,,tree,0
+gmail,Your secure link to Claude.ai is here | 2026-07-29 13:51:10,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,240,1526,912,1579,,0,,,tree,0
+gmail,Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,240,2160,912,2213,,0,,,tree,0
+gmail,", , , Anthropic, , Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39, , Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보, , ,  on Jul 28",elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0
+gmail,Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0
+gmail,"Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보",elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 12:26:58, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 12:26 PM",elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,24,1695,1056,1975,,0,,,tree,0
+gmail,Compose,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,600,1836,1008,2004,,0,,,tree,0
+gmail,Primary,elder_combo_max,api_error,[API-ERROR: RateLimitError],,,52,259,323,365,,0,,,tree,0
+gmail,12:26 PM,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,841,1754,1008,1799,,0,,,tree,0
+gmail,Your secure link to Claude.ai is here | 2026-07-29 12:26:58,elder_zoom_heavy,api_error,[API-ERROR: BadRequestError],,,240,1812,912,1865,,0,,,tree,0
+gmail,Tap a sender image to select that conversation.,elder_combo_max,api_error,[API-ERROR: BadRequestError],,,260,380,621,1055,,0,,,tree,0
+gmail,"Unread, , , Claude Team, , Welcome to Claude Code, , Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏, , ,  on Jul 28",elder_zoom_heavy,api_error,[API-ERROR: AuthenticationError],,,24,1981,1056,2261,,0,,,tree,0
+gmail,Dismiss,elder_combo_max,api_error,[API-ERROR: AuthenticationError],,,637,610,1002,825,,0,,,tree,0
+gmail,Claude Team,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,240,2029,833,2089,,0,,,tree,0
+gmail,Welcome to your new Inbox,elder_combo_max,api_error,[API-ERROR: RateLimitError],,,78,1136,1002,1350,,0,,,tree,0
+gmail,Welcome to Claude Code,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,240,2098,912,2151,,0,,,tree,0
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,elder_combo_max,api_error,[API-ERROR: RateLimitError],,,78,1363,1002,1984,,0,,,tree,0
+gmail,Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,240,2160,912,2213,,0,,,tree,0
+gmail,", , , Anthropic, , Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39, , Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보, , ,  on Jul 28",elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0
+gmail,Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0
+gmail,"Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보",elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0
+gmail,Social,elder_combo_max,api_error,[API-ERROR: RateLimitError],,,221,2042,869,2160,,0,,,tree,0
+gmail,Promotions,elder_combo_max,off_frame,,,,221,2172,869,2255,,0,,,tree,0
+gmail,OK,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,Change categories,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 13:51:10, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 1:51 PM",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,1:51 PM,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,Your secure link to Claude.ai is here | 2026-07-29 13:51:10,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 12:26:58, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 12:26 PM",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,12:26 PM,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,Your secure link to Claude.ai is here | 2026-07-29 12:26:58,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,"Unread, , , Claude Team, , Welcome to Claude Code, , Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏, , ,  on Jul 28",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,Claude Team,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,Welcome to Claude Code,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,", , , Anthropic, , Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39, , Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보, , ,  on Jul 28",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,"Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,Compose,elder_zoom_heavy,api_error,[API-ERROR: RateLimitError],,,600,1836,1008,2004,,0,,,tree,0
+gmail,Compose,elder_combo_max,api_error,[API-ERROR: RateLimitError],,,446,1770,1002,1969,,0,,,tree,0
+gmail,Primary,elder_combo_max,api_error,[API-ERROR: BadRequestError],,,52,259,323,365,,0,,,tree,0
+gmail,Primary,elder_combo_mid,api_error,[API-ERROR: BadRequestError],,,48,241,290,336,,0,,,tree,0
+gmail,Tap a sender image to select that conversation.,elder_combo_mid,api_error,[API-ERROR: AuthenticationError],,,240,351,665,795,,0,,,tree,0
+gmail,Tap a sender image to select that conversation.,elder_combo_max,api_error,[API-ERROR: AuthenticationError],,,260,380,621,1055,,0,,,tree,0
+gmail,Dismiss,elder_combo_mid,api_error,[API-ERROR: RateLimitError],,,680,475,1008,670,,0,,,tree,0
+gmail,Dismiss,elder_combo_max,api_error,[API-ERROR: RateLimitError],,,637,610,1002,825,,0,,,tree,0
+gmail,Welcome to your new Inbox,elder_combo_mid,api_error,[API-ERROR: RateLimitError],,,72,870,1008,973,,0,,,tree,0
+gmail,Welcome to your new Inbox,elder_combo_max,api_error,[API-ERROR: RateLimitError],,,78,1136,1002,1350,,0,,,tree,0
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,elder_combo_mid,api_error,[API-ERROR: RateLimitError],,,72,985,1008,1452,,0,,,tree,0
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,elder_combo_max,api_error,[API-ERROR: RateLimitError],,,78,1363,1002,1984,,0,,,tree,0
+gmail,Social,elder_combo_mid,api_error,[API-ERROR: RateLimitError],,,204,1507,885,1612,,0,,,tree,0
+gmail,Social,elder_combo_max,api_error,[API-ERROR: RateLimitError],,,221,2042,869,2160,,0,,,tree,0
+gmail,Promotions,elder_combo_max,off_frame,,,,221,2172,869,2255,,0,,,tree,0
+gmail,OK,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,Change categories,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 13:51:10, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 1:51 PM",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,1:51 PM,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,Your secure link to Claude.ai is here | 2026-07-29 13:51:10,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 12:26:58, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 12:26 PM",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,12:26 PM,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,Your secure link to Claude.ai is here | 2026-07-29 12:26:58,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,"Unread, , , Claude Team, , Welcome to Claude Code, , Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏, , ,  on Jul 28",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,Claude Team,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,Welcome to Claude Code,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,", , , Anthropic, , Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39, , Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보, , ,  on Jul 28",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,"Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+gmail,Promotions,elder_combo_mid,api_error,[API-ERROR: BadRequestError],,,204,1627,885,1732,,0,,,tree,0
+gmail,Compose,elder_combo_max,api_error,[API-ERROR: BadRequestError],,,446,1770,1002,1969,,0,,,tree,0
+gmail,Primary,elder_combo_mid,api_error,[API-ERROR: AuthenticationError],,,48,241,290,336,,0,,,tree,0
+gmail,OK,elder_combo_mid,api_error,[API-ERROR: AuthenticationError],,,48,1752,252,1935,,0,,,tree,0
+gmail,Tap a sender image to select that conversation.,elder_combo_mid,api_error,[API-ERROR: RateLimitError],,,240,351,665,795,,0,,,tree,0
+gmail,Change categories,elder_combo_mid,api_error,[API-ERROR: RateLimitError],,,276,1752,978,1935,,0,,,tree,0
+gmail,Dismiss,elder_combo_mid,api_error,[API-ERROR: RateLimitError],,,680,475,1008,670,,0,,,tree,0
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 13:51:10, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 1:51 PM",elder_combo_mid,api_error,[API-ERROR: RateLimitError],,,24,1986,1056,2268,,0,,,tree,0
+gmail,Welcome to your new Inbox,elder_combo_mid,api_error,[API-ERROR: RateLimitError],,,72,870,1008,973,,0,,,tree,0
+gmail,1:51 PM,elder_combo_mid,api_error,[API-ERROR: RateLimitError],,,804,2049,1008,2116,,0,,,tree,0
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,elder_combo_mid,api_error,[API-ERROR: RateLimitError],,,72,985,1008,1452,,0,,,tree,0
+gmail,Your secure link to Claude.ai is here | 2026-07-29 13:51:10,elder_combo_mid,api_error,[API-ERROR: RateLimitError],,,240,2130,912,2213,,0,,,tree,0
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 12:26:58, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 12:26 PM",elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+gmail,12:26 PM,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+gmail,Your secure link to Claude.ai is here | 2026-07-29 12:26:58,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+gmail,"Unread, , , Claude Team, , Welcome to Claude Code, , Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏, , ,  on Jul 28",elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+gmail,Claude Team,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+gmail,Welcome to Claude Code,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+gmail,Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+gmail,", , , Anthropic, , Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39, , Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보, , ,  on Jul 28",elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+gmail,Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+gmail,"Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보",elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+gmail,Compose,elder_text_heavy,co_present,"[741, 1829]",741,1829,594,1898,1017,2051,0,1,0,bracket,tree,86
+gmail,Primary,elder_zoom_heavy,co_present,"[109, 271]",109,271,48,258,201,318,1,1,1,bracket,tree,91
+gmail,Tap a sender image to select that conversation.,elder_zoom_heavy,co_present,"[444, 434]",444,434,240,351,729,564,1,1,1,bracket,tree,88
+gmail,Dismiss,elder_zoom_heavy,co_present,"[817, 424]",817,424,744,378,1008,537,1,1,1,bracket,tree,91
+gmail,Welcome to your new Inbox,elder_zoom_heavy,co_present,"[353, 629]",353,629,72,639,1008,711,1,1,1,bracket,tree,91
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,elder_zoom_heavy,co_present,"[471, 770]",471,770,72,723,1008,911,1,1,1,bracket,tree,89
+gmail,Social,elder_zoom_heavy,co_present,"[261, 952]",261,952,204,985,885,1052,0,1,0,bracket,tree,85
+gmail,Promotions,elder_zoom_heavy,co_present,"[335, 1060]",335,1060,204,1105,885,1172,0,1,0,bracket,tree,88
+gmail,OK,elder_zoom_heavy,co_present,"[108, 1192]",108,1192,48,1211,252,1358,1,1,1,bracket,tree,91
+gmail,Change categories,elder_zoom_heavy,co_present,"[516, 1197]",516,1197,276,1211,758,1358,1,1,1,bracket,tree,90
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 13:51:10, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 1:51 PM",elder_zoom_heavy,co_present,"[542, 1450]",542,1450,24,1409,1056,1689,1,1,1,bracket,tree,84
+gmail,1:51 PM,elder_zoom_heavy,co_present,"[918, 1487]",918,1487,864,1468,1008,1513,1,1,1,bracket,tree,91
+gmail,Your secure link to Claude.ai is here | 2026-07-29 13:51:10,elder_zoom_heavy,co_present,"[576, 1553]",576,1553,240,1526,912,1579,1,1,1,bracket,tree,89
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 12:26:58, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 12:26 PM",elder_zoom_heavy,co_present,"[532, 1748]",532,1748,24,1695,1056,1975,1,1,1,bracket,tree,81
+gmail,12:26 PM,elder_zoom_heavy,co_present,"[936, 1776]",936,1776,841,1754,1008,1799,1,1,1,bracket,tree,91
+gmail,Your secure link to Claude.ai is here | 2026-07-29 12:26:58,elder_zoom_heavy,co_present,"[576, 1839]",576,1839,240,1812,912,1865,1,1,1,bracket,tree,88
+gmail,"Unread, , , Claude Team, , Welcome to Claude Code, , Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏, , ,  on Jul 28",elder_zoom_heavy,co_present,"[372, 2142]",372,2142,24,1981,1056,2261,1,1,1,bracket,tree,65
+gmail,Claude Team,elder_zoom_heavy,co_present,"[383, 2062]",383,2062,240,2029,833,2089,1,1,1,bracket,tree,91
+gmail,Welcome to Claude Code,elder_zoom_heavy,co_present,"[522, 2060]",522,2060,240,2098,912,2151,0,1,0,bracket,tree,76
+gmail,Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏,elder_zoom_heavy,co_present,"[576, 2186]",576,2186,240,2160,912,2213,1,1,1,bracket,tree,89
+gmail,Compose,elder_zoom_heavy,co_present,"[798, 1782]",798,1782,600,1836,1008,2004,0,1,0,bracket,tree,90
+gmail,Primary,elder_combo_max,co_present,"[176, 298]",176,298,52,259,323,365,1,1,1,bracket,tree,62
+gmail,Tap a sender image to select that conversation.,elder_combo_max,co_present,"[387, 734]",387,734,260,380,621,1055,1,1,1,bracket,tree,58
+gmail,Dismiss,elder_combo_max,co_present,"[756, 686]",756,686,637,610,1002,825,1,1,1,bracket,tree,62
+gmail,Welcome to your new Inbox,elder_combo_max,co_present,"[411, 1164]",411,1164,78,1136,1002,1350,0,1,0,bracket,tree,62
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,elder_combo_max,co_present,"[489, 1573]",489,1573,78,1363,1002,1984,1,1,1,bracket,tree,58
+gmail,Social,elder_combo_max,co_present,"[540, 312]",540,312,221,2042,869,2160,0,1,0,bracket,tree,40
+gmail,Compose,elder_combo_max,co_present,"[717, 1744]",717,1744,446,1770,1002,1969,0,1,0,bracket,tree,61
+gmail,Primary,elder_combo_mid,co_present,"[133, 276]",133,276,48,241,290,336,1,1,1,bracket,tree,73
+gmail,Tap a sender image to select that conversation.,elder_combo_mid,co_present,"[347, 537]",347,537,240,351,665,795,1,1,1,bracket,tree,70
+gmail,Dismiss,elder_combo_mid,co_present,"[827, 597]",827,597,680,475,1008,670,1,1,1,bracket,tree,73
+gmail,Welcome to your new Inbox,elder_combo_mid,co_present,"[465, 857]",465,857,72,870,1008,973,0,1,0,bracket,tree,70
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,elder_combo_mid,co_present,"[409, 1134]",409,1134,72,985,1008,1452,1,1,1,bracket,tree,70
+gmail,Social,elder_combo_mid,co_present,"[294, 1454]",294,1454,204,1507,885,1612,0,1,0,bracket,tree,70
+gmail,Promotions,elder_combo_mid,co_present,"[392, 1564]",392,1564,204,1627,885,1732,0,1,0,bracket,tree,71
+gmail,OK,elder_combo_mid,co_present,"[122, 1940]",122,1940,48,1752,252,1935,0,1,0,bracket,tree,73
+gmail,Change categories,elder_combo_mid,co_present,"[504, 1786]",504,1786,276,1752,978,1935,1,1,1,bracket,tree,69
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 13:51:10, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 1:51 PM",elder_combo_mid,co_present,"[360, 2104]",360,2104,24,1986,1056,2268,1,1,1,bracket,tree,49
+gmail,1:51 PM,elder_combo_mid,co_present,"[972, 2078]",972,2078,804,2049,1008,2116,1,1,1,bracket,tree,68
+gmail,Your secure link to Claude.ai is here | 2026-07-29 13:51:10,elder_combo_mid,co_present,"[624, 2155]",624,2155,240,2130,912,2213,1,1,1,bracket,tree,58
+gmail,Compose,elder_combo_mid,co_present,"[744, 1790]",744,1790,507,1825,1008,2004,0,1,0,bracket,tree,72
+gmail,Primary,colorblind_deuteranomaly,co_present,"[89, 245]",89,245,42,226,175,279,1,1,1,bracket,tree,99
+gmail,Tap a sender image to select that conversation.,colorblind_deuteranomaly,co_present,"[404, 371]",404,371,210,307,773,494,1,1,1,bracket,tree,96
+gmail,Dismiss,colorblind_deuteranomaly,co_present,"[848, 369]",848,369,786,330,1017,470,1,1,1,bracket,tree,99
+gmail,Welcome to your new Inbox,colorblind_deuteranomaly,co_present,"[323, 544]",323,544,63,559,1017,622,1,1,1,bracket,tree,99
+gmail,Mail categories group messages of the same type for reading all at once. You can enable and disable categories in settings. Learn more,colorblind_deuteranomaly,co_present,"[321, 659]",321,659,63,633,1017,799,1,1,1,bracket,tree,97
+gmail,Social,colorblind_deuteranomaly,co_present,"[231, 826]",231,826,179,864,909,924,0,1,0,bracket,tree,94
+gmail,Promotions,colorblind_deuteranomaly,co_present,"[281, 922]",281,922,179,969,909,1029,0,1,0,bracket,tree,95
+gmail,OK,colorblind_deuteranomaly,co_present,"[100, 1128]",100,1128,42,1063,221,1191,1,1,1,bracket,tree,99
+gmail,Change categories,colorblind_deuteranomaly,co_present,"[437, 1041]",437,1041,242,1063,666,1191,1,1,1,bracket,tree,97
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 13:51:10, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 1:51 PM",colorblind_deuteranomaly,co_present,"[563, 1251]",563,1251,21,1235,1059,1482,1,1,1,bracket,tree,92
+gmail,1:51 PM,colorblind_deuteranomaly,co_present,"[929, 1304]",929,1304,890,1287,1017,1327,1,1,1,bracket,tree,99
+gmail,Your secure link to Claude.ai is here | 2026-07-29 13:51:10,colorblind_deuteranomaly,co_present,"[572, 1365]",572,1365,210,1338,933,1385,1,1,1,bracket,tree,97
+gmail,", , , Anthropic, , Your secure link to Claude.ai is here | 2026-07-29 12:26:58, , Sign in to Claude.ai Click the button below to finish signing in. This link expires in 10 minutes. Sign in If you didn't request this email, you can safely ignore it. Need a hand? Contact Anthropic, , ,  at 12:26 PM",colorblind_deuteranomaly,co_present,"[572, 1611]",572,1611,21,1486,1059,1733,1,1,1,bracket,tree,92
+gmail,12:26 PM,colorblind_deuteranomaly,co_present,"[954, 1558]",954,1558,869,1538,1017,1578,1,1,1,bracket,tree,99
+gmail,Your secure link to Claude.ai is here | 2026-07-29 12:26:58,colorblind_deuteranomaly,co_present,"[572, 1613]",572,1613,210,1589,933,1636,1,1,1,bracket,tree,97
+gmail,"Unread, , , Claude Team, , Welcome to Claude Code, , Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏, , ,  on Jul 28",colorblind_deuteranomaly,co_present,"[406, 1730]",406,1730,21,1737,1059,1984,1,1,1,bracket,tree,89
+gmail,Claude Team,colorblind_deuteranomaly,co_present,"[353, 1671]",353,1671,210,1779,861,1832,0,1,0,bracket,tree,96
+gmail,Welcome to Claude Code,colorblind_deuteranomaly,co_present,"[402, 1730]",402,1730,210,1840,933,1887,0,1,0,bracket,tree,96
+gmail,Ship your first commit in 5 minutes. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏,colorblind_deuteranomaly,co_present,"[485, 1923]",485,1923,210,1895,933,1942,1,1,1,bracket,tree,98
+gmail,", , , Anthropic, , Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39, , Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보, , ,  on Jul 28",colorblind_deuteranomaly,co_present,"[541, 2019]",541,2019,21,1988,1059,2249,1,1,1,bracket,tree,72
+gmail,Claude.ai의 보안 링크가 도착했습니다 | 2026-07-28 14:51:39,colorblind_deuteranomaly,co_present,"[572, 2115]",572,2115,210,2091,933,2145,1,1,1,bracket,tree,85
+gmail,"Claude.ai에 로그인 아래 버튼을 클릭하여 로그인을 완료하세요. 이 링크는 10분 후에 만료됩니다. 로그인 이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다. 도움이 필요하신가요? Anthropic 지원팀에 문의하세요. Anthropic, PBC 548 Market St, PMB 90375, San Francisco, CA 94104 도움말 · 개인정보",colorblind_deuteranomaly,co_present,"[572, 2177]",572,2177,210,2153,933,2207,1,1,1,bracket,tree,85
+gmail,Compose,colorblind_deuteranomaly,co_present,"[823, 1824]",823,1824,662,1904,1017,2051,0,1,0,bracket,tree,97
+maps,Search here,baseline,co_present,"[268, 79]",268,79,162,45,661,122,1,1,1,bracket,tree,109
+maps,Explore,baseline,co_present,"[178, 2184]",178,2184,122,2156,238,2198,1,1,1,bracket,tree,112
+maps,You,baseline,co_present,"[540, 2177]",540,2177,512,2156,568,2198,1,1,1,bracket,tree,108
+maps,Contribute,baseline,co_present,"[896, 2185]",896,2185,816,2156,983,2198,1,1,1,bracket,tree,112
+maps,Search here,elder_text_heavy,co_present,"[277, 78]",277,78,162,37,661,131,1,1,1,bracket,tree,109
+maps,Explore,elder_text_heavy,co_present,"[180, 2177]",180,2177,122,2156,238,2198,1,1,1,bracket,tree,112
+maps,You,elder_text_heavy,co_present,"[540, 2177]",540,2177,512,2156,568,2198,1,1,1,bracket,tree,108
+maps,Contribute,elder_text_heavy,co_present,"[832, 2129]",832,2129,816,2156,983,2198,1,1,1,bracket,tree,112
+maps,Search here,elder_zoom_heavy,co_present,"[289, 88]",289,88,186,52,600,139,1,1,1,bracket,tree,108
+maps,Explore,elder_zoom_heavy,co_present,"[181, 2141]",181,2141,114,2124,245,2172,1,1,1,bracket,tree,112
+maps,You,elder_zoom_heavy,co_present,"[541, 2150]",541,2150,508,2124,571,2172,1,1,1,bracket,tree,108
+maps,Contribute,elder_zoom_heavy,co_present,"[840, 2100]",840,2100,806,2124,994,2172,1,1,1,bracket,tree,112
+maps,Search here,elder_combo_max,co_present,"[357, 98]",357,98,201,38,559,169,1,1,1,bracket,tree,104
+maps,Explore,elder_combo_max,co_present,"[152, 2141]",152,2141,109,2099,250,2151,1,1,1,bracket,tree,112
+maps,You,elder_combo_max,co_present,"[540, 2102]",540,2102,506,2099,573,2151,1,1,1,bracket,tree,109
+maps,Contribute,elder_combo_max,co_present,"[857, 2102]",857,2102,799,2099,1001,2151,1,1,1,bracket,tree,112
+maps,Search here,elder_combo_mid,co_present,"[644, 86]",644,86,480,39,894,152,1,1,1,bracket,tree,108
+maps,Explore,elder_combo_mid,co_present,"[850, 2146]",850,2146,834,2124,965,2172,1,1,1,bracket,tree,112
+maps,You,elder_combo_mid,co_present,"[540, 2110]",540,2110,508,2124,571,2172,1,1,1,bracket,tree,108
+maps,Contribute,elder_combo_mid,co_present,"[166, 2141]",166,2141,86,2124,274,2172,1,1,1,bracket,tree,112
+maps,Search here,colorblind_deuteranomaly,co_present,"[254, 76]",254,76,162,45,661,122,1,1,1,bracket,tree,109
+maps,Explore,colorblind_deuteranomaly,co_present,"[157, 2189]",157,2189,122,2156,238,2198,1,1,1,bracket,tree,112
+maps,You,colorblind_deuteranomaly,co_present,"[498, 2143]",498,2143,512,2156,568,2198,1,1,1,bracket,tree,108
+maps,Contribute,colorblind_deuteranomaly,co_present,"[833, 2181]",833,2181,816,2156,983,2198,1,1,1,bracket,tree,112
+messages,Messages,baseline,co_present,"[313, 76]",313,76,222,51,450,114,1,1,1,bracket,tree,16
+messages,"Once you start a new conversation, you’ll see it listed here",baseline,co_present,"[493, 1411]",493,1411,158,1349,922,1452,1,1,1,bracket,tree,17
+messages,Start chat,baseline,co_present,"[857, 2118]",857,2118,650,2009,1017,2156,1,1,1,bracket,tree,16
+messages,Messages,elder_text_heavy,co_present,"[323, 75]",323,75,222,51,442,111,1,1,1,bracket,tree,16
+messages,"Once you start a new conversation, you’ll see it listed here",elder_text_heavy,co_present,"[465, 1296]",465,1296,158,1293,922,1508,0,1,0,bracket,tree,17
+messages,Start chat,elder_text_heavy,co_present,"[789, 2118]",789,2118,578,2003,1017,2156,1,1,1,bracket,tree,16
+messages,Messages,elder_zoom_heavy,co_present,"[399, 98]",399,98,254,58,506,128,1,1,1,bracket,tree,16
+messages,"Once you start a new conversation, you’ll see it listed here",elder_zoom_heavy,co_present,"[500, 1344]",500,1344,180,1375,900,1492,0,1,0,bracket,tree,17
+messages,Start chat,elder_zoom_heavy,co_present,"[785, 2072]",785,2072,590,1956,1008,2124,1,1,1,bracket,tree,16
+messages,Messages,elder_combo_max,co_present,"[415, 92]",415,92,276,63,549,138,1,1,1,bracket,tree,15
+messages,"Once you start a new conversation, you’ll see it listed here",elder_combo_max,co_present,"[508, 1450]",508,1450,195,1259,885,1646,1,1,1,bracket,tree,17
+messages,Start chat,elder_combo_max,co_present,"[695, 2064]",695,2064,425,1900,1002,2099,1,1,1,bracket,tree,17
+messages,Messages,elder_combo_mid,co_present,"[398, 83]",398,83,254,58,506,128,1,1,1,bracket,tree,16
+messages,"Once you start a new conversation, you’ll see it listed here",elder_combo_mid,co_present,"[506, 1338]",506,1338,180,1301,900,1566,0,1,0,bracket,tree,17
+messages,Start chat,elder_combo_mid,co_present,"[739, 2060]",739,2060,490,1945,1008,2124,1,1,1,bracket,tree,16
+messages,Messages,colorblind_deuteranomaly,co_present,"[297, 86]",297,86,222,51,442,111,1,1,1,bracket,tree,16
+messages,"Once you start a new conversation, you’ll see it listed here",colorblind_deuteranomaly,co_present,"[486, 1297]",486,1297,158,1349,922,1452,0,1,0,bracket,tree,17
+messages,Start chat,colorblind_deuteranomaly,co_present,"[845, 2111]",845,2111,650,2009,1017,2156,1,1,1,bracket,tree,16
+photos,"Take a picture.
+Photos & videos appear here.",baseline,co_present,"[525, 1013]",525,1013,172,1021,907,1192,1,1,1,bracket,tree,22
+photos,No Photos,baseline,co_present,"[540, 1354]",540,1354,172,1192,907,1324,1,1,1,bracket,tree,23
+photos,Search,baseline,co_present,"[808, 2160]",808,2160,540,2009,1080,2219,1,1,1,bracket,tree,20
+photos,"Take a picture.
+Photos & videos appear here.",elder_text_heavy,co_present,"[540, 1176]",540,1176,172,992,907,1208,1,1,1,bracket,tree,22
+photos,No Photos,elder_text_heavy,co_present,"[540, 1379]",540,1379,172,1208,907,1353,0,1,0,bracket,tree,23
+photos,Search,elder_text_heavy,co_present,"[807, 2144]",807,2144,540,2009,1080,2219,1,1,1,bracket,tree,20
+photos,"Take a picture.
+Photos & videos appear here.",elder_zoom_heavy,co_present,"[540, 1042]",540,1042,120,997,960,1192,1,1,1,bracket,tree,22
+photos,No Photos,elder_zoom_heavy,co_present,"[540, 1168]",540,1168,120,1192,960,1342,0,1,0,bracket,tree,24
+photos,Search,elder_zoom_heavy,co_present,"[811, 2105]",811,2105,540,1956,1080,2196,1,1,1,bracket,tree,20
+photos,"Take a picture.
+Photos & videos appear here.",elder_combo_max,co_present,"[472, 986]",472,986,85,867,995,1273,1,1,1,bracket,tree,22
+photos,No Photos,elder_combo_max,co_present,"[512, 1285]",512,1285,85,1273,995,1467,1,1,1,bracket,tree,24
+photos,Search,elder_combo_max,co_present,"[810, 2106]",810,2106,540,1917,1080,2177,1,1,1,bracket,tree,20
+photos,"Take a picture.
+Photos & videos appear here.",elder_combo_mid,co_present,"[540, 1110]",540,1110,120,901,960,1268,1,1,1,bracket,tree,22
+photos,No Photos,elder_combo_mid,co_present,"[505, 1352]",505,1352,120,1268,960,1439,1,1,1,bracket,tree,24
+photos,Search,elder_combo_mid,co_present,"[811, 2141]",811,2141,540,1956,1080,2196,1,1,1,bracket,tree,20
+photos,"Take a picture.
+Photos & videos appear here.",colorblind_deuteranomaly,co_present,"[540, 1087]",540,1087,172,1021,907,1192,1,1,1,bracket,tree,22
+photos,No Photos,colorblind_deuteranomaly,co_present,"[499, 1341]",499,1341,172,1192,907,1324,1,1,1,bracket,tree,23
+photos,Search,colorblind_deuteranomaly,co_present,"[789, 2179]",789,2179,540,2009,1080,2219,1,1,1,bracket,tree,20
+play_store,Sponsored,baseline,co_present,"[121, 1141]",121,1141,63,1119,208,1161,1,1,1,bracket,tree,95
+play_store,Suggested for you,baseline,co_present,"[435, 1128]",435,1128,244,1108,644,1171,1,1,1,bracket,tree,95
+play_store,New and noteworthy,baseline,co_present,"[284, 1859]",284,1859,63,1966,519,2029,0,1,0,bracket,tree,95
+play_store,"Meet a smarter, more natural ChatGPT Voice",baseline,co_present,"[446, 595]",446,595,63,565,1017,733,1,1,1,bracket,tree,94
+play_store,Install,baseline,co_present,"[853, 777]",853,777,873,808,975,861,0,1,0,bracket,tree,91
+play_store,In-app purchases,baseline,co_present,"[853, 823]",853,823,834,871,1014,908,0,1,0,bracket,tree,95
+play_store,Games,baseline,co_present,"[92, 2183]",92,2183,56,2162,160,2204,1,1,1,bracket,tree,93
+play_store,Apps,baseline,co_present,"[324, 2188]",324,2188,286,2162,363,2204,1,1,1,bracket,tree,93
+play_store,Search,baseline,co_present,"[540, 2183]",540,2183,488,2162,593,2204,1,1,1,bracket,tree,90
+play_store,Books,baseline,co_present,"[757, 2183]",757,2183,710,2162,803,2204,1,1,1,bracket,tree,93
+play_store,You,baseline,co_present,"[971, 2179]",971,2179,945,2162,1000,2204,1,1,1,bracket,tree,93
+play_store,Sponsored,elder_text_heavy,co_present,"[120, 1066]",120,1066,63,1119,271,1178,0,1,0,bracket,tree,94
+play_store,Suggested for you,elder_text_heavy,co_present,"[556, 1056]",556,1056,321,1108,824,1188,0,1,0,bracket,tree,94
+play_store,New and noteworthy,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+play_store,"Meet a smarter, more natural ChatGPT Voice",elder_text_heavy,co_present,"[420, 545]",420,545,63,498,1017,690,1,1,1,bracket,tree,93
+play_store,Install,elder_text_heavy,co_present,"[823, 729]",823,729,819,754,967,828,0,1,0,bracket,tree,91
+play_store,In-app purchases,elder_text_heavy,co_present,"[823, 791]",823,791,769,828,1017,880,0,1,0,bracket,tree,94
+play_store,Games,elder_text_heavy,co_present,"[108, 2190]",108,2190,35,2153,181,2212,1,1,1,bracket,tree,92
+play_store,Apps,elder_text_heavy,co_present,"[324, 2182]",324,2182,270,2153,379,2212,1,1,1,bracket,tree,92
+play_store,Search,elder_text_heavy,co_present,"[540, 2179]",540,2179,467,2153,614,2212,1,1,1,bracket,tree,89
+play_store,Books,elder_text_heavy,co_present,"[756, 2182]",756,2182,692,2153,821,2212,1,1,1,bracket,tree,92
+play_store,You,elder_text_heavy,co_present,"[900, 2186]",900,2186,934,2153,1010,2212,0,1,0,bracket,tree,92
+play_store,Sponsored,elder_zoom_heavy,co_present,"[104, 1226]",104,1226,36,1284,207,1332,0,1,0,bracket,tree,94
+play_store,Suggested for you,elder_zoom_heavy,co_present,"[492, 1312]",492,1312,249,1272,708,1344,1,1,1,bracket,tree,94
+play_store,New and noteworthy,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0
+play_store,"Meet a smarter, more natural ChatGPT Voice",elder_zoom_heavy,co_present,"[411, 698]",411,698,36,654,1044,846,1,1,1,bracket,tree,93
+play_store,Install,elder_zoom_heavy,co_present,"[872, 894]",872,894,876,930,996,990,0,1,0,bracket,tree,91
+play_store,In-app purchases,elder_zoom_heavy,co_present,"[882, 1048]",882,1048,834,1002,1039,1044,1,1,1,bracket,tree,94
+play_store,Games,elder_zoom_heavy,co_present,"[79, 2110]",79,2110,48,2130,169,2178,1,1,1,bracket,tree,94
+play_store,Apps,elder_zoom_heavy,co_present,"[324, 2148]",324,2148,280,2130,368,2178,1,1,1,bracket,tree,94
+play_store,Search,elder_zoom_heavy,co_present,"[540, 2100]",540,2100,479,2130,601,2178,0,1,0,bracket,tree,93
+play_store,Books,elder_zoom_heavy,co_present,"[756, 2108]",756,2108,703,2130,810,2178,1,1,1,bracket,tree,94
+play_store,You,elder_zoom_heavy,co_present,"[972, 2153]",972,2153,940,2130,1004,2178,1,1,1,bracket,tree,94
+play_store,Sponsored,elder_combo_max,co_present,"[190, 1414]",190,1414,39,1446,334,1530,0,1,0,bracket,tree,84
+play_store,Suggested for you,elder_combo_max,co_present,"[551, 1493]",551,1493,406,1378,885,1598,1,1,1,bracket,tree,84
+play_store,New and noteworthy,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+play_store,"Meet a smarter, more natural ChatGPT Voice",elder_combo_max,co_present,"[511, 664]",511,664,39,580,1041,838,1,1,1,bracket,tree,83
+play_store,Install,elder_combo_max,co_present,"[817, 910]",817,910,763,916,971,1007,1,1,1,bracket,tree,81
+play_store,In-app purchases,elder_combo_max,co_present,"[858, 1004]",858,1004,693,1007,1041,1080,1,1,1,bracket,tree,84
+play_store,Games,elder_combo_max,co_present,"[93, 2128]",93,2128,13,2090,203,2174,1,1,1,bracket,tree,84
+play_store,Apps,elder_combo_max,co_present,"[324, 2132]",324,2132,248,2090,400,2174,1,1,1,bracket,tree,84
+play_store,Search,elder_combo_max,co_present,"[540, 2122]",540,2122,445,2090,635,2174,1,1,1,bracket,tree,83
+play_store,Books,elder_combo_max,co_present,"[729, 2117]",729,2117,665,2090,847,2174,1,1,1,bracket,tree,84
+play_store,You,elder_combo_max,co_present,"[938, 2132]",938,2132,919,2090,1026,2174,1,1,1,bracket,tree,84
+play_store,Sponsored,elder_combo_mid,co_present,"[166, 1291]",166,1291,36,1332,289,1404,0,1,0,bracket,tree,89
+play_store,Suggested for you,elder_combo_mid,co_present,"[531, 1371]",531,1371,351,1272,900,1464,1,1,1,bracket,tree,89
+play_store,New and noteworthy,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+play_store,"Meet a smarter, more natural ChatGPT Voice",elder_combo_mid,co_present,"[423, 621]",423,621,36,558,1044,782,1,1,1,bracket,tree,88
+play_store,Install,elder_combo_mid,co_present,"[833, 841]",833,841,798,854,984,938,1,1,1,bracket,tree,86
+play_store,In-app purchases,elder_combo_mid,co_present,"[848, 911]",848,911,737,938,1044,1001,0,1,0,bracket,tree,89
+play_store,Games,elder_combo_mid,co_present,"[108, 2162]",108,2162,18,2118,198,2190,1,1,1,bracket,tree,89
+play_store,Apps,elder_combo_mid,co_present,"[323, 2158]",323,2158,258,2118,390,2190,1,1,1,bracket,tree,89
+play_store,Search,elder_combo_mid,co_present,"[540, 2125]",540,2125,450,2118,631,2190,1,1,1,bracket,tree,88
+play_store,Books,elder_combo_mid,co_present,"[756, 2154]",756,2154,677,2118,835,2190,1,1,1,bracket,tree,89
+play_store,You,elder_combo_mid,co_present,"[972, 2154]",972,2154,925,2118,1019,2190,1,1,1,bracket,tree,89
+play_store,Sponsored,colorblind_deuteranomaly,co_present,"[112, 1041]",112,1041,63,1105,208,1147,0,1,0,bracket,tree,95
+play_store,Suggested for you,colorblind_deuteranomaly,co_present,"[442, 1132]",442,1132,244,1094,644,1157,1,1,1,bracket,tree,95
+play_store,New and noteworthy,colorblind_deuteranomaly,co_present,"[252, 1837]",252,1837,63,1952,519,2015,0,1,0,bracket,tree,95
+play_store,"Meet a smarter, more natural ChatGPT Voice",colorblind_deuteranomaly,co_present,"[463, 619]",463,619,63,565,1017,733,1,1,1,bracket,tree,94
+play_store,Install,colorblind_deuteranomaly,co_present,"[853, 769]",853,769,873,808,975,861,0,1,0,bracket,tree,91
+play_store,In-app purchases,colorblind_deuteranomaly,co_present,"[851, 922]",851,922,834,871,1014,908,1,1,1,bracket,tree,95
+play_store,Games,colorblind_deuteranomaly,co_present,"[99, 2184]",99,2184,56,2162,160,2204,1,1,1,bracket,tree,93
+play_store,Apps,colorblind_deuteranomaly,co_present,"[324, 2188]",324,2188,286,2162,363,2204,1,1,1,bracket,tree,93
+play_store,Search,colorblind_deuteranomaly,co_present,"[540, 2148]",540,2148,488,2162,593,2204,1,1,1,bracket,tree,90
+play_store,Books,colorblind_deuteranomaly,co_present,"[756, 2183]",756,2183,710,2162,803,2204,1,1,1,bracket,tree,93
+play_store,You,colorblind_deuteranomaly,co_present,"[970, 2187]",970,2187,945,2162,1000,2204,1,1,1,bracket,tree,93
+settings_accessibility,Screen reader,baseline,co_present,"[197, 224]",197,224,63,210,1038,261,1,1,1,bracket,tree,74
+settings_accessibility,TalkBack,baseline,co_present,"[288, 332]",288,332,221,329,391,386,1,1,1,bracket,tree,76
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,baseline,co_present,"[476, 398]",476,398,221,386,954,480,1,1,1,bracket,tree,72
+settings_accessibility,Display,baseline,co_present,"[112, 572]",112,572,63,590,1038,641,1,1,1,bracket,tree,74
+settings_accessibility,Display size & text,baseline,co_present,"[394, 705]",394,705,221,709,560,766,1,1,1,bracket,tree,73
+settings_accessibility,"Font size, display size, bold text, outline text",baseline,co_present,"[579, 757]",579,757,221,766,933,817,1,1,1,bracket,tree,72
+settings_accessibility,Color & motion,baseline,co_present,"[380, 934]",380,934,221,906,498,963,1,1,1,bracket,tree,76
+settings_accessibility,"Dark theme, color correction, remove animations",baseline,co_present,"[429, 933]",429,933,221,963,954,1057,1,1,1,bracket,tree,72
+settings_accessibility,Magnification,baseline,co_present,"[371, 1166]",371,1166,221,1146,477,1203,1,1,1,bracket,tree,76
+settings_accessibility,Off / Zoom in to make content larger on your screen,baseline,co_present,"[568, 1250]",568,1250,221,1203,954,1297,1,1,1,bracket,tree,66
+settings_accessibility,Select to Speak,baseline,co_present,"[396, 1415]",396,1415,221,1386,510,1443,1,1,1,bracket,tree,73
+settings_accessibility,Off / Hear selected text,baseline,co_present,"[377, 1368]",377,1368,221,1443,604,1494,0,1,0,bracket,tree,72
+settings_accessibility,Interaction controls,baseline,co_present,"[209, 1517]",209,1517,63,1604,1038,1655,0,1,0,bracket,tree,74
+settings_accessibility,Accessibility Menu,baseline,co_present,"[405, 1751]",405,1751,221,1723,571,1780,1,1,1,bracket,tree,74
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",baseline,co_present,"[535, 1872]",535,1872,221,1780,954,1874,1,1,1,bracket,tree,72
+settings_accessibility,Voice Access,baseline,co_present,"[361, 1992]",361,1992,221,1963,473,2020,1,1,1,bracket,tree,76
+settings_accessibility,Off / Control device with voice commands,baseline,co_present,"[492, 2046]",492,2046,221,2020,908,2071,1,1,1,bracket,tree,72
+settings_accessibility,Vibration & haptics,baseline,co_present,"[413, 2189]",413,2189,221,2160,574,2217,1,1,1,bracket,tree,73
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",baseline,co_present,"[588, 2218]",588,2218,221,2217,954,2219,1,1,1,bracket,tree,75
+settings_accessibility,Screen reader,elder_text_heavy,co_present,"[241, 242]",241,242,63,210,1038,283,1,1,1,bracket,tree,60
+settings_accessibility,TalkBack,elder_text_heavy,co_present,"[362, 369]",362,369,221,351,452,428,1,1,1,bracket,tree,62
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,elder_text_heavy,co_present,"[490, 479]",490,479,221,428,954,564,1,1,1,bracket,tree,59
+settings_accessibility,Display,elder_text_heavy,co_present,"[158, 660]",158,660,63,674,1038,747,1,1,1,bracket,tree,60
+settings_accessibility,Display size & text,elder_text_heavy,co_present,"[442, 804]",442,804,221,815,679,892,1,1,1,bracket,tree,62
+settings_accessibility,"Font size, display size, bold text, outline text",elder_text_heavy,co_present,"[588, 960]",588,960,221,892,954,1028,1,1,1,bracket,tree,59
+settings_accessibility,Color & motion,elder_text_heavy,co_present,"[411, 1072]",411,1072,221,1117,600,1194,0,1,0,bracket,tree,55
+settings_accessibility,"Dark theme, color correction, remove animations",elder_text_heavy,co_present,"[478, 1262]",478,1262,221,1194,954,1330,1,1,1,bracket,tree,59
+settings_accessibility,Magnification,elder_text_heavy,co_present,"[391, 1458]",391,1458,221,1419,569,1496,1,1,1,bracket,tree,62
+settings_accessibility,Off / Zoom in to make content larger on your screen,elder_text_heavy,co_present,"[588, 1564]",588,1564,221,1496,954,1632,1,1,1,bracket,tree,59
+settings_accessibility,Select to Speak,elder_text_heavy,co_present,"[454, 1760]",454,1760,221,1721,614,1798,1,1,1,bracket,tree,60
+settings_accessibility,Off / Hear selected text,elder_text_heavy,co_present,"[490, 1858]",490,1858,221,1798,781,1871,1,1,1,bracket,tree,59
+settings_accessibility,Interaction controls,elder_text_heavy,co_present,"[300, 1919]",300,1919,63,1981,1038,2054,0,1,0,bracket,tree,60
+settings_accessibility,Accessibility Menu,elder_text_heavy,co_present,"[370, 2178]",370,2178,221,2122,696,2199,1,1,1,bracket,tree,58
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",elder_text_heavy,co_present,"[588, 2267]",-1,-1,221,2199,954,2219,0,1,0,bracket,tree,58
+settings_accessibility,Voice Access,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Off / Control device with voice commands,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Vibration & haptics,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Screen reader,elder_zoom_heavy,co_present,"[206, 264]",206,264,72,240,1032,297,1,1,1,bracket,tree,60
+settings_accessibility,TalkBack,elder_zoom_heavy,co_present,"[380, 390]",380,390,252,375,447,440,1,1,1,bracket,tree,62
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,elder_zoom_heavy,co_present,"[497, 503]",497,503,252,440,936,546,1,1,1,bracket,tree,59
+settings_accessibility,Display,elder_zoom_heavy,co_present,"[136, 662]",136,662,72,672,1032,729,1,1,1,bracket,tree,60
+settings_accessibility,Display size & text,elder_zoom_heavy,co_present,"[444, 809]",444,809,252,807,642,872,1,1,1,bracket,tree,59
+settings_accessibility,"Font size, display size, bold text, outline text",elder_zoom_heavy,co_present,"[449, 864]",449,864,252,872,936,978,0,1,0,bracket,tree,59
+settings_accessibility,Color & motion,elder_zoom_heavy,co_present,"[396, 1055]",396,1055,252,1080,570,1145,1,1,1,bracket,tree,59
+settings_accessibility,"Dark theme, color correction, remove animations",elder_zoom_heavy,co_present,"[527, 1204]",527,1204,252,1145,936,1251,1,1,1,bracket,tree,53
+settings_accessibility,Magnification,elder_zoom_heavy,co_present,"[448, 1385]",448,1385,252,1353,546,1418,1,1,1,bracket,tree,60
+settings_accessibility,Off / Zoom in to make content larger on your screen,elder_zoom_heavy,co_present,"[507, 1478]",507,1478,252,1418,936,1524,1,1,1,bracket,tree,59
+settings_accessibility,Select to Speak,elder_zoom_heavy,co_present,"[414, 1658]",414,1658,252,1626,583,1691,1,1,1,bracket,tree,60
+settings_accessibility,Off / Hear selected text,elder_zoom_heavy,co_present,"[449, 1730]",449,1730,252,1691,686,1748,1,1,1,bracket,tree,59
+settings_accessibility,Interaction controls,elder_zoom_heavy,co_present,"[247, 1794]",247,1794,72,1874,1032,1931,0,1,0,bracket,tree,60
+settings_accessibility,Accessibility Menu,elder_zoom_heavy,co_present,"[481, 1924]",481,1924,252,2009,654,2074,0,1,0,bracket,tree,59
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",elder_zoom_heavy,co_present,"[543, 2127]",543,2127,252,2074,936,2180,1,1,1,bracket,tree,59
+settings_accessibility,Voice Access,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Off / Control device with voice commands,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Vibration & haptics,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Screen reader,elder_combo_max,co_present,"[290, 310]",290,310,78,260,1028,360,1,1,1,bracket,tree,40
+settings_accessibility,TalkBack,elder_combo_max,co_present,"[424, 468]",424,468,273,445,589,550,1,1,1,bracket,tree,42
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,elder_combo_max,co_present,"[538, 650]",538,650,273,550,924,824,1,1,1,bracket,tree,39
+settings_accessibility,Display,elder_combo_max,co_present,"[199, 969]",199,969,78,961,1028,1061,1,1,1,bracket,tree,40
+settings_accessibility,Display size & text,elder_combo_max,co_present,"[528, 1165]",528,1165,273,1146,901,1251,1,1,1,bracket,tree,36
+settings_accessibility,"Font size, display size, bold text, outline text",elder_combo_max,co_present,"[500, 1358]",500,1358,273,1251,924,1525,1,1,1,bracket,tree,39
+settings_accessibility,Color & motion,elder_combo_max,co_present,"[458, 1596]",458,1596,273,1636,788,1741,0,1,0,bracket,tree,42
+settings_accessibility,"Dark theme, color correction, remove animations",elder_combo_max,co_present,"[543, 1815]",543,1815,273,1741,924,2015,1,1,1,bracket,tree,39
+settings_accessibility,Magnification,elder_combo_max,co_present,"[520, 2098]",520,2098,273,2126,747,2177,1,1,1,bracket,tree,39
+settings_accessibility,Off / Zoom in to make content larger on your screen,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Select to Speak,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Off / Hear selected text,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Interaction controls,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Accessibility Menu,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Voice Access,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Off / Control device with voice commands,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Vibration & haptics,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Screen reader,elder_combo_mid,co_present,"[265, 268]",265,268,72,240,1032,328,1,1,1,bracket,tree,43
+settings_accessibility,TalkBack,elder_combo_mid,co_present,"[331, 424]",331,424,252,406,532,498,1,1,1,bracket,tree,45
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,elder_combo_mid,co_present,"[484, 581]",484,581,252,498,936,740,1,1,1,bracket,tree,42
+settings_accessibility,Display,elder_combo_mid,co_present,"[176, 851]",176,851,72,866,1032,954,0,1,0,bracket,tree,43
+settings_accessibility,Display size & text,elder_combo_mid,co_present,"[500, 1025]",500,1025,252,1032,811,1124,1,1,1,bracket,tree,44
+settings_accessibility,"Font size, display size, bold text, outline text",elder_combo_mid,co_present,"[506, 1144]",506,1144,252,1124,936,1289,0,1,0,bracket,tree,36
+settings_accessibility,Color & motion,elder_combo_mid,co_present,"[476, 1437]",476,1437,252,1391,709,1483,1,1,1,bracket,tree,45
+settings_accessibility,"Dark theme, color correction, remove animations",elder_combo_mid,co_present,"[459, 1498]",459,1498,252,1483,936,1725,0,1,0,bracket,tree,42
+settings_accessibility,Magnification,elder_combo_mid,co_present,"[442, 1848]",442,1848,252,1827,673,1919,1,1,1,bracket,tree,45
+settings_accessibility,Off / Zoom in to make content larger on your screen,elder_combo_mid,co_present,"[509, 2036]",509,2036,252,1919,936,2161,1,1,1,bracket,tree,42
+settings_accessibility,Select to Speak,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Off / Hear selected text,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Interaction controls,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Accessibility Menu,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Voice Access,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Off / Control device with voice commands,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Vibration & haptics,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_accessibility,Screen reader,colorblind_deuteranomaly,co_present,"[211, 219]",211,219,63,210,1038,261,1,1,1,bracket,tree,74
+settings_accessibility,TalkBack,colorblind_deuteranomaly,co_present,"[321, 330]",321,330,221,329,391,386,1,1,1,bracket,tree,76
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,colorblind_deuteranomaly,co_present,"[499, 399]",499,399,221,386,954,480,1,1,1,bracket,tree,72
+settings_accessibility,Display,colorblind_deuteranomaly,co_present,"[116, 577]",116,577,63,590,1038,641,1,1,1,bracket,tree,74
+settings_accessibility,Display size & text,colorblind_deuteranomaly,co_present,"[368, 687]",368,687,221,709,560,766,1,1,1,bracket,tree,73
+settings_accessibility,"Font size, display size, bold text, outline text",colorblind_deuteranomaly,co_present,"[495, 742]",495,742,221,766,933,817,1,1,1,bracket,tree,72
+settings_accessibility,Color & motion,colorblind_deuteranomaly,co_present,"[366, 935]",366,935,221,906,498,963,1,1,1,bracket,tree,76
+settings_accessibility,"Dark theme, color correction, remove animations",colorblind_deuteranomaly,co_present,"[456, 931]",456,931,221,963,954,1057,0,1,0,bracket,tree,72
+settings_accessibility,Magnification,colorblind_deuteranomaly,co_present,"[372, 1174]",372,1174,221,1146,477,1203,1,1,1,bracket,tree,76
+settings_accessibility,Off / Zoom in to make content larger on your screen,colorblind_deuteranomaly,co_present,"[516, 1233]",516,1233,221,1203,954,1297,1,1,1,bracket,tree,66
+settings_accessibility,Select to Speak,colorblind_deuteranomaly,co_present,"[335, 1313]",335,1313,221,1386,510,1443,0,1,0,bracket,tree,73
+settings_accessibility,Off / Hear selected text,colorblind_deuteranomaly,co_present,"[380, 1363]",380,1363,221,1443,604,1494,0,1,0,bracket,tree,72
+settings_accessibility,Interaction controls,colorblind_deuteranomaly,co_present,"[261, 1506]",261,1506,63,1604,1038,1655,0,1,0,bracket,tree,74
+settings_accessibility,Accessibility Menu,colorblind_deuteranomaly,co_present,"[390, 1732]",390,1732,221,1723,571,1780,1,1,1,bracket,tree,74
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",colorblind_deuteranomaly,co_present,"[568, 1889]",568,1889,221,1780,954,1874,1,1,1,bracket,tree,72
+settings_accessibility,Voice Access,colorblind_deuteranomaly,co_present,"[345, 1988]",345,1988,221,1963,473,2020,1,1,1,bracket,tree,76
+settings_accessibility,Off / Control device with voice commands,colorblind_deuteranomaly,co_present,"[530, 2078]",530,2078,221,2020,908,2071,1,1,1,bracket,tree,72
+settings_accessibility,Vibration & haptics,colorblind_deuteranomaly,co_present,"[390, 2195]",390,2195,221,2160,574,2217,1,1,1,bracket,tree,73
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",colorblind_deuteranomaly,co_present,"[600, 2243]",-1,-1,221,2217,954,2219,0,1,0,bracket,tree,75
+settings_display,Brightness,baseline,co_present,"[174, 227]",174,227,63,210,1038,261,1,1,1,bracket,tree,65
+settings_display,Brightness level,baseline,co_present,"[228, 335]",228,335,84,329,378,386,1,1,1,bracket,tree,66
+settings_display,83%,baseline,co_present,"[120, 386]",120,386,84,386,153,437,1,1,1,bracket,tree,67
+settings_display,Lock display,baseline,co_present,"[161, 539]",161,539,63,547,1038,598,1,1,1,bracket,tree,65
+settings_display,Lock screen,baseline,co_present,"[200, 709]",200,709,84,666,309,723,1,1,1,bracket,tree,66
+settings_display,Show all notification content,baseline,co_present,"[319, 692]",319,692,84,723,548,774,0,1,0,bracket,tree,63
+settings_display,Screen timeout,baseline,co_present,"[234, 833]",234,833,84,863,366,920,1,1,1,bracket,tree,66
+settings_display,Not set,baseline,co_present,"[134, 875]",134,875,84,920,203,971,0,1,0,bracket,tree,66
+settings_display,Appearance,baseline,co_present,"[164, 1025]",164,1025,63,1081,1038,1132,0,1,0,bracket,tree,64
+settings_display,Dark theme,baseline,co_present,"[194, 1134]",194,1134,84,1200,298,1257,0,1,0,bracket,tree,66
+settings_display,Will turn on when Bedtime starts,baseline,co_present,"[410, 1192]",410,1192,84,1257,616,1308,0,1,0,bracket,tree,63
+settings_display,Display size & text,baseline,co_present,"[255, 1318]",255,1318,84,1397,423,1454,0,1,0,bracket,tree,66
+settings_display,"Font size, display size, bold text, outline text",baseline,co_present,"[344, 1402]",344,1402,84,1454,796,1505,0,1,0,bracket,tree,63
+settings_display,Navigation mode,baseline,co_present,"[223, 1499]",223,1499,84,1594,402,1651,0,1,0,bracket,tree,66
+settings_display,Gesture navigation,baseline,co_present,"[226, 1558]",226,1558,84,1651,392,1702,0,1,0,bracket,tree,66
+settings_display,Screen saver,baseline,co_present,"[188, 1688]",188,1688,84,1791,323,1848,0,1,0,bracket,tree,66
+settings_display,On / Clock,baseline,co_present,"[175, 1874]",175,1874,84,1848,254,1899,1,1,1,bracket,tree,66
+settings_display,Color,baseline,co_present,"[103, 1894]",103,1894,63,2009,1038,2060,0,1,0,bracket,tree,65
+settings_display,Colors,baseline,co_present,"[165, 2187]",165,2187,84,2152,205,2209,1,1,1,bracket,tree,67
+settings_display,Brightness,elder_text_heavy,co_present,"[191, 241]",191,241,63,210,1038,283,1,1,1,bracket,tree,56
+settings_display,Brightness level,elder_text_heavy,co_present,"[250, 362]",250,362,84,351,484,428,1,1,1,bracket,tree,58
+settings_display,83%,elder_text_heavy,co_present,"[103, 430]",103,430,84,428,184,501,1,1,1,bracket,tree,58
+settings_display,Lock display,elder_text_heavy,co_present,"[180, 600]",180,600,63,611,1038,684,1,1,1,bracket,tree,56
+settings_display,Lock screen,elder_text_heavy,co_present,"[217, 790]",217,790,84,752,390,829,1,1,1,bracket,tree,58
+settings_display,Show all notification content,elder_text_heavy,co_present,"[393, 807]",393,807,84,829,767,902,0,1,0,bracket,tree,55
+settings_display,Screen timeout,elder_text_heavy,co_present,"[288, 962]",288,962,84,991,468,1068,0,1,0,bracket,tree,58
+settings_display,Not set,elder_text_heavy,co_present,"[160, 1027]",160,1027,84,1068,260,1141,0,1,0,bracket,tree,58
+settings_display,Appearance,elder_text_heavy,co_present,"[193, 1201]",193,1201,63,1251,1038,1324,0,1,0,bracket,tree,56
+settings_display,Dark theme,elder_text_heavy,co_present,"[244, 1328]",244,1328,84,1392,374,1469,0,1,0,bracket,tree,57
+settings_display,Will turn on when Bedtime starts,elder_text_heavy,co_present,"[212, 1437]",212,1437,84,1469,672,1605,0,1,0,bracket,tree,55
+settings_display,Display size & text,elder_text_heavy,co_present,"[289, 1610]",289,1610,84,1694,542,1771,0,1,0,bracket,tree,58
+settings_display,"Font size, display size, bold text, outline text",elder_text_heavy,co_present,"[400, 1849]",400,1849,84,1771,954,1907,1,1,1,bracket,tree,55
+settings_display,Navigation mode,elder_text_heavy,co_present,"[288, 1890]",288,1890,84,1996,517,2073,0,1,0,bracket,tree,58
+settings_display,Gesture navigation,elder_text_heavy,co_present,"[303, 2124]",303,2124,84,2073,535,2146,1,1,1,bracket,tree,58
+settings_display,Screen saver,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_display,On / Clock,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Color,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Colors,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Brightness,elder_zoom_heavy,co_present,"[161, 236]",161,236,72,240,1032,297,1,1,1,bracket,tree,58
+settings_display,Brightness level,elder_zoom_heavy,co_present,"[255, 388]",255,388,96,375,434,440,1,1,1,bracket,tree,60
+settings_display,83%,elder_zoom_heavy,co_present,"[126, 439]",126,439,96,440,175,497,1,1,1,bracket,tree,60
+settings_display,Lock display,elder_zoom_heavy,co_present,"[162, 608]",162,608,72,623,1032,680,1,1,1,bracket,tree,58
+settings_display,Lock screen,elder_zoom_heavy,co_present,"[221, 749]",221,749,96,758,353,823,1,1,1,bracket,tree,60
+settings_display,Show all notification content,elder_zoom_heavy,co_present,"[307, 795]",307,795,96,823,625,880,0,1,0,bracket,tree,57
+settings_display,Screen timeout,elder_zoom_heavy,co_present,"[239, 950]",239,950,96,982,419,1047,0,1,0,bracket,tree,60
+settings_display,Not set,elder_zoom_heavy,co_present,"[168, 1096]",168,1096,96,1047,232,1104,1,1,1,bracket,tree,60
+settings_display,Appearance,elder_zoom_heavy,co_present,"[188, 1176]",188,1176,72,1230,1032,1287,0,1,0,bracket,tree,58
+settings_display,Dark theme,elder_zoom_heavy,co_present,"[227, 1321]",227,1321,96,1365,340,1430,0,1,0,bracket,tree,59
+settings_display,Will turn on when Bedtime starts,elder_zoom_heavy,co_present,"[302, 1503]",302,1503,96,1430,615,1536,1,1,1,bracket,tree,57
+settings_display,Display size & text,elder_zoom_heavy,co_present,"[298, 1574]",298,1574,96,1638,486,1703,0,1,0,bracket,tree,60
+settings_display,"Font size, display size, bold text, outline text",elder_zoom_heavy,co_present,"[443, 1629]",443,1629,96,1703,906,1760,0,1,0,bracket,tree,57
+settings_display,Navigation mode,elder_zoom_heavy,co_present,"[274, 1778]",274,1778,96,1862,459,1927,0,1,0,bracket,tree,60
+settings_display,Gesture navigation,elder_zoom_heavy,co_present,"[271, 1961]",271,1961,96,1927,446,1984,1,1,1,bracket,tree,60
+settings_display,Screen saver,elder_zoom_heavy,co_present,"[252, 2119]",252,2119,96,2086,369,2151,1,1,1,bracket,tree,59
+settings_display,On / Clock,elder_zoom_heavy,co_present,"[191, 2179]",191,2179,96,2151,290,2196,1,1,1,bracket,tree,59
+settings_display,Color,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Colors,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Brightness,elder_combo_max,co_present,"[252, 311]",252,311,78,260,1028,360,1,1,1,bracket,tree,43
+settings_display,Brightness level,elder_combo_max,co_present,"[358, 490]",358,490,104,445,652,550,1,1,1,bracket,tree,42
+settings_display,83%,elder_combo_max,co_present,"[133, 573]",133,573,104,550,242,650,1,1,1,bracket,tree,45
+settings_display,Lock display,elder_combo_max,co_present,"[249, 788]",249,788,78,787,1028,887,1,1,1,bracket,tree,43
+settings_display,Lock screen,elder_combo_max,co_present,"[281, 969]",281,969,104,972,522,1077,1,1,1,bracket,tree,45
+settings_display,Show all notification content,elder_combo_max,co_present,"[297, 1102]",297,1102,104,1077,924,1264,0,1,0,bracket,tree,36
+settings_display,Screen timeout,elder_combo_max,co_present,"[271, 1351]",271,1351,104,1375,628,1480,0,1,0,bracket,tree,45
+settings_display,Not set,elder_combo_max,co_present,"[198, 1450]",198,1450,104,1480,342,1580,0,1,0,bracket,tree,45
+settings_display,Appearance,elder_combo_max,co_present,"[250, 1720]",250,1720,78,1717,1028,1817,1,1,1,bracket,tree,43
+settings_display,Dark theme,elder_combo_max,co_present,"[261, 1842]",261,1842,104,1902,501,2007,0,1,0,bracket,tree,43
+settings_display,Will turn on when Bedtime starts,elder_combo_max,co_present,"[282, 2099]",282,2099,104,2007,576,2177,1,1,1,bracket,tree,45
+settings_display,Display size & text,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_display,"Font size, display size, bold text, outline text",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Navigation mode,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Gesture navigation,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Screen saver,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_display,On / Clock,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Color,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Colors,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Brightness,elder_combo_mid,co_present,"[212, 283]",212,283,72,240,1032,328,1,1,1,bracket,tree,48
+settings_display,Brightness level,elder_combo_mid,co_present,"[291, 424]",291,424,96,406,584,498,1,1,1,bracket,tree,50
+settings_display,83%,elder_combo_mid,co_present,"[132, 507]",132,507,96,498,218,586,1,1,1,bracket,tree,50
+settings_display,Lock display,elder_combo_mid,co_present,"[206, 722]",206,722,72,712,1032,800,1,1,1,bracket,tree,48
+settings_display,Lock screen,elder_combo_mid,co_present,"[282, 878]",282,878,96,878,467,970,1,1,1,bracket,tree,50
+settings_display,Show all notification content,elder_combo_mid,co_present,"[389, 948]",389,948,96,970,931,1058,0,1,0,bracket,tree,47
+settings_display,Screen timeout,elder_combo_mid,co_present,"[315, 1134]",315,1134,96,1160,563,1252,0,1,0,bracket,tree,50
+settings_display,Not set,elder_combo_mid,co_present,"[188, 1297]",188,1297,96,1252,310,1340,1,1,1,bracket,tree,50
+settings_display,Appearance,elder_combo_mid,co_present,"[212, 1426]",212,1426,72,1466,1032,1554,0,1,0,bracket,tree,48
+settings_display,Dark theme,elder_combo_mid,co_present,"[256, 1701]",256,1701,96,1632,450,1724,1,1,1,bracket,tree,49
+settings_display,Will turn on when Bedtime starts,elder_combo_mid,co_present,"[274, 1755]",274,1755,96,1724,615,1889,1,1,1,bracket,tree,47
+settings_display,Display size & text,elder_combo_mid,co_present,"[355, 1920]",355,1920,96,1991,655,2083,0,1,0,bracket,tree,47
+settings_display,"Font size, display size, bold text, outline text",elder_combo_mid,co_present,"[522, 2140]",522,2140,96,2083,936,2196,1,1,1,bracket,tree,50
+settings_display,Navigation mode,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Gesture navigation,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Screen saver,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_display,On / Clock,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Color,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Colors,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Brightness,colorblind_deuteranomaly,co_present,"[174, 518]",174,518,63,533,1038,584,1,1,1,bracket,tree,58
+settings_display,Brightness level,colorblind_deuteranomaly,co_present,"[241, 636]",241,636,84,652,378,709,1,1,1,bracket,tree,59
+settings_display,83%,colorblind_deuteranomaly,co_present,"[111, 684]",111,684,84,709,153,760,1,1,1,bracket,tree,60
+settings_display,Lock display,colorblind_deuteranomaly,co_present,"[178, 836]",178,836,63,870,1038,921,0,1,0,bracket,tree,58
+settings_display,Lock screen,colorblind_deuteranomaly,co_present,"[208, 949]",208,949,84,989,309,1046,0,1,0,bracket,tree,59
+settings_display,Show all notification content,colorblind_deuteranomaly,co_present,"[281, 990]",281,990,84,1046,548,1097,0,1,0,bracket,tree,55
+settings_display,Screen timeout,colorblind_deuteranomaly,co_present,"[311, 1129]",311,1129,84,1186,366,1243,0,1,0,bracket,tree,59
+settings_display,Not set,colorblind_deuteranomaly,co_present,"[161, 1185]",161,1185,84,1243,203,1294,0,1,0,bracket,tree,59
+settings_display,Appearance,colorblind_deuteranomaly,co_present,"[152, 1330]",152,1330,63,1404,1038,1455,0,1,0,bracket,tree,58
+settings_display,Dark theme,colorblind_deuteranomaly,co_present,"[210, 1448]",210,1448,84,1523,298,1580,0,1,0,bracket,tree,59
+settings_display,Will turn on when Bedtime starts,colorblind_deuteranomaly,co_present,"[336, 1604]",336,1604,84,1580,616,1631,1,1,1,bracket,tree,56
+settings_display,Display size & text,colorblind_deuteranomaly,co_present,"[231, 1619]",231,1619,84,1720,423,1777,0,1,0,bracket,tree,59
+settings_display,"Font size, display size, bold text, outline text",colorblind_deuteranomaly,co_present,"[404, 1796]",404,1796,84,1777,796,1828,1,1,1,bracket,tree,56
+settings_display,Navigation mode,colorblind_deuteranomaly,co_present,"[229, 1816]",229,1816,84,1917,402,1974,0,1,0,bracket,tree,59
+settings_display,Gesture navigation,colorblind_deuteranomaly,co_present,"[225, 1849]",225,1849,84,1974,392,2025,0,1,0,bracket,tree,59
+settings_display,Screen saver,colorblind_deuteranomaly,co_present,"[221, 2143]",221,2143,84,2114,323,2171,1,1,1,bracket,tree,59
+settings_display,On / Clock,colorblind_deuteranomaly,co_present,"[171, 2162]",171,2162,84,2171,254,2219,1,1,1,bracket,tree,59
+settings_display,Color,colorblind_deuteranomaly,off_screen,,,,,,,,,0,,,tree,0
+settings_display,Colors,colorblind_deuteranomaly,off_screen,,,,,,,,,0,,,tree,0
+settings_main,Search Settings,baseline,co_present,"[341, 105]",341,105,189,80,578,151,1,1,1,bracket,tree,69
+settings_main,Google,baseline,co_present,"[280, 309]",280,309,221,289,354,346,1,1,1,bracket,tree,71
+settings_main,Services & preferences,baseline,co_present,"[387, 347]",387,347,221,346,600,397,1,1,1,bracket,tree,68
+settings_main,Network & internet,baseline,co_present,"[384, 522]",384,522,221,523,566,580,1,1,1,bracket,tree,69
+settings_main,"Mobile, Wi‑Fi, hotspot",baseline,co_present,"[353, 565]",353,565,221,580,572,631,1,1,1,bracket,tree,69
+settings_main,Connected devices,baseline,co_present,"[370, 694]",370,694,221,720,574,777,1,1,1,bracket,tree,69
+settings_main,"Bluetooth, pairing",baseline,co_present,"[360, 758]",360,758,221,777,508,828,1,1,1,bracket,tree,70
+settings_main,Apps,baseline,co_present,"[277, 983]",277,983,221,954,318,1011,1,1,1,bracket,tree,71
+settings_main,"Assistant, recent apps, default apps",baseline,co_present,"[429, 967]",429,967,221,1011,806,1062,0,1,0,bracket,tree,67
+settings_main,Notifications,baseline,co_present,"[315, 1180]",315,1180,221,1151,460,1208,1,1,1,bracket,tree,71
+settings_main,"Notification history, conversations",baseline,co_present,"[469, 1234]",469,1234,221,1208,777,1259,1,1,1,bracket,tree,62
+settings_main,Sound & vibration,baseline,co_present,"[381, 1378]",381,1378,221,1348,548,1405,1,1,1,bracket,tree,69
+settings_main,Volume and haptics,baseline,co_present,"[384, 1430]",384,1430,221,1405,546,1456,1,1,1,bracket,tree,69
+settings_main,Modes,baseline,co_present,"[293, 1574]",293,1574,221,1545,350,1602,1,1,1,bracket,tree,71
+settings_main,"Do Not Disturb, Bedtime, Driving",baseline,co_present,"[508, 1628]",508,1628,221,1602,744,1653,1,1,1,bracket,tree,68
+settings_main,Display & touch,baseline,co_present,"[390, 1771]",390,1771,221,1742,510,1799,1,1,1,bracket,tree,69
+settings_main,"Dark theme, font size, touch",baseline,co_present,"[408, 1794]",408,1794,221,1799,675,1850,1,1,1,bracket,tree,68
+settings_main,Wallpaper & style,baseline,co_present,"[380, 1821]",380,1821,221,1939,542,1996,0,1,0,bracket,tree,69
+settings_main,"Colors, themed icons, app grid",baseline,co_present,"[438, 2007]",438,2007,221,1996,717,2047,1,1,1,bracket,tree,68
+settings_main,Storage,baseline,co_present,"[305, 2190]",305,2190,221,2173,366,2219,1,1,1,bracket,tree,71
+settings_main,Search Settings,elder_text_heavy,co_present,"[370, 106]",370,106,189,72,664,159,1,1,1,bracket,tree,57
+settings_main,Google,elder_text_heavy,co_present,"[305, 316]",305,316,221,289,402,366,1,1,1,bracket,tree,59
+settings_main,Services & preferences,elder_text_heavy,co_present,"[459, 385]",459,385,221,366,770,439,1,1,1,bracket,tree,57
+settings_main,Network & internet,elder_text_heavy,co_present,"[424, 566]",424,566,221,565,691,642,1,1,1,bracket,tree,57
+settings_main,"Mobile, Wi‑Fi, hotspot",elder_text_heavy,co_present,"[426, 637]",426,637,221,642,737,715,1,1,1,bracket,tree,57
+settings_main,Connected devices,elder_text_heavy,co_present,"[413, 804]",413,804,221,804,701,881,1,1,1,bracket,tree,57
+settings_main,"Bluetooth, pairing",elder_text_heavy,co_present,"[429, 918]",429,918,221,881,642,954,1,1,1,bracket,tree,58
+settings_main,Apps,elder_text_heavy,co_present,"[281, 1119]",281,1119,221,1080,351,1157,1,1,1,bracket,tree,59
+settings_main,"Assistant, recent apps, default apps",elder_text_heavy,co_present,"[493, 1136]",493,1136,221,1157,996,1293,0,1,0,bracket,tree,51
+settings_main,Notifications,elder_text_heavy,co_present,"[400, 1420]",400,1420,221,1382,547,1459,1,1,1,bracket,tree,59
+settings_main,"Notification history, conversations",elder_text_heavy,co_present,"[393, 1492]",393,1492,221,1459,996,1595,1,1,1,bracket,tree,57
+settings_main,Sound & vibration,elder_text_heavy,co_present,"[396, 1722]",396,1722,221,1684,665,1761,1,1,1,bracket,tree,57
+settings_main,Volume and haptics,elder_text_heavy,co_present,"[431, 1836]",431,1836,221,1761,695,1834,1,1,1,bracket,tree,57
+settings_main,Modes,elder_text_heavy,co_present,"[326, 1962]",326,1962,221,1923,395,2000,1,1,1,bracket,tree,59
+settings_main,"Do Not Disturb, Bedtime, Driving",elder_text_heavy,co_present,"[546, 2037]",546,2037,221,2000,986,2073,1,1,1,bracket,tree,57
+settings_main,Display & touch,elder_text_heavy,co_present,"[414, 2190]",414,2190,221,2162,612,2219,1,1,1,bracket,tree,58
+settings_main,"Dark theme, font size, touch",elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_main,Wallpaper & style,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_main,"Colors, themed icons, app grid",elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_main,Storage,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_main,Search Settings,elder_zoom_heavy,co_present,"[433, 119]",433,119,216,91,661,172,1,1,1,bracket,tree,60
+settings_main,Google,elder_zoom_heavy,co_present,"[322, 379]",322,379,252,330,403,395,1,1,1,bracket,tree,62
+settings_main,Services & preferences,elder_zoom_heavy,co_present,"[437, 424]",437,424,252,395,677,452,1,1,1,bracket,tree,60
+settings_main,Network & internet,elder_zoom_heavy,co_present,"[489, 621]",489,621,252,596,648,661,1,1,1,bracket,tree,60
+settings_main,"Mobile, Wi‑Fi, hotspot",elder_zoom_heavy,co_present,"[437, 690]",437,690,252,661,652,718,1,1,1,bracket,tree,60
+settings_main,Connected devices,elder_zoom_heavy,co_present,"[441, 808]",441,808,252,820,656,885,1,1,1,bracket,tree,60
+settings_main,"Bluetooth, pairing",elder_zoom_heavy,co_present,"[419, 913]",419,913,252,885,578,942,1,1,1,bracket,tree,61
+settings_main,Apps,elder_zoom_heavy,co_present,"[321, 1119]",321,1119,252,1086,362,1151,1,1,1,bracket,tree,62
+settings_main,"Assistant, recent apps, default apps",elder_zoom_heavy,co_present,"[536, 1175]",536,1175,252,1151,919,1208,1,1,1,bracket,tree,54
+settings_main,Notifications,elder_zoom_heavy,co_present,"[407, 1343]",407,1343,252,1310,526,1375,1,1,1,bracket,tree,62
+settings_main,"Notification history, conversations",elder_zoom_heavy,co_present,"[509, 1404]",509,1404,252,1375,885,1432,1,1,1,bracket,tree,60
+settings_main,Sound & vibration,elder_zoom_heavy,co_present,"[479, 1566]",479,1566,252,1534,628,1599,1,1,1,bracket,tree,60
+settings_main,Volume and haptics,elder_zoom_heavy,co_present,"[420, 1627]",420,1627,252,1599,623,1656,1,1,1,bracket,tree,60
+settings_main,Modes,elder_zoom_heavy,co_present,"[324, 1790]",324,1790,252,1758,398,1823,1,1,1,bracket,tree,62
+settings_main,"Do Not Disturb, Bedtime, Driving",elder_zoom_heavy,co_present,"[503, 1868]",503,1868,252,1823,847,1880,1,1,1,bracket,tree,60
+settings_main,Display & touch,elder_zoom_heavy,co_present,"[446, 2015]",446,2015,252,1982,583,2047,1,1,1,bracket,tree,61
+settings_main,"Dark theme, font size, touch",elder_zoom_heavy,co_present,"[468, 2076]",468,2076,252,2047,769,2104,1,1,1,bracket,tree,60
+settings_main,Wallpaper & style,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_main,"Colors, themed icons, app grid",elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_main,Storage,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0
+settings_main,Search Settings,elder_combo_max,co_present,"[516, 146]",516,146,234,82,888,203,1,1,1,bracket,tree,40
+settings_main,Google,elder_combo_max,co_present,"[391, 445]",391,445,273,358,518,463,1,1,1,bracket,tree,42
+settings_main,Services & preferences,elder_combo_max,co_present,"[472, 546]",472,546,273,463,976,650,1,1,1,bracket,tree,40
+settings_main,Network & internet,elder_combo_max,co_present,"[562, 826]",562,826,273,807,917,912,1,1,1,bracket,tree,42
+settings_main,"Mobile, Wi‑Fi, hotspot",elder_combo_max,co_present,"[432, 980]",432,980,273,912,976,1099,1,1,1,bracket,tree,39
+settings_main,Connected devices,elder_combo_max,co_present,"[566, 1207]",566,1207,273,1210,930,1315,1,1,1,bracket,tree,34
+settings_main,"Bluetooth, pairing",elder_combo_max,co_present,"[525, 1298]",525,1298,273,1315,849,1415,0,1,0,bracket,tree,40
+settings_main,Apps,elder_combo_max,co_present,"[341, 1618]",341,1618,273,1572,452,1677,1,1,1,bracket,tree,42
+settings_main,"Assistant, recent apps, default apps",elder_combo_max,co_present,"[526, 1772]",526,1772,273,1677,976,1864,1,1,1,bracket,tree,40
+settings_main,Notifications,elder_combo_max,co_present,"[501, 1926]",501,1926,273,1975,716,2080,0,1,0,bracket,tree,40
+settings_main,"Notification history, conversations",elder_combo_max,co_present,"[530, 2135]",530,2135,273,2080,976,2177,1,1,1,bracket,tree,42
+settings_main,Sound & vibration,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_main,Volume and haptics,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_main,Modes,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_main,"Do Not Disturb, Bedtime, Driving",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_main,Display & touch,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_main,"Dark theme, font size, touch",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_main,Wallpaper & style,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_main,"Colors, themed icons, app grid",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_main,Storage,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_main,Search Settings,elder_combo_mid,co_present,"[497, 123]",497,123,216,79,783,184,1,1,1,bracket,tree,46
+settings_main,Google,elder_combo_mid,co_present,"[370, 368]",370,368,252,330,470,422,1,1,1,bracket,tree,48
+settings_main,Services & preferences,elder_combo_mid,co_present,"[532, 452]",532,452,252,422,921,510,1,1,1,bracket,tree,46
+settings_main,Network & internet,elder_combo_mid,co_present,"[501, 694]",501,694,252,654,823,746,1,1,1,bracket,tree,46
+settings_main,"Mobile, Wi‑Fi, hotspot",elder_combo_mid,co_present,"[518, 787]",518,787,252,746,882,834,1,1,1,bracket,tree,46
+settings_main,Connected devices,elder_combo_mid,co_present,"[517, 925]",517,925,252,936,836,1028,1,1,1,bracket,tree,45
+settings_main,"Bluetooth, pairing",elder_combo_mid,co_present,"[504, 1070]",504,1070,252,1028,765,1116,1,1,1,bracket,tree,45
+settings_main,Apps,elder_combo_mid,co_present,"[306, 1233]",306,1233,252,1260,411,1352,0,1,0,bracket,tree,48
+settings_main,"Assistant, recent apps, default apps",elder_combo_mid,co_present,"[505, 1354]",505,1354,252,1352,984,1517,0,1,0,bracket,tree,46
+settings_main,Notifications,elder_combo_mid,co_present,"[499, 1637]",499,1637,252,1619,645,1711,1,1,1,bracket,tree,48
+settings_main,"Notification history, conversations",elder_combo_mid,co_present,"[466, 1744]",466,1744,252,1711,984,1876,1,1,1,bracket,tree,46
+settings_main,Sound & vibration,elder_combo_mid,co_present,"[496, 1905]",496,1905,252,1978,790,2070,0,1,0,bracket,tree,46
+settings_main,Volume and haptics,elder_combo_mid,co_present,"[508, 2145]",508,2145,252,2070,833,2158,1,1,1,bracket,tree,46
+settings_main,Modes,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_main,"Do Not Disturb, Bedtime, Driving",elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_main,Display & touch,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_main,"Dark theme, font size, touch",elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_main,Wallpaper & style,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_main,"Colors, themed icons, app grid",elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_main,Storage,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_main,Search Settings,colorblind_deuteranomaly,co_present,"[366, 105]",366,105,189,80,578,151,1,1,1,bracket,tree,69
+settings_main,Google,colorblind_deuteranomaly,co_present,"[283, 309]",283,309,221,289,354,346,1,1,1,bracket,tree,71
+settings_main,Services & preferences,colorblind_deuteranomaly,co_present,"[397, 348]",397,348,221,346,600,397,1,1,1,bracket,tree,68
+settings_main,Network & internet,colorblind_deuteranomaly,co_present,"[383, 511]",383,511,221,523,566,580,1,1,1,bracket,tree,69
+settings_main,"Mobile, Wi‑Fi, hotspot",colorblind_deuteranomaly,co_present,"[350, 560]",350,560,221,580,572,631,1,1,1,bracket,tree,69
+settings_main,Connected devices,colorblind_deuteranomaly,co_present,"[405, 749]",405,749,221,720,574,777,1,1,1,bracket,tree,69
+settings_main,"Bluetooth, pairing",colorblind_deuteranomaly,co_present,"[344, 803]",344,803,221,777,508,828,1,1,1,bracket,tree,70
+settings_main,Apps,colorblind_deuteranomaly,co_present,"[276, 967]",276,967,221,954,318,1011,1,1,1,bracket,tree,71
+settings_main,"Assistant, recent apps, default apps",colorblind_deuteranomaly,co_present,"[480, 1006]",480,1006,221,1011,806,1062,1,1,1,bracket,tree,67
+settings_main,Notifications,colorblind_deuteranomaly,co_present,"[358, 1177]",358,1177,221,1151,460,1208,1,1,1,bracket,tree,71
+settings_main,"Notification history, conversations",colorblind_deuteranomaly,co_present,"[469, 1234]",469,1234,221,1208,777,1259,1,1,1,bracket,tree,62
+settings_main,Sound & vibration,colorblind_deuteranomaly,co_present,"[365, 1388]",365,1388,221,1348,548,1405,1,1,1,bracket,tree,69
+settings_main,Volume and haptics,colorblind_deuteranomaly,co_present,"[368, 1430]",368,1430,221,1405,546,1456,1,1,1,bracket,tree,69
+settings_main,Modes,colorblind_deuteranomaly,co_present,"[280, 1573]",280,1573,221,1545,350,1602,1,1,1,bracket,tree,71
+settings_main,"Do Not Disturb, Bedtime, Driving",colorblind_deuteranomaly,co_present,"[442, 1618]",442,1618,221,1602,744,1653,1,1,1,bracket,tree,68
+settings_main,Display & touch,colorblind_deuteranomaly,co_present,"[367, 1771]",367,1771,221,1742,510,1799,1,1,1,bracket,tree,69
+settings_main,"Dark theme, font size, touch",colorblind_deuteranomaly,co_present,"[452, 1824]",452,1824,221,1799,675,1850,1,1,1,bracket,tree,68
+settings_main,Wallpaper & style,colorblind_deuteranomaly,co_present,"[401, 1828]",401,1828,221,1939,542,1996,0,1,0,bracket,tree,69
+settings_main,"Colors, themed icons, app grid",colorblind_deuteranomaly,co_present,"[410, 1901]",410,1901,221,1996,717,2047,0,1,0,bracket,tree,68
+settings_main,Storage,colorblind_deuteranomaly,co_present,"[307, 2200]",307,2200,221,2173,366,2219,1,1,1,bracket,tree,71
+settings_network,Internet,baseline,co_present,"[278, 205]",278,205,221,189,364,246,1,1,1,bracket,tree,69
+settings_network,AndroidWifi,baseline,co_present,"[296, 257]",296,257,221,246,413,297,1,1,1,bracket,tree,69
+settings_network,SIMs,baseline,co_present,"[278, 415]",278,415,221,386,316,443,1,1,1,bracket,tree,69
+settings_network,T-Mobile,baseline,co_present,"[308, 444]",308,444,221,443,361,494,1,1,1,bracket,tree,69
+settings_network,Airplane mode,baseline,co_present,"[345, 599]",345,599,221,607,491,664,1,1,1,bracket,tree,70
+settings_network,Hotspot & tethering,baseline,co_present,"[394, 748]",394,748,221,777,585,834,1,1,1,bracket,tree,66
+settings_network,Data Saver,baseline,co_present,"[320, 938]",320,938,221,974,423,1031,0,1,0,bracket,tree,69
+settings_network,VPN,baseline,co_present,"[252, 1218]",252,1218,221,1171,305,1228,1,1,1,bracket,tree,69
+settings_network,None,baseline,co_present,"[253, 1169]",253,1169,221,1228,308,1279,0,1,0,bracket,tree,69
+settings_network,Private DNS,baseline,co_present,"[198, 1296]",198,1296,84,1368,307,1425,0,1,0,bracket,tree,69
+settings_network,Automatic,baseline,co_present,"[170, 1350]",170,1350,84,1425,253,1476,0,1,0,bracket,tree,69
+settings_network,Adaptive connectivity,baseline,co_present,"[287, 1474]",287,1474,84,1565,482,1622,0,1,0,bracket,tree,69
+settings_network,On,baseline,co_present,"[101, 1648]",101,1648,84,1622,129,1673,1,1,1,bracket,tree,70
+settings_network,Mobile network security,baseline,co_present,"[286, 1658]",286,1658,84,1762,528,1819,0,1,0,bracket,tree,66
+settings_network,"Network type, encryption, notification controls",baseline,co_present,"[412, 1708]",412,1708,84,1819,835,1870,0,1,0,bracket,tree,66
+settings_network,Internet,elder_text_heavy,co_present,"[345, 210]",345,210,221,189,416,266,1,1,1,bracket,tree,70
+settings_network,AndroidWifi,elder_text_heavy,co_present,"[350, 301]",350,301,221,266,499,339,1,1,1,bracket,tree,70
+settings_network,SIMs,elder_text_heavy,co_present,"[314, 447]",314,447,221,428,350,505,1,1,1,bracket,tree,70
+settings_network,T-Mobile,elder_text_heavy,co_present,"[294, 510]",294,510,221,505,425,578,1,1,1,bracket,tree,70
+settings_network,Airplane mode,elder_text_heavy,co_present,"[392, 680]",392,680,221,681,588,758,1,1,1,bracket,tree,67
+settings_network,Hotspot & tethering,elder_text_heavy,co_present,"[468, 825]",468,825,221,861,715,938,0,1,0,bracket,tree,67
+settings_network,Data Saver,elder_text_heavy,co_present,"[328, 1060]",328,1060,221,1100,495,1177,0,1,0,bracket,tree,70
+settings_network,VPN,elder_text_heavy,co_present,"[292, 1378]",292,1378,221,1339,334,1416,1,1,1,bracket,tree,70
+settings_network,None,elder_text_heavy,co_present,"[300, 1474]",300,1474,221,1416,350,1489,1,1,1,bracket,tree,70
+settings_network,Private DNS,elder_text_heavy,co_present,"[207, 1502]",207,1502,84,1578,387,1655,0,1,0,bracket,tree,70
+settings_network,Automatic,elder_text_heavy,co_present,"[206, 1741]",206,1741,84,1655,333,1728,1,1,1,bracket,tree,70
+settings_network,Adaptive connectivity,elder_text_heavy,co_present,"[352, 1856]",352,1856,84,1817,627,1894,1,1,1,bracket,tree,67
+settings_network,On,elder_text_heavy,co_present,"[108, 1957]",108,1957,84,1894,151,1967,1,1,1,bracket,tree,70
+settings_network,Mobile network security,elder_text_heavy,co_present,"[400, 1942]",400,1942,84,2056,688,2133,0,1,0,bracket,tree,67
+settings_network,"Network type, encryption, notification controls",elder_text_heavy,co_present,"[355, 2188]",355,2188,84,2133,954,2219,1,1,1,bracket,tree,70
+settings_network,Internet,elder_zoom_heavy,co_present,"[343, 244]",343,244,252,216,417,281,1,1,1,bracket,tree,70
+settings_network,AndroidWifi,elder_zoom_heavy,co_present,"[345, 306]",345,306,252,281,468,338,1,1,1,bracket,tree,70
+settings_network,SIMs,elder_zoom_heavy,co_present,"[321, 456]",321,456,252,440,361,505,1,1,1,bracket,tree,70
+settings_network,T-Mobile,elder_zoom_heavy,co_present,"[338, 549]",338,549,252,505,412,562,1,1,1,bracket,tree,70
+settings_network,Airplane mode,elder_zoom_heavy,co_present,"[427, 694]",427,694,252,691,561,756,1,1,1,bracket,tree,67
+settings_network,Hotspot & tethering,elder_zoom_heavy,co_present,"[453, 854]",453,854,252,886,668,951,0,1,0,bracket,tree,67
+settings_network,Data Saver,elder_zoom_heavy,co_present,"[376, 1142]",376,1142,252,1110,483,1175,1,1,1,bracket,tree,70
+settings_network,VPN,elder_zoom_heavy,co_present,"[308, 1366]",308,1366,252,1334,347,1399,1,1,1,bracket,tree,70
+settings_network,None,elder_zoom_heavy,co_present,"[307, 1428]",307,1428,252,1399,351,1456,1,1,1,bracket,tree,70
+settings_network,Private DNS,elder_zoom_heavy,co_present,"[226, 1589]",226,1589,96,1558,351,1623,1,1,1,bracket,tree,70
+settings_network,Automatic,elder_zoom_heavy,co_present,"[201, 1654]",201,1654,96,1623,290,1680,1,1,1,bracket,tree,70
+settings_network,Adaptive connectivity,elder_zoom_heavy,co_present,"[330, 1808]",330,1808,96,1782,553,1847,1,1,1,bracket,tree,67
+settings_network,On,elder_zoom_heavy,co_present,"[116, 1883]",116,1883,96,1847,148,1904,1,1,1,bracket,tree,70
+settings_network,Mobile network security,elder_zoom_heavy,co_present,"[328, 2048]",328,2048,96,2006,604,2071,1,1,1,bracket,tree,67
+settings_network,"Network type, encryption, notification controls",elder_zoom_heavy,co_present,"[431, 2127]",431,2127,96,2071,936,2177,1,1,1,bracket,tree,67
+settings_network,Internet,elder_combo_max,co_present,"[396, 269]",396,269,273,234,540,339,1,1,1,bracket,tree,58
+settings_network,AndroidWifi,elder_combo_max,co_present,"[469, 428]",469,428,273,339,656,439,1,1,1,bracket,tree,56
+settings_network,SIMs,elder_combo_max,co_present,"[373, 567]",373,567,273,550,448,655,1,1,1,bracket,tree,58
+settings_network,T-Mobile,elder_combo_max,co_present,"[394, 664]",394,664,273,655,553,755,1,1,1,bracket,tree,58
+settings_network,Airplane mode,elder_combo_max,co_present,"[401, 937]",401,937,273,866,755,1062,1,1,1,bracket,tree,55
+settings_network,Hotspot & tethering,elder_combo_max,co_present,"[421, 1198]",421,1198,273,1173,924,1369,0,1,0,bracket,tree,55
+settings_network,Data Saver,elder_combo_max,co_present,"[461, 1547]",461,1547,273,1580,645,1685,0,1,0,bracket,tree,56
+settings_network,VPN,elder_combo_max,co_present,"[343, 1828]",343,1828,273,1896,428,2001,0,1,0,bracket,tree,58
+settings_network,None,elder_combo_max,co_present,"[346, 2092]",346,2092,273,2001,448,2101,1,1,1,bracket,tree,58
+settings_network,Private DNS,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_network,Automatic,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_network,Adaptive connectivity,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_network,On,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_network,Mobile network security,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_network,"Network type, encryption, notification controls",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0
+settings_network,Internet,elder_combo_mid,co_present,"[365, 248]",365,248,252,216,490,308,1,1,1,bracket,tree,64
+settings_network,AndroidWifi,elder_combo_mid,co_present,"[407, 347]",407,347,252,308,593,396,1,1,1,bracket,tree,62
+settings_network,SIMs,elder_combo_mid,co_present,"[311, 507]",311,507,252,498,408,590,1,1,1,bracket,tree,64
+settings_network,T-Mobile,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_network,Airplane mode,elder_combo_mid,co_present,"[470, 793]",470,793,252,794,699,886,1,1,1,bracket,tree,61
+settings_network,Hotspot & tethering,elder_combo_mid,co_present,"[473, 976]",473,976,252,1002,852,1094,0,1,0,bracket,tree,60
+settings_network,Data Saver,elder_combo_mid,co_present,"[418, 1330]",418,1330,252,1284,585,1376,1,1,1,bracket,tree,62
+settings_network,VPN,elder_combo_mid,co_present,"[344, 1612]",344,1612,252,1566,389,1658,1,1,1,bracket,tree,64
+settings_network,None,elder_combo_mid,co_present,"[329, 1705]",329,1705,252,1658,408,1746,1,1,1,bracket,tree,64
+settings_network,Private DNS,elder_combo_mid,co_present,"[295, 1868]",295,1868,96,1848,463,1940,1,1,1,bracket,tree,64
+settings_network,Automatic,elder_combo_mid,co_present,"[190, 1862]",190,1862,96,1940,401,2028,0,1,0,bracket,tree,64
+settings_network,Adaptive connectivity,elder_combo_mid,co_present,"[392, 2134]",392,2134,96,2130,754,2196,1,1,1,bracket,tree,61
+settings_network,On,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_network,Mobile network security,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_network,"Network type, encryption, notification controls",elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0
+settings_network,Internet,colorblind_deuteranomaly,co_present,"[284, 207]",284,207,221,189,364,246,1,1,1,bracket,tree,69
+settings_network,AndroidWifi,colorblind_deuteranomaly,co_present,"[315, 261]",315,261,221,246,413,297,1,1,1,bracket,tree,69
+settings_network,SIMs,colorblind_deuteranomaly,co_present,"[253, 397]",253,397,221,386,316,443,1,1,1,bracket,tree,69
+settings_network,T-Mobile,colorblind_deuteranomaly,co_present,"[287, 446]",287,446,221,443,361,494,1,1,1,bracket,tree,69
+settings_network,Airplane mode,colorblind_deuteranomaly,co_present,"[347, 597]",347,597,221,607,491,664,1,1,1,bracket,tree,70
+settings_network,Hotspot & tethering,colorblind_deuteranomaly,co_present,"[403, 762]",403,762,221,777,585,834,1,1,1,bracket,tree,66
+settings_network,Data Saver,colorblind_deuteranomaly,co_present,"[322, 924]",322,924,221,974,423,1031,0,1,0,bracket,tree,69
+settings_network,VPN,colorblind_deuteranomaly,co_present,"[255, 1200]",255,1200,221,1171,305,1228,1,1,1,bracket,tree,69
+settings_network,None,colorblind_deuteranomaly,co_present,"[242, 1182]",242,1182,221,1228,308,1279,0,1,0,bracket,tree,69
+settings_network,Private DNS,colorblind_deuteranomaly,co_present,"[206, 1394]",206,1394,84,1368,307,1425,1,1,1,bracket,tree,69
+settings_network,Automatic,colorblind_deuteranomaly,co_present,"[185, 1450]",185,1450,84,1425,253,1476,1,1,1,bracket,tree,69
+settings_network,Adaptive connectivity,colorblind_deuteranomaly,co_present,"[282, 1478]",282,1478,84,1565,482,1622,0,1,0,bracket,tree,69
+settings_network,On,colorblind_deuteranomaly,co_present,"[106, 1648]",106,1648,84,1622,129,1673,1,1,1,bracket,tree,70
+settings_network,Mobile network security,colorblind_deuteranomaly,co_present,"[279, 1656]",279,1656,84,1762,528,1819,0,1,0,bracket,tree,66
+settings_network,"Network type, encryption, notification controls",colorblind_deuteranomaly,co_present,"[408, 1730]",408,1730,84,1819,835,1870,0,1,0,bracket,tree,66
+youtube,Home,baseline,co_present,"[108, 2194]",108,2194,70,2175,147,2205,1,1,1,bracket,tree,72
+youtube,Shorts,baseline,co_present,"[324, 2193]",324,2193,283,2175,365,2205,1,1,1,bracket,tree,72
+youtube,Subscriptions,baseline,co_present,"[756, 2190]",756,2190,674,2175,838,2205,1,1,1,bracket,tree,72
+youtube,You,baseline,co_present,"[972, 2190]",972,2190,947,2175,998,2205,1,1,1,bracket,tree,72
+youtube,Home,elder_text_heavy,co_present,"[108, 2187]",108,2187,70,2175,147,2205,1,1,1,bracket,tree,72
+youtube,Shorts,elder_text_heavy,co_present,"[324, 2190]",324,2190,283,2175,365,2205,1,1,1,bracket,tree,72
+youtube,Subscriptions,elder_text_heavy,co_present,"[756, 2190]",756,2190,674,2175,838,2205,1,1,1,bracket,tree,72
+youtube,You,elder_text_heavy,co_present,"[971, 2177]",971,2177,947,2175,998,2205,1,1,1,bracket,tree,72
+youtube,Home,elder_zoom_heavy,co_present,"[109, 2188]",109,2188,65,2155,151,2190,1,1,1,bracket,tree,72
+youtube,Shorts,elder_zoom_heavy,co_present,"[304, 2168]",304,2168,277,2155,371,2190,1,1,1,bracket,tree,72
+youtube,Subscriptions,elder_zoom_heavy,co_present,"[758, 2169]",758,2169,662,2155,851,2190,1,1,1,bracket,tree,72
+youtube,You,elder_zoom_heavy,co_present,"[975, 2191]",975,2191,943,2155,1001,2190,1,1,1,bracket,tree,72
+youtube,Home,elder_combo_max,co_present,"[91, 2147]",91,2147,60,2128,156,2167,1,1,1,bracket,tree,65
+youtube,Shorts,elder_combo_max,co_present,"[324, 2142]",324,2142,273,2128,376,2167,1,1,1,bracket,tree,65
+youtube,Subscriptions,elder_combo_max,co_present,"[760, 2147]",760,2147,652,2128,860,2167,1,1,1,bracket,tree,65
+youtube,You,elder_combo_max,co_present,"[972, 2147]",972,2147,941,2128,1003,2167,1,1,1,bracket,tree,65
+youtube,Home,elder_combo_mid,co_present,"[78, 2153]",78,2153,65,2140,151,2175,1,1,1,bracket,tree,65
+youtube,Shorts,elder_combo_mid,co_present,"[324, 2158]",324,2158,277,2140,371,2175,1,1,1,bracket,tree,65
+youtube,Subscriptions,elder_combo_mid,co_present,"[756, 2184]",756,2184,662,2140,851,2175,1,1,1,bracket,tree,65
+youtube,You,elder_combo_mid,co_present,"[975, 2148]",975,2148,943,2140,1001,2175,1,1,1,bracket,tree,65
+youtube,Home,colorblind_deuteranomaly,co_present,"[107, 2190]",107,2190,70,2166,147,2196,1,1,1,bracket,tree,72
+youtube,Shorts,colorblind_deuteranomaly,co_present,"[324, 2185]",324,2185,283,2166,365,2196,1,1,1,bracket,tree,72
+youtube,Subscriptions,colorblind_deuteranomaly,co_present,"[756, 2180]",756,2180,674,2166,838,2196,1,1,1,bracket,tree,72
+youtube,You,colorblind_deuteranomaly,co_present,"[972, 2181]",972,2181,947,2166,998,2196,1,1,1,bracket,tree,72
