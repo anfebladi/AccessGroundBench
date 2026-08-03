@@ -1,9 +1,9 @@
 Sample,Profile,Targets_Present,Targets_Total,Reachability,CI_Low,CI_High
-full,elder_text_heavy,144,162,0.8889,0.8312,0.9286
-full,elder_zoom_heavy,149,162,0.9198,0.8676,0.9525
-full,elder_combo_max,113,162,0.6975,0.6229,0.7630
-full,elder_combo_mid,125,162,0.7716,0.7011,0.8295
-full,colorblind_deuteranomaly,160,162,0.9877,0.9561,0.9966
+full,elder_text_heavy,140,155,0.9032,0.8465,0.9405
+full,elder_zoom_heavy,144,155,0.9290,0.8774,0.9599
+full,elder_combo_max,112,155,0.7226,0.6474,0.7870
+full,elder_combo_mid,123,155,0.7935,0.7231,0.8498
+full,colorblind_deuteranomaly,153,155,0.9871,0.9542,0.9965
 primary,elder_text_heavy,140,155,0.9032,0.8465,0.9405
 primary,elder_zoom_heavy,144,155,0.9290,0.8774,0.9599
 primary,elder_combo_max,112,155,0.7226,0.6474,0.7870

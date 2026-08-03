@@ -533,6 +533,164 @@ class VlmProviderTests(unittest.TestCase):
                     img_height=2219,
                 )
 
+    def test_is_gemini_model_matches_native_and_9router_forms(self):
+        self.assertTrue(vlm_provider._is_gemini_model("gemini/gemini-2.5-flash"))
+        self.assertTrue(vlm_provider._is_gemini_model("9router/ag/gemini-3-flash"))
+        self.assertTrue(vlm_provider._is_gemini_model("9router/ag/gemini-pro-agent"))
+
+    def test_is_gemini_model_rejects_other_families(self):
+        self.assertFalse(vlm_provider._is_gemini_model("openai/gpt-4o-mini"))
+        self.assertFalse(vlm_provider._is_gemini_model("9router/cx/gpt-5.5"))
+        self.assertFalse(vlm_provider._is_gemini_model("anthropic/claude-3-5-sonnet-latest"))
+        self.assertFalse(vlm_provider._is_gemini_model("local/ferret-ui-llama8b"))
+
+    def test_resolve_gemini_reply_converts_in_range_reply_to_pixels(self):
+        # 1080x2219 image; a reply of [500, 500] is the image's normalized
+        # centre regardless of its real pixel size.
+        space, text = vlm_provider._resolve_gemini_reply("[500, 500]", 1080, 2219)
+        self.assertEqual(vlm_provider.GEMINI_SPACE_NORMALIZED, space)
+        self.assertEqual("[540.0, 1109.5]", text)
+
+    def test_resolve_gemini_reply_flags_out_of_range_as_pixel_space(self):
+        # y=1109 on a 2219px-tall image cannot be a 0-1000 normalized value
+        # AND also be this reply's intended pixel answer at the same time --
+        # a value over 1000 is unambiguous pixel-space non-compliance.
+        space, text = vlm_provider._resolve_gemini_reply("[166, 1109]", 1080, 2219)
+        self.assertEqual(vlm_provider.GEMINI_SPACE_PIXEL, space)
+        self.assertEqual("[166, 1109]", text)
+
+    def test_resolve_gemini_reply_flags_unparseable_as_unverified(self):
+        space, text = vlm_provider._resolve_gemini_reply("no coordinates here", 1080, 2219)
+        self.assertEqual(vlm_provider.GEMINI_SPACE_UNVERIFIED, space)
+        self.assertEqual("no coordinates here", text)
+
+    def test_build_gemini_prompt_states_normalized_scale_and_example(self):
+        prompt = vlm_provider.build_gemini_prompt("Bluetooth", None, 1080, 2219)
+        self.assertIn("0-1000", prompt)
+        self.assertIn("[500, 500]", prompt)
+        self.assertIn("'Bluetooth'", prompt)
+        self.assertNotIn("Your previous answer", prompt)
+
+    def test_build_gemini_prompt_strict_adds_correction(self):
+        prompt = vlm_provider.build_gemini_prompt("Bluetooth", None, 1080, 2219, strict=True)
+        self.assertIn("Your previous answer used raw pixel coordinates", prompt)
+
+    @mock.patch("vlm_provider._completion")
+    def test_call_vlm_converts_gemini_normalized_reply_to_pixels(self, completion_mock):
+        completion_mock.return_value = {
+            "choices": [{"message": {"content": "[500, 500]"}}],
+        }
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            image_path = Path(tmp_dir) / "screen.png"
+            image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
+
+            coord_space_out: dict = {}
+            response_text = vlm_provider.call_vlm(
+                "gemini/gemini-2.5-flash",
+                image_path,
+                "irrelevant when target_text is provided",
+                target_text="Bluetooth",
+                img_width=1080,
+                img_height=2219,
+                coord_space_out=coord_space_out,
+            )
+
+        self.assertEqual("[540.0, 1109.5]", response_text)
+        self.assertEqual(vlm_provider.GEMINI_SPACE_NORMALIZED, coord_space_out["value"])
+        sent_prompt = completion_mock.call_args.kwargs["messages"][0]["content"][0]["text"]
+        self.assertIn("0-1000", sent_prompt)
+
+    @mock.patch("vlm_provider.time.sleep")
+    @mock.patch("vlm_provider._completion")
+    def test_call_vlm_retries_gemini_pixel_space_reply_then_succeeds(
+        self, completion_mock, sleep_mock
+    ):
+        completion_mock.side_effect = [
+            {"choices": [{"message": {"content": "[166, 1109]"}}]},
+            {"choices": [{"message": {"content": "[500, 500]"}}]},
+        ]
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            image_path = Path(tmp_dir) / "screen.png"
+            image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
+
+            coord_space_out: dict = {}
+            response_text = vlm_provider.call_vlm(
+                "9router/ag/gemini-3-flash",
+                image_path,
+                "irrelevant when target_text is provided",
+                target_text="Bluetooth",
+                img_width=1080,
+                img_height=2219,
+                max_retries=1,
+                coord_space_out=coord_space_out,
+            )
+
+        self.assertEqual("[540.0, 1109.5]", response_text)
+        self.assertEqual(vlm_provider.GEMINI_SPACE_NORMALIZED, coord_space_out["value"])
+        self.assertEqual(2, completion_mock.call_count)
+        # The retried prompt must be the stricter restatement, not identical.
+        second_prompt = completion_mock.call_args_list[1].kwargs["messages"][0]["content"][0]["text"]
+        self.assertIn("Your previous answer used raw pixel coordinates", second_prompt)
+
+    @mock.patch("vlm_provider._completion")
+    def test_call_vlm_flags_gemini_reply_still_pixel_space_after_retries(
+        self, completion_mock
+    ):
+        completion_mock.return_value = {
+            "choices": [{"message": {"content": "[166, 1109]"}}],
+        }
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            image_path = Path(tmp_dir) / "screen.png"
+            image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
+
+            coord_space_out: dict = {}
+            response_text = vlm_provider.call_vlm(
+                "gemini/gemini-2.5-flash",
+                image_path,
+                "irrelevant when target_text is provided",
+                target_text="Bluetooth",
+                img_width=1080,
+                img_height=2219,
+                max_retries=0,
+                coord_space_out=coord_space_out,
+            )
+
+        # Not silently coerced: the pixel-looking reply is returned unconverted.
+        self.assertEqual("[166, 1109]", response_text)
+        self.assertEqual(vlm_provider.GEMINI_SPACE_PIXEL, coord_space_out["value"])
+        self.assertEqual(1, completion_mock.call_count)
+
+    @mock.patch("vlm_provider._completion")
+    def test_call_vlm_non_gemini_model_unaffected_by_gemini_path(self, completion_mock):
+        completion_mock.return_value = {
+            "choices": [{"message": {"content": "[123, 456]"}}],
+        }
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            image_path = Path(tmp_dir) / "screen.png"
+            image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
+
+            coord_space_out: dict = {}
+            response_text = vlm_provider.call_vlm(
+                "9router/cx/gpt-5.5",
+                image_path,
+                "Find Bluetooth",
+                target_text="Bluetooth",
+                img_width=1080,
+                img_height=2219,
+                coord_space_out=coord_space_out,
+            )
+
+        # GPT rows must be untouched: no conversion, no coord_space set, and
+        # the original prompt is sent verbatim.
+        self.assertEqual("[123, 456]", response_text)
+        self.assertEqual({}, coord_space_out)
+        sent_prompt = completion_mock.call_args.kwargs["messages"][0]["content"][0]["text"]
+        self.assertEqual("Find Bluetooth", sent_prompt)
+
     @mock.patch("vlm_provider.time.sleep")
     @mock.patch("vlm_provider._completion")
     def test_call_vlm_raises_after_repeated_rate_limits(self, completion_mock, sleep_mock):

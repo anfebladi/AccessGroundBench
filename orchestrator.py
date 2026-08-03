@@ -386,25 +386,25 @@ def write_manifest(
     drifts: list[dict],
     reconstructed: bool = False,
 ) -> list[str]:
-    """
-    Merge this run's captures into the on-disk manifest, by screen, and
-    return every problem found across the full merged manifest -- not just
+    """Merge this run's captures into the on-disk manifest, by screen.
+
+    Returns every problem found across the full merged manifest -- not just
     the screens this call touched.
-
-    Two failure modes motivate this:
-
-    (1) A previous run lost one capture to a caught-and-ignored exception,
-    which shrank a profile from 168 to 165 targets with nothing in the
-    output to say so -- the manifest exists so a gap cannot be silent.
-
-    (2) write_manifest used to overwrite the file unconditionally. A
-    `--screens settings_main` run -- which the re-collection checklist's own
-    step 3 recommends -- silently replaced a full 13-screen manifest with a
-    1-screen one, erasing the completeness and drift record for the other 12
-    screens even though their captures were untouched on disk. Merging by
-    screen means a subset run can only ever update the screens it actually
-    captured; every other screen's record is carried forward unchanged.
     """
+    # Two failure modes motivate merging rather than overwriting:
+    #
+    # (1) A previous run lost one capture to a caught-and-ignored exception,
+    # which shrank a profile from 168 to 165 targets with nothing in the
+    # output to say so -- the manifest exists so a gap cannot be silent.
+    #
+    # (2) write_manifest used to overwrite the file unconditionally. A
+    # `--screens settings_main` run -- a normal way to spot-check one screen
+    # before a full collection -- silently replaced a full 13-screen
+    # manifest with a 1-screen one, erasing the completeness and drift
+    # record for the other 12 screens even though their captures were
+    # untouched on disk. Merging by screen means a subset run can only ever
+    # update the screens it actually captured; every other screen's record
+    # is carried forward unchanged.
     existing_screens = load_existing_manifest()
 
     stale = sorted(set(existing_screens) - set(screens))

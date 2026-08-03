@@ -36,11 +36,11 @@ import argparse
 import csv
 import json
 import sys
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 
 from vlm_eval.scoring import get_png_dimensions
-from vlm_eval.targets import locate_element
+from vlm_eval.targets import MAX_TARGET_CHARS, box_contains, locate_element
 from vlm_eval.stats import (
     DEFAULT_PERMUTATIONS,
     cluster_permutation_test,
@@ -129,12 +129,13 @@ WITH_TREE_SUFFIX = "_with_tree"
 
 
 # ---------------------------------------------------------------------------
-# Stage B: sample exclusion sets
+# Sample exclusion sets
 #
 # B1 (screen, condition) contamination exclusions and B2 task-validity target
 # exclusions, composed into named samples that are all reported side by side
-# -- never silently replacing the unrestricted numbers. See CLAUDE.md's
-# remediation plan, Stage B, for the evidence behind each set.
+# -- never silently replacing the unrestricted numbers, since each rests on
+# a judgment call about contamination severity that a reader may weigh
+# differently.
 # ---------------------------------------------------------------------------
 
 _FONT_DENSITY_PROFILES = (
@@ -171,11 +172,14 @@ B1_UNIFORM: frozenset[tuple[str, str]] = frozenset({
 })
 
 # B2: length cap for the task-validity exclusion (container nodes are always
-# excluded regardless of length; see compute_b2_targets). Sits in an empty
-# band in the length distribution (134-200 chars have zero targets between
-# 134 and 200), so the exact value only matters for the 134-char boundary
-# case -- 100 additionally excludes it as a deliberate stricter choice.
-B2_LENGTH_CAP = 100
+# excluded regardless of length; see compute_b2_targets). Shares
+# vlm_eval.targets.MAX_TARGET_CHARS, the same cap harvest_targets applies
+# before a target is ever queried, so this analysis-side recomputation cannot
+# drift from what current collections actually harvest -- it only differs on
+# datasets collected before that cap existed (e.g. dataset/experiment_2 and
+# the six hosted-model CSVs already on disk), which still carry the excluded
+# rows and need this recomputation to filter them out after the fact.
+B2_LENGTH_CAP = MAX_TARGET_CHARS
 
 SAMPLES: dict[str, dict] = {
     "full":          {"b1": frozenset(), "b2": False},
@@ -185,15 +189,6 @@ SAMPLES: dict[str, dict] = {
 }
 SAMPLE_NAMES = list(SAMPLES)  # preserves definition order for output ordering
 DEFAULT_SAMPLE = "primary"
-
-
-def _box_contains(outer: list[int], inner: list[int]) -> bool:
-    """True when `outer` fully encloses `inner` (and they are not the same box)."""
-    return (
-        outer[0] <= inner[0] and outer[1] <= inner[1]
-        and outer[2] >= inner[2] and outer[3] >= inner[3]
-        and outer != inner
-    )
 
 
 def compute_b2_targets(baseline_rows: list[dict]) -> frozenset[tuple[str, str]]:
@@ -226,7 +221,7 @@ def compute_b2_targets(baseline_rows: list[dict]) -> frozenset[tuple[str, str]]:
             if len(text) > B2_LENGTH_CAP:
                 excluded.add((screen, text))
                 continue
-            if any(_box_contains(box, other_box) for other_text, other_box in items
+            if any(box_contains(box, other_box) for other_text, other_box in items
                    if other_text != text):
                 excluded.add((screen, text))
     return frozenset(excluded)
@@ -239,24 +234,19 @@ def target_excluded_for_condition(
     profile: str,
     b2_targets: frozenset[tuple[str, str]],
 ) -> bool:
-    """
-    True when (target, profile) should be dropped from `sample`'s pool for
-    this one condition's tables.
-
-    B2 exclusions apply to a target across every condition, baseline
-    included, since the target itself is task-invalid regardless of what it
-    is compared against -- the b2_targets check does not depend on `profile`.
-
-    B1 exclusions apply only to the named (screen, profile) cell: the same
-    target's baseline reading, and its readings under every OTHER condition,
-    are unaffected. This is deliberate -- settings_display is contaminated
-    under colorblind_deuteranomaly specifically, not under every condition it
-    appears in.
-    """
+    """True when (target, profile) should be dropped from `sample`'s pool for this one condition's tables."""
     if sample not in SAMPLES:
         raise ValueError(f"Unknown sample: {sample!r}")
+    # B2 applies to a target across every condition, baseline included --
+    # the target itself is task-invalid regardless of what it is compared
+    # against, so this check does not depend on `profile`.
     if (screen, target_text) in b2_targets and SAMPLES[sample]["b2"]:
         return True
+    # B1 applies only to the named (screen, profile) cell: the same target's
+    # baseline reading, and its readings under every other condition, are
+    # unaffected -- settings_display is contaminated under
+    # colorblind_deuteranomaly specifically, not under every condition it
+    # appears in.
     return (screen, profile) in SAMPLES[sample]["b1"]
 
 
@@ -291,13 +281,7 @@ def derive_status(row: dict) -> str:
 
 
 def load_results(csv_path: Path) -> list[dict]:
-    """Load an evaluation CSV, normalising the status column.
-
-    prompt_mode/tree_rows_sent were added after the archived experiment_2
-    run, so older CSVs lack those columns entirely; default them to vision/0
-    rather than letting downstream code see missing keys, so the archived
-    dataset's regression reproduction (CLAUDE.md #9) keeps working unchanged.
-    """
+    """Load an evaluation CSV, normalising the status column."""
     if not csv_path.is_file():
         print(f"[ERROR] Results CSV not found: {csv_path}")
         sys.exit(1)
@@ -307,6 +291,10 @@ def load_results(csv_path: Path) -> list[dict]:
 
     for row in rows:
         row["status"] = derive_status(row)
+        # prompt_mode/tree_rows_sent were added after the archived
+        # experiment_2 run, so older CSVs lack those columns entirely;
+        # default them to vision/0 rather than letting downstream code see
+        # missing keys.
         if not row.get("prompt_mode"):
             row["prompt_mode"] = PROMPT_MODE_VISION
         if not row.get("tree_rows_sent"):
@@ -317,11 +305,44 @@ def load_results(csv_path: Path) -> list[dict]:
 
 
 def index_rows(rows: list[dict]) -> dict[tuple[str, str, str], dict]:
-    """Index rows by (screen, target_text, profile)."""
-    return {
-        (r.get("screen", ""), r.get("target_text", ""), r.get("profile", "")): r
-        for r in rows
-    }
+    """
+    Index rows by (screen, target_text, profile).
+
+    A plain dict comprehension over `rows` would let whichever row for a
+    duplicated key came LAST in the file silently win -- and a stale
+    api_error row appended after a real answer (an interrupted-collection
+    artifact, not a re-run of this code) would then shadow that real answer
+    out of every downstream table, since they all gate on
+    status == STATUS_CO_PRESENT. This prefers any real (non-api_error) row
+    over an api_error row regardless of position, and warns rather than
+    silently resolving the rest, so a corrupted file can never be consumed
+    quietly again the way gpt-5.4_with_tree.csv was.
+    """
+    index: dict[tuple[str, str, str], dict] = {}
+    key_counts: Counter = Counter()
+
+    for r in rows:
+        key = (r.get("screen", ""), r.get("target_text", ""), r.get("profile", ""))
+        key_counts[key] += 1
+        if key not in index:
+            index[key] = r
+            continue
+        if index[key].get("status") == STATUS_API_ERROR and r.get("status") != STATUS_API_ERROR:
+            index[key] = r
+        # else: keep whichever real (or first api_error) row is already
+        # stored -- a later api_error must never overwrite a real answer.
+
+    duplicates = {k: c for k, c in key_counts.items() if c > 1}
+    if duplicates:
+        print(
+            f"[WARN] {len(duplicates)} duplicate (screen, target_text, profile) "
+            f"key(s) found among {len(rows)} rows; kept the first real "
+            "(non-api_error) row for each and ignored the rest. This CSV "
+            "should be canonicalized (vlm_eval.results.canonicalize_rows / "
+            "finalize_csv) rather than analyzed repeatedly in this state."
+        )
+
+    return index
 
 
 def _load_profile_labels(labels_dir: Path, screen: str, profile: str) -> list[dict]:
@@ -337,29 +358,25 @@ def reclassify_label_changed(
     rows: list[dict],
     labels_dir: Path,
 ) -> list[dict]:
+    """Recover the label_changed / off_screen distinction for CSVs collected before it existed.
+
+    Mutates and returns `rows`.
     """
-    Recover the label_changed / off_screen distinction for CSVs collected
-    before this distinction existed in the pipeline.
-
-    A row written STATUS_OFF_SCREEN before vlm_eval.runner started using
-    locate_element's relaxed match may actually be an element whose label
-    text reflowed but is still on screen -- the collection-time code could
-    not tell the two apart. This re-checks each such row against the current
-    label JSON (unchanged since collection; no re-capture or API call
-    involved) and, when a relaxed match resolves it, rewrites the row's
-    status to STATUS_LABEL_CHANGED in memory only. Rows already written with
-    an explicit status (including STATUS_LABEL_CHANGED, from a run using the
-    updated runner) are left untouched -- exact matches at collection time are
-    authoritative and never revisited here.
-
-    This is purely a reachability-side correction: STATUS_LABEL_CHANGED rows
-    never satisfy status == STATUS_CO_PRESENT, so every scored/contingency
-    table already excludes them without any change on their part.
-
-    Mutates and returns `rows`. Also returns nothing else -- callers that want
-    the breakdown should scan the returned rows for STATUS_LABEL_CHANGED
-    themselves (see report_label_changed_breakdown).
-    """
+    # A row written STATUS_OFF_SCREEN before vlm_eval.runner started using
+    # locate_element's relaxed match may actually be an element whose label
+    # text reflowed but is still on screen -- the collection-time code could
+    # not tell the two apart. Re-check each such row against the current
+    # label JSON (unchanged since collection; no re-capture or API call
+    # involved) and, when a relaxed match resolves it, rewrite the row's
+    # status to STATUS_LABEL_CHANGED in memory only. Rows already written
+    # with an explicit status are left untouched -- exact matches at
+    # collection time are authoritative and never revisited here.
+    #
+    # This is purely a reachability-side correction: STATUS_LABEL_CHANGED
+    # rows never satisfy status == STATUS_CO_PRESENT, so every
+    # scored/contingency table already excludes them unchanged. Callers that
+    # want the breakdown scan the returned rows for STATUS_LABEL_CHANGED
+    # themselves (see report_label_changed_breakdown).
     if not labels_dir.is_dir():
         print(f"  [WARN] Labels directory not found: {labels_dir} "
               "-- skipping label_changed reclassification.")
@@ -401,29 +418,27 @@ def reclassify_label_changed(
 
 
 def reclassify_off_frame(rows: list[dict], images_dir: Path) -> list[dict]:
-    """
-    Recover the off_frame distinction for rows collected before
-    bound_extractor.extract clamped bounds to the visible content area.
-
-    A row with a box whose center falls outside its screenshot (a node
-    clipped at the crop edge but retained at full, uncropped size) could not
-    have been meaningfully scored -- hit_test compared the model's answer to
-    a point that was never on the image. This re-checks every row that
-    carries a box (STATUS_CO_PRESENT or STATUS_LABEL_CHANGED; off_screen rows
-    have none) against the actual screenshot dimensions on disk (unchanged
-    since collection; no re-capture or API call involved) and rewrites the
-    status to STATUS_OFF_FRAME in memory when the center lands outside it.
-
-    Purely a scoring-side correction: STATUS_OFF_FRAME rows never satisfy
-    status == STATUS_CO_PRESENT, so every scored/contingency table already
-    excludes them without any change on their part. Reachability is
-    unaffected in the other direction -- the element genuinely exists in the
-    layout, so it must keep counting as present; compute_reachability's
-    `status != STATUS_OFF_SCREEN` check already does this correctly for any
-    status other than off_screen, off_frame included.
+    """Recover the off_frame distinction for rows collected before bound_extractor clamped bounds to the visible area.
 
     Mutates and returns `rows`.
     """
+    # A row with a box whose center falls outside its screenshot (a node
+    # clipped at the crop edge but retained at full, uncropped size) could
+    # not have been meaningfully scored -- hit_test compared the model's
+    # answer to a point that was never on the image. Re-check every row that
+    # carries a box (STATUS_CO_PRESENT or STATUS_LABEL_CHANGED; off_screen
+    # rows have none) against the actual screenshot dimensions on disk
+    # (unchanged since collection; no re-capture or API call involved) and
+    # rewrite the status to STATUS_OFF_FRAME in memory when the center lands
+    # outside it.
+    #
+    # Purely a scoring-side correction: STATUS_OFF_FRAME rows never satisfy
+    # status == STATUS_CO_PRESENT, so every scored/contingency table already
+    # excludes them unchanged. Reachability is unaffected in the other
+    # direction -- the element genuinely exists in the layout, so it must
+    # keep counting as present; compute_reachability's
+    # `status != STATUS_OFF_SCREEN` check already handles any status other
+    # than off_screen correctly, off_frame included.
     if not images_dir.is_dir():
         print(f"  [WARN] Images directory not found: {images_dir} "
               "-- skipping off_frame reclassification.")
@@ -505,25 +520,24 @@ def compute_reachability(
     sample: str = "full",
     b2_targets: frozenset[tuple[str, str]] = frozenset(),
 ) -> tuple[int, int]:
-    """
-    Count how many baseline targets still exist in a profile's layout.
+    """Count how many baseline targets still exist in a profile's layout.
 
     Returns (present, total). Model-independent: it depends only on which
     targets the capture found, never on a model's answer.
-
-    label_changed_mode controls how STATUS_LABEL_CHANGED rows are counted
-    (see LABEL_CHANGED_MODES): "exclude" removes them from both present and
-    total (the target is dropped from the pool for this profile);
-    "unreachable" counts them in total but not present (the pre-reclassification
-    behaviour, since they used to be indistinguishable from off_screen);
-    "reachable" counts them in both. All three are free -- reachability only
-    needs presence, never a score.
-
-    sample/b2_targets apply Stage B's exclusions (see target_excluded_for_condition):
-    an excluded (target, profile) pair is dropped from both present and total,
-    same as label_changed_mode="exclude" -- the target is removed from the
-    pool for this profile, not counted as unreachable.
     """
+    # label_changed_mode controls how STATUS_LABEL_CHANGED rows are counted
+    # (see LABEL_CHANGED_MODES): "exclude" removes them from both present
+    # and total (the target is dropped from the pool for this profile);
+    # "unreachable" counts them in total but not present (the
+    # pre-reclassification behaviour, since they used to be
+    # indistinguishable from off_screen); "reachable" counts them in both.
+    # All three are free -- reachability only needs presence, never a score.
+    #
+    # sample/b2_targets apply the sample's exclusions (see
+    # target_excluded_for_condition): an excluded (target, profile) pair is
+    # dropped from both present and total, same as
+    # label_changed_mode="exclude" -- the target is removed from the pool
+    # for this profile, not counted as unreachable.
     if label_changed_mode not in LABEL_CHANGED_MODES:
         raise ValueError(f"Unknown label_changed_mode: {label_changed_mode!r}")
 
@@ -584,13 +598,11 @@ def report_reachability(
 
 
 def report_label_changed_breakdown(index: dict, profiles: list[str]) -> list[dict]:
-    """
-    Print and return every STATUS_LABEL_CHANGED row: which target, under
-    which profile, and what it now renders as.
+    """Print and return every STATUS_LABEL_CHANGED row: which target, under which profile, and what it now renders as.
 
-    This is the input to the still-open decision (see CLAUDE.md's
-    remediation plan) of how label_changed targets should be treated -- this
-    function only measures and reports, it does not decide.
+    Deliberately only measures and reports; how label_changed targets should
+    ultimately be treated in scoring is a separate decision this function
+    does not make.
     """
     rows_out = []
     for (screen, text, profile), row in sorted(index.items()):
@@ -726,15 +738,13 @@ def compute_contingency(
     sample: str = "full",
     b2_targets: frozenset[tuple[str, str]] = frozenset(),
 ) -> tuple[int, int, int, int]:
-    """
-    Build the 2x2 contingency table for baseline vs one profile.
+    """Build the 2x2 contingency table for baseline vs one profile.
 
-    Restricted to co_present rows in both arms, so off-screen targets and API
-    failures never enter the table. `sample`/`b2_targets` additionally drop
-    targets excluded for this profile (see target_excluded_for_condition).
-
-    Returns (a, b, c, d):
-      a both pass, b broke it, c fluke recovery, d both fail.
+    Returns (a, b, c, d): a both pass, b broke it, c fluke recovery, d both
+    fail. Restricted to co_present rows in both arms, so off-screen targets
+    and API failures never enter the table; `sample`/`b2_targets`
+    additionally drop targets excluded for this profile (see
+    target_excluded_for_condition).
     """
     a = b = c = d = 0
 
@@ -1100,8 +1110,7 @@ def main() -> None:
                              "together automatically -- use --compare-a/--compare-b "
                              "for a paired vision-vs-tree comparison instead.")
     parser.add_argument("--sample", choices=[*SAMPLE_NAMES, "all"], default="all",
-                        help="Which Stage B exclusion set(s) to report (see "
-                             "CLAUDE.md's remediation plan, Stage B). 'full' is "
+                        help="Which exclusion set(s) to report. 'full' is "
                              "no exclusions; 'primary' is the recommended sample "
                              "(B1-minimal + B2); 'precautionary' and 'uniform' "
                              "are sensitivity variants. Default 'all' runs every "

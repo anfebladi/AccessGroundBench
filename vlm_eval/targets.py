@@ -23,6 +23,13 @@ _WHITESPACE_RE = re.compile(r"\s+")
 # are real, independent targets on settings_display.
 MIN_RELAXED_MATCH_CHARS = 20
 
+# A harvested text this long is not a rendered on-screen label a model could
+# plausibly be asked to tap: Android list rows (e.g. Gmail's conversation
+# items) synthesize a single `text` attribute concatenating sender, subject,
+# and full preview body onto one node for accessibility narration, well past
+# anything actually visible as one string.
+MAX_TARGET_CHARS = 100
+
 
 def normalize_label(text: str) -> str:
     """Collapse the whitespace differences reflow introduces into a label.
@@ -38,11 +45,48 @@ def normalize_label(text: str) -> str:
     return _WHITESPACE_RE.sub(" ", _INVISIBLE_RE.sub(" ", text)).strip()
 
 
+def box_contains(outer: list[int], inner: list[int]) -> bool:
+    """True when `outer` fully encloses `inner` (and they are not the same box)."""
+    return (
+        outer[0] <= inner[0] and outer[1] <= inner[1]
+        and outer[2] >= inner[2] and outer[3] >= inner[3]
+        and outer != inner
+    )
+
+
+def invalid_targets(candidates: list[dict]) -> set[str]:
+    """Return the text of candidates that are not real groundable targets.
+
+    A candidate is invalid if its text exceeds MAX_TARGET_CHARS, or if its box
+    fully encloses another candidate's box on the same screen. Both are the
+    shape of a row-container node: a whole-row label (e.g. Gmail's
+    conversation-item text, which concatenates sender, subject, and full
+    preview body) that encloses its own sender/subject/preview children,
+    which are already separate, individually-visible targets. Querying the
+    container as its own target would ask a model to locate a string that is
+    not what is actually rendered as one label on screen.
+    """
+    invalid: set[str] = set()
+    for cand in candidates:
+        text = cand["text"]
+        box = cand["baseline_box"]
+        if len(text) > MAX_TARGET_CHARS:
+            invalid.add(text)
+            continue
+        if any(
+            box_contains(box, other["baseline_box"])
+            for other in candidates
+            if other["text"] != text
+        ):
+            invalid.add(text)
+    return invalid
+
+
 def harvest_targets(screen_name: str, labels_dir: Path) -> list[dict]:
     """
     Read baseline label JSON for a screen and extract non-empty text elements.
 
-    Returns a list of dicts with 'text' and 'box' keys.
+    Returns a list of dicts with 'text' and 'baseline_box' keys.
     """
     baseline_path = labels_dir / f"{screen_name}_baseline.json"
     if not baseline_path.is_file():
@@ -58,16 +102,51 @@ def harvest_targets(screen_name: str, labels_dir: Path) -> list[dict]:
         if text and text.strip():
             text_counts[text.strip()] += 1
 
-    targets = []
+    candidates = []
     for rec in records:
         text = rec.get("text")
         if text and text.strip():
             clean_text = text.strip()
             if text_counts[clean_text] == 1:
-                targets.append({"text": clean_text, "baseline_box": rec["box"]})
+                candidates.append({"text": clean_text, "baseline_box": rec["box"]})
 
-    print(f"  [HARVEST] {len(targets)} unambiguous text targets from {baseline_path.name}")
+    excluded = invalid_targets(candidates)
+    targets = [cand for cand in candidates if cand["text"] not in excluded]
+
+    excluded_note = f" ({len(excluded)} excluded: not groundable text)" if excluded else ""
+    print(f"  [HARVEST] {len(targets)} unambiguous text targets from "
+          f"{baseline_path.name}{excluded_note}")
     return targets
+
+
+def build_expected_keys(
+    screens: list[str],
+    labels_dir: Path,
+    profiles: list[str],
+) -> list[tuple[str, str, str]]:
+    """
+    Build the canonical (screen, target_text, profile) key list for a collection.
+
+    Order is screen (as given) outer, profile (as given) middle, target
+    (harvest order) inner -- this is the single canonical ordering that
+    vlm_eval.results.prepare_csv/finalize_csv sort result rows into, so a
+    fresh collection and a repaired one are byte-comparable rather than
+    differing by whatever order resume history happened to produce.
+
+    Every key here is guaranteed queryable at collection time (every target
+    comes from harvest_targets, which already excludes duplicated and
+    non-groundable text). A row whose key is not in this set is stale --
+    either the target set changed since collection (see invalid_targets) or
+    the row is otherwise not a real measurement -- and gets dropped when a
+    results CSV is canonicalized against it.
+    """
+    keys: list[tuple[str, str, str]] = []
+    for screen in screens:
+        targets = harvest_targets(screen, labels_dir)
+        for profile in profiles:
+            for target in targets:
+                keys.append((screen, target["text"], profile))
+    return keys
 
 
 def find_element_in_profile(
@@ -91,22 +170,19 @@ def locate_element(
 
     Returns (box, matched_text, match_kind) or None if nothing plausibly
     corresponds to target_text in this profile.
-
-    match_kind is MATCH_EXACT when the rendered text is byte-identical to the
-    baseline target string. It is MATCH_RELAXED when the exact lookup fails
-    but a whitespace-normalized comparison succeeds, or one normalized string
-    is a prefix of the other and both exceed MIN_RELAXED_MATCH_CHARS -- the
-    shape of a reflow that truncated or re-worded a label without actually
-    removing the element from the screen (see vlm_eval.targets module docs
-    and CLAUDE.md re: label_changed).
-
-    Exact match is checked first and independently, so it can never be
-    shadowed by a coincidental relaxed match elsewhere in the layout.
     """
+    # Exact match is checked first and independently, so it can never be
+    # shadowed by a coincidental relaxed match elsewhere in the layout.
     for rec in profile_labels:
         text = rec.get("text")
         if text and text.strip() == target_text:
             return rec["box"], text.strip(), MATCH_EXACT
+
+    # match_kind is MATCH_RELAXED when the exact lookup above fails but a
+    # whitespace-normalized comparison succeeds, or one normalized string
+    # is a prefix of the other and both exceed MIN_RELAXED_MATCH_CHARS --
+    # the shape of a reflow that truncated or re-worded a label without
+    # actually removing the element from the screen.
 
     target_norm = normalize_label(target_text)
     if not target_norm:

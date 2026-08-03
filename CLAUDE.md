@@ -25,11 +25,14 @@ screen. Differences are tested with **McNemar's paired test**.
 as publication-grade: multiple-comparison correction, honest confound reporting, and
 stated limitations are required, not optional.
 
-> **Status (2026-07-29).** Experiment 2 was audited, found to have three invalidating
-> defects, and archived to `dataset/experiment_2/`. All code fixes are landed and the
-> analysis is rebuilt. **The remaining step is re-collection on the emulator** — see §7.
-> A separate leak found the same day in the accessibility-tree exclusion logic is also
-> fixed — see `METHODS.md` §3 — and `USE_A11Y_TREE` was reset to `false` pending review.
+> **Status (2026-08-03).** Experiment 3 is collected and the vision arm is analysed —
+> see §5. 13 screens, 155 targets, 11 models, 930 rows per model. Two defects were found
+> and fixed during this round: Gemini answered in its native 0–1000 normalized coordinate
+> space while the pipeline scored pixels (`gemini-pro-agent` read 8.4%, actually 96.8%),
+> and result CSVs accumulated duplicate/stale rows from concurrent writers and unremoved
+> `api_error` retries. Both are fixed in code and the data is repaired — see §6.
+> **Remaining: analyse the tree arm** (6 `_with_tree.csv` files, collected and clean but
+> deliberately not pooled with vision), and resolve the repo privacy items in §10.
 
 > **For the full mathematics** — every formula, its rationale, and a worked example for
 > all three evaluation modes (vision-only, tree-injected, cross-file) — see
@@ -168,47 +171,62 @@ with the main project. Needs ~10 GB VRAM.
 
 ## 5. Current state of results
 
-**No current results.** Experiment 2 was archived on 2026-07-29 after an audit found
-three invalidating defects; the code is fixed but re-collection has not run yet.
+**Experiment 3 (current, 2026-08-03).** 13 screens, 155 targets, 11 models, 930 rows
+each. Vision-only arm analysed; the 6 `_with_tree.csv` files are collected and clean but
+**not yet analysed** — that is a separate research question and must not be pooled with
+the vision arm (`discover_result_csvs` enforces this).
 
-- `dataset/experiment_2/` — the July run: 13 screens, 168 targets, 7 models,
-  1005 rows each. **Superseded, do not cite.** Full defect list in its README.
+- `dataset/` — the current run. 17 result CSVs, all exactly 930 rows, one row per
+  `(screen, target_text, profile)`, zero `api_error`.
+- `dataset/experiment_2/` — the July run: 168 targets, 1005 rows. **Superseded, do not
+  cite.** Full defect list in its README.
 - `dataset/experiment_1/` — an earlier, smaller run. Also superseded.
-- `dataset/` — empty of captures until the orchestrator is re-run.
 
-### What the archived data still shows once re-analysed correctly
-
-Running the current `mcnemar_analysis.py` against `dataset/experiment_2` reproduces
-these, and doing so is the regression test for the analysis code (§9):
+### Headline results (sample=primary)
 
 | Profile | reachability | b | c | pooled p | |
 |---|---:|---:|---:|---:|---|
-| `elder_text_heavy` | 88.5% | 61 | 13 | **0.00005** | significant after Holm |
-| `elder_zoom_heavy` | 89.9% | 37 | 54 | 0.172 | ns (trends *up*) |
-| `elder_combo_max` | **66.7%** | 44 | 33 | 0.313 | ns |
-| `colorblind_deuteranomaly` | 96.4% | 22 | 29 | 0.395 | ns |
+| `elder_text_heavy` | 90.3% | 64 | 32 | **0.0054** | significant after Holm |
+| `elder_combo_mid` | 79.4% | 69 | 39 | 0.062 | ns |
+| `elder_combo_max` | **72.3%** | 64 | 44 | 0.186 | ns |
+| `elder_zoom_heavy` | 92.9% | 45 | 51 | 0.656 | ns (trends *up*) |
+| `colorblind_deuteranomaly` | 98.7% | 37 | 33 | 0.746 | ns |
 
-Per-model McNemar with Holm across 28 tests leaves **only** `gpt-5.4-mini` /
-`elder_text_heavy` (p=0.00098) significant. Every frontier model is flagged `ceiling`
-(98–99% baseline on co-present targets), meaning underpowered, **not** resilient.
+Per-model McNemar with Holm across 54 tests leaves **nothing** significant: 39 tests
+flagged `ceiling`, 5 `floor`, 10 plain ns. This is expected — 6 of 11 models sit at
+98–99% baseline with only 2–4 discordant pairs per profile, so the per-model arm is
+structurally underpowered and its nulls are **not** evidence of resilience.
 
-Direction is unanimous for font scaling: **7/7 models down**, sign test p = 0.016.
+Direction for font scaling: **10/11 models down, 1 tied**, sign test p = 0.00195.
 
 **The defensible claims are therefore:**
-1. `elder_combo_max` removes a third of interactive text from the reachable screen —
-   large, clean, model-independent.
-2. Font scaling degrades grounding (pooled p = 0.00005) while density and colour do
-   not. Text *reflow* is the failure mode, not visual distortion in general — density
+1. `elder_combo_max` removes **27.7%** of interactive text from the reachable screen —
+   large, clean, model-independent, and the strongest result in the study.
+2. Font scaling degrades grounding (pooled p = 0.0054) while density and colour do not.
+   Text *reflow* is the failure mode, not visual distortion in general — density
    inflation actually trends helpful, since targets get bigger. `elder_combo_max` is
-   **not** claimable either way: it drops 56 of 168 targets, so its null is measured on
+   **not** claimable either way: it drops 43 of 155 targets, so its null is measured on
    the easiest 112 and is a selection artefact as much as a result (§6 "Still open",
    `METHODS.md` §1.2.1).
 
-Not supported: "frontier VLMs degrade under accessibility settings." On visible
-elements `gpt-5.5` goes 99.1% → 98.2% under `elder_combo_max`, and `gpt-5.6-sol` has
-`b=0, c=0` — not one changed answer. (That 99.1% is the *restricted* baseline over
-combo_max's 112 surviving targets; the same model is 98.2% over all 168. The gap is the
-survivorship effect, not a measurement error.)
+**Robustness split that must be reported.** `gpt-5.4` (54.8% baseline) and `gpt-5.4-mini`
+(34.2%) are the only two models with real headroom and supply **289 of 501** discordant
+pairs. Splitting the pooled counts by weak-two vs other-nine:
+
+- `elder_text_heavy` — weak two 36/21 (63% b), other nine 32/11 (**74% b**) → both agree;
+  the font-scaling effect is robust across the roster, not an artefact of weak models.
+- `colorblind_deuteranomaly` — weak two 33/20 (62% b), other nine 16/16 (**exactly 50%**)
+  → the apparent colour effect is carried entirely by the two least accurate models.
+
+Not supported: "frontier VLMs degrade under accessibility settings." Every frontier model
+is at ceiling with a handful of changed answers; `gpt-5.6-sol` has b+c = 9 across all
+five profiles combined.
+
+**The 11 CSVs are not 11 independent models.** `gpt-5.6-luna`/`-sol`/`-terra` are configs
+of one base model; `gemini-3-flash` and `gemini-3-flash-agent` are one model on two
+routes; `gemini-3.5-flash-low` is a reasoning-effort variant. The sign test in particular
+treats them as independent draws and therefore overstates its own evidence — report it
+over model *families* (GPT / Gemini / Ferret) or state the dependence explicitly.
 
 ---
 
@@ -259,6 +277,13 @@ landed and covered by tests.
   above the 5% warning threshold and not previously visible, because the manifest
   that would have caught it only covered `settings_main` until the rebuild. Decide
   whether to exclude `maps` or accept it; not yet decided.
+- **`gmail` target text is inbox-dependent.** Its targets include real message subjects,
+  senders, and timestamps -- content that will not reproduce byte-for-byte across
+  collections the way a static app's UI text does. Kept rather than excluded (16 of its
+  23 candidates are valid groundable targets after the length/container filter above, and
+  it is a realistic accessibility-relevant app), but any comparison across collection runs
+  must treat gmail's per-target results as tied to that run's inbox state, the same
+  caveat `maps` and `play_store` carry above.
 - **`settings_display` colorblind drift, mechanism confirmed.** Enabling the
   daltonizer removes `'Color'`/`'Colors'` from that screen and shifts every other
   element down — and the shift is *not* a crop-offset artifact: raw (uncropped) XML
@@ -316,6 +341,19 @@ automated pass/fail.
   The `baseline_box=None` branch is a plain bounds check and is only used by tests.
 - **Targets come from baseline only** and must appear exactly once there. Duplicated
   text is dropped entirely, which is why 175 baseline texts yield 168 targets.
+- **A third filter removes targets that are not one rendered label**
+  (`vlm_eval.targets.invalid_targets`): text longer than `MAX_TARGET_CHARS` (100), or a
+  box that fully encloses another target's box on the same screen. Both are the shape of
+  an Android list-row container node -- Gmail's conversation rows synthesize a single
+  `text` attribute concatenating sender, subject, and the full (untruncated) preview body
+  onto one `ViewGroup`, enclosing its own sender/subject/preview children, which are
+  already separate targets. On the current dataset this drops 7 of gmail's 23 candidates
+  (162 -> 155 targets overall). Applied at harvest time, before any model is queried --
+  querying it anyway was what made Ferret-UI's fine-tuned reply format (which echoes the
+  target string before the box) spend 38 minutes generating a reply for one 297-char
+  target. `mcnemar_analysis.compute_b2_targets` recomputes the same rule from a CSV's rows,
+  for datasets collected before this filter existed (`dataset/experiment_2`, and any
+  hosted-model CSV collected before this change) that still contain the excluded rows.
 - **`find_element_in_profile` returns the first match**, so a text that is unique at
   baseline but duplicated after reflow silently resolves to whichever node comes first
   in the hierarchy.

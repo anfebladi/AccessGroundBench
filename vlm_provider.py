@@ -22,6 +22,13 @@ DEFAULT_MAX_RETRIES = 3
 DEFAULT_RATE_LIMIT_BACKOFF_SECONDS = 0.5
 REQUEST_TIMEOUT_ENV_VAR = "VLM_REQUEST_TIMEOUT_SECONDS"
 DEFAULT_REQUEST_TIMEOUT_SECONDS = 120.0
+# Ferret-UI is a locally-hosted 8B model doing single-request inference on
+# one GPU, not a hosted API behind a load balancer -- a query that echoes a
+# long target string back before its answer can take minutes, not seconds.
+# Abandoning the socket at the hosted-API default leaves the server still
+# generating for a client that already gave up, which is what causes the
+# request backlog seen under FerretServer.request_queue_size.
+FERRET_REQUEST_TIMEOUT_SECONDS = 1800.0
 TEMPERATURE_ENV_VAR = "VLM_TEMPERATURE"
 DEFAULT_TEMPERATURE = 0.0
 
@@ -52,6 +59,30 @@ _FERRET_SINGLE_BRACKET_RE = re.compile(
     r"\[\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*,"
     r"\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\]"
 )
+
+# Gemini's own grounding/object-detection post-training returns point and
+# bounding-box coordinates on a 0-1000 normalized scale regardless of the
+# image's real pixel dimensions, and it applies that convention here even
+# though PROMPT_TEMPLATE (vlm_eval/runner.py) explicitly asks for pixels.
+# Measured on the collected dataset: gemini-pro-agent's y_pred was a median
+# 0.4522x of the true pixel y-centre, against an expected 1000/2219 = 0.4507
+# for that image's height -- it was answering in vocab space, not pixel
+# space, on ~90% of replies. See CLAUDE.md and build_gemini_prompt below.
+GEMINI_VOCAB_SIZE = 1000
+
+GEMINI_SPACE_NORMALIZED = "normalized"
+GEMINI_SPACE_PIXEL = "pixel"
+GEMINI_SPACE_UNVERIFIED = "unverified"
+
+# Same bracketed-pair shape as vlm_eval.scoring.BRACKET_REGEX, duplicated
+# here (rather than imported) so this module keeps parsing its own
+# model-specific wire replies locally, the same way the Ferret regexes above
+# do for Ferret's own reply shape.
+_GEMINI_COORD_RE = re.compile(
+    r"[\[(]\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*[\])]"
+)
+
+_TARGET_TEXT_RE = re.compile(r"click on the text element:\s*'([^']+)'")
 
 
 def image_to_data_url(image_path: Path) -> str:
@@ -113,17 +144,16 @@ def _register_compatible_model(model: str) -> None:
         litellm.suppress_debug_info = previous_suppress_debug_info
 
 
-def _resolve_request_timeout(timeout: float | None = None) -> float:
-    """Resolve the per-request timeout from an argument or environment."""
+def _resolve_request_timeout(
+    timeout: float | None = None,
+    default: float = DEFAULT_REQUEST_TIMEOUT_SECONDS,
+) -> float:
+    """Resolve the per-request timeout from an argument, environment, or default."""
     if timeout is not None:
         resolved = timeout
     else:
         raw_timeout = os.environ.get(REQUEST_TIMEOUT_ENV_VAR, "").strip()
-        resolved = (
-            DEFAULT_REQUEST_TIMEOUT_SECONDS
-            if not raw_timeout
-            else float(raw_timeout)
-        )
+        resolved = default if not raw_timeout else float(raw_timeout)
 
     if resolved <= 0:
         raise ValueError(f"{REQUEST_TIMEOUT_ENV_VAR} must be > 0")
@@ -335,6 +365,130 @@ def _extract_response_text(response: Any) -> str:
     return "" if content is None else str(content)
 
 
+def _is_gemini_model(model: str) -> bool:
+    """True for native `gemini/...` models and 9router routes naming a Gemini model.
+
+    9router routes have their own prefix stripped before the underlying model
+    name reaches LiteLLM (see resolve_completion_config), so this checks past
+    NINEROUTER_PREFIX rather than matching against the raw model string.
+    """
+    if model.startswith("gemini/"):
+        return True
+    if model.startswith(NINEROUTER_PREFIX):
+        return "gemini" in model[len(NINEROUTER_PREFIX):].lower()
+    return False
+
+
+def _extract_target_from_prompt(prompt: str) -> str | None:
+    """
+    Best-effort fallback: recover the target text from a rendered prompt.
+
+    Used only when a caller does not pass target_text explicitly. Apostrophes
+    in the target text truncate this extraction, which is why every in-repo
+    caller now passes target_text directly instead of relying on it.
+    """
+    match = _TARGET_TEXT_RE.search(prompt)
+    return match.group(1) if match else None
+
+
+def _resolve_image_dims(
+    image_path: Path, img_width: int | None, img_height: int | None
+) -> tuple[int, int]:
+    """Return (width, height), reading the PNG directly when not already known."""
+    if img_width is not None and img_height is not None:
+        return img_width, img_height
+
+    from PIL import Image
+
+    with Image.open(image_path) as img:
+        return img.size
+
+
+def build_gemini_prompt(
+    target_text: str,
+    tree_rows: list[tuple[str, list[int]]] | None,
+    img_width: int,
+    img_height: int,
+    strict: bool = False,
+) -> str:
+    """
+    Build the prompt for Gemini's native normalized coordinate convention.
+
+    Gemini answers in 0-1000 normalized space regardless of what the prompt
+    asks for (see GEMINI_VOCAB_SIZE) -- restating "pixel" harder does not fix
+    that, since it is not confused about the instruction, it is applying its
+    own trained output convention. So instead of asking for pixels and
+    converting nothing, this asks for what the model already wants to give
+    -- a 0-1000 point with a worked example anchored to this image's actual
+    dimensions -- and call_vlm converts the reply back to pixels afterward.
+
+    strict=True adds one more corrective sentence, used only when a prior
+    attempt in the same call_vlm retry loop came back in pixel space anyway.
+    """
+    lines = [
+        "You are an autonomous mobile agent navigating an Android user interface.",
+        f"Look closely at this image. This image is {img_width} x {img_height} pixels.",
+    ]
+    if tree_rows:
+        tree_text = "\n".join(
+            f'- "{label}" [{x1},{y1}][{x2},{y2}]'
+            for label, (x1, y1, x2, y2) in tree_rows
+        )
+        lines.append(
+            "You are also given a partial accessibility tree listing some "
+            "on-screen elements with their pixel bounds in the format "
+            f"[x1,y1][x2,y2]:\n{tree_text}\nThe target element may not appear "
+            "in this tree; use the surrounding elements' positions as "
+            "spatial reference and the image to locate it."
+        )
+    instruction = (
+        f"Locate the text element: '{target_text}'. Report its centre point "
+        "on a 0-1000 NORMALIZED scale, where [0, 0] is the top-left corner "
+        "and [1000, 1000] is the bottom-right corner of the image -- NOT "
+        "raw pixel coordinates. For example, the exact centre of this image "
+        f"is [500, 500] regardless of its {img_width}x{img_height} pixel "
+        "size. Return your response strictly in the bracket format: [x, y]"
+    )
+    if strict:
+        instruction += (
+            " Your previous answer used raw pixel coordinates, which is "
+            "wrong for this request -- rescale your answer to the 0-1000 "
+            "range before replying."
+        )
+    lines.append(instruction)
+    return "\n".join(lines)
+
+
+def _resolve_gemini_reply(
+    raw_text: str, img_width: int, img_height: int
+) -> tuple[str, str]:
+    """
+    Interpret a Gemini reply as normalized 0-1000 coordinates and convert to pixels.
+
+    Returns (coord_space, output_text). A value > GEMINI_VOCAB_SIZE (or
+    negative) on either axis is unambiguous pixel-space non-compliance --
+    nothing on a 0-1000 scale can produce it -- so it is reported as-is,
+    unconverted, for the caller to retry or flag. Anything in range is
+    trusted as normalized and converted to a pixel centre.
+
+    A pixel-space reply whose values also happen to fall inside 0-1000 (the
+    top-left ~45% of these screens) is indistinguishable from a genuinely
+    normalized reply from the text alone -- this is a stated limitation, not
+    a bug: see CLAUDE.md and the plan's "Compliance check and retry" section.
+    """
+    match = _GEMINI_COORD_RE.search(raw_text)
+    if not match:
+        return GEMINI_SPACE_UNVERIFIED, raw_text
+
+    x, y = float(match.group(1)), float(match.group(2))
+    if x > GEMINI_VOCAB_SIZE or y > GEMINI_VOCAB_SIZE or x < 0 or y < 0:
+        return GEMINI_SPACE_PIXEL, raw_text
+
+    cx = (x / GEMINI_VOCAB_SIZE) * img_width
+    cy = (y / GEMINI_VOCAB_SIZE) * img_height
+    return GEMINI_SPACE_NORMALIZED, f"[{cx:.1f}, {cy:.1f}]"
+
+
 def _sanitize_for_ferret(text: str) -> str:
     """
     Strip characters that would confuse ferret_server.py's prompt parsing.
@@ -353,25 +507,22 @@ def build_ferret_prompt(
     img_width: int,
     img_height: int,
 ) -> str:
-    """
-    Build the prompt Ferret-UI expects.
+    """Build the prompt Ferret-UI expects.
 
     Vision mode (tree_rows falsy) returns exactly the fine-tuned grounding
-    line Ferret was trained on -- unchanged from before tree mode existed, so
-    the two modes only ever differ by the tree block.
-
-    Tree mode prepends nearby elements, scaled to Ferret's own 0-1000
-    "vocabulary" coordinate space (see FERRET_VOCAB_SIZE), formatted the way
-    ferret_ui/model_UI.py:126-140 formats an input box: single bracket,
-    comma-space, `int()`-truncated (not rounded) after scaling -- matching
-    ferret_ui/model_UI.py:131,136 exactly. The grounding line always comes
-    last, since Ferret's fine-tuning expects the instruction to be the final
-    thing it reads.
+    line Ferret was trained on. Tree mode prepends nearby elements before it.
     """
     grounding_line = f"Provide the bounding box of the text '{_sanitize_for_ferret(target_text)}'."
     if not tree_rows:
         return grounding_line
 
+    # Tree rows are scaled to Ferret's own 0-1000 "vocabulary" coordinate
+    # space (see FERRET_VOCAB_SIZE), formatted the way
+    # ferret_ui/model_UI.py:126-140 formats an input box: single bracket,
+    # comma-space, `int()`-truncated (not rounded) after scaling -- matching
+    # ferret_ui/model_UI.py:131,136 exactly. The grounding line always comes
+    # last, since Ferret's fine-tuning expects the instruction to be the
+    # final thing it reads.
     ratio_w = FERRET_VOCAB_SIZE / img_width
     ratio_h = FERRET_VOCAB_SIZE / img_height
     lines = []
@@ -418,27 +569,18 @@ def _call_ferret(
     request_timeout: float | None,
 ) -> str:
     """Send a request to the local Ferret-UI inference server."""
-    from PIL import Image
-
     resolved_target = target_text
     if resolved_target is None:
         # Fallback for callers that don't pass structured target_text.
-        # Apostrophes in the target text truncate the capture here, which is
-        # why every in-repo caller now passes target_text explicitly instead.
-        match = re.search(r"click on the text element:\s*'([^']+)'", prompt)
-        if match:
-            resolved_target = match.group(1)
+        resolved_target = _extract_target_from_prompt(prompt)
+        if resolved_target is not None:
             print(
                 "    [WARN] call_vlm invoked for Ferret-UI without "
                 "target_text; falling back to regex extraction from the "
                 "prompt string."
             )
 
-    if img_width is not None and img_height is not None:
-        w, h = img_width, img_height
-    else:
-        with Image.open(image_path) as img:
-            w, h = img.size
+    w, h = _resolve_image_dims(image_path, img_width, img_height)
 
     if resolved_target is None:
         # No target could be determined at all; send the raw prompt through
@@ -455,7 +597,7 @@ def _call_ferret(
     body = json.dumps(data).encode("utf-8")
 
     retries = _resolve_max_retries(max_retries)
-    timeout = _resolve_request_timeout(request_timeout)
+    timeout = _resolve_request_timeout(request_timeout, default=FERRET_REQUEST_TIMEOUT_SECONDS)
     delay = DEFAULT_RATE_LIMIT_BACKOFF_SECONDS
 
     attempt = 0
@@ -477,8 +619,35 @@ def _call_ferret(
             raise RuntimeError(
                 f"Ferret-UI server rejected the request (HTTP {e.code}): {detail}"
             ) from e
+        except TimeoutError as e:
+            # Raised directly by urlopen on a read timeout, not wrapped in
+            # URLError, so it needs its own clause. Not retried: the server
+            # is still generating for this same request, so a retry would
+            # queue behind it and time out again rather than making progress.
+            raise RuntimeError(
+                f"Ferret-UI request exceeded the {timeout:.0f}s timeout "
+                f"({REQUEST_TIMEOUT_ENV_VAR}). The server is likely still "
+                "generating a reply for a long target string, not down; "
+                "raise the timeout rather than retrying."
+            ) from e
         except urllib.error.URLError as e:
             if isinstance(e.reason, ConnectionRefusedError):
+                if attempt < retries:
+                    # A single-threaded server with a full listen backlog
+                    # refuses new connections while busy; that looks
+                    # identical to "not running" but resolves once the
+                    # in-flight request finishes, so it is worth retrying
+                    # before concluding the server is actually down.
+                    sleep_seconds = delay
+                    print(
+                        f"    [RETRY] Ferret-UI server refused the connection "
+                        f"(likely busy); sleeping {sleep_seconds:.2f}s before "
+                        f"retry {attempt + 1}/{retries}"
+                    )
+                    time.sleep(sleep_seconds)
+                    delay = max(delay * 2, DEFAULT_RATE_LIMIT_BACKOFF_SECONDS)
+                    attempt += 1
+                    continue
                 print("\n[ERROR] Could not connect to the Ferret-UI inference server!")
                 print("Please start the server in a separate terminal:")
                 print("  cd ferret_ui")
@@ -525,6 +694,7 @@ def call_vlm(
     tree_rows: list[tuple[str, list[int]]] | None = None,
     img_width: int | None = None,
     img_height: int | None = None,
+    coord_space_out: dict | None = None,
 ) -> str:
     """
     Send image + prompt to a vision model and return raw text.
@@ -537,10 +707,15 @@ def call_vlm(
 
     target_text and tree_rows are structured context for models whose wire
     format is rewritten from `prompt` rather than sent verbatim (currently
-    only local/ferret-ui-llama8b). Hosted models ignore them and send
-    `prompt` unchanged. tree_rows is the collect_tree_rows() output in
-    cropped-image pixel space; each model-specific rewrite is responsible for
-    converting to its own coordinate convention.
+    Ferret-UI and Gemini). Other hosted models ignore them and send `prompt`
+    unchanged. tree_rows is the collect_tree_rows() output in cropped-image
+    pixel space; each model-specific rewrite is responsible for converting to
+    its own coordinate convention.
+
+    coord_space_out, when given a dict, receives {"value": GEMINI_SPACE_*}
+    for Gemini models once the reply is resolved, so a caller can log
+    per-row format compliance (see build_gemini_prompt / _resolve_gemini_reply).
+    It is left untouched for every other model family.
     """
     if model == FERRET_MODEL_ID:
         return _call_ferret(
@@ -554,6 +729,16 @@ def call_vlm(
             request_timeout,
         )
 
+    is_gemini = _is_gemini_model(model)
+    gemini_target = None
+    gemini_w = gemini_h = None
+    if is_gemini:
+        gemini_target = (
+            target_text if target_text is not None else _extract_target_from_prompt(prompt)
+        )
+        if gemini_target is not None:
+            gemini_w, gemini_h = _resolve_image_dims(image_path, img_width, img_height)
+
     data_url = image_to_data_url(image_path)
     retries = _resolve_max_retries(max_retries)
     timeout = _resolve_request_timeout(request_timeout)
@@ -563,6 +748,13 @@ def call_vlm(
 
     attempt = 0
     while attempt <= retries:
+        wire_prompt = (
+            build_gemini_prompt(
+                gemini_target, tree_rows, gemini_w, gemini_h, strict=attempt > 0
+            )
+            if is_gemini and gemini_target is not None
+            else prompt
+        )
         try:
             kwargs = dict(
                 **resolve_completion_config(model),
@@ -570,7 +762,7 @@ def call_vlm(
                     {
                         "role": "user",
                         "content": [
-                            {"type": "text", "text": prompt},
+                            {"type": "text", "text": wire_prompt},
                             {
                                 "type": "image_url",
                                 "image_url": {"url": data_url},
@@ -585,7 +777,7 @@ def call_vlm(
                 kwargs["temperature"] = resolved_temperature
             kwargs["timeout"] = timeout
             response = _completion(**kwargs)
-            return _extract_response_text(response)
+            raw_text = _extract_response_text(response)
         except Exception as exc:
             # Some reasoning models reject an explicit temperature. Drop it for
             # this model and retry rather than failing the whole run.
@@ -615,5 +807,25 @@ def call_vlm(
             time.sleep(sleep_seconds)
             delay = max(sleep_seconds * 2, DEFAULT_RATE_LIMIT_BACKOFF_SECONDS)
             attempt += 1
+            continue
+
+        if is_gemini and gemini_target is not None:
+            space, resolved_text = _resolve_gemini_reply(raw_text, gemini_w, gemini_h)
+            if space == GEMINI_SPACE_PIXEL and attempt < retries:
+                # Out-of-range on either axis is unambiguous pixel-space
+                # non-compliance (see _resolve_gemini_reply); retry with a
+                # stricter restatement rather than silently coercing it.
+                print(
+                    f"    [RETRY] {model} answered in pixel space instead of "
+                    f"the requested 0-1000 normalized scale; retrying with a "
+                    f"stricter restatement ({attempt + 1}/{retries})"
+                )
+                attempt += 1
+                continue
+            if coord_space_out is not None:
+                coord_space_out["value"] = space
+            return resolved_text
+
+        return raw_text
 
     raise RuntimeError("unreachable retry state")
