@@ -6,8 +6,12 @@ from pathlib import Path
 from vlm_eval.targets import (
     MATCH_EXACT,
     MATCH_RELAXED,
+    MAX_TARGET_CHARS,
+    box_contains,
+    build_expected_keys,
     find_element_in_profile,
     harvest_targets,
+    invalid_targets,
     locate_element,
     normalize_label,
 )
@@ -44,6 +48,30 @@ class VlmEvalTargetsTests(unittest.TestCase):
 
         self.assertEqual([], targets)
 
+    def test_harvest_targets_excludes_row_containers_and_long_text(self):
+        long_text = "x" * (MAX_TARGET_CHARS + 1)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            labels_dir = Path(tmp_dir)
+            label_path = labels_dir / "gmail_baseline.json"
+            label_path.write_text(
+                json.dumps([
+                    # Row container: encloses "Sender" below, and is itself
+                    # short enough to survive the length rule alone.
+                    {"text": "container", "box": [0, 0, 100, 100]},
+                    {"text": "Sender", "box": [10, 10, 50, 50]},
+                    {"text": long_text, "box": [200, 200, 210, 210]},
+                    {"text": "Compose", "box": [300, 300, 320, 320]},
+                ]),
+                encoding="utf-8",
+            )
+
+            targets = harvest_targets("gmail", labels_dir)
+
+        self.assertEqual(
+            {"Sender", "Compose"},
+            {t["text"] for t in targets},
+        )
+
     def test_find_element_in_profile_matches_stripped_text(self):
         labels = [
             {"text": " Settings ", "box": [1, 2, 3, 4]},
@@ -52,6 +80,50 @@ class VlmEvalTargetsTests(unittest.TestCase):
 
         self.assertEqual([1, 2, 3, 4], find_element_in_profile(labels, "Settings"))
         self.assertIsNone(find_element_in_profile(labels, "Battery"))
+
+
+class BoxContainsTests(unittest.TestCase):
+    def test_outer_box_contains_inner_box(self):
+        self.assertTrue(box_contains([0, 0, 100, 100], [10, 10, 50, 50]))
+
+    def test_identical_boxes_do_not_contain_each_other(self):
+        self.assertFalse(box_contains([0, 0, 100, 100], [0, 0, 100, 100]))
+
+    def test_partially_overlapping_boxes_do_not_contain(self):
+        self.assertFalse(box_contains([0, 0, 50, 50], [25, 25, 75, 75]))
+
+    def test_disjoint_boxes_do_not_contain(self):
+        self.assertFalse(box_contains([0, 0, 10, 10], [100, 100, 110, 110]))
+
+
+class InvalidTargetsTests(unittest.TestCase):
+    def test_over_cap_text_is_excluded(self):
+        long_text = "x" * (MAX_TARGET_CHARS + 1)
+        candidates = [{"text": long_text, "baseline_box": [0, 0, 10, 10]}]
+
+        self.assertEqual({long_text}, invalid_targets(candidates))
+
+    def test_text_at_the_cap_is_kept(self):
+        exact_text = "x" * MAX_TARGET_CHARS
+        candidates = [{"text": exact_text, "baseline_box": [0, 0, 10, 10]}]
+
+        self.assertEqual(set(), invalid_targets(candidates))
+
+    def test_container_enclosing_another_target_is_excluded(self):
+        candidates = [
+            {"text": "container", "baseline_box": [0, 0, 100, 100]},
+            {"text": "child", "baseline_box": [10, 10, 50, 50]},
+        ]
+
+        self.assertEqual({"container"}, invalid_targets(candidates))
+
+    def test_short_unique_label_is_kept(self):
+        candidates = [
+            {"text": "Home", "baseline_box": [0, 0, 20, 20]},
+            {"text": "Back", "baseline_box": [30, 30, 50, 50]},
+        ]
+
+        self.assertEqual(set(), invalid_targets(candidates))
 
 
 class NormalizeLabelTests(unittest.TestCase):
@@ -137,6 +209,55 @@ class LocateElementTests(unittest.TestCase):
         target = "Unread, , , Claude Team, , Welcome to Claude Code, , Ship"
 
         self.assertIsNone(locate_element(labels, target))
+
+
+class BuildExpectedKeysTests(unittest.TestCase):
+    def test_orders_screen_then_profile_then_target(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            labels_dir = Path(tmp_dir)
+            (labels_dir / "clock_baseline.json").write_text(
+                json.dumps([
+                    {"text": "Timer", "box": [1, 2, 3, 4]},
+                    {"text": "Alarm", "box": [5, 6, 7, 8]},
+                ]),
+                encoding="utf-8",
+            )
+            (labels_dir / "dialer_baseline.json").write_text(
+                json.dumps([{"text": "Call", "box": [1, 2, 3, 4]}]),
+                encoding="utf-8",
+            )
+
+            keys = build_expected_keys(
+                ["clock", "dialer"], labels_dir, ["baseline", "elder_text_heavy"]
+            )
+
+        self.assertEqual(
+            [
+                ("clock", "Timer", "baseline"),
+                ("clock", "Alarm", "baseline"),
+                ("clock", "Timer", "elder_text_heavy"),
+                ("clock", "Alarm", "elder_text_heavy"),
+                ("dialer", "Call", "baseline"),
+                ("dialer", "Call", "elder_text_heavy"),
+            ],
+            keys,
+        )
+
+    def test_excludes_targets_invalid_targets_would_drop(self):
+        # build_expected_keys must reflect the same harvest that runs at
+        # collection time, including the invalid_targets filter -- otherwise
+        # the "expected" set it hands to prepare_csv/finalize_csv would
+        # itself contain the stale targets those are meant to catch.
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            labels_dir = Path(tmp_dir)
+            (labels_dir / "gmail_baseline.json").write_text(
+                json.dumps([{"text": "x" * (MAX_TARGET_CHARS + 1), "box": [1, 2, 3, 4]}]),
+                encoding="utf-8",
+            )
+
+            keys = build_expected_keys(["gmail"], labels_dir, ["baseline"])
+
+        self.assertEqual([], keys)
 
 
 if __name__ == "__main__":

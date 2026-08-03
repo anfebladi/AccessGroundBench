@@ -17,6 +17,7 @@ import sys
 from dotenv import load_dotenv
 
 from vlm_eval.config import (
+    ALL_PROFILES,
     LABELS_DIR,
     get_results_csv,
     resolve_models,
@@ -24,8 +25,17 @@ from vlm_eval.config import (
     resolve_trials,
     resolve_use_a11y_tree,
 )
-from vlm_eval.results import PROMPT_MODE_TREE, PROMPT_MODE_VISION, prepare_csv
+from vlm_eval.results import (
+    PROMPT_MODE_TREE,
+    PROMPT_MODE_VISION,
+    CsvLockError,
+    acquire_lock,
+    finalize_csv,
+    prepare_csv,
+    release_lock,
+)
 from vlm_eval.runner import evaluate_screen, summarize_run
+from vlm_eval.targets import build_expected_keys
 from vlm_provider import model_configuration_error
 
 load_dotenv()
@@ -75,6 +85,13 @@ def main(argv: list[str] | None = None) -> None:
         help="Discard existing result rows and restart from scratch "
              "(default resumes an interrupted run)",
     )
+    parser.add_argument(
+        "--force-unlock",
+        action="store_true",
+        help="Remove a stale .lock file left by a killed run before starting "
+             "(only do this once you've confirmed no other run is actually "
+             "using the CSV)",
+    )
     args = parser.parse_args(argv)
 
     models = resolve_models(None)
@@ -85,6 +102,12 @@ def main(argv: list[str] | None = None) -> None:
     if not screens:
         print("[ERROR] No screens found. Run orchestrator.py first to collect data.")
         sys.exit(1)
+
+    # Computed once so every model's prepare_csv/finalize_csv call agrees on
+    # exactly the same key set -- the canonical row count this collection
+    # should produce (155 targets x 6 profiles as of this dataset).
+    expected_key_order = build_expected_keys(screens, LABELS_DIR, ALL_PROFILES)
+    expected_keys = set(expected_key_order)
 
     mode_label = "Vision + A11y Tree" if use_a11y_tree else "Vision-only"
 
@@ -99,6 +122,7 @@ def main(argv: list[str] | None = None) -> None:
     print("=" * 60)
 
     total_rows = 0
+    all_problems: list[str] = []
     for model in models:
         if not api_key_exists(model):
             config_error = model_configuration_error(model)
@@ -117,37 +141,62 @@ def main(argv: list[str] | None = None) -> None:
         print(f"  Trials per query: {trials}")
         print("=" * 60)
 
-        completed = prepare_csv(
-            results_csv,
-            fresh=args.fresh,
-            expected_prompt_mode=PROMPT_MODE_TREE if use_a11y_tree else PROMPT_MODE_VISION,
-        )
+        if args.force_unlock:
+            release_lock(results_csv)
+        try:
+            # A second process against the same CSV used to snapshot
+            # `completed` before this one had written anything and both
+            # would append the same keys -- see CLAUDE.md's
+            # canonicalization notes for the duplicate rows that caused.
+            acquire_lock(results_csv)
+        except CsvLockError as e:
+            print(f"\n[SKIP] {e}")
+            continue
 
-        for screen_name in screens:
-            print(f"\n  -- Screen: {screen_name} --")
-            rows = evaluate_screen(
-                model, screen_name, pace_seconds, results_csv,
-                use_a11y_tree=use_a11y_tree,
-                trials=trials,
-                completed=completed,
+        try:
+            completed = prepare_csv(
+                results_csv,
+                fresh=args.fresh,
+                expected_prompt_mode=PROMPT_MODE_TREE if use_a11y_tree else PROMPT_MODE_VISION,
+                expected_keys=expected_keys,
             )
-            total_rows += rows
 
-        summary = summarize_run(results_csv)
-        if summary:
-            print(f"\n  [SUMMARY] {model}")
-            for status, count in sorted(summary["statuses"].items()):
-                print(f"    {status or '(blank)':<14} {count}")
-            print(f"    parse failures {summary['parse_failures']}")
-            if summary["flip_rate"] is not None:
-                print(f"    trial flip rate {summary['flip_rate'] * 100:.1f}% "
-                      f"({summary['flipped_rows']}/{summary['multi_trial_rows']} "
-                      f"multi-trial targets disagreed)")
+            for screen_name in screens:
+                print(f"\n  -- Screen: {screen_name} --")
+                rows = evaluate_screen(
+                    model, screen_name, pace_seconds, results_csv,
+                    use_a11y_tree=use_a11y_tree,
+                    trials=trials,
+                    completed=completed,
+                )
+                total_rows += rows
+
+            summary = summarize_run(results_csv)
+            if summary:
+                print(f"\n  [SUMMARY] {model}")
+                for status, count in sorted(summary["statuses"].items()):
+                    print(f"    {status or '(blank)':<14} {count}")
+                print(f"    parse failures {summary['parse_failures']}")
+                if summary["flip_rate"] is not None:
+                    print(f"    trial flip rate {summary['flip_rate'] * 100:.1f}% "
+                          f"({summary['flipped_rows']}/{summary['multi_trial_rows']} "
+                          f"multi-trial targets disagreed)")
+
+            all_problems.extend(finalize_csv(results_csv, expected_key_order))
+        finally:
+            release_lock(results_csv)
 
     print("\n" + "=" * 60)
     print("  Evaluation complete!")
     print(f"  Total rows logged this run: {total_rows}")
     print("=" * 60)
+
+    if all_problems:
+        print(f"\n  {len(all_problems)} PROBLEM(S) -- this dataset is not ready to use:")
+        for problem in all_problems:
+            print(f"    - {problem}")
+        print("=" * 60)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

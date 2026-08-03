@@ -198,26 +198,18 @@ def crop_screenshot(
 
 
 def apply_color_transform(png_path: Path, color_mode: str) -> float:
-    """
-    Phase 3.6 — Remap a screenshot's colors in-place to emulate a color-vision
-    deficiency, using the matrices in COLOR_TRANSFORMS.
+    """Remap a screenshot's colors in-place to emulate a color-vision deficiency.
 
-    This is what makes a colorblind profile visible in the saved pixels, since
-    `adb screencap` does not capture Android's on-device daltonizer.
-
-    Returns the mean absolute per-channel change, and raises RuntimeError if
-    the transform left the pixels untouched. Verifying here rather than by
-    diffing against a separate baseline capture keeps the check exact: the
-    comparison is before-and-after on the same bytes, so app content drift
-    cannot mask a transform that silently did nothing.
-
-    Note the magnitude scales with how colourful the screen is -- a green-weak
-    transform barely moves a dark, near-monochrome UI -- so only "changed at
-    all" is a meaningful pass condition, not any particular delta.
+    Uses the matrices in COLOR_TRANSFORMS. This is what makes a colorblind
+    profile visible in the saved pixels, since `adb screencap` does not
+    capture Android's on-device daltonizer.
 
     Args:
         png_path:   Path to the PNG file to transform.
         color_mode: Key into COLOR_TRANSFORMS (e.g. "deuteranomaly").
+
+    Returns the mean absolute per-channel change, and raises RuntimeError if
+    the transform left the pixels untouched.
     """
     from PIL import Image, ImageChops, ImageStat
 
@@ -241,10 +233,17 @@ def apply_color_transform(png_path: Path, color_mode: str) -> float:
     with Image.open(png_path) as img:
         original = img.convert("RGB")
         transformed = original.convert("RGB", tuple_12)
+        # Comparing before-and-after on the same bytes, rather than diffing
+        # against a separate baseline capture, keeps this exact: app content
+        # drift between two captures cannot mask a transform that silently
+        # did nothing.
         stat = ImageStat.Stat(ImageChops.difference(original, transformed))
         delta = sum(stat.mean) / len(stat.mean)
         transformed.save(png_path)
 
+    # The magnitude scales with how colourful the screen is -- a green-weak
+    # transform barely moves a dark, near-monochrome UI -- so only "changed
+    # at all" is a meaningful pass condition, not any particular delta.
     if delta == 0.0:
         raise RuntimeError(
             f"Color transform '{color_mode}' changed nothing in "

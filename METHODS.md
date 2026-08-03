@@ -127,6 +127,41 @@ either scoring `off_screen` as failure — reintroducing the confound above — 
 restricting every profile to the 109 targets present in all of them, which changes the
 estimand. Neither is done; the bias is reported instead.
 
+### 1.2.2 Target-validity filter
+
+A harvested candidate is a valid target only if it is the one string a user would
+actually see and tap. Two shapes fail that test, both from Android accessibility
+narration crushing a whole UI row into a single `text` attribute:
+
+- **Length.** A target's text exceeds `MAX_TARGET_CHARS` (100 characters).
+- **Containment.** A target's box fully encloses another target's box on the same
+  screen — the container is the parent of the target it should not compete with.
+
+Both are the shape of Gmail's `viewified_conversation_item_view` row nodes: one
+`ViewGroup` carries a synthesized string concatenating sender, subject, and the full
+(untruncated) preview body, and encloses its own sender/subject/preview children —
+which are already separate, individually-visible targets. Asking a model to locate that
+concatenation is not asking it to find a rendered label.
+
+`vlm_eval.targets.invalid_targets` applies this filter at harvest time, before any
+target is queried: `harvest_targets` never returns an invalid candidate, so no CSV row
+and no API call exists for it. This is a sample-*definition* rule, not a post-hoc
+statistical correction — it removes targets that were never valid instances of the
+grounding task, the same category of decision as requiring baseline-unique text.
+
+`mcnemar_analysis.compute_b2_targets` recomputes the identical rule from a completed
+CSV's `co_present` rows. It exists for datasets collected before the harvest-time filter
+did (`dataset/experiment_2`, and any hosted-model CSV collected before this change),
+where the invalid rows are already on disk and must be filtered out after the fact
+rather than never generated. On a fresh collection the two should agree exactly; where
+they diverge, it means the CSV predates this filter.
+
+Effect on the current (non-archived) dataset: 7 of gmail's 23 harvested candidates are
+excluded (162 → 155 targets across all 13 screens), all by the length rule; none of
+gmail's other targets enclose one another, so the containment rule contributes nothing
+on this dataset (it exists for a shape the length rule alone would not catch — a short
+container label enclosing a target with equally short text, e.g. two overlapping icons).
+
 ### 1.3 The 2×2 contingency table
 
 For a set of paired (baseline, comparison) scores, `compute_contingency`

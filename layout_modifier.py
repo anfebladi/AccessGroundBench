@@ -126,11 +126,11 @@ def apply_density(adb: str, serial: str, value: str) -> None:
 # Android reads. Verified against the resulting captures: 0 of 68 off-centre
 # elements mirrored. Hence verify_rtl_applied() below -- but even with the
 # correct key, re-collection still measured 0% mirroring across every screen,
-# so no ELDER_PROFILES entry requests rtl="1" anymore. The reflow this key is
-# meant to trigger likely needs a full app/process restart to take effect,
-# which nothing in this pipeline currently does; a real fix would need that,
-# not just the correct setting key. See CLAUDE.md's profile history for the
-# dropped elder_combo_rtl arm (now elder_combo_mid, RTL-free).
+# so no ELDER_PROFILES entry requests rtl="1" anymore (the dropped arm,
+# elder_combo_rtl, was renamed elder_combo_mid and is RTL-free). The reflow
+# this key is meant to trigger likely needs a full app/process restart to
+# take effect, which nothing in this pipeline currently does; a real fix
+# would need that, not just the correct setting key.
 RTL_SETTING_KEY = "debug.force_rtl"
 
 

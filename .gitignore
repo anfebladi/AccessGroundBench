@@ -45,3 +45,8 @@ sample_input/capture_*.json
 # Android/local tooling logs
 *.log
 adb*.txt
+
+# Result-CSV canonicalization safety copies and single-writer locks
+# (see vlm_eval.results.canonicalize_rows / acquire_lock)
+dataset/*.bak
+dataset/*.lock

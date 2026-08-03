@@ -86,6 +86,10 @@ class VlmEvaluatorConfigTests(unittest.TestCase):
 
 
 class VlmEvaluatorMainTests(unittest.TestCase):
+    @mock.patch("vlm_evaluator.build_expected_keys", return_value=[])
+    @mock.patch("vlm_evaluator.finalize_csv", return_value=[])
+    @mock.patch("vlm_evaluator.release_lock")
+    @mock.patch("vlm_evaluator.acquire_lock")
     @mock.patch("vlm_evaluator.summarize_run", return_value={})
     @mock.patch("vlm_evaluator.evaluate_screen", return_value=1)
     @mock.patch("vlm_evaluator.prepare_csv", return_value=set())
@@ -107,6 +111,10 @@ class VlmEvaluatorMainTests(unittest.TestCase):
         prepare_csv_mock,
         evaluate_screen_mock,
         summarize_run_mock,
+        acquire_lock_mock,
+        release_lock_mock,
+        finalize_csv_mock,
+        build_expected_keys_mock,
     ):
         fake_stdout = io.StringIO()
         fake_stdout.reconfigure = lambda **kwargs: None
@@ -131,6 +139,10 @@ class VlmEvaluatorMainTests(unittest.TestCase):
         for call in evaluate_screen_mock.call_args_list:
             self.assertFalse(call.kwargs.get("use_a11y_tree", False))
 
+    @mock.patch("vlm_evaluator.build_expected_keys", return_value=[])
+    @mock.patch("vlm_evaluator.finalize_csv", return_value=[])
+    @mock.patch("vlm_evaluator.release_lock")
+    @mock.patch("vlm_evaluator.acquire_lock")
     @mock.patch("vlm_evaluator.summarize_run", return_value={})
     @mock.patch("vlm_evaluator.evaluate_screen", return_value=1)
     @mock.patch("vlm_evaluator.prepare_csv", return_value=set())
@@ -147,6 +159,10 @@ class VlmEvaluatorMainTests(unittest.TestCase):
         prepare_csv_mock,
         evaluate_screen_mock,
         summarize_run_mock,
+        acquire_lock_mock,
+        release_lock_mock,
+        finalize_csv_mock,
+        build_expected_keys_mock,
     ):
         fake_stdout = io.StringIO()
         fake_stdout.reconfigure = lambda **kwargs: None

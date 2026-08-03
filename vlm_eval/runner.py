@@ -52,48 +52,17 @@ def collect_tree_rows(
     """Collect a profile's label records into (label, box) rows.
 
     Each row is one UI element with its best available label and pixel
-    bounding box. Falls back through: text -> content_desc -> resource_id ->
-    class.
-
-    Two independent exclusions keep the tree from handing the model the answer.
-    Both only ever REMOVE rows, so neither can inflate a tree-mode result: a
-    withheld row can make the task harder, never easier.
-
-    1. LABEL exclusion (exclude_text). Any element whose RENDERED LABEL matches
-       the target is withheld, so the tree never names the thing being asked
-       about. This must be checked against the same fallback chain used to
-       build the label, not against `text` alone: a node with empty `text` but
-       `content_desc == exclude_text` still renders the target's name, so
-       checking `text` alone let it through. Measured on the archived dataset,
-       that leaked 22 of 168 targets (13.1%).
-
-    2. BOUNDS exclusion (target_box + baseline_box). Any row whose box CENTRE
-       would score a hit under scoring.hit_test is withheld, regardless of its
-       label. The label exclusion alone does not cover this: a parent
-       container labelled e.g. "navigation_bar_item_content_container" never
-       renders the target's name, but its centre can sit inside the target's
-       scoring box, so a model could score by reading the tree rather than
-       looking at the image. Measured on the current dataset, the label
-       exclusion alone left 575 of 853 target x profile pairs (67.4%) with at
-       least one such row -- mean 2.12 hitting rows out of a ~74-row tree.
-
-       Removing them costs ~3% of spatial context. Without it a tree-mode
-       improvement is uninterpretable, because "the tree helped the model
-       locate the element" and "the model read a nearby container's centre off
-       the tree" predict the same result, and the confound points the same way
-       as the hypothesis.
-
-    Both boxes are required for the bounds exclusion, since hit_test scores a
-    baseline-sized box centred on the current profile's box (see
-    scoring.hit_test). When either is None only the label exclusion applies,
-    which keeps existing non-tree callers working unchanged.
-
-    This is the single source of truth for the exclusions; every rendering of
-    the tree (per-model prompt formats included) must be built from this
-    function's output rather than re-deriving the fallback/exclusion logic,
-    or the leak fix can silently regress in one rendering while holding in
-    another.
+    bounding box, falling back through text -> content_desc -> resource_id
+    -> class. This is the single source of truth for the tree exclusions
+    below; every rendering of the tree (per-model prompt formats included)
+    must be built from this function's output rather than re-deriving the
+    fallback/exclusion logic, so a fix to one cannot silently regress while
+    holding in another.
     """
+    # Two independent exclusions keep the tree from handing the model the
+    # answer. Both only ever REMOVE rows, so neither can inflate a
+    # tree-mode result: a withheld row can make the task harder, never
+    # easier.
     check_bounds = target_box is not None and baseline_box is not None
 
     rows = []
@@ -109,11 +78,31 @@ def collect_tree_rows(
             or rec.get("class")
             or "?"
         )
+        # LABEL exclusion: any element whose RENDERED LABEL matches the
+        # target is withheld, so the tree never names the thing being asked
+        # about. Checked against the same fallback chain used to build
+        # `label` above, not against `text` alone -- a node with empty
+        # `text` but `content_desc == exclude_text` still renders the
+        # target's name, and checking `text` alone let 22 of 168 targets
+        # (13.1%) leak through on the archived dataset.
         if (
             exclude_text is not None
             and label.strip() == exclude_text.strip()
         ):
             continue
+        # BOUNDS exclusion: any row whose box centre would score a hit
+        # under scoring.hit_test is withheld regardless of its label. The
+        # label exclusion alone does not cover this -- a parent container
+        # labelled e.g. "navigation_bar_item_content_container" never
+        # renders the target's name, but its centre can sit inside the
+        # target's scoring box, letting a model score by reading the tree
+        # rather than looking at the image. Without it, the label
+        # exclusion alone left 575 of 853 target x profile pairs (67.4%)
+        # with at least one such hitting row, costing only ~3% of spatial
+        # context to remove. Both boxes are required here since hit_test
+        # scores a baseline-sized box centred on the current profile's box
+        # (see scoring.hit_test); when either is None only the label
+        # exclusion applies, keeping non-tree callers working unchanged.
         if check_bounds:
             centre_x = (box[0] + box[2]) // 2
             centre_y = (box[1] + box[3]) // 2
@@ -182,22 +171,19 @@ def evaluate_screen(
     trials: int = 1,
     completed: set[tuple[str, str, str]] | None = None,
 ) -> int:
-    """
-    Evaluate all profiles for a single screen.
+    """Evaluate all profiles for a single screen.
 
-    When use_a11y_tree is True, injects the accessibility tree into the
-    prompt alongside the screenshot. When False, runs vision-only (unchanged).
-
-    When trials > 1 the same query is sent that many times and scored by
-    majority vote, which measures rather than assumes the stability of a
-    single stochastic draw.
-
-    Targets absent from a profile's layout are recorded with
-    status=off_screen and NO score. They are a property of the layout, not a
-    grounding failure, and are analysed separately as reachability.
+    use_a11y_tree=True injects the accessibility tree into the prompt
+    alongside the screenshot; otherwise runs vision-only. trials > 1 sends
+    the same query that many times and scores by majority vote, measuring
+    rather than assuming the stability of a single stochastic draw.
 
     Returns the total number of evaluation rows generated.
     """
+    # Targets absent from a profile's layout are recorded with
+    # status=off_screen and NO score: they are a property of the layout,
+    # not a grounding failure, and are analysed separately as
+    # reachability.
     targets = harvest_targets(screen_name, labels_dir)
     if not targets:
         print(f"  [SKIP] No targets for screen: {screen_name}")
@@ -300,10 +286,10 @@ def evaluate_screen(
                 # The element is still rendered, but reflow changed its label
                 # text enough that the exact-string lookup missed it. This is
                 # not "off screen" and not a model answer -- it is a distinct,
-                # deliberately unscored category. Whether/how to query it is
-                # an open sample-definition decision (see CLAUDE.md's
-                # remediation plan); recording it here makes the category
-                # visible and countable without pre-deciding that question.
+                # deliberately unscored category, so it is recorded rather
+                # than queried: whether/how such a target should eventually be
+                # scored is a separate decision that recording it here does
+                # not pre-empt.
                 safe_matched = matched_text.encode("ascii", "replace").decode("ascii")
                 append_result(results_csv, {
                     "screen": screen_name,
@@ -361,9 +347,11 @@ def evaluate_screen(
                 )
 
             trial_results = []
+            trial_coord_spaces = []
             api_error: Exception | None = None
 
             for _ in range(max(1, trials)):
+                coord_space_out: dict = {}
                 try:
                     raw_response = call_vlm(
                         model,
@@ -373,10 +361,12 @@ def evaluate_screen(
                         tree_rows=tree_rows,
                         img_width=img_width,
                         img_height=img_height,
+                        coord_space_out=coord_space_out,
                     )
                 except Exception as exc:
                     api_error = exc
                     break
+                trial_coord_spaces.append(coord_space_out.get("value", ""))
                 trial_results.append(
                     (raw_response,) + score_one_trial(
                         raw_response, box, baseline_box, img_width, img_height
@@ -410,11 +400,12 @@ def evaluate_screen(
             score = 1 if sum(scores) * 2 > len(scores) else 0
 
             # Report the first trial that agrees with the majority, so the
-            # logged coordinates match the logged score.
-            representative = next(
-                (t for t in trial_results if t[3] == score), trial_results[0]
+            # logged coordinates (and coord_space) match the logged score.
+            representative_index = next(
+                (i for i, t in enumerate(trial_results) if t[3] == score), 0
             )
-            raw_response, x_pred, y_pred, _, parse_method = representative
+            raw_response, x_pred, y_pred, _, parse_method = trial_results[representative_index]
+            coord_space = trial_coord_spaces[representative_index]
 
             append_result(results_csv, {
                 "screen": screen_name,
@@ -431,6 +422,7 @@ def evaluate_screen(
                 "parse_method": parse_method,
                 "prompt_mode": PROMPT_MODE_TREE if use_a11y_tree else PROMPT_MODE_VISION,
                 "tree_rows_sent": len(tree_rows) if tree_rows else 0,
+                "coord_space": coord_space,
             })
             count += 1
 

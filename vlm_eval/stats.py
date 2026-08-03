@@ -215,37 +215,37 @@ def cluster_permutation_test(
     n_permutations: int = DEFAULT_PERMUTATIONS,
     seed: int = 0,
 ) -> dict:
-    """
-    Two-tailed permutation test on paired binary outcomes with clustering.
+    """Two-tailed permutation test on paired binary outcomes with clustering.
 
     Args:
         clusters: {cluster_key: [(baseline_score, experimental_score), ...]}.
             One cluster is one target; its list holds that target's paired
             outcome under every model evaluated.
 
-    Why this test rather than a per-model McNemar:
-
-      1. Power. Per-model tests have only a handful of discordant pairs each.
-         The smallest achievable two-tailed exact binomial p-value is
-         2 * 0.5**n, so after correcting across a family of ~28 tests a model
-         needs >= 11 one-directional discordant pairs to reach significance --
-         which several models cannot produce even in principle. Pooling the
-         models supplies enough discordant observations to test at all.
-
-      2. Non-independence. The same targets are reused for every model, so the
-         per-model outcomes for one target are correlated: a target that is
-         intrinsically hard is hard for everyone. Pooling them into a single
-         McNemar would treat them as independent and manufacture confidence.
-         Permuting whole clusters preserves that correlation exactly, because
-         a target's outcomes across models are always relabelled together.
-
-    Under H0 the baseline/experimental labels are exchangeable within a target,
-    so flipping a cluster negates its contribution to the statistic
-    T = sum(baseline - experimental). The null distribution is built by
-    randomly flipping each cluster and recomputing T.
-
     Returns a dict with the observed statistic, b/c totals, and the p-value.
     """
+    # Used instead of a per-model McNemar for two reasons:
+    #
+    # 1. Power. Per-model tests have only a handful of discordant pairs
+    #    each. The smallest achievable two-tailed exact binomial p-value is
+    #    2 * 0.5**n, so after correcting across a family of ~28 tests a
+    #    model needs >= 11 one-directional discordant pairs to reach
+    #    significance -- which several models cannot produce even in
+    #    principle. Pooling the models supplies enough discordant
+    #    observations to test at all.
+    #
+    # 2. Non-independence. The same targets are reused for every model, so
+    #    the per-model outcomes for one target are correlated: a target
+    #    that is intrinsically hard is hard for everyone. Pooling them into
+    #    a single McNemar would treat them as independent and manufacture
+    #    confidence. Permuting whole clusters preserves that correlation
+    #    exactly, because a target's outcomes across models are always
+    #    relabelled together.
+    #
+    # Under H0 the baseline/experimental labels are exchangeable within a
+    # target, so flipping a cluster negates its contribution to the
+    # statistic T = sum(baseline - experimental). The null distribution is
+    # built by randomly flipping each cluster and recomputing T.
     keys = list(clusters)
     if not keys:
         return {

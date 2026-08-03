@@ -78,6 +78,16 @@ def check_token_budget(input_ids, image_size, model_config, max_new_tokens):
         )
 
 
+class FerretServer(HTTPServer):
+    # Requests are served strictly one at a time: one GPU-resident model, no
+    # batching across connections. The stdlib default backlog of 5 means one
+    # slow generation (a long target string gets echoed back before the box,
+    # taking minutes) fills the queue and the OS starts refusing further
+    # connects outright -- which a client reports as "server not running"
+    # rather than "server busy". A deep backlog lets callers queue and wait.
+    request_queue_size = 128
+
+
 class FerretServerHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         try:
@@ -178,9 +188,12 @@ class FerretServerHandler(BaseHTTPRequestHandler):
             
         except Exception as e:
             print(f"Error processing request: {e}")
-            self.send_response(500)
-            self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+            try:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+            except Exception as inner_e:
+                print(f"Failed to send error response (client may have disconnected): {inner_e}")
 
 def main():
     parser = argparse.ArgumentParser()
@@ -214,7 +227,7 @@ def main():
 
     # Set up server and attach state
     server_address = ('', args.port)
-    httpd = HTTPServer(server_address, FerretServerHandler)
+    httpd = FerretServer(server_address, FerretServerHandler)
     
     httpd.model = model
     httpd.tokenizer = tokenizer

@@ -10,6 +10,60 @@ def touch_csv(path: Path) -> None:
     path.write_text("screen,target_text,profile\n", encoding="utf-8")
 
 
+class IndexRowsTests(unittest.TestCase):
+    def test_no_duplicates_indexes_normally(self):
+        rows = [
+            {"screen": "clock", "target_text": "Timer", "profile": "baseline",
+             "status": mcnemar_analysis.STATUS_CO_PRESENT, "score": "1"},
+        ]
+
+        index = mcnemar_analysis.index_rows(rows)
+
+        self.assertEqual(1, len(index))
+        self.assertEqual("1", index[("clock", "Timer", "baseline")]["score"])
+
+    def test_later_api_error_does_not_shadow_an_earlier_real_row(self):
+        # The exact defect found in gpt-5.4_with_tree.csv: a real answer
+        # followed by a stale api_error from a later resumed/retried run. A
+        # naive last-write-wins dict comprehension would let the error hide
+        # the real answer from every downstream co_present-gated table.
+        real = {"screen": "gmail", "target_text": "1:51 PM", "profile": "elder_text_heavy",
+                "status": mcnemar_analysis.STATUS_CO_PRESENT, "score": "1"}
+        error = {"screen": "gmail", "target_text": "1:51 PM", "profile": "elder_text_heavy",
+                 "status": mcnemar_analysis.STATUS_API_ERROR, "score": ""}
+
+        index = mcnemar_analysis.index_rows([real, error])
+
+        self.assertEqual(real, index[("gmail", "1:51 PM", "elder_text_heavy")])
+
+    def test_earlier_api_error_is_replaced_by_a_later_real_row(self):
+        error = {"screen": "gmail", "target_text": "1:51 PM", "profile": "elder_text_heavy",
+                 "status": mcnemar_analysis.STATUS_API_ERROR, "score": ""}
+        real = {"screen": "gmail", "target_text": "1:51 PM", "profile": "elder_text_heavy",
+                "status": mcnemar_analysis.STATUS_CO_PRESENT, "score": "1"}
+
+        index = mcnemar_analysis.index_rows([error, real])
+
+        self.assertEqual(real, index[("gmail", "1:51 PM", "elder_text_heavy")])
+
+    def test_duplicate_keys_trigger_a_warning(self):
+        rows = [
+            {"screen": "clock", "target_text": "Timer", "profile": "baseline",
+             "status": mcnemar_analysis.STATUS_CO_PRESENT, "score": "1"},
+            {"screen": "clock", "target_text": "Timer", "profile": "baseline",
+             "status": mcnemar_analysis.STATUS_CO_PRESENT, "score": "0"},
+        ]
+
+        import io
+        from contextlib import redirect_stdout
+
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            mcnemar_analysis.index_rows(rows)
+
+        self.assertIn("duplicate", buf.getvalue().lower())
+
+
 class DiscoverResultCsvsTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
