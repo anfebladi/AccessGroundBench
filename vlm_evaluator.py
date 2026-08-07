@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 from vlm_eval.config import (
     LABELS_DIR,
     get_results_csv,
+    resolve_coord_space,
     resolve_model,
     resolve_pace_seconds,
     resolve_use_a11y_tree,
@@ -65,6 +66,7 @@ def main() -> None:
     models = [model]
     pace_seconds = resolve_pace_seconds(None)
     use_a11y_tree = resolve_use_a11y_tree()
+    coord_space = resolve_coord_space()
 
     screens = discover_screens()
     if not screens:
@@ -78,6 +80,7 @@ def main() -> None:
     print(f"  Mode    : {mode_label}")
     print("  Note    : Does not navigate or capture the emulator")
     print(f"  Models  : {', '.join(models)}")
+    print(f"  Coords  : {coord_space}")
     print(f"  Pace    : {pace_seconds}s")
     print(f"  Screens : {', '.join(screens)}")
     print("=" * 60)
@@ -96,13 +99,25 @@ def main() -> None:
         print(f"  Output CSV:       {results_csv}")
         print("=" * 60)
 
-        for screen_name in screens:
-            print(f"\n  -- Screen: {screen_name} --")
-            rows = evaluate_screen(
-                model, screen_name, pace_seconds, results_csv,
-                use_a11y_tree=use_a11y_tree,
-            )
-            total_rows += rows
+        model_rows = 0
+        try:
+            for screen_name in screens:
+                print(f"\n  -- Screen: {screen_name} --")
+                rows = evaluate_screen(
+                    model, screen_name, pace_seconds, results_csv,
+                    use_a11y_tree=use_a11y_tree,
+                    coord_space=coord_space,
+                )
+                model_rows += rows
+                total_rows += rows
+        finally:
+            # init_csv writes the header before the first API call, so a run
+            # that dies on call one leaves a header-only file named after the
+            # model. mcnemar_analysis globs every evaluation_results_*.csv and
+            # would treat that orphan as a real result, so drop it here.
+            if model_rows == 0:
+                results_csv.unlink(missing_ok=True)
+                print(f"  [CSV] Removed empty results file: {results_csv.name}")
 
     print("\n" + "=" * 60)
     print("  Evaluation complete!")

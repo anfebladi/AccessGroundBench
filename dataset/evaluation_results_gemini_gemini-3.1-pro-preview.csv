@@ -1,244 +1,244 @@
 screen,target_text,profile,raw_response,x_pred,y_pred,x_min,y_min,x_max,y_max,score
-clock,8:30 AM,baseline,"```json [{""point"": [240, 311], ""label"": ""text""}] ```",240,311,84,231,429,414,1
-clock,"Mon, Tue, Wed, Thu, Fri",baseline,"[267, 212]",267,212,84,450,493,505,0
-clock,9:00 AM,baseline,"[237, 309]",237,309,84,603,429,786,0
-clock,"Sun, Sat",baseline,"[150, 376]",150,376,84,822,241,877,0
-clock,Clock,baseline,"[300, 960]",300,960,280,2196,367,2246,0
-clock,Timer,baseline,"```json [498, 2235] ```",498,2235,496,2196,584,2246,1
-clock,Stopwatch,baseline,"```json [   {""point"": [699, 2216], ""label"": ""text""} ] ```",699,2216,675,2196,836,2246,1
-clock,Bedtime,baseline,"```json [   {""point"": [899, 2210]} ] ```",899,2210,908,2196,1035,2246,0
-clock,8:30 AM,elder_text_heavy,"[203, 142]",203,142,84,231,429,414,0
-clock,"Mon, Tue, Wed, Thu, Fri",elder_text_heavy,"[346, 212]",346,212,84,438,665,517,0
-clock,9:00 AM,elder_text_heavy,"[238, 305]",238,305,84,603,429,786,0
-clock,"Sun, Sat",elder_text_heavy,"[178, 372]",178,372,84,810,301,889,0
-clock,Clock,elder_text_heavy,"[300, 977]",300,977,280,2196,367,2246,0
-clock,Timer,elder_text_heavy,"```json [499, 2223] ```",499,2223,496,2196,584,2246,1
-clock,Stopwatch,elder_text_heavy,"[700, 953]",700,953,675,2196,836,2246,0
-clock,Bedtime,elder_text_heavy,"[899, 977]",899,977,908,2196,1035,2246,0
-clock,8:30 AM,elder_zoom_heavy,"[270, 169]",270,169,96,264,487,472,0
-clock,"Mon, Tue, Wed, Thu, Fri",elder_zoom_heavy,"[300, 241]",300,241,96,513,554,575,0
-clock,9:00 AM,elder_zoom_heavy,"[230, 345]",230,345,96,688,487,896,0
-clock,"Sun, Sat",elder_zoom_heavy,"[169, 432]",169,432,96,937,269,999,0
-clock,Clock,elder_zoom_heavy,"[300, 971]",300,971,275,2168,373,2224,0
-clock,Timer,elder_zoom_heavy,"[540, 2197]",540,2197,491,2168,589,2224,1
-clock,Stopwatch,elder_zoom_heavy,"[699, 971]",699,971,664,2168,848,2224,0
-clock,Bedtime,elder_zoom_heavy,"[900, 955]",900,955,900,2168,1044,2224,0
-clock,8:30 AM,elder_combo_max,"[300, 180]",300,180,104,286,541,516,0
-clock,"Mon, Tue, Wed, Thu, Fri",elder_combo_max,"[415, 277]",415,277,104,516,794,714,0
-clock,9:00 AM,elder_combo_max,"[253, 401]",253,401,104,792,541,1022,0
-clock,"Sun, Sat",elder_combo_max,"[230, 489]",230,489,104,1046,393,1154,0
-clock,Clock,elder_combo_max,"[300, 966]",300,966,271,2148,377,2209,0
-clock,Timer,elder_combo_max,"```json [   {""point"": [500, 2173], ""label"": ""text""} ] ```",500,2173,487,2148,593,2209,1
-clock,Stopwatch,elder_combo_max,"```json [   {""point"": [699, 2168], ""label"": ""Stopwatch""} ] ```",699,2168,657,2148,854,2209,1
-clock,Bedtime,elder_combo_max,"[899, 966]",899,966,894,2148,1049,2209,0
-clock,8:30 AM,elder_combo_rtl,"[269, 163]",269,163,96,264,487,472,0
-clock,"Mon, Tue, Wed, Thu, Fri",elder_combo_rtl,"[416, 240]",416,240,96,496,800,592,0
-clock,9:00 AM,elder_combo_rtl,"[272, 355]",272,355,96,688,487,896,0
-clock,"Sun, Sat",elder_combo_rtl,"[210, 428]",210,428,96,920,358,1016,0
-clock,Clock,elder_combo_rtl,"[300, 2197]",300,2197,275,2168,373,2224,1
-clock,Timer,elder_combo_rtl,"[499, 971]",499,971,491,2168,589,2224,0
-clock,Stopwatch,elder_combo_rtl,"[700, 2209]",700,2209,664,2168,848,2224,1
-clock,Bedtime,elder_combo_rtl,"[899, 971]",899,971,900,2168,1044,2224,0
-contacts,All contacts,baseline,"```json [224, 256] ```",224,256,142,226,342,279,1
-contacts,No contacts yet,baseline,"[500, 626]",500,626,317,1378,763,1462,0
-contacts,Contacts,baseline,"[295, 2197]",295,2197,249,2216,387,2258,0
-contacts,Organize,baseline,"```json [704, 2217] ```",704,2217,692,2216,829,2258,1
-contacts,All contacts,elder_text_heavy,"[267, 110]",267,110,142,214,436,291,0
-contacts,No contacts yet,elder_text_heavy,"[499, 622]",499,622,289,1365,792,1461,0
-contacts,Contacts,elder_text_heavy,"[295, 977]",295,977,223,2202,414,2258,0
-contacts,Organize,elder_text_heavy,"```json [   {""point"": [705, 2215]} ] ```",705,2215,666,2202,855,2258,1
-contacts,All contacts,elder_zoom_heavy,"[257, 127]",257,127,162,258,394,318,0
-contacts,No contacts yet,elder_zoom_heavy,"[500, 642]",500,642,284,1404,796,1500,0
-contacts,Contacts,elder_zoom_heavy,"[264, 2208]",264,2208,208,2190,365,2238,1
-contacts,Organize,elder_zoom_heavy,"[732, 981]",732,981,714,2190,869,2238,0
-contacts,All contacts,elder_combo_max,"```json [339, 315] ```",339,315,176,260,584,366,1
-contacts,No contacts yet,elder_combo_max,"[500, 650]",500,650,199,1397,881,1526,0
-contacts,Contacts,elder_combo_max,"[250, 971]",250,971,136,2146,404,2224,0
-contacts,Organize,elder_combo_max,"[749, 971]",749,971,676,2146,943,2224,0
-contacts,All contacts,elder_combo_rtl,"[320, 305]",320,305,162,241,527,336,1
-contacts,No contacts yet,elder_combo_rtl,"[499, 642]",499,642,242,1387,839,1499,0
-contacts,Contacts,elder_combo_rtl,"[266, 977]",266,977,170,2171,404,2238,0
-contacts,Organize,elder_combo_rtl,"[735, 953]",735,953,676,2171,908,2238,0
-dialer,Phone Number,baseline,"[500, 204]",500,204,147,955,933,1099,0
-dialer,1,baseline,"[173, 532]",173,532,169,1148,203,1252,0
-dialer,2,baseline,"[499, 529]",499,529,518,1152,561,1256,0
-dialer,ABC,baseline,"[499, 563]",499,563,505,1256,574,1300,0
-dialer,3,baseline,"[826, 545]",826,545,870,1152,914,1256,0
-dialer,DEF,baseline,"[826, 563]",826,563,861,1256,924,1300,0
-dialer,4,baseline,"[172, 611]",172,611,163,1343,210,1447,0
-dialer,GHI,baseline,"[173, 642]",173,642,157,1447,216,1491,0
-dialer,5,baseline,"[500, 614]",500,614,516,1343,562,1447,0
-dialer,JKL,baseline,"[498, 642]",498,642,510,1447,569,1491,0
-dialer,6,baseline,"[826, 616]",826,616,869,1343,915,1447,0
-dialer,MNO,baseline,"[826, 642]",826,642,852,1447,933,1491,0
-dialer,7,baseline,"[173, 706]",173,706,166,1535,208,1639,0
-dialer,PQRS,baseline,"```json [   {""point"": [173, 1640], ""label"": ""PQRS""} ] ```",173,1640,142,1639,232,1683,1
-dialer,8,baseline,"[499, 696]",499,696,517,1535,562,1639,0
-dialer,TUV,baseline,"[499, 729]",499,729,507,1639,573,1683,0
-dialer,9,baseline,"```json [   {""point"": [826, 1493], ""label"": ""9""} ] ```",826,1493,869,1535,915,1639,0
-dialer,WXYZ,baseline,"[826, 729]",826,729,846,1639,939,1683,0
-dialer,∗,baseline,"[173, 792]",173,792,168,1723,206,1835,0
-dialer,0,baseline,"[499, 810]",499,810,512,1727,567,1831,0
-dialer,+,baseline,"[500, 815]",500,815,529,1831,549,1875,0
-dialer,#,baseline,"```json [   {""point"": [826, 783], ""label"": ""#""} ] ```",826,783,865,1727,921,1831,0
-dialer,Call,baseline,"[499, 878]",499,878,414,1926,666,2073,0
-dialer,Home,baseline,"[167, 981]",167,981,135,2216,224,2258,0
-dialer,Keypad,baseline,"[500, 980]",500,980,481,2216,597,2258,0
-dialer,Voicemail,baseline,"[832, 981]",832,981,826,2216,972,2258,0
-dialer,Phone Number,elder_text_heavy,"[500, 246]",500,246,147,941,933,1085,0
-dialer,1,elder_text_heavy,"[172, 545]",172,545,169,1134,203,1238,0
-dialer,2,elder_text_heavy,"[499, 521]",499,521,518,1138,561,1242,0
-dialer,ABC,elder_text_heavy,"[499, 545]",499,545,505,1242,574,1286,0
-dialer,3,elder_text_heavy,"[826, 545]",826,545,870,1138,914,1242,0
-dialer,DEF,elder_text_heavy,"[826, 552]",826,552,861,1242,924,1286,0
-dialer,4,elder_text_heavy,"[173, 617]",173,617,163,1329,210,1433,0
-dialer,GHI,elder_text_heavy,"[173, 638]",173,638,157,1433,216,1477,0
-dialer,5,elder_text_heavy,"[499, 608]",499,608,516,1329,562,1433,0
-dialer,JKL,elder_text_heavy,"[500, 638]",500,638,510,1433,569,1477,0
-dialer,6,elder_text_heavy,"[826, 608]",826,608,869,1329,915,1433,0
-dialer,MNO,elder_text_heavy,"[826, 638]",826,638,852,1433,933,1477,0
-dialer,7,elder_text_heavy,"[173, 693]",173,693,166,1521,208,1625,0
-dialer,PQRS,elder_text_heavy,"[173, 720]",173,720,142,1625,232,1669,0
-dialer,8,elder_text_heavy,"```json [   {""point"": [500, 1515]} ] ```",500,1515,517,1521,562,1625,0
-dialer,TUV,elder_text_heavy,"[500, 725]",500,725,507,1625,573,1669,0
-dialer,9,elder_text_heavy,"[826, 715]",826,715,869,1521,915,1625,0
-dialer,WXYZ,elder_text_heavy,"[826, 725]",826,725,846,1625,939,1669,0
-dialer,∗,elder_text_heavy,"[173, 773]",173,773,168,1709,206,1821,0
-dialer,0,elder_text_heavy,"[500, 1785]",500,1785,512,1713,567,1817,0
-dialer,+,elder_text_heavy,"[499, 810]",499,810,529,1817,549,1861,0
-dialer,#,elder_text_heavy,"[827, 786]",827,786,865,1713,921,1817,0
-dialer,Call,elder_text_heavy,"[499, 874]",499,874,400,1912,681,2059,0
-dialer,Home,elder_text_heavy,"[166, 981]",166,981,118,2202,241,2258,0
-dialer,Keypad,elder_text_heavy,"[498, 977]",498,977,461,2202,618,2258,0
-dialer,Voicemail,elder_text_heavy,"[833, 977]",833,977,800,2202,1000,2258,0
-dialer,Phone Number,elder_zoom_heavy,"[500, 206]",500,206,168,750,912,915,0
-dialer,1,elder_zoom_heavy,"[174, 467]",174,467,168,971,207,1089,0
-dialer,2,elder_zoom_heavy,"[499, 459]",499,459,514,976,564,1094,0
-dialer,ABC,elder_zoom_heavy,"[500, 480]",500,480,500,1094,579,1145,0
-dialer,3,elder_zoom_heavy,"```json [825, 1056] ```",825,1056,866,976,916,1094,0
-dialer,DEF,elder_zoom_heavy,"[825, 497]",825,497,855,1094,928,1145,0
-dialer,4,elder_zoom_heavy,"[174, 578]",174,578,160,1195,214,1313,0
-dialer,GHI,elder_zoom_heavy,"[174, 592]",174,592,154,1313,221,1364,0
-dialer,5,elder_zoom_heavy,"[500, 563]",500,563,514,1195,566,1313,0
-dialer,JKL,elder_zoom_heavy,"[500, 592]",500,592,506,1313,574,1364,0
-dialer,6,elder_zoom_heavy,"[825, 558]",825,558,865,1195,918,1313,0
-dialer,MNO,elder_zoom_heavy,"[825, 592]",825,592,845,1313,938,1364,0
-dialer,7,elder_zoom_heavy,"[173, 649]",173,649,163,1414,211,1532,0
-dialer,PQRS,elder_zoom_heavy,"[174, 1515]",174,1515,136,1532,239,1583,0
-dialer,8,elder_zoom_heavy,"[500, 650]",500,650,514,1414,565,1532,0
-dialer,TUV,elder_zoom_heavy,"[499, 689]",499,689,502,1532,577,1583,0
-dialer,9,elder_zoom_heavy,"[825, 654]",825,654,865,1414,918,1532,0
-dialer,WXYZ,elder_zoom_heavy,"[825, 687]",825,687,839,1532,945,1583,0
-dialer,∗,elder_zoom_heavy,"```json [   {""point"": [174, 1754], ""label"": ""∗""} ] ```",174,1754,166,1628,209,1756,0
-dialer,0,elder_zoom_heavy,"[499, 749]",499,749,508,1633,571,1751,0
-dialer,+,elder_zoom_heavy,"[500, 786]",500,786,528,1751,551,1802,0
-dialer,#,elder_zoom_heavy,"[825, 776]",825,776,860,1633,924,1751,0
-dialer,Call,elder_zoom_heavy,"[545, 861]",545,861,396,1860,684,2028,0
-dialer,Home,elder_zoom_heavy,"[166, 984]",166,984,129,2190,230,2238,0
-dialer,Keypad,elder_zoom_heavy,"[499, 981]",499,981,475,2190,605,2238,0
-dialer,Voicemail,elder_zoom_heavy,"[833, 981]",833,981,817,2190,982,2238,0
-dialer,Phone Number,elder_combo_max,"[500, 206]",500,206,182,585,898,764,0
-dialer,1,elder_combo_max,"[175, 411]",175,411,167,825,209,952,0
-dialer,2,elder_combo_max,"```json [   {""point"": [540, 499], ""label"": ""text""} ] ```",540,499,513,831,566,958,0
-dialer,ABC,elder_combo_max,"[500, 437]",500,437,497,958,582,1012,0
-dialer,3,elder_combo_max,"[825, 401]",825,401,863,831,917,958,0
-dialer,DEF,elder_combo_max,"[825, 436]",825,436,851,958,930,1012,0
-dialer,4,elder_combo_max,"[175, 501]",175,501,159,1068,217,1195,0
-dialer,GHI,elder_combo_max,"[175, 545]",175,545,152,1195,225,1249,0
-dialer,5,elder_combo_max,"[499, 503]",499,503,511,1068,567,1195,0
-dialer,JKL,elder_combo_max,"[499, 545]",499,545,503,1195,575,1249,0
-dialer,6,elder_combo_max,"[824, 526]",824,526,862,1068,919,1195,0
-dialer,MNO,elder_combo_max,"[824, 545]",824,545,841,1195,940,1249,0
-dialer,7,elder_combo_max,"[174, 608]",174,608,162,1305,214,1432,0
-dialer,PQRS,elder_combo_max,"```json [   {""point"": [175, 1437], ""label"": ""PQRS""} ] ```",175,1437,133,1432,244,1486,1
-dialer,8,elder_combo_max,"[499, 611]",499,611,511,1305,566,1432,0
-dialer,TUV,elder_combo_max,"[499, 649]",499,649,499,1432,579,1486,0
-dialer,9,elder_combo_max,"[824, 626]",824,626,862,1305,919,1432,0
-dialer,WXYZ,elder_combo_max,"[825, 649]",825,649,834,1432,947,1486,0
-dialer,∗,elder_combo_max,"[174, 712]",174,712,165,1537,212,1675,0
-dialer,0,elder_combo_max,"[499, 742]",499,742,506,1542,573,1669,0
-dialer,+,elder_combo_max,"```json [   {""point"": [540, 1685]} ] ```",540,1685,527,1669,552,1723,1
-dialer,#,elder_combo_max,"[825, 729]",825,729,856,1542,925,1669,0
-dialer,Call,elder_combo_max,"[500, 836]",500,836,360,1788,720,1970,0
-dialer,Home,elder_combo_max,"[166, 971]",166,971,93,2146,266,2224,0
-dialer,Keypad,elder_combo_max,"[500, 971]",500,971,429,2146,651,2224,0
-dialer,Voicemail,elder_combo_max,"[832, 971]",832,971,757,2146,1042,2224,0
-dialer,Phone Number,elder_combo_rtl,"```json {""point"": [423, 362]} ```",423,362,168,731,912,896,0
-dialer,1,elder_combo_rtl,"[173, 444]",173,444,168,952,207,1070,0
-dialer,2,elder_combo_rtl,"[499, 451]",499,451,514,957,564,1075,0
-dialer,ABC,elder_combo_rtl,"[499, 486]",499,486,500,1075,579,1126,0
-dialer,3,elder_combo_rtl,"[825, 461]",825,461,866,957,916,1075,0
-dialer,DEF,elder_combo_rtl,"[825, 486]",825,486,855,1075,928,1126,0
-dialer,4,elder_combo_rtl,"[173, 1243]",173,1243,160,1176,214,1294,1
-dialer,GHI,elder_combo_rtl,"```json [   {""point"": [174, 1315]} ] ```",174,1315,154,1294,221,1345,1
-dialer,5,elder_combo_rtl,"```json [   {""point"": [500, 1255]} ] ```",500,1255,514,1176,566,1294,0
-dialer,JKL,elder_combo_rtl,"```json [   {""point"": [499, 1262]} ] ```",499,1262,506,1294,574,1345,0
-dialer,6,elder_combo_rtl,"[825, 549]",825,549,865,1176,918,1294,0
-dialer,MNO,elder_combo_rtl,"```json [   {""point"": [583, 825]} ] ```",583,825,845,1294,938,1345,0
-dialer,7,elder_combo_rtl,"[174, 654]",174,654,163,1395,211,1513,0
-dialer,PQRS,elder_combo_rtl,"[174, 680]",174,680,136,1513,239,1564,0
-dialer,8,elder_combo_rtl,"[500, 642]",500,642,514,1395,565,1513,0
-dialer,TUV,elder_combo_rtl,"[499, 680]",499,680,502,1513,577,1564,0
-dialer,9,elder_combo_rtl,"[825, 642]",825,642,865,1395,918,1513,0
-dialer,WXYZ,elder_combo_rtl,"[826, 680]",826,680,839,1513,945,1564,0
-dialer,∗,elder_combo_rtl,"[173, 755]",173,755,166,1609,209,1737,0
-dialer,0,elder_combo_rtl,"[499, 755]",499,755,508,1614,571,1732,0
-dialer,+,elder_combo_rtl,"[499, 781]",499,781,528,1732,551,1783,0
-dialer,#,elder_combo_rtl,"[825, 755]",825,755,860,1614,924,1732,0
-dialer,Call,elder_combo_rtl,"[546, 853]",546,853,377,1841,704,2009,0
-dialer,Home,elder_combo_rtl,"[167, 977]",167,977,104,2171,255,2238,0
-dialer,Keypad,elder_combo_rtl,"```json [   {""point"": [500, 2173], ""label"": ""text""} ] ```",500,2173,443,2171,637,2238,0
-dialer,Voicemail,elder_combo_rtl,"[833, 977]",833,977,776,2171,1024,2238,0
-messages,Sign In,baseline,"[500, 891]",500,891,330,1959,750,2085,0
-messages,Use Messages without an account,baseline,"[499, 942]",499,942,42,2085,1038,2211,0
-messages,Messages,baseline,"[586, 50]",586,50,519,74,748,137,0
-messages,Welcome!,baseline,"[500, 127]",500,127,276,223,805,371,0
-messages,Sign into your Google account to get the very best of Messages,baseline,"[500, 199]",500,199,70,376,1010,524,0
-messages,Chat with Gemini in Messages (Available in select regions),baseline,"[571, 355]",571,355,316,755,922,861,0
-messages,Sync chats across your devices,baseline,"[527, 444]",527,444,316,987,824,1040,0
-messages,Google and your carrier will periodically verify your device info to enable Google services. Carrier rates apply.,baseline,"[500, 688]",500,688,53,1527,1027,1611,0
-messages,Sign In,elder_text_heavy,"[499, 882]",499,882,330,1941,750,2076,0
-messages,Use Messages without an account,elder_text_heavy,"[500, 942]",500,942,42,2076,1038,2211,0
-messages,Messages,elder_text_heavy,"```json [   {""point"": [587, 110]} ] ```",587,110,519,74,748,137,1
-messages,Welcome!,elder_text_heavy,"[500, 246]",500,246,276,223,805,371,1
-messages,Sign into your Google account to get the very best of Messages,elder_text_heavy,"[500, 225]",500,225,70,376,1010,637,0
-messages,Chat with Gemini in Messages (Available in select regions),elder_text_heavy,"[570, 436]",570,436,316,868,922,1099,0
-messages,Sync chats across your devices,elder_text_heavy,"[549, 563]",549,563,316,1204,922,1358,0
-messages,Google and your carrier will periodically verify your device info to enable Google services. Carrier rates apply.,elder_text_heavy,"[499, 706]",499,706,53,1516,1027,1657,0
-messages,Sign In,elder_zoom_heavy,"[500, 871]",500,871,300,1896,780,2040,0
-messages,Use Messages without an account,elder_zoom_heavy,"[500, 937]",500,937,48,2040,1032,2184,0
-messages,Messages,elder_zoom_heavy,"```json [   {""point"": [624, 127], ""label"": ""text""} ] ```",624,127,516,84,778,157,1
-messages,Welcome!,elder_zoom_heavy,"[500, 149]",500,149,238,255,843,424,0
-messages,Sign into your Google account to get the very best of Messages,elder_zoom_heavy,"[500, 246]",500,246,60,430,1020,682,0
-messages,Chat with Gemini in Messages (Available in select regions),elder_zoom_heavy,"[583, 459]",583,459,360,946,900,1126,0
-messages,Sync chats across your devices,elder_zoom_heavy,"[546, 580]",546,580,360,1246,900,1366,0
-messages,Google and your carrier will periodically verify your device info to enable Google services. Carrier rates apply.,elder_zoom_heavy,"[500, 712]",500,712,60,1546,1020,1572,0
-messages,Sign In,elder_combo_max,"[500, 843]",500,843,280,1804,800,1985,0
+clock,8:30 AM,baseline,"```json [{""point"": [240, 311], ""label"": ""text""}] ```",259,685,84,231,429,414,0
+clock,"Mon, Tue, Wed, Thu, Fri",baseline,"[267, 212]",288,467,84,450,493,505,1
+clock,9:00 AM,baseline,"[237, 309]",255,681,84,603,429,786,1
+clock,"Sun, Sat",baseline,"[150, 376]",162,829,84,822,241,877,1
+clock,Clock,baseline,"[300, 960]",324,2116,280,2196,367,2246,0
+clock,Timer,baseline,"```json [498, 2235] ```",-1,-1,496,2196,584,2246,0
+clock,Stopwatch,baseline,"```json [   {""point"": [699, 2216], ""label"": ""text""} ] ```",-1,-1,675,2196,836,2246,0
+clock,Bedtime,baseline,"```json [   {""point"": [899, 2210]} ] ```",-1,-1,908,2196,1035,2246,0
+clock,8:30 AM,elder_text_heavy,"[203, 142]",219,313,84,231,429,414,1
+clock,"Mon, Tue, Wed, Thu, Fri",elder_text_heavy,"[346, 212]",373,467,84,438,665,517,1
+clock,9:00 AM,elder_text_heavy,"[238, 305]",257,672,84,603,429,786,1
+clock,"Sun, Sat",elder_text_heavy,"[178, 372]",192,820,84,810,301,889,0
+clock,Clock,elder_text_heavy,"[300, 977]",324,2154,280,2196,367,2246,0
+clock,Timer,elder_text_heavy,"```json [499, 2223] ```",-1,-1,496,2196,584,2246,0
+clock,Stopwatch,elder_text_heavy,"[700, 953]",756,2101,675,2196,836,2246,0
+clock,Bedtime,elder_text_heavy,"[899, 977]",970,2154,908,2196,1035,2246,0
+clock,8:30 AM,elder_zoom_heavy,"[270, 169]",291,371,96,264,487,472,1
+clock,"Mon, Tue, Wed, Thu, Fri",elder_zoom_heavy,"[300, 241]",324,529,96,513,554,575,1
+clock,9:00 AM,elder_zoom_heavy,"[230, 345]",248,757,96,688,487,896,1
+clock,"Sun, Sat",elder_zoom_heavy,"[169, 432]",182,948,96,937,269,999,1
+clock,Clock,elder_zoom_heavy,"[300, 971]",324,2132,275,2168,373,2224,0
+clock,Timer,elder_zoom_heavy,"[540, 2197]",-1,-1,491,2168,589,2224,0
+clock,Stopwatch,elder_zoom_heavy,"[699, 971]",754,2132,664,2168,848,2224,0
+clock,Bedtime,elder_zoom_heavy,"[900, 955]",972,2097,900,2168,1044,2224,0
+clock,8:30 AM,elder_combo_max,"[300, 180]",324,394,104,286,541,516,1
+clock,"Mon, Tue, Wed, Thu, Fri",elder_combo_max,"[415, 277]",448,606,104,516,794,714,1
+clock,9:00 AM,elder_combo_max,"[253, 401]",273,878,104,792,541,1022,1
+clock,"Sun, Sat",elder_combo_max,"[230, 489]",248,1070,104,1046,393,1154,0
+clock,Clock,elder_combo_max,"[300, 966]",324,2115,271,2148,377,2209,0
+clock,Timer,elder_combo_max,"```json [   {""point"": [500, 2173], ""label"": ""text""} ] ```",-1,-1,487,2148,593,2209,0
+clock,Stopwatch,elder_combo_max,"```json [   {""point"": [699, 2168], ""label"": ""Stopwatch""} ] ```",-1,-1,657,2148,854,2209,0
+clock,Bedtime,elder_combo_max,"[899, 966]",970,2115,894,2148,1049,2209,0
+clock,8:30 AM,elder_combo_rtl,"[269, 163]",290,357,96,264,487,472,1
+clock,"Mon, Tue, Wed, Thu, Fri",elder_combo_rtl,"[416, 240]",449,527,96,496,800,592,1
+clock,9:00 AM,elder_combo_rtl,"[272, 355]",293,779,96,688,487,896,1
+clock,"Sun, Sat",elder_combo_rtl,"[210, 428]",226,939,96,920,358,1016,0
+clock,Clock,elder_combo_rtl,"[300, 2197]",-1,-1,275,2168,373,2224,0
+clock,Timer,elder_combo_rtl,"[499, 971]",538,2132,491,2168,589,2224,0
+clock,Stopwatch,elder_combo_rtl,"[700, 2209]",-1,-1,664,2168,848,2224,0
+clock,Bedtime,elder_combo_rtl,"[899, 971]",970,2132,900,2168,1044,2224,0
+contacts,All contacts,baseline,"```json [224, 256] ```",241,564,142,226,342,279,0
+contacts,No contacts yet,baseline,"[500, 626]",540,1380,317,1378,763,1462,1
+contacts,Contacts,baseline,"[295, 2197]",-1,-1,249,2216,387,2258,0
+contacts,Organize,baseline,"```json [704, 2217] ```",-1,-1,692,2216,829,2258,0
+contacts,All contacts,elder_text_heavy,"[267, 110]",288,242,142,214,436,291,1
+contacts,No contacts yet,elder_text_heavy,"[499, 622]",538,1371,289,1365,792,1461,1
+contacts,Contacts,elder_text_heavy,"[295, 977]",318,2154,223,2202,414,2258,0
+contacts,Organize,elder_text_heavy,"```json [   {""point"": [705, 2215]} ] ```",-1,-1,666,2202,855,2258,0
+contacts,All contacts,elder_zoom_heavy,"[257, 127]",277,278,162,258,394,318,1
+contacts,No contacts yet,elder_zoom_heavy,"[500, 642]",540,1409,284,1404,796,1500,0
+contacts,Contacts,elder_zoom_heavy,"[264, 2208]",-1,-1,208,2190,365,2238,0
+contacts,Organize,elder_zoom_heavy,"[732, 981]",790,2154,714,2190,869,2238,0
+contacts,All contacts,elder_combo_max,"```json [339, 315] ```",366,689,176,260,584,366,0
+contacts,No contacts yet,elder_combo_max,"[500, 650]",540,1423,199,1397,881,1526,1
+contacts,Contacts,elder_combo_max,"[250, 971]",270,2126,136,2146,404,2224,0
+contacts,Organize,elder_combo_max,"[749, 971]",808,2126,676,2146,943,2224,0
+contacts,All contacts,elder_combo_rtl,"[320, 305]",345,669,162,241,527,336,0
+contacts,No contacts yet,elder_combo_rtl,"[499, 642]",538,1409,242,1387,839,1499,1
+contacts,Contacts,elder_combo_rtl,"[266, 977]",287,2145,170,2171,404,2238,0
+contacts,Organize,elder_combo_rtl,"[735, 953]",793,2092,676,2171,908,2238,0
+dialer,Phone Number,baseline,"[500, 204]",540,449,147,955,933,1099,0
+dialer,1,baseline,"[173, 532]",186,1173,169,1148,203,1252,1
+dialer,2,baseline,"[499, 529]",538,1166,518,1152,561,1256,1
+dialer,ABC,baseline,"[499, 563]",538,1241,505,1256,574,1300,0
+dialer,3,baseline,"[826, 545]",892,1201,870,1152,914,1256,1
+dialer,DEF,baseline,"[826, 563]",892,1241,861,1256,924,1300,0
+dialer,4,baseline,"[172, 611]",185,1347,163,1343,210,1447,1
+dialer,GHI,baseline,"[173, 642]",186,1415,157,1447,216,1491,0
+dialer,5,baseline,"[500, 614]",540,1353,516,1343,562,1447,1
+dialer,JKL,baseline,"[498, 642]",537,1415,510,1447,569,1491,0
+dialer,6,baseline,"[826, 616]",892,1358,869,1343,915,1447,1
+dialer,MNO,baseline,"[826, 642]",892,1415,852,1447,933,1491,0
+dialer,7,baseline,"[173, 706]",186,1556,166,1535,208,1639,1
+dialer,PQRS,baseline,"```json [   {""point"": [173, 1640], ""label"": ""PQRS""} ] ```",-1,-1,142,1639,232,1683,0
+dialer,8,baseline,"[499, 696]",538,1534,517,1535,562,1639,0
+dialer,TUV,baseline,"[499, 729]",538,1607,507,1639,573,1683,0
+dialer,9,baseline,"```json [   {""point"": [826, 1493], ""label"": ""9""} ] ```",-1,-1,869,1535,915,1639,0
+dialer,WXYZ,baseline,"[826, 729]",892,1607,846,1639,939,1683,0
+dialer,∗,baseline,"[173, 792]",186,1746,168,1723,206,1835,1
+dialer,0,baseline,"[499, 810]",538,1786,512,1727,567,1831,1
+dialer,+,baseline,"[500, 815]",540,1797,529,1831,549,1875,0
+dialer,#,baseline,"```json [   {""point"": [826, 783], ""label"": ""#""} ] ```",892,1726,865,1727,921,1831,0
+dialer,Call,baseline,"[499, 878]",538,1935,414,1926,666,2073,1
+dialer,Home,baseline,"[167, 981]",180,2163,135,2216,224,2258,0
+dialer,Keypad,baseline,"[500, 980]",540,2160,481,2216,597,2258,0
+dialer,Voicemail,baseline,"[832, 981]",898,2163,826,2216,972,2258,0
+dialer,Phone Number,elder_text_heavy,"[500, 246]",540,542,147,941,933,1085,0
+dialer,1,elder_text_heavy,"[172, 545]",185,1201,169,1134,203,1238,1
+dialer,2,elder_text_heavy,"[499, 521]",538,1148,518,1138,561,1242,1
+dialer,ABC,elder_text_heavy,"[499, 545]",538,1201,505,1242,574,1286,0
+dialer,3,elder_text_heavy,"[826, 545]",892,1201,870,1138,914,1242,1
+dialer,DEF,elder_text_heavy,"[826, 552]",892,1217,861,1242,924,1286,0
+dialer,4,elder_text_heavy,"[173, 617]",186,1360,163,1329,210,1433,1
+dialer,GHI,elder_text_heavy,"[173, 638]",186,1406,157,1433,216,1477,0
+dialer,5,elder_text_heavy,"[499, 608]",538,1340,516,1329,562,1433,1
+dialer,JKL,elder_text_heavy,"[500, 638]",540,1406,510,1433,569,1477,0
+dialer,6,elder_text_heavy,"[826, 608]",892,1340,869,1329,915,1433,1
+dialer,MNO,elder_text_heavy,"[826, 638]",892,1406,852,1433,933,1477,0
+dialer,7,elder_text_heavy,"[173, 693]",186,1528,166,1521,208,1625,1
+dialer,PQRS,elder_text_heavy,"[173, 720]",186,1587,142,1625,232,1669,0
+dialer,8,elder_text_heavy,"```json [   {""point"": [500, 1515]} ] ```",-1,-1,517,1521,562,1625,0
+dialer,TUV,elder_text_heavy,"[500, 725]",540,1598,507,1625,573,1669,0
+dialer,9,elder_text_heavy,"[826, 715]",892,1576,869,1521,915,1625,1
+dialer,WXYZ,elder_text_heavy,"[826, 725]",892,1598,846,1625,939,1669,0
+dialer,∗,elder_text_heavy,"[173, 773]",186,1704,168,1709,206,1821,0
+dialer,0,elder_text_heavy,"[500, 1785]",-1,-1,512,1713,567,1817,0
+dialer,+,elder_text_heavy,"[499, 810]",538,1786,529,1817,549,1861,0
+dialer,#,elder_text_heavy,"[827, 786]",893,1733,865,1713,921,1817,1
+dialer,Call,elder_text_heavy,"[499, 874]",538,1927,400,1912,681,2059,1
+dialer,Home,elder_text_heavy,"[166, 981]",179,2163,118,2202,241,2258,0
+dialer,Keypad,elder_text_heavy,"[498, 977]",537,2154,461,2202,618,2258,0
+dialer,Voicemail,elder_text_heavy,"[833, 977]",899,2154,800,2202,1000,2258,0
+dialer,Phone Number,elder_zoom_heavy,"[500, 206]",540,452,168,750,912,915,0
+dialer,1,elder_zoom_heavy,"[174, 467]",187,1025,168,971,207,1089,1
+dialer,2,elder_zoom_heavy,"[499, 459]",538,1007,514,976,564,1094,1
+dialer,ABC,elder_zoom_heavy,"[500, 480]",540,1054,500,1094,579,1145,0
+dialer,3,elder_zoom_heavy,"```json [825, 1056] ```",-1,-1,866,976,916,1094,0
+dialer,DEF,elder_zoom_heavy,"[825, 497]",891,1091,855,1094,928,1145,0
+dialer,4,elder_zoom_heavy,"[174, 578]",187,1269,160,1195,214,1313,1
+dialer,GHI,elder_zoom_heavy,"[174, 592]",187,1300,154,1313,221,1364,0
+dialer,5,elder_zoom_heavy,"[500, 563]",540,1236,514,1195,566,1313,1
+dialer,JKL,elder_zoom_heavy,"[500, 592]",540,1300,506,1313,574,1364,0
+dialer,6,elder_zoom_heavy,"[825, 558]",891,1225,865,1195,918,1313,1
+dialer,MNO,elder_zoom_heavy,"[825, 592]",891,1300,845,1313,938,1364,0
+dialer,7,elder_zoom_heavy,"[173, 649]",186,1425,163,1414,211,1532,1
+dialer,PQRS,elder_zoom_heavy,"[174, 1515]",-1,-1,136,1532,239,1583,0
+dialer,8,elder_zoom_heavy,"[500, 650]",540,1427,514,1414,565,1532,1
+dialer,TUV,elder_zoom_heavy,"[499, 689]",538,1513,502,1532,577,1583,0
+dialer,9,elder_zoom_heavy,"[825, 654]",891,1436,865,1414,918,1532,1
+dialer,WXYZ,elder_zoom_heavy,"[825, 687]",891,1508,839,1532,945,1583,0
+dialer,∗,elder_zoom_heavy,"```json [   {""point"": [174, 1754], ""label"": ""∗""} ] ```",-1,-1,166,1628,209,1756,0
+dialer,0,elder_zoom_heavy,"[499, 749]",538,1644,508,1633,571,1751,1
+dialer,+,elder_zoom_heavy,"[500, 786]",540,1726,528,1751,551,1802,0
+dialer,#,elder_zoom_heavy,"[825, 776]",891,1704,860,1633,924,1751,1
+dialer,Call,elder_zoom_heavy,"[545, 861]",588,1890,396,1860,684,2028,1
+dialer,Home,elder_zoom_heavy,"[166, 984]",179,2160,129,2190,230,2238,0
+dialer,Keypad,elder_zoom_heavy,"[499, 981]",538,2154,475,2190,605,2238,0
+dialer,Voicemail,elder_zoom_heavy,"[833, 981]",899,2154,817,2190,982,2238,0
+dialer,Phone Number,elder_combo_max,"[500, 206]",540,451,182,585,898,764,0
+dialer,1,elder_combo_max,"[175, 411]",189,900,167,825,209,952,1
+dialer,2,elder_combo_max,"```json [   {""point"": [540, 499], ""label"": ""text""} ] ```",583,1092,513,831,566,958,0
+dialer,ABC,elder_combo_max,"[500, 437]",540,957,497,958,582,1012,0
+dialer,3,elder_combo_max,"[825, 401]",891,878,863,831,917,958,1
+dialer,DEF,elder_combo_max,"[825, 436]",891,954,851,958,930,1012,0
+dialer,4,elder_combo_max,"[175, 501]",189,1097,159,1068,217,1195,1
+dialer,GHI,elder_combo_max,"[175, 545]",189,1193,152,1195,225,1249,0
+dialer,5,elder_combo_max,"[499, 503]",538,1101,511,1068,567,1195,1
+dialer,JKL,elder_combo_max,"[499, 545]",538,1193,503,1195,575,1249,0
+dialer,6,elder_combo_max,"[824, 526]",889,1151,862,1068,919,1195,1
+dialer,MNO,elder_combo_max,"[824, 545]",889,1193,841,1195,940,1249,0
+dialer,7,elder_combo_max,"[174, 608]",187,1331,162,1305,214,1432,1
+dialer,PQRS,elder_combo_max,"```json [   {""point"": [175, 1437], ""label"": ""PQRS""} ] ```",-1,-1,133,1432,244,1486,0
+dialer,8,elder_combo_max,"[499, 611]",538,1338,511,1305,566,1432,1
+dialer,TUV,elder_combo_max,"[499, 649]",538,1421,499,1432,579,1486,0
+dialer,9,elder_combo_max,"[824, 626]",889,1370,862,1305,919,1432,1
+dialer,WXYZ,elder_combo_max,"[825, 649]",891,1421,834,1432,947,1486,0
+dialer,∗,elder_combo_max,"[174, 712]",187,1559,165,1537,212,1675,1
+dialer,0,elder_combo_max,"[499, 742]",538,1624,506,1542,573,1669,1
+dialer,+,elder_combo_max,"```json [   {""point"": [540, 1685]} ] ```",-1,-1,527,1669,552,1723,0
+dialer,#,elder_combo_max,"[825, 729]",891,1596,856,1542,925,1669,1
+dialer,Call,elder_combo_max,"[500, 836]",540,1830,360,1788,720,1970,1
+dialer,Home,elder_combo_max,"[166, 971]",179,2126,93,2146,266,2224,0
+dialer,Keypad,elder_combo_max,"[500, 971]",540,2126,429,2146,651,2224,0
+dialer,Voicemail,elder_combo_max,"[832, 971]",898,2126,757,2146,1042,2224,0
+dialer,Phone Number,elder_combo_rtl,"```json {""point"": [423, 362]} ```",456,794,168,731,912,896,1
+dialer,1,elder_combo_rtl,"[173, 444]",186,975,168,952,207,1070,1
+dialer,2,elder_combo_rtl,"[499, 451]",538,990,514,957,564,1075,1
+dialer,ABC,elder_combo_rtl,"[499, 486]",538,1067,500,1075,579,1126,0
+dialer,3,elder_combo_rtl,"[825, 461]",891,1012,866,957,916,1075,1
+dialer,DEF,elder_combo_rtl,"[825, 486]",891,1067,855,1075,928,1126,0
+dialer,4,elder_combo_rtl,"[173, 1243]",-1,-1,160,1176,214,1294,0
+dialer,GHI,elder_combo_rtl,"```json [   {""point"": [174, 1315]} ] ```",-1,-1,154,1294,221,1345,0
+dialer,5,elder_combo_rtl,"```json [   {""point"": [500, 1255]} ] ```",-1,-1,514,1176,566,1294,0
+dialer,JKL,elder_combo_rtl,"```json [   {""point"": [499, 1262]} ] ```",-1,-1,506,1294,574,1345,0
+dialer,6,elder_combo_rtl,"[825, 549]",891,1205,865,1176,918,1294,1
+dialer,MNO,elder_combo_rtl,"```json [   {""point"": [583, 825]} ] ```",629,1811,845,1294,938,1345,0
+dialer,7,elder_combo_rtl,"[174, 654]",187,1436,163,1395,211,1513,1
+dialer,PQRS,elder_combo_rtl,"[174, 680]",187,1493,136,1513,239,1564,0
+dialer,8,elder_combo_rtl,"[500, 642]",540,1409,514,1395,565,1513,1
+dialer,TUV,elder_combo_rtl,"[499, 680]",538,1493,502,1513,577,1564,0
+dialer,9,elder_combo_rtl,"[825, 642]",891,1409,865,1395,918,1513,1
+dialer,WXYZ,elder_combo_rtl,"[826, 680]",892,1493,839,1513,945,1564,0
+dialer,∗,elder_combo_rtl,"[173, 755]",186,1657,166,1609,209,1737,1
+dialer,0,elder_combo_rtl,"[499, 755]",538,1657,508,1614,571,1732,1
+dialer,+,elder_combo_rtl,"[499, 781]",538,1715,528,1732,551,1783,0
+dialer,#,elder_combo_rtl,"[825, 755]",891,1657,860,1614,924,1732,1
+dialer,Call,elder_combo_rtl,"[546, 853]",589,1873,377,1841,704,2009,1
+dialer,Home,elder_combo_rtl,"[167, 977]",180,2145,104,2171,255,2238,0
+dialer,Keypad,elder_combo_rtl,"```json [   {""point"": [500, 2173], ""label"": ""text""} ] ```",-1,-1,443,2171,637,2238,0
+dialer,Voicemail,elder_combo_rtl,"[833, 977]",899,2145,776,2171,1024,2238,0
+messages,Sign In,baseline,"[500, 891]",540,1964,330,1959,750,2085,1
+messages,Use Messages without an account,baseline,"[499, 942]",538,2077,42,2085,1038,2211,0
+messages,Messages,baseline,"[586, 50]",632,110,519,74,748,137,1
+messages,Welcome!,baseline,"[500, 127]",540,280,276,223,805,371,1
+messages,Sign into your Google account to get the very best of Messages,baseline,"[500, 199]",540,438,70,376,1010,524,1
+messages,Chat with Gemini in Messages (Available in select regions),baseline,"[571, 355]",616,782,316,755,922,861,1
+messages,Sync chats across your devices,baseline,"[527, 444]",569,979,316,987,824,1040,0
+messages,Google and your carrier will periodically verify your device info to enable Google services. Carrier rates apply.,baseline,"[500, 688]",540,1517,53,1527,1027,1611,0
+messages,Sign In,elder_text_heavy,"[499, 882]",538,1944,330,1941,750,2076,0
+messages,Use Messages without an account,elder_text_heavy,"[500, 942]",540,2077,42,2076,1038,2211,0
+messages,Messages,elder_text_heavy,"```json [   {""point"": [587, 110]} ] ```",633,242,519,74,748,137,0
+messages,Welcome!,elder_text_heavy,"[500, 246]",540,542,276,223,805,371,0
+messages,Sign into your Google account to get the very best of Messages,elder_text_heavy,"[500, 225]",540,496,70,376,1010,637,1
+messages,Chat with Gemini in Messages (Available in select regions),elder_text_heavy,"[570, 436]",615,961,316,868,922,1099,1
+messages,Sync chats across your devices,elder_text_heavy,"[549, 563]",592,1241,316,1204,922,1358,0
+messages,Google and your carrier will periodically verify your device info to enable Google services. Carrier rates apply.,elder_text_heavy,"[499, 706]",538,1556,53,1516,1027,1657,1
+messages,Sign In,elder_zoom_heavy,"[500, 871]",540,1912,300,1896,780,2040,1
+messages,Use Messages without an account,elder_zoom_heavy,"[500, 937]",540,2057,48,2040,1032,2184,1
+messages,Messages,elder_zoom_heavy,"```json [   {""point"": [624, 127], ""label"": ""text""} ] ```",673,278,516,84,778,157,0
+messages,Welcome!,elder_zoom_heavy,"[500, 149]",540,327,238,255,843,424,1
+messages,Sign into your Google account to get the very best of Messages,elder_zoom_heavy,"[500, 246]",540,540,60,430,1020,682,1
+messages,Chat with Gemini in Messages (Available in select regions),elder_zoom_heavy,"[583, 459]",629,1007,360,946,900,1126,1
+messages,Sync chats across your devices,elder_zoom_heavy,"[546, 580]",589,1273,360,1246,900,1366,0
+messages,Google and your carrier will periodically verify your device info to enable Google services. Carrier rates apply.,elder_zoom_heavy,"[500, 712]",540,1563,60,1546,1020,1572,1
+messages,Sign In,elder_combo_max,"[500, 843]",540,1846,280,1804,800,1985,1
 messages,Use Messages without an account,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
-messages,Messages,elder_combo_max,"[608, 61]",608,61,514,91,799,169,0
-messages,Welcome!,elder_combo_max,"[540, 368]",540,368,205,276,876,464,1
-messages,Sign into your Google account to get the very best of Messages,elder_combo_max,"[500, 290]",500,290,65,471,1015,828,0
-messages,Chat with Gemini in Messages (Available in select regions),elder_combo_max,"[500, 584]",500,584,390,1114,885,1453,0
+messages,Messages,elder_combo_max,"[608, 61]",656,133,514,91,799,169,1
+messages,Welcome!,elder_combo_max,"[540, 368]",583,805,205,276,876,464,0
+messages,Sign into your Google account to get the very best of Messages,elder_combo_max,"[500, 290]",540,635,65,471,1015,828,1
+messages,Chat with Gemini in Messages (Available in select regions),elder_combo_max,"[500, 584]",540,1278,390,1114,885,1453,1
 messages,Sync chats across your devices,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
 messages,Google and your carrier will periodically verify your device info to enable Google services. Carrier rates apply.,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
-messages,Sign In,elder_combo_rtl,"[500, 858]",500,858,300,1858,780,2021,0
+messages,Sign In,elder_combo_rtl,"[500, 858]",540,1884,300,1858,780,2021,1
 messages,Use Messages without an account,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
-messages,Messages,elder_combo_rtl,"[599, 56]",599,56,516,84,778,157,0
-messages,Welcome!,elder_combo_rtl,"[500, 151]",500,151,238,255,843,424,0
-messages,Sign into your Google account to get the very best of Messages,elder_combo_rtl,"[500, 260]",500,260,60,430,1020,742,0
-messages,Chat with Gemini in Messages (Available in select regions),elder_combo_rtl,"[570, 532]",570,532,360,1006,900,1386,0
-messages,Sync chats across your devices,elder_combo_rtl,"```json {""box_2d"": [671, 333, 680, 829], ""text_content"": ""Sync chats across your devices""} ```",671,333,360,1506,900,1534,0
+messages,Messages,elder_combo_rtl,"[599, 56]",646,122,516,84,778,157,1
+messages,Welcome!,elder_combo_rtl,"[500, 151]",540,331,238,255,843,424,1
+messages,Sign into your Google account to get the very best of Messages,elder_combo_rtl,"[500, 260]",540,570,60,430,1020,742,1
+messages,Chat with Gemini in Messages (Available in select regions),elder_combo_rtl,"[570, 532]",615,1168,360,1006,900,1386,1
+messages,Sync chats across your devices,elder_combo_rtl,"```json {""box_2d"": [671, 333, 680, 829], ""text_content"": ""Sync chats across your devices""} ```",724,731,360,1506,900,1534,0
 messages,Google and your carrier will periodically verify your device info to enable Google services. Carrier rates apply.,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
-settings_main,Search Settings,baseline,"[345, 52]",345,52,189,80,578,151,0
-settings_main,Google,baseline,"[266, 142]",266,142,221,289,354,346,0
-settings_main,Services & preferences,baseline,"[379, 163]",379,163,221,346,600,397,0
-settings_main,Network & internet,baseline,"[364, 245]",364,245,221,523,566,580,0
-settings_main,"Mobile, Wi‑Fi, hotspot",baseline,"[367, 269]",367,269,221,580,572,631,0
-settings_main,Connected devices,baseline,"[499, 348]",499,348,221,720,574,777,0
-settings_main,"Bluetooth, pairing",baseline,"[337, 351]",337,351,221,777,508,828,0
-settings_main,Apps,baseline,"```json [{""point"": [249, 431]}] ```",249,431,221,954,318,1011,0
-settings_main,"Assistant, recent apps, default apps",baseline,"[475, 456]",475,456,221,1011,806,1062,0
-settings_main,Notifications,baseline,"[315, 517]",315,517,221,1151,460,1208,0
-settings_main,"Notification history, conversations",baseline,"[461, 542]",461,542,221,1208,777,1259,0
-settings_main,Sound & vibration,baseline,"[355, 603]",355,603,221,1348,548,1405,0
-settings_main,Volume and haptics,baseline,"[354, 627]",354,627,221,1405,546,1456,0
+settings_main,Search Settings,baseline,"[345, 52]",372,114,189,80,578,151,1
+settings_main,Google,baseline,"[266, 142]",287,313,221,289,354,346,1
+settings_main,Services & preferences,baseline,"[379, 163]",409,359,221,346,600,397,1
+settings_main,Network & internet,baseline,"[364, 245]",393,540,221,523,566,580,1
+settings_main,"Mobile, Wi‑Fi, hotspot",baseline,"[367, 269]",396,593,221,580,572,631,1
+settings_main,Connected devices,baseline,"[499, 348]",538,767,221,720,574,777,1
+settings_main,"Bluetooth, pairing",baseline,"[337, 351]",363,773,221,777,508,828,0
+settings_main,Apps,baseline,"```json [{""point"": [249, 431]}] ```",268,950,221,954,318,1011,0
+settings_main,"Assistant, recent apps, default apps",baseline,"[475, 456]",513,1005,221,1011,806,1062,0
+settings_main,Notifications,baseline,"[315, 517]",340,1139,221,1151,460,1208,0
+settings_main,"Notification history, conversations",baseline,"[461, 542]",497,1195,221,1208,777,1259,0
+settings_main,Sound & vibration,baseline,"[355, 603]",383,1329,221,1348,548,1405,0
+settings_main,Volume and haptics,baseline,"[354, 627]",382,1382,221,1405,546,1456,0

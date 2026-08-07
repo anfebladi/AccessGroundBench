@@ -1,0 +1,367 @@
+screen,target_text,profile,raw_response,x_pred,y_pred,x_min,y_min,x_max,y_max,score
+clock,8:30 AM,baseline,"[235, 148]",253,326,84,231,414,414,1
+clock,"Mon, Tue, Wed, Thu, Fri",baseline,"[268, 215]",289,474,84,450,492,505,1
+clock,9:00 AM,baseline,"[236, 315]",254,694,84,603,414,786,1
+clock,"Sun, Sat",baseline,"[149, 385]",160,848,84,822,242,877,1
+clock,Clock,baseline,"[300, 978]",324,2156,281,2127,367,2177,1
+clock,Timer,baseline,"[500, 974]",540,2147,496,2127,583,2177,1
+clock,Stopwatch,baseline,"[699, 2147]",-1,-1,675,2127,837,2177,0
+clock,Bedtime,baseline,"[898, 977]",969,2154,908,2127,1035,2177,1
+clock,8:30 AM,elder_text_heavy,"[231, 147]",249,324,84,231,414,414,1
+clock,"Mon, Tue, Wed, Thu, Fri",elder_text_heavy,"[350, 215]",378,474,84,438,664,517,1
+clock,9:00 AM,elder_text_heavy,"[232, 313]",250,690,84,603,414,786,1
+clock,"Sun, Sat",elder_text_heavy,"[175, 385]",189,848,84,810,300,889,1
+clock,Clock,elder_text_heavy,"[300, 978]",324,2156,281,2127,367,2177,1
+clock,Timer,elder_text_heavy,"[500, 978]",540,2156,496,2127,583,2177,1
+clock,Stopwatch,elder_text_heavy,"[699, 978]",754,2156,675,2127,837,2177,1
+clock,Bedtime,elder_text_heavy,"[899, 978]",970,2156,908,2127,1035,2177,1
+clock,8:30 AM,elder_zoom_heavy,"[265, 175]",286,384,96,264,470,472,1
+clock,"Mon, Tue, Wed, Thu, Fri",elder_zoom_heavy,"[306, 247]",330,542,96,513,557,575,1
+clock,9:00 AM,elder_zoom_heavy,"[265, 361]",286,792,96,688,470,896,1
+clock,"Sun, Sat",elder_zoom_heavy,"[170, 440]",183,966,96,937,272,999,1
+clock,Clock,elder_zoom_heavy,"[300, 974]",324,2138,275,2108,372,2164,1
+clock,Timer,elder_zoom_heavy,"[500, 972]",540,2134,491,2108,589,2164,1
+clock,Stopwatch,elder_zoom_heavy,"[701, 975]",757,2141,664,2108,848,2164,1
+clock,Bedtime,elder_zoom_heavy,"[897, 974]",968,2138,899,2108,1044,2164,1
+clock,8:30 AM,elder_combo_max,"[292, 182]",315,398,104,286,522,516,1
+clock,"Mon, Tue, Wed, Thu, Fri",elder_combo_max,"[345, 282]",372,617,104,516,794,714,1
+clock,9:00 AM,elder_combo_max,"[291, 412]",314,902,104,792,522,1022,1
+clock,"Sun, Sat",elder_combo_max,"[234, 506]",252,1108,104,1046,398,1154,1
+clock,Clock,elder_combo_max,"[298, 971]",321,2126,271,2094,376,2155,1
+clock,Timer,elder_combo_max,"[500, 970]",540,2124,487,2094,593,2155,1
+clock,Stopwatch,elder_combo_max,"[700, 971]",756,2126,657,2094,854,2155,1
+clock,Bedtime,elder_combo_max,"[897, 973]",968,2130,894,2094,1050,2155,1
+clock,8:30 AM,elder_combo_rtl,"[265, 165]",286,362,96,264,470,472,1
+clock,"Mon, Tue, Wed, Thu, Fri",elder_combo_rtl,"[420, 246]",453,540,96,496,801,592,1
+clock,9:00 AM,elder_combo_rtl,"[265, 361]",286,792,96,688,470,896,1
+clock,"Sun, Sat",elder_combo_rtl,"[210, 445]",226,977,96,920,357,1016,1
+clock,Clock,elder_combo_rtl,"[300, 975]",324,2141,275,2108,372,2164,1
+clock,Timer,elder_combo_rtl,"[500, 974]",540,2138,491,2108,589,2164,1
+clock,Stopwatch,elder_combo_rtl,"[699, 976]",754,2143,664,2108,848,2164,1
+clock,Bedtime,elder_combo_rtl,"[898, 974]",969,2138,899,2108,1044,2164,1
+clock,8:30 AM,colorblind_deuteranomaly,"[231, 146]",249,321,84,231,414,414,1
+clock,"Mon, Tue, Wed, Thu, Fri",colorblind_deuteranomaly,"[267, 215]",288,474,84,450,492,505,1
+clock,9:00 AM,colorblind_deuteranomaly,"[228, 315]",246,694,84,603,414,786,1
+clock,"Sun, Sat",colorblind_deuteranomaly,"[148, 386]",159,851,84,822,242,877,1
+clock,Clock,colorblind_deuteranomaly,"[298, 977]",321,2154,281,2127,367,2177,1
+clock,Timer,colorblind_deuteranomaly,"[500, 977]",540,2154,496,2127,583,2177,1
+clock,Stopwatch,colorblind_deuteranomaly,"[699, 2154]",-1,-1,675,2127,837,2177,0
+clock,Bedtime,colorblind_deuteranomaly,"[898, 974]",969,2147,908,2127,1035,2177,1
+contacts,Device,baseline,"[184, 113]",198,249,142,226,258,279,1
+contacts,No contacts yet,baseline,"[540, 635]",583,1400,316,1357,765,1449,1
+contacts,Contacts,baseline,"[169, 974]",182,2147,111,2127,249,2177,1
+contacts,Highlights,baseline,"[500, 977]",540,2154,463,2127,616,2177,1
+contacts,Organize,baseline,"[829, 978]",895,2156,831,2127,968,2177,1
+contacts,Device,elder_text_heavy,"[211, 114]",227,251,142,214,313,291,1
+contacts,No contacts yet,elder_text_heavy,"[540, 636]",583,1402,288,1347,793,1450,1
+contacts,Contacts,elder_text_heavy,"[168, 976]",181,2152,111,2127,249,2177,1
+contacts,Highlights,elder_text_heavy,"[499, 977]",538,2154,463,2127,616,2177,1
+contacts,Organize,elder_text_heavy,"[831, 973]",897,2145,831,2127,968,2177,1
+contacts,Device,elder_zoom_heavy,"[215, 130]",232,285,162,258,297,318,1
+contacts,No contacts yet,elder_zoom_heavy,"[540, 658]",583,1444,284,1389,796,1494,1
+contacts,Contacts,elder_zoom_heavy,"[168, 976]",181,2143,101,2108,258,2164,1
+contacts,Highlights,elder_zoom_heavy,"[540, 970]",583,2130,452,2108,627,2164,1
+contacts,Organize,elder_zoom_heavy,"[833, 973]",899,2136,822,2108,977,2164,1
+contacts,Device,elder_combo_max,"[276, 142]",298,310,176,260,414,366,1
+contacts,No contacts yet,elder_combo_max,"[540, 664]",583,1454,200,1386,880,1525,1
+contacts,Contacts,elder_combo_max,"[168, 972]",181,2128,96,2094,264,2155,1
+contacts,Highlights,elder_combo_max,"[500, 972]",540,2128,446,2094,633,2155,1
+contacts,Organize,elder_combo_max,"[833, 971]",899,2126,816,2094,984,2155,1
+contacts,Device,elder_combo_rtl,"[247, 131]",266,287,162,241,373,336,1
+contacts,No contacts yet,elder_combo_rtl,"[509, 654]",549,1436,241,1371,839,1493,1
+contacts,Contacts,elder_combo_rtl,"[168, 968]",181,2125,101,2108,258,2164,1
+contacts,Highlights,elder_combo_rtl,"[504, 973]",544,2136,452,2108,627,2164,1
+contacts,Organize,elder_combo_rtl,"[831, 974]",897,2138,822,2108,977,2164,1
+contacts,Device,colorblind_deuteranomaly,"[184, 114]",198,251,142,226,258,279,1
+contacts,No contacts yet,colorblind_deuteranomaly,"[540, 638]",583,1406,316,1357,765,1449,1
+contacts,Contacts,colorblind_deuteranomaly,"[170, 975]",183,2149,111,2127,249,2177,1
+contacts,Highlights,colorblind_deuteranomaly,"[540, 975]",583,2149,463,2127,616,2177,1
+contacts,Organize,colorblind_deuteranomaly,"[829, 977]",895,2154,831,2127,968,2177,1
+dialer,Phone Number,baseline,"[447, 515]",482,1135,147,1064,933,1208,1
+dialer,1,baseline,"[182, 592]",196,1305,181,1263,205,1332,1
+dialer,2,baseline,"[508, 597]",548,1316,517,1263,559,1333,1
+dialer,ABC,baseline,"[501, 621]",541,1369,507,1353,570,1378,1
+dialer,3,baseline,"[821, 592]",886,1305,863,1263,906,1335,1
+dialer,DEF,baseline,"[821, 618]",886,1362,857,1355,913,1378,1
+dialer,4,baseline,"[179, 679]",193,1497,170,1453,217,1522,1
+dialer,GHI,baseline,"[180, 706]",194,1556,168,1542,219,1567,1
+dialer,5,baseline,"[500, 677]",540,1492,516,1453,561,1524,1
+dialer,JKL,baseline,"[500, 707]",540,1558,512,1544,566,1568,1
+dialer,6,baseline,"[816, 674]",881,1486,862,1453,908,1524,1
+dialer,MNO,baseline,"[817, 704]",882,1552,849,1543,921,1568,1
+dialer,7,baseline,"[180, 765]",194,1686,172,1643,214,1712,1
+dialer,PQRS,baseline,"[179, 794]",193,1750,154,1732,233,1758,1
+dialer,8,baseline,"[500, 763]",540,1682,517,1643,561,1715,1
+dialer,TUV,baseline,"[503, 791]",543,1744,509,1734,569,1758,1
+dialer,9,baseline,"[818, 762]",883,1680,862,1643,908,1714,1
+dialer,WXYZ,baseline,"[818, 792]",883,1746,843,1734,927,1757,1
+dialer,*,baseline,"[180, 852]",194,1878,175,1862,211,1897,1
+dialer,0,baseline,"[500, 856]",540,1887,512,1833,566,1905,1
+dialer,+,baseline,"[540, 882]",583,1944,531,1929,546,1944,0
+dialer,#,baseline,"[817, 854]",882,1883,866,1858,903,1901,1
+dialer,Call,baseline,"[540, 2108]",-1,-1,413,2026,667,2173,0
+dialer,Phone Number,elder_text_heavy,"[540, 240]",583,529,147,1064,933,1208,0
+dialer,1,elder_text_heavy,"[183, 590]",197,1300,181,1263,205,1332,1
+dialer,2,elder_text_heavy,"[508, 597]",548,1316,518,1263,560,1333,1
+dialer,ABC,elder_text_heavy,"[503, 622]",543,1371,496,1348,582,1382,1
+dialer,3,elder_text_heavy,"[815, 590]",880,1300,863,1263,906,1335,1
+dialer,DEF,elder_text_heavy,"[818, 621]",883,1369,846,1350,923,1382,1
+dialer,4,elder_text_heavy,"[180, 677]",194,1492,170,1453,217,1522,1
+dialer,GHI,elder_text_heavy,"[182, 708]",196,1561,159,1538,228,1572,1
+dialer,5,elder_text_heavy,"[504, 674]",544,1486,516,1453,561,1524,1
+dialer,JKL,elder_text_heavy,"[503, 707]",543,1558,503,1539,575,1572,1
+dialer,6,elder_text_heavy,"[818, 678]",883,1494,861,1453,907,1524,1
+dialer,MNO,elder_text_heavy,"[818, 704]",883,1552,836,1539,933,1573,1
+dialer,7,elder_text_heavy,"[180, 765]",194,1686,172,1643,214,1712,1
+dialer,PQRS,elder_text_heavy,"[180, 793]",194,1748,139,1727,248,1762,1
+dialer,8,elder_text_heavy,"[500, 765]",540,1686,516,1643,560,1715,1
+dialer,TUV,elder_text_heavy,"[504, 791]",544,1744,498,1730,579,1763,1
+dialer,9,elder_text_heavy,"[818, 760]",883,1675,861,1643,907,1714,1
+dialer,WXYZ,elder_text_heavy,"[820, 793]",885,1748,827,1730,942,1762,1
+dialer,*,elder_text_heavy,"[180, 1856]",-1,-1,175,1862,211,1897,0
+dialer,0,elder_text_heavy,"[502, 852]",542,1878,512,1833,566,1905,1
+dialer,+,elder_text_heavy,"[500, 878]",540,1935,529,1926,549,1946,1
+dialer,#,elder_text_heavy,"[818, 853]",883,1880,863,1854,907,1905,1
+dialer,Call,elder_text_heavy,"[544, 954]",587,2103,400,2026,681,2173,1
+dialer,Phone Number,elder_zoom_heavy,"[540, 225]",583,494,168,897,912,1062,0
+dialer,1,elder_zoom_heavy,"[180, 537]",194,1179,180,1125,206,1203,1
+dialer,2,elder_zoom_heavy,"[540, 538]",583,1181,515,1125,562,1205,0
+dialer,ABC,elder_zoom_heavy,"[504, 573]",544,1258,504,1227,574,1255,0
+dialer,3,elder_zoom_heavy,"[815, 546]",880,1199,860,1125,909,1207,1
+dialer,DEF,elder_zoom_heavy,"[815, 567]",880,1245,854,1229,916,1255,1
+dialer,4,elder_zoom_heavy,"[180, 634]",194,1392,166,1341,219,1419,1
+dialer,GHI,elder_zoom_heavy,"[178, 670]",192,1471,164,1442,222,1470,0
+dialer,5,elder_zoom_heavy,"[502, 634]",542,1392,513,1341,563,1421,1
+dialer,JKL,elder_zoom_heavy,"[500, 665]",540,1460,509,1444,568,1471,1
+dialer,6,elder_zoom_heavy,"[820, 638]",885,1401,859,1341,911,1422,1
+dialer,MNO,elder_zoom_heavy,"[818, 663]",883,1455,846,1444,924,1472,1
+dialer,7,elder_zoom_heavy,"[180, 725]",194,1592,170,1557,217,1635,1
+dialer,PQRS,elder_zoom_heavy,"[179, 764]",193,1677,149,1658,238,1687,1
+dialer,8,elder_zoom_heavy,"[504, 729]",544,1600,514,1557,563,1639,1
+dialer,TUV,elder_zoom_heavy,"[510, 764]",550,1677,505,1661,572,1688,1
+dialer,9,elder_zoom_heavy,"[818, 725]",883,1592,858,1557,910,1639,1
+dialer,WXYZ,elder_zoom_heavy,"[818, 766]",883,1682,837,1661,932,1687,1
+dialer,*,elder_zoom_heavy,"[179, 835]",193,1833,173,1806,213,1845,1
+dialer,0,elder_zoom_heavy,"[499, 829]",538,1820,508,1773,570,1855,1
+dialer,+,elder_zoom_heavy,"[500, 862]",540,1892,530,1882,547,1899,1
+dialer,#,elder_zoom_heavy,"[818, 836]",883,1835,863,1800,906,1850,1
+dialer,Call,elder_zoom_heavy,"[549, 944]",592,2073,396,1992,685,2160,1
+dialer,Phone Number,elder_combo_max,"[518, 397]",559,869,182,782,898,961,1
+dialer,1,elder_combo_max,"[180, 492]",194,1077,178,1029,207,1113,1
+dialer,2,elder_combo_max,"[501, 494]",541,1081,512,1029,564,1115,1
+dialer,ABC,elder_combo_max,"[500, 529]",540,1158,479,1131,598,1178,1
+dialer,3,elder_combo_max,"[816, 496]",881,1086,858,1029,911,1117,1
+dialer,DEF,elder_combo_max,"[815, 528]",880,1156,832,1133,938,1178,1
+dialer,4,elder_combo_max,"[178, 597]",192,1307,164,1263,221,1347,1
+dialer,GHI,elder_combo_max,"[180, 634]",194,1388,144,1364,242,1411,1
+dialer,5,elder_combo_max,"[505, 600]",545,1314,511,1263,566,1349,1
+dialer,JKL,elder_combo_max,"[504, 638]",544,1397,487,1366,590,1412,1
+dialer,6,elder_combo_max,"[816, 601]",881,1316,857,1263,913,1350,1
+dialer,MNO,elder_combo_max,"[815, 636]",880,1392,817,1366,953,1413,1
+dialer,7,elder_combo_max,"[180, 709]",194,1552,167,1497,219,1581,1
+dialer,PQRS,elder_combo_max,"[178, 743]",192,1627,117,1597,270,1646,1
+dialer,8,elder_combo_max,"[501, 705]",541,1543,512,1497,566,1585,1
+dialer,TUV,elder_combo_max,"[502, 745]",542,1631,482,1601,596,1647,1
+dialer,9,elder_combo_max,"[816, 697]",881,1526,857,1497,913,1585,1
+dialer,WXYZ,elder_combo_max,"[817, 739]",882,1618,804,1601,966,1646,1
+dialer,*,elder_combo_max,"[179, 817]",193,1789,171,1766,216,1810,1
+dialer,0,elder_combo_max,"[540, 1590]",-1,-1,506,1731,572,1819,0
+dialer,+,elder_combo_max,"[511, 851]",551,1863,525,1844,553,1872,0
+dialer,#,elder_combo_max,"[817, 817]",882,1789,855,1753,914,1822,1
+dialer,Call,elder_combo_max,"[595, 2061]",-1,-1,360,1969,720,2151,0
+dialer,Phone Number,elder_combo_rtl,"[540, 200]",583,439,168,897,912,1062,0
+dialer,1,elder_combo_rtl,"[180, 535]",194,1174,180,1125,206,1203,1
+dialer,2,elder_combo_rtl,"[508, 536]",548,1177,515,1125,562,1205,1
+dialer,ABC,elder_combo_rtl,"[510, 571]",550,1253,487,1221,591,1262,1
+dialer,3,elder_combo_rtl,"[818, 536]",883,1177,860,1125,909,1207,1
+dialer,DEF,elder_combo_rtl,"[818, 567]",883,1245,838,1223,931,1262,1
+dialer,4,elder_combo_rtl,"[180, 630]",194,1383,167,1341,220,1419,1
+dialer,GHI,elder_combo_rtl,"[179, 663]",193,1455,151,1436,236,1477,1
+dialer,5,elder_combo_rtl,"[540, 632]",583,1387,513,1341,563,1421,0
+dialer,JKL,elder_combo_rtl,"[502, 667]",542,1464,494,1437,583,1477,1
+dialer,6,elder_combo_rtl,"[815, 631]",880,1385,858,1341,910,1422,1
+dialer,MNO,elder_combo_rtl,"[816, 663]",881,1455,825,1437,944,1478,1
+dialer,7,elder_combo_rtl,"[180, 731]",194,1605,170,1557,217,1635,1
+dialer,PQRS,elder_combo_rtl,"[178, 763]",192,1675,127,1651,260,1694,1
+dialer,8,elder_combo_rtl,"[509, 731]",549,1605,514,1557,563,1639,1
+dialer,TUV,elder_combo_rtl,"[540, 765]",583,1679,489,1654,589,1694,0
+dialer,9,elder_combo_rtl,"[821, 725]",886,1592,859,1557,911,1639,1
+dialer,WXYZ,elder_combo_rtl,"[820, 763]",885,1675,815,1655,955,1694,1
+dialer,*,elder_combo_rtl,"[178, 834]",192,1831,173,1806,213,1845,1
+dialer,0,elder_combo_rtl,"[510, 826]",550,1813,508,1773,570,1855,1
+dialer,+,elder_combo_rtl,"[540, 865]",583,1899,526,1878,551,1903,0
+dialer,#,elder_combo_rtl,"[822, 836]",887,1835,859,1795,911,1855,1
+dialer,Call,elder_combo_rtl,"[548, 946]",591,2077,376,1992,705,2160,1
+dialer,Phone Number,colorblind_deuteranomaly,"[540, 236]",583,520,147,1064,933,1208,0
+dialer,1,colorblind_deuteranomaly,"[184, 589]",198,1298,181,1263,205,1332,1
+dialer,2,colorblind_deuteranomaly,"[504, 593]",544,1307,517,1263,559,1333,1
+dialer,ABC,colorblind_deuteranomaly,"[500, 623]",540,1373,507,1353,570,1378,1
+dialer,3,colorblind_deuteranomaly,"[815, 588]",880,1296,863,1263,906,1335,1
+dialer,DEF,colorblind_deuteranomaly,"[815, 618]",880,1362,857,1355,913,1378,1
+dialer,4,colorblind_deuteranomaly,"[180, 678]",194,1494,170,1453,217,1522,1
+dialer,GHI,colorblind_deuteranomaly,"[180, 706]",194,1556,168,1542,219,1567,1
+dialer,5,colorblind_deuteranomaly,"[503, 675]",543,1488,516,1453,561,1524,1
+dialer,JKL,colorblind_deuteranomaly,"[502, 706]",542,1556,512,1544,566,1568,1
+dialer,6,colorblind_deuteranomaly,"[818, 673]",883,1483,862,1453,908,1524,1
+dialer,MNO,colorblind_deuteranomaly,"[821, 704]",886,1552,849,1543,921,1568,1
+dialer,7,colorblind_deuteranomaly,"[180, 770]",194,1697,172,1643,214,1712,1
+dialer,PQRS,colorblind_deuteranomaly,"[179, 792]",193,1746,154,1732,233,1758,1
+dialer,8,colorblind_deuteranomaly,"[511, 767]",551,1691,517,1643,561,1715,1
+dialer,TUV,colorblind_deuteranomaly,"[540, 792]",583,1746,509,1734,569,1758,0
+dialer,9,colorblind_deuteranomaly,"[821, 758]",886,1671,862,1643,908,1714,1
+dialer,WXYZ,colorblind_deuteranomaly,"[821, 792]",886,1746,843,1734,927,1757,1
+dialer,*,colorblind_deuteranomaly,"[180, 856]",194,1887,175,1862,211,1897,1
+dialer,0,colorblind_deuteranomaly,"[501, 851]",541,1876,512,1833,566,1905,1
+dialer,+,colorblind_deuteranomaly,"[540, 882]",583,1944,531,1929,546,1944,0
+dialer,#,colorblind_deuteranomaly,"[820, 853]",885,1880,866,1858,903,1901,1
+dialer,Call,colorblind_deuteranomaly,"[542, 953]",585,2101,413,2026,667,2173,1
+messages,Sign In,baseline,"[510, 915]",550,2017,330,1953,750,2079,1
+messages,Use Messages without an account,baseline,"[540, 2154]",-1,-1,42,2079,1038,2205,0
+messages,"Share videos as they're
+meant to be seen",baseline,"[500, 485]",540,1069,0,985,1080,1143,1
+messages,"Preserve sharp video clarity when you
+sign in and send Google Photos links.",baseline,"[540, 556]",583,1225,79,1164,1001,1267,1
+messages,How it works,baseline,"[503, 592]",543,1305,0,1267,1080,1393,1
+messages,Sign In,elder_text_heavy,"[506, 912]",546,2010,330,1935,750,2070,1
+messages,Use Messages without an account,elder_text_heavy,"[511, 976]",551,2152,42,2070,1038,2205,1
+messages,"Share videos as they're
+meant to be seen",elder_text_heavy,"[509, 477]",549,1051,0,973,1080,1156,1
+messages,"Preserve sharp video clarity when you
+sign in and send Google Photos links.",elder_text_heavy,"[540, 584]",583,1287,79,1177,1001,1392,1
+messages,How it works,elder_text_heavy,"[540, 656]",583,1446,0,1392,1080,1518,1
+messages,Sign In,elder_zoom_heavy,"[510, 905]",550,1987,300,1908,780,2052,1
+messages,Use Messages without an account,elder_zoom_heavy,"[540, 2147]",-1,-1,48,2052,1032,2196,0
+messages,"Share videos as they're
+meant to be seen",elder_zoom_heavy,"[540, 466]",583,1023,0,932,1080,1111,1
+messages,"Preserve sharp video clarity when you
+sign in and send Google Photos links.",elder_zoom_heavy,"[540, 540]",583,1185,90,1135,990,1252,1
+messages,How it works,elder_zoom_heavy,"[504, 588]",544,1291,0,1252,1080,1396,1
+messages,Sign In,elder_combo_max,"[506, 877]",546,1920,280,1828,800,2009,1
+messages,Use Messages without an account,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+messages,"Share videos as they're
+meant to be seen",elder_combo_max,"[500, 613]",540,1342,0,1223,1080,1475,1
+messages,"Preserve sharp video clarity when you
+sign in and send Google Photos links.",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+messages,How it works,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+messages,Sign In,elder_combo_rtl,"[509, 888]",549,1950,300,1870,780,2033,1
+messages,Use Messages without an account,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+messages,"Share videos as they're
+meant to be seen",elder_combo_rtl,"[507, 539]",547,1183,0,1079,1080,1297,1
+messages,"Preserve sharp video clarity when you
+sign in and send Google Photos links.",elder_combo_rtl,"[509, 663]",549,1455,90,1321,990,1546,1
+messages,How it works,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+messages,Sign In,colorblind_deuteranomaly,"[510, 919]",550,2026,330,1953,750,2079,1
+messages,Use Messages without an account,colorblind_deuteranomaly,"[500, 976]",540,2152,42,2079,1038,2205,1
+messages,"Share videos as they're
+meant to be seen",colorblind_deuteranomaly,"[540, 480]",583,1058,0,985,1080,1143,1
+messages,"Preserve sharp video clarity when you
+sign in and send Google Photos links.",colorblind_deuteranomaly,"[540, 557]",583,1228,79,1164,1001,1267,1
+messages,How it works,colorblind_deuteranomaly,"[540, 593]",583,1307,0,1267,1080,1393,1
+settings_main,Search settings,baseline,"[352, 52]",380,114,200,75,553,146,1
+settings_main,"App security, device lock, permissions",baseline,"[471, 112]",508,246,189,221,810,265,1
+settings_main,Location,baseline,"[271, 186]",292,410,189,374,394,445,1
+settings_main,On / 5 apps have access to location,baseline,"[450, 216]",486,476,189,445,772,496,1
+settings_main,Safety & emergency,baseline,"[398, 289]",429,637,189,605,655,676,1
+settings_main,"Emergency SOS, medical info, alerts",baseline,"[456, 321]",492,707,189,676,779,727,1
+settings_main,"Passwords, passkeys & accounts",baseline,"[541, 397]",584,875,189,836,968,907,1
+settings_main,Suggestions for sign-in & autofill,baseline,"[423, 429]",456,945,189,907,719,958,1
+settings_main,Digital Wellbeing & parental controls,baseline,"[472, 514]",509,1133,189,1055,1017,1188,1
+settings_main,"Screen time, app timers, bedtime schedules",baseline,"[515, 556]",556,1225,189,1188,904,1239,1
+settings_main,Google,baseline,"[253, 631]",273,1391,189,1335,356,1406,1
+settings_main,Services & preferences,baseline,"[354, 658]",382,1450,189,1406,568,1457,1
+settings_main,System,baseline,"[258, 735]",278,1620,189,1566,363,1637,1
+settings_main,"Languages, gestures, time, backup",baseline,"[437, 762]",471,1680,189,1637,755,1688,1
+settings_main,About emulated device,baseline,"[428, 841]",462,1854,189,1797,729,1868,1
+settings_main,sdk_gphone64_x86_64,baseline,"[351, 862]",379,1900,189,1868,566,1919,1
+settings_main,Tips & support,baseline,"[338, 939]",365,2070,189,2028,533,2099,1
+settings_main,"Help articles, phone & chat",baseline,"[383, 967]",413,2132,189,2099,626,2150,1
+settings_main,Search settings,elder_text_heavy,"[388, 53]",419,116,200,67,638,154,1
+settings_main,"App security, device lock, permissions",elder_text_heavy,"[458, 219]",494,482,189,411,1017,547,1
+settings_main,Location,elder_text_heavy,"[292, 307]",315,676,189,631,440,718,1
+settings_main,On / 5 apps have access to location,elder_text_heavy,"[479, 351]",517,773,189,718,1017,854,1
+settings_main,Safety & emergency,elder_text_heavy,"[442, 453]",477,998,189,938,762,1025,1
+settings_main,"Emergency SOS, medical info, alerts",elder_text_heavy,"[515, 495]",556,1091,189,1025,1017,1161,1
+settings_main,"Passwords, passkeys & accounts",elder_text_heavy,"[497, 604]",536,1331,189,1245,1017,1408,1
+settings_main,Suggestions for sign-in & autofill,elder_text_heavy,"[538, 659]",581,1453,189,1408,965,1481,1
+settings_main,Digital Wellbeing & parental controls,elder_text_heavy,"[544, 756]",587,1666,189,1565,1017,1728,1
+settings_main,"Screen time, app timers, bedtime schedules",elder_text_heavy,"[540, 818]",583,1803,189,1728,1017,1864,1
+settings_main,Google,elder_text_heavy,"[272, 906]",293,1997,189,1948,394,2035,1
+settings_main,Services & preferences,elder_text_heavy,"[430, 2088]",-1,-1,189,2035,738,2108,0
+settings_main,System,elder_text_heavy,"[271, 908]",292,2002,189,2192,405,2205,0
+settings_main,"Languages, gestures, time, backup",elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,About emulated device,elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,sdk_gphone64_x86_64,elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Tips & support,elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Help articles, phone & chat",elder_text_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Search settings,elder_zoom_heavy,"[401, 59]",433,129,228,85,632,166,1
+settings_main,"App security, device lock, permissions",elder_zoom_heavy,"[530, 282]",572,619,216,594,919,651,1
+settings_main,Location,elder_zoom_heavy,"[308, 372]",332,816,216,777,448,858,1
+settings_main,On / 5 apps have access to location,elder_zoom_heavy,"[512, 409]",552,898,216,858,881,915,1
+settings_main,Safety & emergency,elder_zoom_heavy,"[455, 497]",491,1091,216,1041,747,1122,1
+settings_main,"Emergency SOS, medical info, alerts",elder_zoom_heavy,"[518, 526]",559,1155,216,1122,885,1179,1
+settings_main,"Passwords, passkeys & accounts",elder_zoom_heavy,"[495, 618]",534,1357,216,1290,1008,1442,1
+settings_main,Suggestions for sign-in & autofill,elder_zoom_heavy,"[484, 676]",522,1484,216,1442,819,1499,1
+settings_main,Digital Wellbeing & parental controls,elder_zoom_heavy,"[540, 765]",583,1679,216,1595,1008,1747,1
+settings_main,"Screen time, app timers, bedtime schedules",elder_zoom_heavy,"[491, 822]",530,1805,216,1747,1008,1853,1
+settings_main,Google,elder_zoom_heavy,"[285, 915]",307,2009,216,1964,406,2045,1
+settings_main,Services & preferences,elder_zoom_heavy,"[400, 948]",432,2081,216,2045,641,2102,1
+settings_main,System,elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Languages, gestures, time, backup",elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,About emulated device,elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,sdk_gphone64_x86_64,elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Tips & support,elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Help articles, phone & chat",elder_zoom_heavy,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Search settings,elder_combo_max,"[513, 66]",554,144,247,76,855,197,1
+settings_main,"App security, device lock, permissions",elder_combo_max,"[520, 898]",561,1966,234,1863,1002,2050,1
+settings_main,Location,elder_combo_max,"[514, 953]",555,2087,234,2154,581,2190,0
+settings_main,On / 5 apps have access to location,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Safety & emergency,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Emergency SOS, medical info, alerts",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Passwords, passkeys & accounts",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Suggestions for sign-in & autofill,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Digital Wellbeing & parental controls,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Screen time, app timers, bedtime schedules",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Google,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Services & preferences,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,System,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Languages, gestures, time, backup",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,About emulated device,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,sdk_gphone64_x86_64,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Tips & support,elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Help articles, phone & chat",elder_combo_max,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Search settings,elder_combo_rtl,"[455, 62]",491,136,228,73,753,178,1
+settings_main,"App security, device lock, permissions",elder_combo_rtl,"[545, 609]",588,1337,216,1238,1008,1403,1
+settings_main,Location,elder_combo_rtl,"[341, 712]",368,1563,216,1499,517,1604,1
+settings_main,On / 5 apps have access to location,elder_combo_rtl,"[567, 768]",612,1686,216,1604,1008,1769,1
+settings_main,Safety & emergency,elder_combo_rtl,"[524, 882]",565,1936,216,1865,903,1970,1
+settings_main,"Emergency SOS, medical info, alerts",elder_combo_rtl,"[538, 935]",581,2053,216,1970,1008,2135,1
+settings_main,"Passwords, passkeys & accounts",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Suggestions for sign-in & autofill,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Digital Wellbeing & parental controls,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Screen time, app timers, bedtime schedules",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Google,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Services & preferences,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,System,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Languages, gestures, time, backup",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,About emulated device,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,sdk_gphone64_x86_64,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Tips & support,elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,"Help articles, phone & chat",elder_combo_rtl,[OFF-SCREEN],-1,-1,,,,,0
+settings_main,Search settings,colorblind_deuteranomaly,"[351, 54]",379,119,200,75,553,146,1
+settings_main,"App security, device lock, permissions",colorblind_deuteranomaly,"[470, 111]",507,244,189,221,810,265,1
+settings_main,Location,colorblind_deuteranomaly,"[272, 185]",293,407,189,374,394,445,1
+settings_main,On / 5 apps have access to location,colorblind_deuteranomaly,"[450, 215]",486,474,189,445,772,496,1
+settings_main,Safety & emergency,colorblind_deuteranomaly,"[397, 289]",428,637,189,605,655,676,1
+settings_main,"Emergency SOS, medical info, alerts",colorblind_deuteranomaly,"[450, 322]",486,710,189,676,779,727,1
+settings_main,"Passwords, passkeys & accounts",colorblind_deuteranomaly,"[541, 396]",584,873,189,836,968,907,1
+settings_main,Suggestions for sign-in & autofill,colorblind_deuteranomaly,"[428, 427]",462,941,189,907,719,958,1
+settings_main,Digital Wellbeing & parental controls,colorblind_deuteranomaly,"[479, 514]",517,1133,189,1055,1017,1188,1
+settings_main,"Screen time, app timers, bedtime schedules",colorblind_deuteranomaly,"[506, 557]",546,1228,189,1188,904,1239,1
+settings_main,Google,colorblind_deuteranomaly,"[252, 627]",272,1382,189,1335,356,1406,1
+settings_main,Services & preferences,colorblind_deuteranomaly,"[353, 656]",381,1446,189,1406,568,1457,1
+settings_main,System,colorblind_deuteranomaly,"[258, 735]",278,1620,189,1566,363,1637,1
+settings_main,"Languages, gestures, time, backup",colorblind_deuteranomaly,"[441, 762]",476,1680,189,1637,755,1688,1
+settings_main,About emulated device,colorblind_deuteranomaly,"[425, 1849]",-1,-1,189,1797,729,1868,0
+settings_main,sdk_gphone64_x86_64,colorblind_deuteranomaly,"[353, 862]",381,1900,189,1868,566,1919,1
+settings_main,Tips & support,colorblind_deuteranomaly,"[338, 940]",365,2072,189,2028,533,2099,1
+settings_main,"Help articles, phone & chat",colorblind_deuteranomaly,"[380, 965]",410,2127,189,2099,626,2150,1

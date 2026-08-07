@@ -55,6 +55,7 @@ AccessGroundBench/
 ├── vlm_evaluator.py         # Offline VLM evaluation entry point
 ├── vlm_provider.py          # LiteLLM calls and retry handling
 ├── vlm_eval/                # Evaluation config, targets, scoring, results, runner
+├── rescore_coords.py        # Offline re-scoring under a different coord space
 ├── mcnemar_analysis.py      # Paired statistical analysis
 ├── tests/                   # Unit tests
 ├── sample_input/            # Committed PNG/XML sample captures
@@ -116,12 +117,41 @@ these variables:
 VLM_MODEL=openai/gpt-4o-mini
 VLM_PACE_SECONDS=0
 VLM_MAX_RETRIES=3
+COORD_SPACE=pixel
 
 OPENAI_API_KEY=your-openai-api-key
 GOOGLE_API_KEY=your-google-api-key
 GEMINI_API_KEY=your-gemini-api-key
 ANTHROPIC_API_KEY=your-anthropic-api-key
 ```
+
+### Coordinate conventions
+
+Models do not agree on how to express a point. Most answer in absolute image
+pixels, but several — Qwen-VL, Gemini, and GLM-V among them — answer on a
+0-1000 grid independent of the real image size. Because a normalized answer can
+never exceed 1000 while the screenshots are 2205 pixels tall, scoring a
+normalized model as `pixel` compresses every prediction into the top-left
+corner. The result is 0% accuracy on every row, and McNemar reports
+`Inconclusive (floor)` for every profile — a measurement artifact that is easily
+mistaken for a weak model.
+
+Set `COORD_SPACE` to `pixel` (default) or `norm1000` to match the model under
+test. Declaring it explicitly rather than inferring it keeps the convention a
+recorded property of each published run.
+
+To determine a model's convention from an existing results file, or to repair a
+run that was scored under the wrong one, use `rescore_coords.py`. Raw model
+responses are stored verbatim in the CSV, so both operations are offline and
+cost no API calls:
+
+```bash
+python rescore_coords.py --csv dataset/evaluation_results_MODEL.csv --check
+python rescore_coords.py --csv dataset/evaluation_results_MODEL.csv --coord-space norm1000
+```
+
+Rewriting a CSV writes a `.csv.bak` alongside it first. Rerun
+`mcnemar_analysis.py` afterwards to refresh the statistics.
 
 `VLM_PACE_SECONDS` is an optional non-negative delay between successful model
 calls. `VLM_MAX_RETRIES` controls retries for provider failures. Use the key

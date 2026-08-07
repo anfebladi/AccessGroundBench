@@ -49,4 +49,9 @@ sample_input/capture_*.json
 
 # Android/local tooling logs
 *.log
+*.err
+*.pid
 adb*.txt
+
+# Pre-rescore backups written by rescore_coords.py
+dataset/*.csv.bak

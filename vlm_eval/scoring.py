@@ -13,6 +13,25 @@ def parse_coordinates(response_text: str) -> tuple[float, float]:
     return -1.0, -1.0
 
 
+def to_pixel_space(
+    x: float,
+    y: float,
+    img_width: int,
+    img_height: int,
+    coord_space: str = "pixel",
+) -> tuple[float, float]:
+    """Convert a model's raw coordinates into absolute image pixels.
+
+    "pixel" answers are already absolute and pass through unchanged.
+    "norm1000" answers sit on a 0-1000 grid independent of image size and are
+    scaled by the real dimensions. Mirrors the conversion the Ferret-UI branch
+    of vlm_provider already applies to its own 1000-scale output.
+    """
+    if coord_space == "norm1000":
+        return x / 1000.0 * img_width, y / 1000.0 * img_height
+    return x, y
+
+
 def hit_test(x_pred: int, y_pred: int, box: list[int], baseline_box: list[int] | None = None) -> int:
     """
     Return 1 when a predicted point hits the target.

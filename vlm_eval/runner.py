@@ -7,9 +7,9 @@ from pathlib import Path
 
 from vlm_provider import call_vlm
 
-from .config import ALL_PROFILES, IMAGES_DIR, LABELS_DIR
+from .config import ALL_PROFILES, DEFAULT_COORD_SPACE, IMAGES_DIR, LABELS_DIR
 from .results import append_result
-from .scoring import hit_test, parse_coordinates
+from .scoring import hit_test, parse_coordinates, to_pixel_space
 from .targets import find_element_in_profile, harvest_targets
 
 PROMPT_TEMPLATE = (
@@ -90,12 +90,16 @@ def evaluate_screen(
     labels_dir: Path = LABELS_DIR,
     profiles: list[str] | None = None,
     use_a11y_tree: bool = False,
+    coord_space: str = DEFAULT_COORD_SPACE,
 ) -> int:
     """
     Evaluate all profiles for a single screen.
 
     When use_a11y_tree is True, injects the accessibility tree into the
     prompt alongside the screenshot. When False, runs vision-only (unchanged).
+
+    coord_space declares the convention the model answers in; "norm1000"
+    responses are rescaled to pixels before hit-testing.
 
     Returns the total number of evaluation rows generated.
     """
@@ -176,7 +180,10 @@ def evaluate_screen(
                 print("    [ABORT] Provider/API error; no CSV row written for this target.")
                 raise SystemExit(1) from exc
 
-            x_coord, y_coord = parse_coordinates(raw_response)
+            x_raw, y_raw = parse_coordinates(raw_response)
+            x_coord, y_coord = to_pixel_space(
+                x_raw, y_raw, img_width, img_height, coord_space
+            )
 
             if (
                 x_coord < 0

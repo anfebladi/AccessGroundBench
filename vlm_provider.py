@@ -65,6 +65,32 @@ def _is_rate_limit_error(exc: Exception) -> bool:
     return "rate limit" in str(exc).lower()
 
 
+def _is_retryable_error(exc: Exception) -> bool:
+    """Detect transient provider failures worth retrying.
+
+    Covers rate limits plus timeouts, connection drops, and 5xx responses. A
+    single hung request used to abort an entire multi-hundred-call sweep,
+    discarding every row already collected, because only rate limits were
+    retried and the runner treats any surviving exception as fatal.
+    """
+    if _is_rate_limit_error(exc):
+        return True
+
+    class_name = exc.__class__.__name__.lower()
+    if any(tok in class_name for tok in ("timeout", "connection", "apierror", "serviceunavailable", "internalserver")):
+        return True
+
+    status_code = getattr(exc, "status_code", None)
+    if isinstance(status_code, int) and status_code >= 500:
+        return True
+
+    message = str(exc).lower()
+    return any(
+        tok in message
+        for tok in ("timed out", "timeout", "connection error", "connection reset", "bad gateway", "service unavailable")
+    )
+
+
 def _retry_delay_seconds(exc: Exception, fallback: float) -> float:
     """Extract retry delay hints from provider errors, falling back to backoff."""
     retry_after = getattr(exc, "retry_after", None)
@@ -224,12 +250,13 @@ def call_vlm(
             response = _completion(**kwargs)
             return _extract_response_text(response)
         except Exception as exc:
-            if not _is_rate_limit_error(exc) or attempt >= retries:
+            if not _is_retryable_error(exc) or attempt >= retries:
                 raise
 
             sleep_seconds = _retry_delay_seconds(exc, delay)
+            reason = "Rate limited" if _is_rate_limit_error(exc) else exc.__class__.__name__
             print(
-                f"    [RETRY] Rate limited; sleeping {sleep_seconds:.2f}s "
+                f"    [RETRY] {reason}; sleeping {sleep_seconds:.2f}s "
                 f"before retry {attempt + 1}/{retries}"
             )
             time.sleep(sleep_seconds)
