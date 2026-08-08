@@ -83,6 +83,7 @@ AccessGroundBench/
 ├── vlm_evaluator.py          # Entry point: load labels, query VLM, score predictions
 ├── vlm_provider.py           # LiteLLM + Ferret-UI server calls with retry handling
 ├── mcnemar_analysis.py       # Reachability, pooled permutation, per-model McNemar
+├── rescore_coords.py         # Offline re-scoring under a different coordinate space
 ├── main.py                   # Minimal package entry point
 │
 ├── vlm_eval/
@@ -170,6 +171,48 @@ Model prefix → required key:
 | `local/ferret-ui-llama8b` | Ferret-UI server (see below) |
 | `9router/` | `NINEROUTER_BASE_URL` + `NINEROUTER_API_KEY` |
 | `openai_compatible/` | `OPENAI_COMPATIBLE_BASE_URL` + `OPENAI_COMPATIBLE_API_KEY` |
+
+### Coordinate conventions
+
+Models do not agree on how to express a point. Most answer in absolute image
+pixels, but several — Qwen-VL, Gemini, and GLM-V among them — answer on a
+0-1000 grid independent of the real image size. Because a normalized answer can
+never exceed 1000 while the screenshots are ~2200 pixels tall, scoring a
+normalized model as `pixel` compresses every prediction into the top-left
+corner. The result is near-0% accuracy on every row, and McNemar reports
+`Inconclusive (floor)` for every profile — a measurement artifact that is easily
+mistaken for a weak model.
+
+Models known to answer on the 0-1000 grid are recognised automatically by
+`vlm_provider._uses_normalized_coords` (Gemini, Qwen, GLM). They are sent a
+prompt that states the scale explicitly, and a reply whose values fall outside
+0-1000 is retried once with a stricter restatement before being recorded as
+pixel-space non-compliance. The convention actually resolved for each reply is
+written to the `coord_space` column, so it is a recorded property of every row
+rather than an assumption about the run.
+
+`COORD_SPACE` (`pixel` by default, or `norm1000`) is a manual override for a
+model not yet in that registry. Setting it to anything other than `pixel` for a
+model that already self-describes — or for Ferret-UI, which converts its own
+0-1000 output — is rejected at startup rather than silently double-converting.
+
+To determine a model's convention from an existing results file, or to repair a
+run scored under the wrong one, use `rescore_coords.py`. It re-reads the stored
+`raw_response`, so both operations are offline and cost no API calls:
+
+```bash
+python rescore_coords.py --csv dataset/evaluation_results_MODEL.csv --check
+python rescore_coords.py --csv dataset/evaluation_results_MODEL.csv --coord-space norm1000
+```
+
+Rewriting a CSV writes a `.csv.bak` alongside it first. Rerun
+`mcnemar_analysis.py` afterwards to refresh the statistics.
+
+> **Note.** `raw_response` holds the model's verbatim reply only for rows
+> collected after this change. Gemini rows collected earlier store the
+> already-converted pixel value, so `--check` and re-scoring cannot recover
+> their original 0-1000 answer. Those rows' `x_pred`/`y_pred`/`score` remain
+> correct and authoritative; they simply cannot be re-derived offline.
 
 Hosted models are sent through LiteLLM. Native LiteLLM model names keep their
 normal behavior. For 9Router, connect your provider in the 9Router dashboard,

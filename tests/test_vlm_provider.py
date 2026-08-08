@@ -533,50 +533,88 @@ class VlmProviderTests(unittest.TestCase):
                     img_height=2219,
                 )
 
-    def test_is_gemini_model_matches_native_and_9router_forms(self):
-        self.assertTrue(vlm_provider._is_gemini_model("gemini/gemini-2.5-flash"))
-        self.assertTrue(vlm_provider._is_gemini_model("9router/ag/gemini-3-flash"))
-        self.assertTrue(vlm_provider._is_gemini_model("9router/ag/gemini-pro-agent"))
+    def test_uses_normalized_coords_matches_native_and_9router_forms(self):
+        self.assertTrue(vlm_provider._uses_normalized_coords("gemini/gemini-2.5-flash"))
+        self.assertTrue(vlm_provider._uses_normalized_coords("9router/ag/gemini-3-flash"))
+        self.assertTrue(vlm_provider._uses_normalized_coords("9router/ag/gemini-pro-agent"))
 
-    def test_is_gemini_model_rejects_other_families(self):
-        self.assertFalse(vlm_provider._is_gemini_model("openai/gpt-4o-mini"))
-        self.assertFalse(vlm_provider._is_gemini_model("9router/cx/gpt-5.5"))
-        self.assertFalse(vlm_provider._is_gemini_model("anthropic/claude-3-5-sonnet-latest"))
-        self.assertFalse(vlm_provider._is_gemini_model("local/ferret-ui-llama8b"))
+    def test_uses_normalized_coords_matches_qwen_and_glm_routes(self):
+        # The reason the registry is a predicate rather than a Gemini check:
+        # these OpenRouter models answer on the same 0-1000 grid and scored
+        # ~0% while they were treated as pixel-space.
+        self.assertTrue(vlm_provider._uses_normalized_coords(
+            "openrouter/qwen/qwen3-vl-235b-a22b-instruct"))
+        self.assertTrue(vlm_provider._uses_normalized_coords(
+            "openrouter/z-ai/glm-5v-turbo"))
 
-    def test_resolve_gemini_reply_converts_in_range_reply_to_pixels(self):
-        # 1080x2219 image; a reply of [500, 500] is the image's normalized
-        # centre regardless of its real pixel size.
-        space, text = vlm_provider._resolve_gemini_reply("[500, 500]", 1080, 2219)
-        self.assertEqual(vlm_provider.GEMINI_SPACE_NORMALIZED, space)
-        self.assertEqual("[540.0, 1109.5]", text)
+    def test_uses_normalized_coords_rejects_other_families(self):
+        self.assertFalse(vlm_provider._uses_normalized_coords("openai/gpt-4o-mini"))
+        self.assertFalse(vlm_provider._uses_normalized_coords("9router/cx/gpt-5.5"))
+        self.assertFalse(vlm_provider._uses_normalized_coords(
+            "anthropic/claude-3-5-sonnet-latest"))
 
-    def test_resolve_gemini_reply_flags_out_of_range_as_pixel_space(self):
+    def test_uses_normalized_coords_excludes_ferret_which_self_converts(self):
+        # Ferret-UI also replies on a 1000 scale, but call_vlm's Ferret branch
+        # already converts it; matching here would convert a second time.
+        self.assertFalse(vlm_provider._uses_normalized_coords("local/ferret-ui-llama8b"))
+
+    def test_validate_coord_space_allows_pixel_for_any_model(self):
+        self.assertEqual("pixel", vlm_provider.validate_coord_space(
+            "9router/ag/gemini-3-flash", "pixel"))
+        self.assertEqual("pixel", vlm_provider.validate_coord_space(
+            "openai/gpt-4o-mini", "pixel"))
+
+    def test_validate_coord_space_allows_override_for_unregistered_model(self):
+        self.assertEqual("norm1000", vlm_provider.validate_coord_space(
+            "openrouter/some/new-vlm", "norm1000"))
+
+    def test_validate_coord_space_rejects_override_on_self_converting_models(self):
+        # The double-conversion guard: COORD_SPACE is one global value per run
+        # while VLM_MODEL may list several models, so this must fail loudly
+        # rather than silently squash predictions into the top-left corner.
+        for model in ("9router/ag/gemini-3-flash",
+                      "gemini/gemini-2.5-flash",
+                      "openrouter/qwen/qwen3-vl-235b-a22b-instruct",
+                      "local/ferret-ui-llama8b"):
+            with self.subTest(model=model):
+                with self.assertRaises(SystemExit):
+                    vlm_provider.validate_coord_space(model, "norm1000")
+
+    def test_classify_normalized_reply_reports_in_range_as_normalized(self):
+        self.assertEqual(
+            vlm_provider.GEMINI_SPACE_NORMALIZED,
+            vlm_provider._classify_normalized_reply("[500, 500]"),
+        )
+
+    def test_classify_normalized_reply_flags_out_of_range_as_pixel_space(self):
         # y=1109 on a 2219px-tall image cannot be a 0-1000 normalized value
         # AND also be this reply's intended pixel answer at the same time --
         # a value over 1000 is unambiguous pixel-space non-compliance.
-        space, text = vlm_provider._resolve_gemini_reply("[166, 1109]", 1080, 2219)
-        self.assertEqual(vlm_provider.GEMINI_SPACE_PIXEL, space)
-        self.assertEqual("[166, 1109]", text)
+        self.assertEqual(
+            vlm_provider.GEMINI_SPACE_PIXEL,
+            vlm_provider._classify_normalized_reply("[166, 1109]"),
+        )
 
-    def test_resolve_gemini_reply_flags_unparseable_as_unverified(self):
-        space, text = vlm_provider._resolve_gemini_reply("no coordinates here", 1080, 2219)
-        self.assertEqual(vlm_provider.GEMINI_SPACE_UNVERIFIED, space)
-        self.assertEqual("no coordinates here", text)
+    def test_classify_normalized_reply_flags_unparseable_as_unverified(self):
+        self.assertEqual(
+            vlm_provider.GEMINI_SPACE_UNVERIFIED,
+            vlm_provider._classify_normalized_reply("no coordinates here"),
+        )
 
-    def test_build_gemini_prompt_states_normalized_scale_and_example(self):
-        prompt = vlm_provider.build_gemini_prompt("Bluetooth", None, 1080, 2219)
+    def test_build_normalized_prompt_states_normalized_scale_and_example(self):
+        prompt = vlm_provider.build_normalized_prompt("Bluetooth", None, 1080, 2219)
         self.assertIn("0-1000", prompt)
         self.assertIn("[500, 500]", prompt)
         self.assertIn("'Bluetooth'", prompt)
         self.assertNotIn("Your previous answer", prompt)
 
-    def test_build_gemini_prompt_strict_adds_correction(self):
-        prompt = vlm_provider.build_gemini_prompt("Bluetooth", None, 1080, 2219, strict=True)
+    def test_build_normalized_prompt_strict_adds_correction(self):
+        prompt = vlm_provider.build_normalized_prompt(
+            "Bluetooth", None, 1080, 2219, strict=True)
         self.assertIn("Your previous answer used raw pixel coordinates", prompt)
 
     @mock.patch("vlm_provider._completion")
-    def test_call_vlm_converts_gemini_normalized_reply_to_pixels(self, completion_mock):
+    def test_call_vlm_returns_normalized_reply_verbatim(self, completion_mock):
         completion_mock.return_value = {
             "choices": [{"message": {"content": "[500, 500]"}}],
         }
@@ -596,14 +634,17 @@ class VlmProviderTests(unittest.TestCase):
                 coord_space_out=coord_space_out,
             )
 
-        self.assertEqual("[540.0, 1109.5]", response_text)
+        # Verbatim, NOT converted: the runner converts using coord_space_out,
+        # so the model's own answer survives into raw_response and stays
+        # re-scorable offline.
+        self.assertEqual("[500, 500]", response_text)
         self.assertEqual(vlm_provider.GEMINI_SPACE_NORMALIZED, coord_space_out["value"])
         sent_prompt = completion_mock.call_args.kwargs["messages"][0]["content"][0]["text"]
         self.assertIn("0-1000", sent_prompt)
 
     @mock.patch("vlm_provider.time.sleep")
     @mock.patch("vlm_provider._completion")
-    def test_call_vlm_retries_gemini_pixel_space_reply_then_succeeds(
+    def test_call_vlm_retries_normalized_model_pixel_space_reply_then_succeeds(
         self, completion_mock, sleep_mock
     ):
         completion_mock.side_effect = [
@@ -627,7 +668,7 @@ class VlmProviderTests(unittest.TestCase):
                 coord_space_out=coord_space_out,
             )
 
-        self.assertEqual("[540.0, 1109.5]", response_text)
+        self.assertEqual("[500, 500]", response_text)
         self.assertEqual(vlm_provider.GEMINI_SPACE_NORMALIZED, coord_space_out["value"])
         self.assertEqual(2, completion_mock.call_count)
         # The retried prompt must be the stricter restatement, not identical.
@@ -635,7 +676,7 @@ class VlmProviderTests(unittest.TestCase):
         self.assertIn("Your previous answer used raw pixel coordinates", second_prompt)
 
     @mock.patch("vlm_provider._completion")
-    def test_call_vlm_flags_gemini_reply_still_pixel_space_after_retries(
+    def test_call_vlm_flags_reply_still_pixel_space_after_retries(
         self, completion_mock
     ):
         completion_mock.return_value = {
@@ -664,7 +705,7 @@ class VlmProviderTests(unittest.TestCase):
         self.assertEqual(1, completion_mock.call_count)
 
     @mock.patch("vlm_provider._completion")
-    def test_call_vlm_non_gemini_model_unaffected_by_gemini_path(self, completion_mock):
+    def test_call_vlm_pixel_space_model_unaffected_by_normalized_path(self, completion_mock):
         completion_mock.return_value = {
             "choices": [{"message": {"content": "[123, 456]"}}],
         }

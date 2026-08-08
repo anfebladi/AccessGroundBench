@@ -58,6 +58,43 @@ def parse_coordinates(response_text: str) -> tuple[float, float]:
 
 TOLERANCE = 30
 
+# Coordinate-space labels that mean "this reply is on a 0-1000 grid".
+# "norm1000" is the COORD_SPACE override's spelling; "normalized" is what
+# vlm_provider records per reply for models it recognises. Both denote the
+# same conversion, so both are honoured here rather than in two places.
+NORMALIZED_SPACES = ("norm1000", "normalized")
+
+NORMALIZED_VOCAB_SIZE = 1000.0
+
+
+def to_pixel_space(
+    x: float,
+    y: float,
+    img_width: int,
+    img_height: int,
+    coord_space: str = "pixel",
+) -> tuple[float, float]:
+    """Convert a model's raw coordinates into absolute image pixels.
+
+    Absolute-pixel answers pass through unchanged. Answers on the 0-1000 grid
+    are scaled by the real image dimensions.
+
+    The scaled value is quantized to one decimal place. That is not cosmetic:
+    the conversion previously happened in vlm_provider, which emitted
+    f"[{cx:.1f}, {cy:.1f}]" before the runner truncated with int(). Dropping
+    the rounding shifts x_pred/y_pred by one pixel for ~4% of possible replies
+    (e.g. width 1080, reply 12 -> 12.96, which rounds to 13.0 but truncates to
+    12), and because score = hit_test(x_pred, ...) that can flip a score at a
+    box edge. Keeping the quantization here makes the new path reproduce every
+    already-collected row exactly; tests/test_vlm_eval_scoring.py pins it
+    across the full 0-1000 input space.
+    """
+    if coord_space in NORMALIZED_SPACES:
+        cx = x / NORMALIZED_VOCAB_SIZE * img_width
+        cy = y / NORMALIZED_VOCAB_SIZE * img_height
+        return float(f"{cx:.1f}"), float(f"{cy:.1f}")
+    return x, y
+
 def hit_test(x_pred: int, y_pred: int, box: list[int], baseline_box: list[int] | None = None) -> int:
     """
     Return 1 when a predicted point hits the target.

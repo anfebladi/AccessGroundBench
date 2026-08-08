@@ -17,6 +17,10 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+# vlm_eval.config imports nothing from this module (only os/pathlib), so this
+# direction is safe; the reverse would be circular.
+from vlm_eval.config import COORD_SPACE_ENV_VAR, DEFAULT_COORD_SPACE
+
 MAX_RETRIES_ENV_VAR = "VLM_MAX_RETRIES"
 DEFAULT_MAX_RETRIES = 3
 DEFAULT_RATE_LIMIT_BACKOFF_SECONDS = 0.5
@@ -310,6 +314,32 @@ def _is_retryable_error(exc: Exception) -> bool:
     )
 
 
+def _is_retryable_error(exc: Exception) -> bool:
+    """Detect transient provider failures worth retrying.
+
+    Covers rate limits plus timeouts, connection drops, and 5xx responses. A
+    single hung request used to abort an entire multi-hundred-call sweep,
+    discarding every row already collected, because only rate limits were
+    retried and the runner treats any surviving exception as fatal.
+    """
+    if _is_rate_limit_error(exc):
+        return True
+
+    class_name = exc.__class__.__name__.lower()
+    if any(tok in class_name for tok in ("timeout", "connection", "apierror", "serviceunavailable", "internalserver")):
+        return True
+
+    status_code = getattr(exc, "status_code", None)
+    if isinstance(status_code, int) and status_code >= 500:
+        return True
+
+    message = str(exc).lower()
+    return any(
+        tok in message
+        for tok in ("timed out", "timeout", "connection error", "connection reset", "bad gateway", "service unavailable")
+    )
+
+
 def _retry_delay_seconds(exc: Exception, fallback: float) -> float:
     """Extract retry delay hints from provider errors, falling back to backoff."""
     retry_after = getattr(exc, "retry_after", None)
@@ -365,18 +395,61 @@ def _extract_response_text(response: Any) -> str:
     return "" if content is None else str(content)
 
 
-def _is_gemini_model(model: str) -> bool:
-    """True for native `gemini/...` models and 9router routes naming a Gemini model.
+# Model families whose grounding post-training answers on a 0-1000 normalized
+# grid rather than in image pixels. Extend this rather than adding a second
+# mechanism: one predicate keeps prompt selection, per-reply space resolution,
+# and the COORD_SPACE override guard all agreeing about the same models.
+_NORMALIZED_COORD_FAMILIES = ("gemini", "qwen", "glm")
 
-    9router routes have their own prefix stripped before the underlying model
-    name reaches LiteLLM (see resolve_completion_config), so this checks past
-    NINEROUTER_PREFIX rather than matching against the raw model string.
+
+def _uses_normalized_coords(model: str) -> bool:
+    """True for models that answer on the 0-1000 scale instead of in pixels.
+
+    Covers native `gemini/...`, OpenRouter `openrouter/qwen/...` and
+    `openrouter/z-ai/glm-...`, and 9router routes naming any of them. 9router
+    routes have their own prefix stripped before the underlying model name
+    reaches LiteLLM (see resolve_completion_config), so the 9router branch
+    checks past NINEROUTER_PREFIX rather than matching the raw model string.
+
+    Ferret-UI is deliberately excluded: it also replies on a 1000 scale, but
+    call_vlm's Ferret branch already converts its own output, so treating it
+    here would convert twice.
     """
-    if model.startswith("gemini/"):
-        return True
+    if model == FERRET_MODEL_ID:
+        return False
+
+    name = model
     if model.startswith(NINEROUTER_PREFIX):
-        return "gemini" in model[len(NINEROUTER_PREFIX):].lower()
-    return False
+        name = model[len(NINEROUTER_PREFIX):]
+    name = name.lower()
+
+    return any(family in name for family in _NORMALIZED_COORD_FAMILIES)
+
+
+def validate_coord_space(model: str, coord_space: str) -> str:
+    """Reject a COORD_SPACE override that would double-convert a model's reply.
+
+    COORD_SPACE is a single global value per run while VLM_MODEL may name
+    several models, so no one value is correct for a mixed run. It exists only
+    for models this module does not already recognise. A model that converts
+    its own output -- anything matched by _uses_normalized_coords, plus
+    Ferret-UI -- would have that conversion applied a second time in the
+    runner, putting every prediction near the top-left corner and reporting a
+    capable model as ~0% accurate. Fail loudly at startup instead.
+    """
+    if coord_space == DEFAULT_COORD_SPACE:
+        return coord_space
+
+    if _uses_normalized_coords(model) or model == FERRET_MODEL_ID:
+        print(
+            f"[ERROR] {COORD_SPACE_ENV_VAR}={coord_space} is invalid for {model}: "
+            f"this model already reports its own coordinate space per reply, so "
+            f"the override would convert twice. Unset {COORD_SPACE_ENV_VAR} "
+            f"(or set it to '{DEFAULT_COORD_SPACE}')."
+        )
+        raise SystemExit(1)
+
+    return coord_space
 
 
 def _extract_target_from_prompt(prompt: str) -> str | None:
@@ -404,7 +477,7 @@ def _resolve_image_dims(
         return img.size
 
 
-def build_gemini_prompt(
+def build_normalized_prompt(
     target_text: str,
     tree_rows: list[tuple[str, list[int]]] | None,
     img_width: int,
@@ -412,15 +485,16 @@ def build_gemini_prompt(
     strict: bool = False,
 ) -> str:
     """
-    Build the prompt for Gemini's native normalized coordinate convention.
+    Build the prompt for models with a native normalized coordinate convention.
 
-    Gemini answers in 0-1000 normalized space regardless of what the prompt
-    asks for (see GEMINI_VOCAB_SIZE) -- restating "pixel" harder does not fix
-    that, since it is not confused about the instruction, it is applying its
-    own trained output convention. So instead of asking for pixels and
-    converting nothing, this asks for what the model already wants to give
-    -- a 0-1000 point with a worked example anchored to this image's actual
-    dimensions -- and call_vlm converts the reply back to pixels afterward.
+    These models answer in 0-1000 normalized space regardless of what the
+    prompt asks for (see GEMINI_VOCAB_SIZE) -- restating "pixel" harder does
+    not fix that, since they are not confused about the instruction, they are
+    applying their own trained output convention. So instead of asking for
+    pixels and converting nothing, this asks for what the model already wants
+    to give -- a 0-1000 point with a worked example anchored to this image's
+    actual dimensions -- and the runner converts the reply back to pixels
+    afterward, using the space resolved for that individual reply.
 
     strict=True adds one more corrective sentence, used only when a prior
     attempt in the same call_vlm retry loop came back in pixel space anyway.
@@ -459,17 +533,21 @@ def build_gemini_prompt(
     return "\n".join(lines)
 
 
-def _resolve_gemini_reply(
-    raw_text: str, img_width: int, img_height: int
-) -> tuple[str, str]:
+def _classify_normalized_reply(raw_text: str) -> str:
     """
-    Interpret a Gemini reply as normalized 0-1000 coordinates and convert to pixels.
+    Decide which coordinate space a normalized-convention model actually used.
 
-    Returns (coord_space, output_text). A value > GEMINI_VOCAB_SIZE (or
-    negative) on either axis is unambiguous pixel-space non-compliance --
-    nothing on a 0-1000 scale can produce it -- so it is reported as-is,
-    unconverted, for the caller to retry or flag. Anything in range is
-    trusted as normalized and converted to a pixel centre.
+    Returns one of GEMINI_SPACE_*. A value > GEMINI_VOCAB_SIZE (or negative) on
+    either axis is unambiguous pixel-space non-compliance -- nothing on a 0-1000
+    scale can produce it -- so it is reported as PIXEL for the caller to retry
+    or flag. Anything in range is trusted as NORMALIZED. An unparseable reply is
+    UNVERIFIED.
+
+    Classification only. The reply text is returned to the caller verbatim and
+    the pixel conversion happens in the runner (vlm_eval.scoring.to_pixel_space),
+    driven by the space this returns. Converting here instead would discard the
+    model's original answer, which is what made the already-collected Gemini
+    rows impossible to re-score offline.
 
     A pixel-space reply whose values also happen to fall inside 0-1000 (the
     top-left ~45% of these screens) is indistinguishable from a genuinely
@@ -478,15 +556,13 @@ def _resolve_gemini_reply(
     """
     match = _GEMINI_COORD_RE.search(raw_text)
     if not match:
-        return GEMINI_SPACE_UNVERIFIED, raw_text
+        return GEMINI_SPACE_UNVERIFIED
 
     x, y = float(match.group(1)), float(match.group(2))
     if x > GEMINI_VOCAB_SIZE or y > GEMINI_VOCAB_SIZE or x < 0 or y < 0:
-        return GEMINI_SPACE_PIXEL, raw_text
+        return GEMINI_SPACE_PIXEL
 
-    cx = (x / GEMINI_VOCAB_SIZE) * img_width
-    cy = (y / GEMINI_VOCAB_SIZE) * img_height
-    return GEMINI_SPACE_NORMALIZED, f"[{cx:.1f}, {cy:.1f}]"
+    return GEMINI_SPACE_NORMALIZED
 
 
 def _sanitize_for_ferret(text: str) -> str:
@@ -729,15 +805,15 @@ def call_vlm(
             request_timeout,
         )
 
-    is_gemini = _is_gemini_model(model)
-    gemini_target = None
-    gemini_w = gemini_h = None
-    if is_gemini:
-        gemini_target = (
+    is_normalized = _uses_normalized_coords(model)
+    norm_target = None
+    norm_w = norm_h = None
+    if is_normalized:
+        norm_target = (
             target_text if target_text is not None else _extract_target_from_prompt(prompt)
         )
-        if gemini_target is not None:
-            gemini_w, gemini_h = _resolve_image_dims(image_path, img_width, img_height)
+        if norm_target is not None:
+            norm_w, norm_h = _resolve_image_dims(image_path, img_width, img_height)
 
     data_url = image_to_data_url(image_path)
     retries = _resolve_max_retries(max_retries)
@@ -749,10 +825,10 @@ def call_vlm(
     attempt = 0
     while attempt <= retries:
         wire_prompt = (
-            build_gemini_prompt(
-                gemini_target, tree_rows, gemini_w, gemini_h, strict=attempt > 0
+            build_normalized_prompt(
+                norm_target, tree_rows, norm_w, norm_h, strict=attempt > 0
             )
-            if is_gemini and gemini_target is not None
+            if is_normalized and norm_target is not None
             else prompt
         )
         try:
@@ -799,9 +875,12 @@ def call_vlm(
                 raise
 
             sleep_seconds = _retry_delay_seconds(exc, delay)
-            failure_kind = "Rate limited" if _is_rate_limit_error(exc) else "Request failed"
+            # Name the exception class for non-rate-limit failures: retries now
+            # cover timeouts, 5xx, and dropped connections, and "Request failed"
+            # alone makes those indistinguishable in a run log.
+            reason = "Rate limited" if _is_rate_limit_error(exc) else exc.__class__.__name__
             print(
-                f"    [RETRY] {failure_kind}; sleeping {sleep_seconds:.2f}s "
+                f"    [RETRY] {reason}; sleeping {sleep_seconds:.2f}s "
                 f"before retry {attempt + 1}/{retries}"
             )
             time.sleep(sleep_seconds)
@@ -809,11 +888,11 @@ def call_vlm(
             attempt += 1
             continue
 
-        if is_gemini and gemini_target is not None:
-            space, resolved_text = _resolve_gemini_reply(raw_text, gemini_w, gemini_h)
+        if is_normalized and norm_target is not None:
+            space = _classify_normalized_reply(raw_text)
             if space == GEMINI_SPACE_PIXEL and attempt < retries:
                 # Out-of-range on either axis is unambiguous pixel-space
-                # non-compliance (see _resolve_gemini_reply); retry with a
+                # non-compliance (see _classify_normalized_reply); retry with a
                 # stricter restatement rather than silently coercing it.
                 print(
                     f"    [RETRY] {model} answered in pixel space instead of "
@@ -824,7 +903,8 @@ def call_vlm(
                 continue
             if coord_space_out is not None:
                 coord_space_out["value"] = space
-            return resolved_text
+            # Verbatim: the runner converts, using `space` for this reply.
+            return raw_text
 
         return raw_text
 

@@ -44,9 +44,13 @@ sample_input/capture_*.json
 
 # Android/local tooling logs
 *.log
+*.err
+*.pid
 adb*.txt
 
 # Result-CSV canonicalization safety copies and single-writer locks
-# (see vlm_eval.results.canonicalize_rows / acquire_lock)
+# (see vlm_eval.results.canonicalize_rows / acquire_lock), plus the
+# pre-rescore backups rescore_coords.py writes as dataset/*.csv.bak --
+# already covered by the *.bak glob.
 dataset/*.bak
 dataset/*.lock
