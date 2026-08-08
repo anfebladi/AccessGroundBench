@@ -62,6 +62,53 @@ Using the baseline's *size* but the current profile's *centre* holds scoring str
 constant across profiles: an element that visually inflates under `elder_zoom_heavy`
 does not become an easier target just because it is bigger on screen.
 
+### 1.1.1 Coordinate space, and what `raw_response` means
+
+`x_pred, y_pred` are always absolute pixels in the cropped image's space. Getting there
+depends on the model, because several families (Gemini, Qwen-VL, GLM-V) answer on a
+**0–1000 normalized grid** regardless of the real image size. Those models are recognised
+by `vlm_provider._uses_normalized_coords`, prompted on the scale they already use, and
+their reply is converted by `vlm_eval.scoring.to_pixel_space`:
+
+```
+x_pred = int( round_1dp( x_reply / 1000 · img_width  ) )
+y_pred = int( round_1dp( y_reply / 1000 · img_height ) )
+```
+
+The `round_1dp` step is load-bearing and not cosmetic. Conversion originally happened
+inside `vlm_provider`, which formatted its output as `f"[{cx:.1f}, {cy:.1f}]"` before the
+runner truncated with `int()`. Removing the intermediate rounding shifts `x_pred`/`y_pred`
+by one pixel for **267 of the 3003** possible integer replies across this dataset's three
+image dimensions (1080×2177, 1080×2196, 1080×2219) — ~4% per axis — and since
+`score = hit_test(x_pred, …)`, a one-pixel shift can flip a score at a box edge. Keeping
+the quantization means every already-collected row reproduces exactly;
+`tests/test_vlm_eval_scoring.py::ToPixelSpaceTests` pins it over the full input space.
+
+Conversion is decided **per reply, not per model**. A normalized-convention model can
+still answer a given query in pixel space, and `vlm_provider._classify_normalized_reply`
+records which happened in the `coord_space` column:
+
+| `coord_space` | meaning | converted? |
+|---|---|---|
+| `normalized` | reply within 0–1000; taken as grid coordinates | yes |
+| `pixel` | a value exceeded 1000, so it cannot be normalized; retried once with a stricter prompt, then recorded as-is | no |
+| `unverified` | no coordinate pair could be parsed | no |
+| *(blank)* | model was never on the normalized path | no |
+
+> **Non-comparability note (`CLAUDE.md` §9).** `raw_response` holds the model's **verbatim**
+> reply only for rows collected **after** the coordinate-mechanism unification (merged
+> 2026-08-08). Gemini rows collected before it store the *already-converted pixel value*,
+> so the original 0–1000 answer is unrecoverable for those rows and `rescore_coords.py`
+> cannot re-derive them offline. Their `x_pred`/`y_pred`/`score` remain correct and
+> authoritative — this is a limit on re-analysis, not on validity. The 12 `unverified`
+> rows in `gemini-pro-agent` (both arms) are the only rows in that set that were never
+> converted at all.
+>
+> A pixel-space reply whose values happen to fall inside 0–1000 (roughly the top-left 45%
+> of these screens) is indistinguishable from a genuinely normalized one from the text
+> alone. The compliance retry reduces but does not eliminate this; it is a stated
+> limitation of the measurement, not a defect.
+
 ### 1.2 Row status
 
 Every evaluated row carries one of three statuses (`vlm_eval/results.py`):

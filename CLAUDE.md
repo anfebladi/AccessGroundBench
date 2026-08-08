@@ -167,6 +167,23 @@ Its `[[x1,y1,x2,y2]]` reply is on a 0–1000 normalised scale and gets converted
 pixel centre. Ferret-UI runs in its **own venv** (`ferret_ui/venv`) — its deps conflict
 with the main project. Needs ~10 GB VRAM.
 
+**Normalized-coordinate models.** Gemini, Qwen-VL and GLM-V answer on a 0–1000 grid
+rather than in pixels. `vlm_provider._uses_normalized_coords` recognises them (Ferret-UI
+is excluded — it converts its own output), they get `build_normalized_prompt`, and
+`vlm_eval.scoring.to_pixel_space` converts the reply. The decision is **per reply, not
+per model**: `_classify_normalized_reply` writes `normalized` / `pixel` / `unverified`
+to the `coord_space` column and only `normalized` is scaled. `COORD_SPACE` remains a
+manual override for unregistered models; `validate_coord_space` rejects a non-`pixel`
+value for any model that self-describes, rather than converting twice.
+
+> **`raw_response` changed meaning.** It is the model's verbatim reply only for rows
+> collected after the coordinate unification (merged 2026-08-08). Earlier Gemini rows
+> store the already-converted pixel value, so `rescore_coords.py` cannot re-derive them.
+> Those rows' `x_pred`/`y_pred`/`score` stay authoritative. Full detail in
+> [`METHODS.md`](METHODS.md) §1.1.1 — including why `to_pixel_space` quantizes to one
+> decimal (dropping it moves 267 of 3003 possible replies by a pixel and can flip a
+> score at a box edge).
+
 ---
 
 ## 5. Current state of results
