@@ -7,7 +7,7 @@ from pathlib import Path
 
 from vlm_provider import call_vlm
 
-from .config import ALL_PROFILES, IMAGES_DIR, LABELS_DIR
+from .config import ALL_PROFILES, DEFAULT_COORD_SPACE, IMAGES_DIR, LABELS_DIR
 from .results import (
     PROMPT_MODE_TREE,
     PROMPT_MODE_VISION,
@@ -18,7 +18,13 @@ from .results import (
     STATUS_OFF_SCREEN,
     append_result,
 )
-from .scoring import PARSE_FAILED, get_png_dimensions, hit_test, parse_coordinates_detailed
+from .scoring import (
+    PARSE_FAILED,
+    get_png_dimensions,
+    hit_test,
+    parse_coordinates_detailed,
+    to_pixel_space,
+)
 from .targets import MATCH_EXACT, harvest_targets, locate_element
 
 PROMPT_TEMPLATE = (
@@ -136,6 +142,7 @@ def score_one_trial(
     baseline_box: list[int],
     img_width: int,
     img_height: int,
+    coord_space: str = DEFAULT_COORD_SPACE,
 ) -> tuple[int, int, int, str]:
     """
     Turn one raw model reply into a scored prediction.
@@ -144,8 +151,17 @@ def score_one_trial(
     parsed, or that land outside the image, are recorded as (-1, -1) misses --
     the model was asked and answered, so this is a genuine grounding failure
     rather than a missing measurement.
+
+    coord_space is the space *this reply* was resolved to, not the model's
+    general convention. A model on the 0-1000 grid can still answer a given
+    query in pixels (vlm_provider retries, then records it as such) or
+    unparseably; converting those would corrupt a reply that needs no
+    conversion, so the decision is made per reply rather than per model.
     """
     x_coord, y_coord, parse_method = parse_coordinates_detailed(raw_response)
+    x_coord, y_coord = to_pixel_space(
+        x_coord, y_coord, img_width, img_height, coord_space
+    )
 
     if (
         x_coord < 0
@@ -170,6 +186,7 @@ def evaluate_screen(
     use_a11y_tree: bool = False,
     trials: int = 1,
     completed: set[tuple[str, str, str]] | None = None,
+    coord_space: str = DEFAULT_COORD_SPACE,
 ) -> int:
     """Evaluate all profiles for a single screen.
 
@@ -177,6 +194,9 @@ def evaluate_screen(
     alongside the screenshot; otherwise runs vision-only. trials > 1 sends
     the same query that many times and scores by majority vote, measuring
     rather than assuming the stability of a single stochastic draw.
+
+    coord_space declares the convention the model answers in; "norm1000"
+    responses are rescaled to pixels before hit-testing.
 
     Returns the total number of evaluation rows generated.
     """
@@ -366,10 +386,15 @@ def evaluate_screen(
                 except Exception as exc:
                     api_error = exc
                     break
+                # Models vlm_provider recognises report the space they actually
+                # answered in for this reply; anything else falls back to the
+                # run-level COORD_SPACE override.
+                reply_space = coord_space_out.get("value", "") or coord_space
                 trial_coord_spaces.append(coord_space_out.get("value", ""))
                 trial_results.append(
                     (raw_response,) + score_one_trial(
-                        raw_response, box, baseline_box, img_width, img_height
+                        raw_response, box, baseline_box, img_width, img_height,
+                        coord_space=reply_space,
                     )
                 )
                 if pace_seconds > 0:
@@ -405,7 +430,10 @@ def evaluate_screen(
                 (i for i, t in enumerate(trial_results) if t[3] == score), 0
             )
             raw_response, x_pred, y_pred, _, parse_method = trial_results[representative_index]
-            coord_space = trial_coord_spaces[representative_index]
+            # Distinct from the `coord_space` parameter (the run-level override):
+            # this is what the representative reply resolved to, and it is what
+            # gets logged.
+            reported_coord_space = trial_coord_spaces[representative_index]
 
             append_result(results_csv, {
                 "screen": screen_name,
@@ -422,7 +450,7 @@ def evaluate_screen(
                 "parse_method": parse_method,
                 "prompt_mode": PROMPT_MODE_TREE if use_a11y_tree else PROMPT_MODE_VISION,
                 "tree_rows_sent": len(tree_rows) if tree_rows else 0,
-                "coord_space": coord_space,
+                "coord_space": reported_coord_space,
             })
             count += 1
 

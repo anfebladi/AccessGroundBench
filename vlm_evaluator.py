@@ -20,6 +20,7 @@ from vlm_eval.config import (
     ALL_PROFILES,
     LABELS_DIR,
     get_results_csv,
+    resolve_coord_space,
     resolve_models,
     resolve_pace_seconds,
     resolve_trials,
@@ -31,12 +32,13 @@ from vlm_eval.results import (
     CsvLockError,
     acquire_lock,
     finalize_csv,
+    has_data_rows,
     prepare_csv,
     release_lock,
 )
 from vlm_eval.runner import evaluate_screen, summarize_run
 from vlm_eval.targets import build_expected_keys
-from vlm_provider import model_configuration_error
+from vlm_provider import model_configuration_error, validate_coord_space
 
 load_dotenv()
 
@@ -97,6 +99,7 @@ def main(argv: list[str] | None = None) -> None:
     models = resolve_models(None)
     pace_seconds = resolve_pace_seconds(None)
     use_a11y_tree = resolve_use_a11y_tree()
+    coord_space = resolve_coord_space()
 
     screens = discover_screens()
     if not screens:
@@ -116,6 +119,7 @@ def main(argv: list[str] | None = None) -> None:
     print(f"  Mode    : {mode_label}")
     print("  Note    : Does not navigate or capture the emulator")
     print(f"  Models  : {', '.join(models)}")
+    print(f"  Coords  : {coord_space}")
     print(f"  Pace    : {pace_seconds}s")
     print(f"  Resume  : {'no (--fresh)' if args.fresh else 'yes'}")
     print(f"  Screens : {', '.join(screens)}")
@@ -134,6 +138,10 @@ def main(argv: list[str] | None = None) -> None:
 
         results_csv = get_results_csv(model, use_a11y_tree)
         trials = resolve_trials(model)
+        # COORD_SPACE is one global value but VLM_MODEL may list several
+        # models, so it is validated per model: a non-pixel override on a
+        # model that already reports its own scale would convert twice.
+        coord_space = validate_coord_space(model, resolve_coord_space())
 
         print(f"\n" + "=" * 60)
         print(f"  Evaluating Model: {model}")
@@ -168,6 +176,7 @@ def main(argv: list[str] | None = None) -> None:
                     use_a11y_tree=use_a11y_tree,
                     trials=trials,
                     completed=completed,
+                    coord_space=coord_space,
                 )
                 total_rows += rows
 
@@ -184,6 +193,18 @@ def main(argv: list[str] | None = None) -> None:
 
             all_problems.extend(finalize_csv(results_csv, expected_key_order))
         finally:
+            # init_csv writes the header before the first API call, so a run
+            # that dies on call one leaves a header-only file named after the
+            # model. mcnemar_analysis globs every evaluation_results_*.csv and
+            # would treat that orphan as a real result, so drop it here.
+            #
+            # Keyed on the file being header-only, NOT on this run having
+            # appended nothing: with resume, a re-run of an already-complete
+            # model legitimately adds zero rows, and deleting then would
+            # destroy a finished result.
+            if results_csv.exists() and not has_data_rows(results_csv):
+                results_csv.unlink()
+                print(f"  [CSV] Removed empty results file: {results_csv.name}")
             release_lock(results_csv)
 
     print("\n" + "=" * 60)

@@ -308,6 +308,27 @@ def append_result(results_csv: Path, row: dict) -> None:
         writer.writerow([row.get(col, "") for col in CSV_COLUMNS])
 
 
+def has_data_rows(results_csv: Path) -> bool:
+    """Return True when the CSV holds at least one row beyond its header.
+
+    init_csv writes the header before the first API call, so a run that dies on
+    call one leaves a header-only orphan named after the model.
+    discover_result_csvs globs every evaluation_results_*.csv and would treat
+    that orphan as a real result, so the caller deletes it.
+
+    Deliberately keyed on file content rather than on how many rows a given run
+    appended: resume means a re-run of an already-complete model adds nothing,
+    and that file must survive.
+    """
+    try:
+        with open(results_csv, newline="", encoding="utf-8") as f:
+            reader = csv.reader(f)
+            next(reader, None)  # header
+            return any(row for row in reader)
+    except FileNotFoundError:
+        return False
+
+
 def finalize_csv(
     results_csv: Path,
     expected_key_order: list[tuple[str, str, str]],

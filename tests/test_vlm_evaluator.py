@@ -100,8 +100,10 @@ class VlmEvaluatorMainTests(unittest.TestCase):
         {
             "VLM_MODEL": "openai/gpt-5.4-nano",
             "VLM_PACE_SECONDS": "1.5",
-            # Pinned so a developer's .env cannot change the expected mode.
+            # Pinned so the developer's own .env, which load_dotenv reads at
+            # import time, cannot change what this test observes.
             "USE_A11Y_TREE": "false",
+            "COORD_SPACE": "pixel",
         },
     )
     def test_main_uses_env_model_env_pace_and_discovered_screens(

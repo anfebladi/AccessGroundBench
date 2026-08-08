@@ -13,6 +13,18 @@ PACE_ENV_VAR: str = "VLM_PACE_SECONDS"
 A11Y_TREE_ENV_VAR: str = "USE_A11Y_TREE"
 TRIALS_ENV_VAR: str = "VLM_TRIALS"
 TRIALS_MODELS_ENV_VAR: str = "VLM_TRIALS_MODELS"
+COORD_SPACE_ENV_VAR: str = "COORD_SPACE"
+
+# Coordinate conventions a model may answer in. "pixel" means absolute image
+# pixels; "norm1000" means a resolution-independent 0-1000 grid that must be
+# rescaled by the image dimensions before hit-testing.
+#
+# This is a manual override for models vlm_provider does not already recognise.
+# Models that self-describe their scale (see _uses_normalized_coords) report the
+# convention per reply in the coord_space column instead; setting a non-pixel
+# override for one of those is rejected rather than double-converted.
+COORD_SPACES = ("pixel", "norm1000")
+DEFAULT_COORD_SPACE = "pixel"
 
 ALL_PROFILES = [
     "baseline",
@@ -40,8 +52,10 @@ def resolve_models(cli_model: str | None) -> list[str]:
     print("  To fix this, set a LiteLLM model string in .env, for example:")
     print("  VLM_MODEL=openai/gpt-4o-mini")
     print("")
-    print("  Or pass a temporary override:")
-    print("  python vlm_evaluator.py --model openai/gpt-4o-mini")
+    print("  Or set it in the environment for a single run:")
+    print("  VLM_MODEL=openai/gpt-4o-mini python vlm_evaluator.py")
+    print("")
+    print("  vlm_evaluator.py takes no command-line flags; it reads .env only.")
     raise SystemExit(1)
 
 
@@ -105,6 +119,33 @@ def resolve_trials(model: str) -> int:
         return 1
 
     return trials
+
+
+def resolve_coord_space() -> str:
+    """Resolve the manual coordinate-convention override from COORD_SPACE.
+
+    Models disagree on how to express a point. Most answer in absolute image
+    pixels, but several (Qwen-VL, Gemini, GLM-V) answer on a 0-1000 grid
+    regardless of the real image size. Scoring a normalized answer as pixels
+    compresses every prediction into the top-left corner, which makes a hit
+    arithmetically impossible and reports near-0% accuracy for an otherwise
+    capable model.
+
+    This is only an escape hatch for a model vlm_provider does not yet
+    recognise. Models matched by _uses_normalized_coords are prompted on the
+    0-1000 scale and report the convention they actually answered in per reply,
+    which is recorded in the coord_space column; combining that with a non-pixel
+    override here would convert twice, so validate_coord_space rejects it.
+    """
+    raw = os.environ.get(COORD_SPACE_ENV_VAR, "").strip().lower()
+    if not raw:
+        return DEFAULT_COORD_SPACE
+
+    if raw not in COORD_SPACES:
+        print(f"[ERROR] {COORD_SPACE_ENV_VAR} must be one of {', '.join(COORD_SPACES)}; got: {raw}")
+        raise SystemExit(1)
+
+    return raw
 
 
 def resolve_pace_seconds(cli_pace_seconds: str | None) -> float:

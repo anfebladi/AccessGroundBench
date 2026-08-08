@@ -8,6 +8,7 @@ from vlm_eval.scoring import (
     hit_test,
     parse_coordinates,
     parse_coordinates_detailed,
+    to_pixel_space,
 )
 
 
@@ -66,6 +67,52 @@ class HitTestTests(unittest.TestCase):
         # plus tolerance is 50 + 30 = 80.
         self.assertEqual(1, hit_test(150 + 79, 150, inflated, baseline))
         self.assertEqual(0, hit_test(150 + 81, 150, inflated, baseline))
+
+
+class ToPixelSpaceTests(unittest.TestCase):
+    # The three distinct screenshot dimensions in dataset/images. Bar heights
+    # change with density, so each profile group has its own image height.
+    DATASET_DIMS = ((1080, 2177), (1080, 2196), (1080, 2219))
+
+    def test_pixel_space_passes_through_unchanged(self):
+        self.assertEqual((123.0, 456.0), to_pixel_space(123.0, 456.0, 1080, 2219, "pixel"))
+
+    def test_unknown_space_is_treated_as_pixels(self):
+        # "unverified" (an unparseable reply) must not be scaled: the -1
+        # sentinel and any salvaged value stay in whatever space they were.
+        self.assertEqual((-1.0, -1.0), to_pixel_space(-1.0, -1.0, 1080, 2219, "unverified"))
+
+    def test_both_normalized_spellings_convert_identically(self):
+        # "norm1000" is COORD_SPACE's spelling; "normalized" is what
+        # vlm_provider records per reply. They must not diverge.
+        self.assertEqual(
+            to_pixel_space(500, 500, 1080, 2219, "norm1000"),
+            to_pixel_space(500, 500, 1080, 2219, "normalized"),
+        )
+
+    def test_centre_of_grid_maps_to_centre_of_image(self):
+        self.assertEqual((540.0, 1109.5), to_pixel_space(500, 500, 1080, 2219, "norm1000"))
+
+    def test_reproduces_legacy_provider_side_conversion_exactly(self):
+        """The conversion used to happen in vlm_provider, which emitted
+        f"[{cx:.1f}, {cy:.1f}]" before the runner truncated with int().
+
+        Moving it here must not change a single already-collected x_pred or
+        y_pred. Dropping the 1-decimal quantization would shift ~4% of replies
+        by one pixel (267 of 3003 inputs across these dimensions), and since
+        score = hit_test(x_pred, ...) that can flip a score at a box edge.
+        """
+        for width, height in self.DATASET_DIMS:
+            for value in range(1001):
+                legacy_x = float(f"{(value / 1000.0) * width:.1f}")
+                legacy_y = float(f"{(value / 1000.0) * height:.1f}")
+                new_x, new_y = to_pixel_space(value, value, width, height, "normalized")
+
+                self.assertEqual(
+                    (int(legacy_x), int(legacy_y)),
+                    (int(new_x), int(new_y)),
+                    f"x_pred/y_pred changed for reply {value} at {width}x{height}",
+                )
 
 
 if __name__ == "__main__":
