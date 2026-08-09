@@ -1,6 +1,6 @@
 # AccessGroundBench
 
-AccessGroundBench is a research benchmark that measures how Android accessibility layout changes (large fonts, zoomed displays, RTL layouts, color filters) affect a vision-language model's (VLM) ability to locate UI text elements on screen.
+AccessGroundBench is a research benchmark that measures how Android accessibility layout changes (large fonts, zoomed displays, and color filters) affect a vision-language model's (VLM) ability to locate UI text elements on screen. An RTL arm exists only in the archived experiment described below.
 
 The pipeline has three stages:
 
@@ -49,9 +49,10 @@ be counted as "broken" if the model got it right at baseline.
 
 ```
 litellm >= 1.91.3
+numpy >= 2.4.6
 Pillow >= 10.0
 python-dotenv >= 1.0
-scipy  (optional — for precise McNemar p-values)
+scipy >= 1.17.1
 ```
 
 Install with `uv` (recommended) or `pip`:
@@ -63,8 +64,6 @@ uv sync
 # using pip
 pip install .
 
-# optional: precise McNemar p-values
-pip install scipy
 ```
 
 ---
@@ -89,16 +88,18 @@ AccessGroundBench/
 │       └── reports/           # Reachability, grounding, comparison, and outputs
 │
 ├── ferret_ui/                # Local Ferret-UI inference server (optional)
-│   ├── ferret_server.py      # FastAPI server wrapping the Ferret-UI model
+│   ├── ferret_server.py      # Local HTTPServer wrapping the Ferret-UI model
 │   ├── start_server.bat      # Launch script for Windows
 │   ├── requirements.txt      # Ferret-UI Python dependencies (separate venv)
 │   └── ...                   # Model architecture modules
 │
 ├── dataset/
-│   ├── images/               # Collected PNGs  — gitignored, created by `agb collect`
-│   ├── raw_xml/              # Collected UI XML — gitignored, created by `agb collect`
-│   ├── labels/               # Extracted JSON labels — gitignored, created by `agb collect`
-│   └── experiment_1/         # Committed reference results from Experiment 1
+│   ├── images/               # Current collected PNGs (locally generated artifacts)
+│   ├── raw_xml/              # Current collected UI XML (locally generated artifacts)
+│   ├── labels/               # Current extracted JSON labels (locally generated artifacts)
+│   ├── collection_manifest.json # Current capture/provenance manifest
+│   ├── experiment_1/         # Archived reference results from Experiment 1
+│   └── experiment_2/         # Archived pre-correction run (do not cite headline results)
 │
 ├── tests/                    # Unit tests
 ├── outputs/                  # Standalone pipeline output (gitignored)
@@ -156,7 +157,7 @@ VLM_PACE_SECONDS=0       # Optional delay between API calls (use for rate-limite
 VLM_MAX_RETRIES=3         # Number of retries on provider failure
 VLM_REQUEST_TIMEOUT_SECONDS=120  # Per-request timeout in seconds
 
-GOOGLE_API_KEY=your-google-api-key-here
+GOOGLE_API_KEY=your-google-api-key-here  # gemini/ also accepts GEMINI_API_KEY
 OPENAI_API_KEY=your-openai-api-key-here
 ANTHROPIC_API_KEY=your-anthropic-api-key-here
 
@@ -173,7 +174,7 @@ Model prefix → required key:
 | Model prefix | Key variable |
 |---|---|
 | `openai/` | `OPENAI_API_KEY` |
-| `gemini/` | `GOOGLE_API_KEY` |
+| `gemini/` | `GEMINI_API_KEY` or `GOOGLE_API_KEY` |
 | `anthropic/` | `ANTHROPIC_API_KEY` |
 | `local/ferret-ui-llama8b` | Ferret-UI server (see below) |
 | `9router/` | `NINEROUTER_BASE_URL` + `NINEROUTER_API_KEY` |
@@ -302,6 +303,10 @@ Six layout profiles are applied programmatically to the emulator before each scr
 > 0% mirroring across every screen, even with the corrected setting key. The RTL arm
 > was dropped rather than kept unverified; no profile requests RTL anymore.
 
+This is the current collection configuration. The archived `dataset/experiment_2/`
+run still contains the invalid `elder_combo_rtl` arm; treat its RTL rows as an
+unverified historical condition, not as evidence about the current profiles.
+
 ### Profile verification
 
 Every profile is read back from the device after it is applied
@@ -378,6 +383,17 @@ say so.
 agb collect --dry-run
 ```
 
+**Rebuild a manifest from assets already on disk (no emulator or new captures):**
+```bash
+agb collect --rebuild-manifest
+agb collect --rebuild-manifest --screens settings_main dialer
+```
+With no `--screens`, collection uses the complete default `SCREENS` list. A
+`--screens` subset is intentional; it reconstructs only those screens from the files
+already on disk. When a manifest already exists, records for screens not selected are
+carried forward unchanged; otherwise the rebuilt manifest contains only the selected
+screens.
+
 **Collect specific screens only:**
 ```bash
 agb collect --screens settings_main contacts dialer
@@ -410,10 +426,20 @@ Example: `VLM_MODEL=openai/gpt-4o-mini` → `dataset/evaluation_results_openai_g
 |---|---|
 | `co_present` | Target exists in both layouts; the model was queried and scored |
 | `off_screen` | Target absent from this layout — no measurement, **not** a failure |
+| `label_changed` | A relaxed label match found the element after text reflow; not queried or scored |
+| `off_frame` | The element exists, but its recorded box center is outside the screenshot; not scored |
 | `api_error` | Provider failed; the row is retried on resume rather than scored |
 
 **Resume.** Runs append and skip already-completed `(screen, target, profile)` keys, so an
 interrupted run does not discard ~1000 paid API calls. Use `--fresh` to start over.
+Use `--force-unlock` when a killed process left a stale per-CSV `.lock` file:
+`agb evaluate --force-unlock`.
+
+Set `USE_A11Y_TREE=true` (accepted values are `true`, `1`, or `yes`; falsy values are
+`false`, `0`, `no`, or unset) to run the accessibility-tree prompt arm. Tree-mode files
+are written as `dataset/evaluation_results_{model_id}_with_tree.csv`; vision-only files
+omit `_with_tree`. The evaluator refuses to resume a file containing the other prompt
+mode, so keep the two arms in separate CSVs.
 
 **Determinism.** `VLM_TEMPERATURE` defaults to 0. Set `VLM_TRIALS=3` to send each query
 three times and score by majority vote; the run then reports a **flip rate**, letting you
@@ -428,12 +454,34 @@ add statistical power. `VLM_TRIALS_MODELS` restricts repeats to specific models.
 agb analyze
 ```
 
-Analyzes all `evaluation_results_*.csv` files in `dataset/` automatically.
+By default, analysis discovers matching `evaluation_results_*.csv` files in the data
+directory and runs the vision mode. Use `--mode tree` to discover only
+`*_with_tree.csv` files; use `--csv` to analyze one explicit file.
 
 ```bash
 agb analyze --csv dataset/evaluation_results_openai_gpt-4o-mini.csv
 agb analyze --data-dir dataset/experiment_2   # re-analyse the archive
+agb analyze --mode tree --data-dir dataset
+agb analyze --sample primary --data-dir dataset
 ```
+
+Named samples are `full`, `primary`, `precautionary`, and `uniform` (the default is
+`all` when no `--sample` is supplied). Reachability can classify label changes with
+`--label-changed {exclude,unreachable,reachable}`. The default `unreachable` mode
+keeps label-changed targets in the denominator but not the present count; use
+`exclude` to remove them or `reachable` to count them as present. The permutation draw count and seed are
+configurable with `--permutations` and `--seed`.
+
+To compare two result files directly, provide both paths:
+```bash
+agb analyze --compare-a dataset/evaluation_results_model.csv \
+  --compare-b dataset/evaluation_results_model_with_tree.csv
+```
+Cross-file comparison applies label-changed and off-frame reclassification and the
+selected sample exclusions, then runs a paired McNemar comparison per profile. It
+writes `mcnemar_compare_<model>.csv`. It does not apply the pooled profile test, Holm
+correction, floor/ceiling flags, effect sizes, or a tree-by-profile interaction test;
+use the regular mode-specific analysis for those outputs.
 
 The script reports four sections:
 
@@ -449,10 +497,12 @@ Holm–Bonferroni across the whole family, plus power flags.
 corroboration that a pooled effect is not driven by one model.
 
 **Output:** `reachability_results.csv`, `pooled_permutation_results.csv`,
-`mcnemar_results_per_model.csv`, `direction_consistency.csv`
+`mcnemar_results_per_model.csv`, and `direction_consistency.csv`. When label changes
+are present, analysis also writes `label_changed_breakdown.csv`.
 
-`elder_combo_rtl` (the archived RTL arm, `dataset/experiment_2/`) was renamed
-`elder_combo_mid` and folded into the default profile set — see the profile table above.
+The current profile set uses `elder_combo_mid` and contains no RTL arm. The archived
+`dataset/experiment_2/` files retain the historical `elder_combo_rtl` name; they are
+not interchangeable with current captures.
 
 ---
 
@@ -462,10 +512,12 @@ Ferret-UI is a small open-source VLM fine-tuned for mobile UI grounding. It runs
 
 ### Setup
 
-1. Download the model weights (requires Hugging Face access):
+1. From the `ferret_ui` directory, download the repository source files required by
+   the server (requires Hugging Face access):
 
 ```bash
-python ferret_ui/download_scripts.py
+cd ferret_ui
+python download_scripts.py
 ```
 
 2. Create a separate virtual environment for Ferret-UI (its dependencies conflict with the main project):
@@ -477,17 +529,33 @@ venv\Scripts\activate          # Windows
 pip install -r requirements.txt
 ```
 
-3. Start the inference server:
+3. Start the local HTTP inference server:
 
 ```bash
-.\ferret_ui\start_server.bat
+cd ferret_ui
+start_server.bat       # Windows (or .\start_server.bat)
 ```
 
-The server runs on `http://localhost:8000` by default. Leave it running in a separate terminal.
+From that same `ferret_ui` directory on any platform:
+```bash
+python ferret_server.py
+```
+
+The server accepts `POST /` requests at `http://localhost:8000/` by default. Leave it
+running in a separate terminal and wait for `Model loaded successfully!` before running
+the evaluator. Ferret requests use a 1,800-second timeout by default (override with
+`VLM_REQUEST_TIMEOUT_SECONDS` if needed); a read timeout is not retried because the
+server may still be generating the same reply.
+
+On startup, `ferret_server.py` loads the Hugging Face model configured by `--model_path`
+(default: `jadechoghari/Ferret-UI-Llama8b`) before serving requests.
 
 4. Add `local/ferret-ui-llama8b` to `VLM_MODEL` in `.env` and run the evaluator normally.
 
-> **Hardware:** Running Ferret-UI requires a CUDA GPU with at least 10 GB VRAM. The model will not damage hardware — the GPU will thermal-throttle or OOM-error safely if resources are insufficient.
+> **Hardware:** CUDA is the practical path for Ferret-UI; the server can fall back to
+> CPU when CUDA is unavailable, but inference will be much slower. About 10 GB of VRAM
+> is an estimate, not a guarantee: memory use depends on image, tree, and generation
+> settings, and an undersized GPU may raise a CUDA OOM error.
 
 ---
 
@@ -578,7 +646,7 @@ This section describes the full experimental methodology in sufficient detail fo
 
 ### Overview
 
-The benchmark evaluates whether Android accessibility layout transformations impair a VLM's ability to ground UI text elements. Each experiment follows a paired design: the same model receives the same grounding queries under a **baseline** layout and under each **experimental accessibility profile**, and the resulting hit-rate difference is evaluated using McNemar's test.
+The benchmark evaluates whether Android accessibility layout transformations impair a VLM's ability to ground UI text elements. Each experiment follows a paired design: the same model receives the same grounding queries under a **baseline** layout and under each **experimental accessibility profile**. The primary pooled difference is tested with a cluster permutation test; per-model differences use McNemar's test.
 
 ### 1. Environment Setup
 
@@ -594,13 +662,16 @@ The benchmark evaluates whether Android accessibility layout transformations imp
 
 ### 3. Accessibility Profiles
 
-Six profiles were applied via ADB `settings` commands:
+The current collection applies six profiles via ADB `settings` commands (baseline plus
+five experimental profiles). None requests RTL:
 
 - **Font scale:** `adb shell settings put system font_scale <value>`
 - **Screen density:** `adb shell wm density <value>` / `wm density reset`
-- **RTL layout:** `adb shell settings put global debug.force_rtl <0|1>` plus
-  `adb shell setprop debug.force_rtl <0|1>` — this is `Settings.Global.DEVELOPMENT_FORCE_RTL`.
-  Writing the setting without the system property does not trigger a reflow.
+- **RTL layout (archived only):** the historical `elder_combo_rtl` run attempted
+  `adb shell settings put global debug.force_rtl <0|1>` plus
+  `adb shell setprop debug.force_rtl <0|1>` — this is
+  `Settings.Global.DEVELOPMENT_FORCE_RTL`. The current profile set dropped RTL after
+  capture verification found no mirroring; see the profile note above.
 - **Color filter:** Android's daltonizer toggled via `accessibility_display_daltonizer_enabled` and `accessibility_display_daltonizer` secure settings. Applied in software to the PNG because `adb screencap` captures pre-daltonizer buffers.
 - A 2.5-second stabilization delay followed each profile application.
 
@@ -644,7 +715,7 @@ Provide the bounding box of the text '{target_text}'.
 
 Ferret-UI was fine-tuned on this exact format. The general-purpose prompt caused it to return text descriptions instead of coordinates.
 
-**Scoring:** A prediction is a hit (1) if the predicted (x, y) falls within the target element's bounding box expanded by ±30 px on all sides (simulating Google's 48 dp minimum touch-target guideline). All results logged to `evaluation_results_{model}.csv`.
+**Scoring:** A prediction is a hit (1) if the predicted (x, y) falls within the target element's bounding box expanded by ±30 px on all sides (simulating Google's 48 dp minimum touch-target guideline). Vision-only results are logged to `evaluation_results_{model}.csv`; tree-injected results use the `_with_tree` suffix.
 
 ### 7. Statistical Analysis
 
