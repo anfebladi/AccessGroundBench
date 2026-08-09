@@ -36,8 +36,8 @@ stated limitations are required, not optional.
 
 > **For the full mathematics** — every formula, its rationale, and a worked example for
 > all three evaluation modes (vision-only, tree-injected, cross-file) — see
-> [`METHODS.md`](METHODS.md). This file's §5–6 below summarise results and defect
-> history; `METHODS.md` is the canonical statistics reference.
+> [`docs/methods.md`](docs/methods.md). This file's §5–6 below summarise results and defect
+> history; `docs/methods.md` is the canonical statistics reference.
 
 ---
 
@@ -45,33 +45,34 @@ stated limitations are required, not optional.
 
 ```
 STAGE 1 — COLLECT (needs a live Android emulator)
-  orchestrator.py
+  agb collect → collection.workflow
     for each of 13 screens, capture 7 assets:
       baseline -> 5 experimental profiles -> baseline_close (drift probe)
     per capture:
-      layout_modifier.apply_profile()      # ADB settings: font / density / rtl / daltonizer
+      collection.runtime.profiles.apply_profile()  # font / density / rtl / daltonizer
         └─ verify_profile()                # read all four vectors back; raise on mismatch
-      app_navigator.navigate_to_screen()   # am start, confirm foreground pkg, dismiss perms
-      screenshot_pipeline.run_pipeline()   # uiautomator dump -> screencap -> pull -> crop -> colour xform
-      app_navigator.validate_xml_package() # confirm XML belongs to the intended app
-      bound_extractor.run()                # XML -> JSON boxes, y-shifted into cropped space
-      capture_checks.rtl_applied()         # RTL profiles only: did the layout mirror?
-    then: measure_drift() over the two baselines; write manifest; exit 1 on any gap
+      collection.runtime.navigation.navigate_to_screen() # launch and validate app
+      collection.pipeline.capture.run_pipeline() # dump -> capture -> crop -> colour
+      collection.runtime.navigation.validate_xml_package() # validate captured app
+      collection.artifacts.labels.run() # XML -> JSON boxes in cropped space
+      collection.artifacts.diagnostics.* # empirical capture diagnostics
+    then: collection.artifacts.manifest measures drift and writes manifest;
+          exit 1 on any gap
   ->  dataset/{images,raw_xml,labels}/{screen}_{profile}.*
       dataset/collection_manifest.json
 
 STAGE 2 — EVALUATE (offline, no emulator)
-  vlm_evaluator.py
+  agb evaluate → evaluation.workflow
     discover screens from dataset/labels/*_baseline.json
-    vlm_eval/targets.harvest_targets()     # texts appearing EXACTLY ONCE in baseline
+    evaluation.grounding.targets.harvest_targets() # baseline-unique texts
     for each (target × profile):
       absent from this layout -> status=off_screen, NO score (never queried)
-      else vlm_eval/runner.evaluate_screen()  # prompt, call model x VLM_TRIALS, majority vote
-           vlm_eval/scoring.hit_test()        # baseline-sized box at current centre, ±30px
+      else evaluation.runner.evaluate_screen() # trial lifecycle
+           evaluation.grounding.scoring.hit_test() # baseline-sized box, ±30px
   ->  dataset/evaluation_results_{model_id}.csv   (appends; resumable)
 
 STAGE 3 — ANALYSE
-  mcnemar_analysis.py
+  agb analyze → analysis.workflow
     1 reachability          targets present / baseline targets, Wilson CI
     2 pooled permutation    PRIMARY: cluster permutation across models, per profile
     3 per-model McNemar     SECONDARY: co-present only, Holm, floor/ceiling flags
@@ -83,29 +84,33 @@ STAGE 3 — ANALYSE
 ### Commands
 
 ```bash
-python orchestrator.py                        # full collection (exits 1 on any problem)
-python orchestrator.py --dry-run              # logic check, no emulator
-python orchestrator.py --screens clock dialer # subset
-python vlm_evaluator.py                       # evaluate; resumes by default
-python vlm_evaluator.py --fresh               # discard existing rows and restart
-python mcnemar_analysis.py                    # analyse dataset/
-python mcnemar_analysis.py --data-dir dataset/experiment_2   # re-analyse the archive
+agb collect                                  # full collection (exits 1 on any problem)
+agb collect --dry-run                        # logic check, no emulator
+agb collect --screens clock dialer           # subset
+agb evaluate                                 # evaluate; resumes by default
+agb evaluate --fresh                         # discard existing rows and restart
+agb analyze                                  # analyse dataset/
+agb analyze --data-dir dataset/experiment_2  # re-analyse the archive
+agb canonicalize --csv <result.csv>          # repair stale/duplicate result rows
+agb rescore --csv <result.csv> --check       # diagnose coordinate convention offline
+agb profile <profile-or-reset>               # standalone profile control
+agb capture [output_name]                    # standalone synchronized capture
+agb extract <xml_path> [--output <json>]     # standalone label extraction
 ```
+
+Installed compatibility commands preserve the former script entry-point names for
+automation. Prefer the unified `agb` commands in new instructions and tooling.
 
 Environment: Windows 11, PowerShell, venv at `.venv`. Activate with
 `.\.venv\Scripts\Activate.ps1`. Use `.venv/Scripts/python.exe` for one-off scripts.
 
-**Running tests.** `pytest` is *not* installed and `tests/` has no `__init__.py`, so
-`unittest discover` fails on it. Use:
+**Running tests.** Use the standard unittest discovery command from the repository root:
 
 ```bash
-.venv/Scripts/python.exe -c "import sys,unittest,pathlib; sys.path[:0]=['.','tests']; \
-unittest.main(argv=['x','discover'],module=None,exit=False) if 0 else \
-unittest.TextTestRunner().run(unittest.defaultTestLoader.loadTestsFromNames( \
-[p.stem for p in sorted(pathlib.Path('tests').glob('test_*.py'))]))"
+uv run python -m unittest discover -s tests -p "test_*.py"
 ```
 
-155 tests, all passing as of 2026-07-29.
+Do not hard-code a test count here; the suite changes as responsibilities are migrated.
 
 ---
 
@@ -125,7 +130,8 @@ mirroring across every screen — see §6. The arm is dropped, not just unverifi
 `ELDER_PROFILES` entry requests `rtl="1"` anymore.
 
 The colour filter is applied **in software to the PNG** (Machado et al. 2009 severity-1.0
-matrix, `screenshot_pipeline.COLOR_TRANSFORMS`) because `adb screencap` reads display
+matrix, `collection.pipeline.imaging.COLOR_TRANSFORMS`) because `adb screencap`
+reads display
 buffers *before* Android's hardware daltonizer. The on-device daltonizer is still
 toggled via ADB, which has a side effect — see §6.3.
 
@@ -149,7 +155,8 @@ VLM_TRIALS_MODELS=         # empty -> VLM_TRIALS applies to all models
 > The local `.env` currently has `USE_A11Y_TREE=true`. Tests pin it explicitly, but any
 > ad-hoc script that reads it will run in tree mode and write `*_with_tree.csv`.
 
-Model prefix routing (`vlm_provider.resolve_completion_config`):
+Model prefix routing
+(`evaluation.providers.config.resolve_completion_config`):
 
 | Prefix | Requires |
 |---|---|
@@ -160,27 +167,33 @@ Model prefix routing (`vlm_provider.resolve_completion_config`):
 
 Keys still containing `your-...-here` are treated as unset.
 
-**Ferret-UI needs a different prompt.** `vlm_provider.call_vlm` detects the model,
-regex-extracts the target from the standard prompt, and rewrites it to
+**Ferret-UI needs a different prompt.** The provider facade dispatches the model to
+`evaluation.providers.ferret.call_ferret`, which uses structured
+target context (with regex extraction only as a compatibility fallback) and rewrites it to
 `Provide the bounding box of the text '<target>'.` — the format it was fine-tuned on.
 Its `[[x1,y1,x2,y2]]` reply is on a 0–1000 normalised scale and gets converted to a
 pixel centre. Ferret-UI runs in its **own venv** (`ferret_ui/venv`) — its deps conflict
 with the main project. Needs ~10 GB VRAM.
 
 **Normalized-coordinate models.** Gemini, Qwen-VL and GLM-V answer on a 0–1000 grid
-rather than in pixels. `vlm_provider._uses_normalized_coords` recognises them (Ferret-UI
-is excluded — it converts its own output), they get `build_normalized_prompt`, and
-`vlm_eval.scoring.to_pixel_space` converts the reply. The decision is **per reply, not
-per model**: `_classify_normalized_reply` writes `normalized` / `pixel` / `unverified`
+rather than in pixels.
+`evaluation.providers.config.uses_normalized_coords`
+recognises them (Ferret-UI is excluded — it converts its own output), they get
+`evaluation.providers.coord_prompting.build_normalized_prompt`, and
+`evaluation.grounding.scoring.to_pixel_space` converts the reply. The decision is
+**per reply, not
+per model**: `evaluation.providers.coord_prompting.classify_normalized_reply`
+writes `normalized` / `pixel` / `unverified`
 to the `coord_space` column and only `normalized` is scaled. `COORD_SPACE` remains a
-manual override for unregistered models; `validate_coord_space` rejects a non-`pixel`
+manual override for unregistered models;
+`evaluation.providers.config.validate_coord_space` rejects a non-`pixel`
 value for any model that self-describes, rather than converting twice.
 
 > **`raw_response` changed meaning.** It is the model's verbatim reply only for rows
 > collected after the coordinate unification (merged 2026-08-08). Earlier Gemini rows
-> store the already-converted pixel value, so `rescore_coords.py` cannot re-derive them.
+> store the already-converted pixel value, so `agb rescore` cannot re-derive them.
 > Those rows' `x_pred`/`y_pred`/`score` stay authoritative. Full detail in
-> [`METHODS.md`](METHODS.md) §1.1.1 — including why `to_pixel_space` quantizes to one
+> [`docs/methods.md`](docs/methods.md) §1.1.1 — including why `to_pixel_space` quantizes to one
 > decimal (dropping it moves 267 of 3003 possible replies by a pixel and can flip a
 > score at a box edge).
 
@@ -224,7 +237,7 @@ Direction for font scaling: **10/11 models down, 1 tied**, sign test p = 0.00195
    inflation actually trends helpful, since targets get bigger. `elder_combo_max` is
    **not** claimable either way: it drops 43 of 155 targets, so its null is measured on
    the easiest 112 and is a selection artefact as much as a result (§6 "Still open",
-   `METHODS.md` §1.2.1).
+   `docs/methods.md` §1.2.1).
 
 **Robustness split that must be reported.** `gpt-5.4` (54.8% baseline) and `gpt-5.4-mini`
 (34.2%) are the only two models with real headroom and supply **289 of 501** discordant
@@ -254,21 +267,21 @@ landed and covered by tests.
 
 | Defect | Fix | Where |
 |---|---|---|
-| Off-screen targets auto-scored 0 without querying the model | `status` column; absent targets get `off_screen` and **no** score; analysis restricted to `co_present` | `vlm_eval/runner.py`, `vlm_eval/results.py`, `mcnemar_analysis.py` |
-| RTL setting key never read by Android | write `debug.force_rtl` as both setting and system property | `layout_modifier.apply_rtl` |
-| Nothing verified a profile applied | read all four vectors back; raise `ProfileVerificationError` | `layout_modifier.verify_profile` |
-| RTL mirroring never checked visually | mirror check added on captured hierarchy — then, on re-collection, measured 0% mirrored across every screen even with the corrected setting key; the arm was dropped and renamed `elder_combo_mid` rather than kept as a nominal RTL condition, and the now-pointless check was removed | `layout_modifier.ELDER_PROFILES`, was `capture_checks.rtl_applied` |
-| Colour transform could silently no-op | before/after diff inside the transform; raises on zero change | `screenshot_pipeline.apply_color_transform` |
-| Content drift never measured | baseline-open / baseline-close bracketing per screen | `orchestrator.measure_drift` |
-| Missing capture failed silently | completion manifest; run exits non-zero on any gap | `orchestrator.write_manifest` |
-| No multiple-comparison correction | Holm–Bonferroni across the family | `vlm_eval/stats.holm_bonferroni` |
-| Per-model tests underpowered; targets non-independent | pooled cluster permutation test | `vlm_eval/stats.cluster_permutation_test` |
-| No ceiling check (floor check existed) | `Ceiling_Limited` above 95% baseline | `mcnemar_analysis.power_flag` |
-| p-values only, no effect sizes | Newcombe paired risk difference + conditional odds ratio | `vlm_eval/stats` |
-| Single stochastic draw per query | `VLM_TEMPERATURE=0`, `VLM_TRIALS` majority vote, flip rate | `vlm_provider`, `vlm_eval/runner` |
-| Crash discarded ~1000 paid API calls | append + skip completed keys; `--fresh` to restart | `vlm_eval/results.prepare_csv` |
-| First `n, n` pair in a reply could be scored | bracket-anchored parse first, loose fallback, method logged | `vlm_eval/scoring` |
-| Tree mode leaked 13.1% of targets' names+bounds via `content_desc` fallback, letting the model read the answer off the tree | exclude on the rendered label (full fallback chain), not on `text` alone; re-measured leak rate 0/168 | `vlm_eval/runner.build_tree_text` |
+| Off-screen targets auto-scored 0 without querying the model | `status` column; absent targets get `off_screen` and **no** score; analysis restricted to `co_present` | `evaluation.runner`, `.results`, and `analysis` |
+| RTL setting key never read by Android | write `debug.force_rtl` as both setting and system property | `collection.runtime.profiles.apply_rtl` |
+| Nothing verified a profile applied | read all four vectors back; raise `ProfileVerificationError` | `collection.runtime.profiles.verify_profile` |
+| RTL mirroring never checked visually | mirror check added on captured hierarchy — then, on re-collection, measured 0% mirrored across every screen even with the corrected setting key; the arm was dropped and renamed `elder_combo_mid` rather than kept as a nominal RTL condition, and the now-pointless check was removed | `collection.runtime.profiles.ELDER_PROFILES`; historical check was in the former capture diagnostics |
+| Colour transform could silently no-op | before/after diff inside the transform; raises on zero change | `collection.pipeline.imaging.apply_color_transform` |
+| Content drift never measured | baseline-open / baseline-close bracketing per screen | `collection.artifacts.manifest.measure_drift` |
+| Missing capture failed silently | completion manifest; run exits non-zero on any gap | `collection.artifacts.manifest.write_manifest` |
+| No multiple-comparison correction | Holm–Bonferroni across the family | `analysis.stats.holm_bonferroni` |
+| Per-model tests underpowered; targets non-independent | pooled cluster permutation test | `analysis.stats.cluster_permutation_test` |
+| No ceiling check (floor check existed) | `Ceiling_Limited` above 95% baseline | `analysis.reports.grounding.power_flag` |
+| p-values only, no effect sizes | Newcombe paired risk difference + conditional odds ratio | `analysis.stats` |
+| Single stochastic draw per query | `VLM_TEMPERATURE=0`, `VLM_TRIALS` majority vote, flip rate | `evaluation.providers` and `.runner` |
+| Crash discarded ~1000 paid API calls | append + skip completed keys; `--fresh` to restart | `evaluation.storage.results.prepare_csv` |
+| First `n, n` pair in a reply could be scored | bracket-anchored parse first, loose fallback, method logged | `evaluation.grounding.scoring` |
+| Tree mode leaked 13.1% of targets' names+bounds via `content_desc` fallback, letting the model read the answer off the tree | exclude on the rendered label (full fallback chain), not on `text` alone; re-measured leak rate 0/168 | `evaluation.grounding.task_prompting.build_tree_text` |
 
 ### Still open
 
@@ -283,10 +296,12 @@ landed and covered by tests.
   baseline accuracy vs 85.3%). This inflates the baseline arm itself: `gpt-5.4` reads
   51.2% over all 168 targets but 67.9% on combo_max's 112. **Do not report "the
   combined profile does not harm grounding"** — that null is measured on the easiest
-  third that survived. Full numbers and rationale in `METHODS.md` §1.2.1.
+  third that survived. Full numbers and rationale in `docs/methods.md` §1.2.1.
 - **`play_store` drift, resolved.** Its rotating carousel produced 5 of 11 drifted
-  texts in the archive; re-collection's offline drift rebuild (`orchestrator.py
-  --rebuild-manifest`, 2026-07-30) measures 0.0% for `play_store` in the current
+  texts in the archive; re-collection's offline drift rebuild
+  (`agb collect --rebuild-manifest`, backed by
+  `collection.artifacts.manifest.rebuild_screen`, 2026-07-30) measures 0.0%
+  for `play_store` in the current
   dataset — the carousel did not rotate during this run's capture window. Not
   guaranteed to stay that way on a future re-collection; re-check rather than assume.
 - **`maps` drift, newly found.** The same rebuild flags `maps` at 40.0% (`'Hello'`
@@ -307,16 +322,16 @@ landed and covered by tests.
   bounds show a uniform 323px shift for every element between `baseline` and
   `colorblind_deuteranomaly`, with image dimensions unchanged. It also persists into
   `baseline_close`, which applies the `baseline` profile (daltonizer off) beforehand.
-  Investigated as a possible teardown leak in `layout_modifier.py` — it is not one:
+  Investigated as a possible teardown leak in `collection.runtime.profiles` — it is not one:
   `apply_profile("baseline")` and `reset_all` both correctly write
   `accessibility_display_daltonizer_enabled=0` and it verifies clean, including in
-  the exact colorblind→baseline sequence the orchestrator runs (regression tests in
-  `tests/test_layout_modifier.py::DaltonizerTeardownTests`). The actual mechanism is
+  the exact colorblind→baseline sequence the collection workflow runs (regression tests in
+  the `DaltonizerTeardownTests` regression coverage). The actual mechanism is
   an Android Settings-app UI side effect: toggling an accessibility setting
   out-of-band via `adb shell settings put` (rather than through the Settings UI)
   appears to trigger a persistent banner on the Display page that a value revert
   alone does not clear — the same category of problem as the RTL reflow issue in
-  `layout_modifier.py` (needs a full app restart, which nothing in this pipeline
+  `collection.runtime.profiles` (needs a full app restart, which nothing in this pipeline
   currently does). Exclude `settings_display` from the colorblind arm; this is not
   fixable by reordering or re-verifying the setting.
 - **Ferret-UI parse robustness.** 15 unparsed replies in the archive, versus 0–1 for
@@ -330,13 +345,13 @@ Everything else is done; this is the remaining work, and it needs the emulator.
 
 1. Emulator prerequisites (§8 Conventions): Google account signed in; Messages, Gmail,
    Maps opened once to clear first-run dialogs.
-2. `python orchestrator.py --dry-run` — logic path.
-3. `python orchestrator.py --screens settings_main` — confirm all four profile
+2. `agb collect --dry-run` — logic path.
+3. `agb collect --screens settings_main` — confirm all four profile
    assertions pass.
 4. Full run; confirm the manifest reports no problems and the run exits 0.
 5. Evaluate one model first; confirm `status` populates and resume works by interrupting
    and restarting.
-6. `python mcnemar_analysis.py`.
+6. `agb analyze`.
 
 RTL was already tried and dropped (§3, §6): no profile requests `rtl="1"` anymore, so
 there is no mirror-eyeball step left to run. If a future attempt revives an RTL arm,
@@ -349,7 +364,7 @@ automated pass/fail.
 
 - **Coordinate space.** Labels are shifted into *cropped-image* space: status-bar
   height subtracted from all y values, nav bar removed from the bottom
-  (`bound_extractor.extract(y_offset=, bottom_crop=)`). Bar heights come from
+  (`collection.artifacts.labels.extract(y_offset=, bottom_crop=)`). Bar heights come from
   `dumpsys window displays` and **change with density**, so image dimensions differ
   between profiles. Never compare raw y values across profiles without accounting for this.
 - **Scoring uses baseline geometry.** `hit_test` builds a box of *baseline* width/height
@@ -359,7 +374,8 @@ automated pass/fail.
 - **Targets come from baseline only** and must appear exactly once there. Duplicated
   text is dropped entirely, which is why 175 baseline texts yield 168 targets.
 - **A third filter removes targets that are not one rendered label**
-  (`vlm_eval.targets.invalid_targets`): text longer than `MAX_TARGET_CHARS` (100), or a
+  (`evaluation.grounding.targets.invalid_targets`): text longer than
+  `MAX_TARGET_CHARS` (100), or a
   box that fully encloses another target's box on the same screen. Both are the shape of
   an Android list-row container node -- Gmail's conversation rows synthesize a single
   `text` attribute concatenating sender, subject, and the full (untruncated) preview body
@@ -368,7 +384,8 @@ automated pass/fail.
   (162 -> 155 targets overall). Applied at harvest time, before any model is queried --
   querying it anyway was what made Ferret-UI's fine-tuned reply format (which echoes the
   target string before the box) spend 38 minutes generating a reply for one 297-char
-  target. `mcnemar_analysis.compute_b2_targets` recomputes the same rule from a CSV's rows,
+  target. `analysis.data.samples.compute_b2_targets` recomputes the same
+  rule from a CSV's rows,
   for datasets collected before this filter existed (`dataset/experiment_2`, and any
   hosted-model CSV collected before this change) that still contain the excluded rows.
 - **`find_element_in_profile` returns the first match**, so a text that is unique at

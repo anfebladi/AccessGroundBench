@@ -6,13 +6,15 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-import layout_modifier
-import orchestrator
+from collection import cli as collection_cli
+from collection.runtime import profiles as layout_modifier
+from collection.artifacts import manifest as collection_manifest
+from collection import workflow
 
 
 def sequence_profiles() -> list[str]:
     experimental = [p for p in layout_modifier.ELDER_PROFILES if p != "baseline"]
-    return ["baseline", *experimental, orchestrator.DRIFT_PROBE]
+    return ["baseline", *experimental, collection_manifest.DRIFT_PROBE]
 
 
 def make_entry(screen: str, profile: str, ok: bool = True, label_count: int = 1) -> dict:
@@ -47,10 +49,10 @@ class OrchestratorPathsTestCase(unittest.TestCase):
             d.mkdir(parents=True)
 
         patches = [
-            mock.patch.object(orchestrator, "IMAGES_DIR", self.images_dir),
-            mock.patch.object(orchestrator, "RAW_XML_DIR", self.raw_xml_dir),
-            mock.patch.object(orchestrator, "LABELS_DIR", self.labels_dir),
-            mock.patch.object(orchestrator, "MANIFEST_PATH", self.manifest_path),
+            mock.patch.object(collection_manifest, "IMAGES_DIR", self.images_dir),
+            mock.patch.object(collection_manifest, "RAW_XML_DIR", self.raw_xml_dir),
+            mock.patch.object(collection_manifest, "LABELS_DIR", self.labels_dir),
+            mock.patch.object(collection_manifest, "MANIFEST_PATH", self.manifest_path),
         ]
         for p in patches:
             p.start()
@@ -63,7 +65,7 @@ class OrchestratorPathsTestCase(unittest.TestCase):
 
 class WriteManifestMergeTests(OrchestratorPathsTestCase):
     def test_first_write_creates_a_fresh_manifest(self):
-        problems = orchestrator.write_manifest(
+        problems = collection_manifest.write_manifest(
             ["clock"], full_entries("clock"), []
         )
 
@@ -72,9 +74,9 @@ class WriteManifestMergeTests(OrchestratorPathsTestCase):
         self.assertEqual(["clock"], list(manifest["screens"]))
 
     def test_second_run_preserves_screens_it_did_not_touch(self):
-        orchestrator.write_manifest(["clock"], full_entries("clock"), [])
+        collection_manifest.write_manifest(["clock"], full_entries("clock"), [])
 
-        orchestrator.write_manifest(["dialer"], full_entries("dialer"), [])
+        collection_manifest.write_manifest(["dialer"], full_entries("dialer"), [])
 
         manifest = self.read_manifest()
         self.assertEqual({"clock", "dialer"}, set(manifest["screens"]))
@@ -85,11 +87,11 @@ class WriteManifestMergeTests(OrchestratorPathsTestCase):
         )
 
     def test_subset_run_warns_about_screens_it_did_not_touch(self):
-        orchestrator.write_manifest(["clock", "dialer"], full_entries("clock") + full_entries("dialer"), [])
+        collection_manifest.write_manifest(["clock", "dialer"], full_entries("clock") + full_entries("dialer"), [])
 
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
-            orchestrator.write_manifest(["clock"], full_entries("clock"), [])
+            collection_manifest.write_manifest(["clock"], full_entries("clock"), [])
 
         output = buf.getvalue()
         self.assertIn("WARN", output)
@@ -98,18 +100,18 @@ class WriteManifestMergeTests(OrchestratorPathsTestCase):
     def test_no_warning_when_this_run_covers_everything_on_disk(self):
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
-            orchestrator.write_manifest(["clock"], full_entries("clock"), [])
+            collection_manifest.write_manifest(["clock"], full_entries("clock"), [])
 
         self.assertNotIn("WARN", buf.getvalue())
 
     def test_recapturing_a_screen_replaces_its_own_record(self):
-        orchestrator.write_manifest(["clock"], full_entries("clock"), [])
+        collection_manifest.write_manifest(["clock"], full_entries("clock"), [])
 
         stale_entries = full_entries("clock")
         stale_entries[0]["ok"] = False
         stale_entries[0].pop("label_count", None)
         stale_entries[0]["error"] = "navigation failed"
-        orchestrator.write_manifest(["clock"], stale_entries, [])
+        collection_manifest.write_manifest(["clock"], stale_entries, [])
 
         manifest = self.read_manifest()
         self.assertFalse(manifest["screens"]["clock"]["captures"][0]["ok"])
@@ -126,7 +128,7 @@ class WriteManifestMergeTests(OrchestratorPathsTestCase):
             encoding="utf-8",
         )
 
-        orchestrator.write_manifest(["dialer"], full_entries("dialer"), [])
+        collection_manifest.write_manifest(["dialer"], full_entries("dialer"), [])
 
         manifest = self.read_manifest()
         # Only dialer is present -- the old-schema "clock" entry had nothing
@@ -134,15 +136,15 @@ class WriteManifestMergeTests(OrchestratorPathsTestCase):
         self.assertEqual(["dialer"], list(manifest["screens"]))
 
     def test_expected_and_successful_totals_are_across_the_full_manifest(self):
-        orchestrator.write_manifest(["clock"], full_entries("clock"), [])
-        orchestrator.write_manifest(["dialer"], full_entries("dialer"), [])
+        collection_manifest.write_manifest(["clock"], full_entries("clock"), [])
+        collection_manifest.write_manifest(["dialer"], full_entries("dialer"), [])
 
         manifest = self.read_manifest()
-        self.assertEqual(2 * orchestrator.PER_SCREEN_EXPECTED, manifest["expected_captures"])
-        self.assertEqual(2 * orchestrator.PER_SCREEN_EXPECTED, manifest["successful_captures"])
+        self.assertEqual(2 * collection_manifest.PER_SCREEN_EXPECTED, manifest["expected_captures"])
+        self.assertEqual(2 * collection_manifest.PER_SCREEN_EXPECTED, manifest["successful_captures"])
 
     def test_reconstructed_flag_is_recorded_per_screen(self):
-        orchestrator.write_manifest(["clock"], full_entries("clock"), [], reconstructed=True)
+        collection_manifest.write_manifest(["clock"], full_entries("clock"), [], reconstructed=True)
 
         manifest = self.read_manifest()
         self.assertTrue(manifest["screens"]["clock"]["reconstructed"])
@@ -173,7 +175,7 @@ class ContaminationProblemsTests(ContaminationAndDiagnosticsTestCase):
                                ["Brightness", "Color"]),
         ]
 
-        problems = orchestrator.contamination_problems("settings_display", captures)
+        problems = collection_manifest.contamination_problems("settings_display", captures)
 
         self.assertEqual([], problems)
 
@@ -185,7 +187,7 @@ class ContaminationProblemsTests(ContaminationAndDiagnosticsTestCase):
                                ["Brightness"]),
         ]
 
-        problems = orchestrator.contamination_problems("settings_display", captures)
+        problems = collection_manifest.contamination_problems("settings_display", captures)
 
         self.assertEqual(1, len(problems))
         self.assertIn("colour-only contamination", problems[0])
@@ -200,7 +202,7 @@ class ContaminationProblemsTests(ContaminationAndDiagnosticsTestCase):
             self.write_labels("clock", "elder_text_heavy", ["Alarm", "8:30 AM"]),
         ]
 
-        problems = orchestrator.contamination_problems("clock", captures)
+        problems = collection_manifest.contamination_problems("clock", captures)
 
         self.assertEqual([], problems)
 
@@ -211,7 +213,7 @@ class ContaminationProblemsTests(ContaminationAndDiagnosticsTestCase):
             self.write_labels("clock", "colorblind_deuteranomaly", ["Alarm"]),
         ]
 
-        problems = orchestrator.contamination_problems("clock", captures)
+        problems = collection_manifest.contamination_problems("clock", captures)
 
         self.assertEqual([], problems)
 
@@ -226,7 +228,7 @@ class ContaminationProblemsTests(ContaminationAndDiagnosticsTestCase):
         colourblind = self.write_labels("clock", "colorblind_deuteranomaly",
                                          ["Alarm", "8:30 AM"])
 
-        problems = orchestrator.contamination_problems(
+        problems = collection_manifest.contamination_problems(
             "clock", [baseline, probe, colourblind]
         )
 
@@ -240,7 +242,7 @@ class ShapeDiagnosticsTests(ContaminationAndDiagnosticsTestCase):
             self.write_labels("clock", "elder_text_heavy", ["A", "B"]),
         ]
 
-        notes = orchestrator.shape_diagnostics("clock", captures)
+        notes = collection_manifest.shape_diagnostics("clock", captures)
 
         self.assertEqual([], notes)
 
@@ -250,7 +252,7 @@ class ShapeDiagnosticsTests(ContaminationAndDiagnosticsTestCase):
             self.write_labels("gmail", "elder_text_heavy", ["A", "C"]),
         ]
 
-        notes = orchestrator.shape_diagnostics("gmail", captures)
+        notes = collection_manifest.shape_diagnostics("gmail", captures)
 
         self.assertEqual(1, len(notes))
         self.assertIn("gmail/elder_text_heavy", notes[0])
@@ -265,7 +267,7 @@ class ShapeDiagnosticsTests(ContaminationAndDiagnosticsTestCase):
             self.write_labels("settings_display", "colorblind_deuteranomaly", []),
         ]
 
-        notes = orchestrator.shape_diagnostics("settings_display", captures)
+        notes = collection_manifest.shape_diagnostics("settings_display", captures)
 
         self.assertEqual([], notes)
 
@@ -285,7 +287,7 @@ class ScreenProblemsContaminationIntegrationTests(ContaminationAndDiagnosticsTes
                 continue
             captures.append(self.write_labels("settings_display", profile, ["Brightness"]))
 
-        problems = orchestrator.screen_problems("settings_display", captures, None)
+        problems = collection_manifest.screen_problems("settings_display", captures, None)
 
         self.assertTrue(any("colour-only contamination" in p for p in problems))
 
@@ -306,7 +308,7 @@ class WriteManifestDiagnosticsTests(ContaminationAndDiagnosticsTestCase):
                 texts = ["A", "B"]  # ordinary tail loss -> no diagnostic
             captures.append(self.write_labels("gmail", profile, texts))
 
-        problems = orchestrator.write_manifest(["gmail"], captures, [])
+        problems = collection_manifest.write_manifest(["gmail"], captures, [])
 
         manifest = self.read_manifest()
         record = manifest["screens"]["gmail"]
@@ -316,7 +318,7 @@ class WriteManifestDiagnosticsTests(ContaminationAndDiagnosticsTestCase):
 
 class ScreenProblemsTests(unittest.TestCase):
     def test_clean_screen_has_no_problems(self):
-        problems = orchestrator.screen_problems("clock", full_entries("clock"), None)
+        problems = collection_manifest.screen_problems("clock", full_entries("clock"), None)
         self.assertEqual([], problems)
 
     def test_missing_capture_is_reported(self):
@@ -324,7 +326,7 @@ class ScreenProblemsTests(unittest.TestCase):
         entries[0]["ok"] = False
         entries[0].pop("label_count", None)
 
-        problems = orchestrator.screen_problems("clock", entries, None)
+        problems = collection_manifest.screen_problems("clock", entries, None)
 
         self.assertTrue(any("missing capture" in p for p in problems))
 
@@ -332,7 +334,7 @@ class ScreenProblemsTests(unittest.TestCase):
         entries = full_entries("clock")
         entries[0]["label_count"] = 0
 
-        problems = orchestrator.screen_problems("clock", entries, None)
+        problems = collection_manifest.screen_problems("clock", entries, None)
 
         self.assertTrue(any("empty extraction" in p for p in problems))
 
@@ -340,7 +342,7 @@ class ScreenProblemsTests(unittest.TestCase):
         drift = {"screen": "clock", "drift_rate": 0.2, "flagged": True,
                   "vanished": ["x"], "appeared": []}
 
-        problems = orchestrator.screen_problems("clock", full_entries("clock"), drift)
+        problems = collection_manifest.screen_problems("clock", full_entries("clock"), drift)
 
         self.assertTrue(any("high content drift" in p for p in problems))
 
@@ -348,14 +350,14 @@ class ScreenProblemsTests(unittest.TestCase):
         drift = {"screen": "clock", "drift_rate": 0.0, "flagged": False,
                   "vanished": [], "appeared": []}
 
-        problems = orchestrator.screen_problems("clock", full_entries("clock"), drift)
+        problems = collection_manifest.screen_problems("clock", full_entries("clock"), drift)
 
         self.assertEqual([], problems)
 
 
 class RebuildCaptureEntryTests(OrchestratorPathsTestCase):
     def test_missing_files_produce_not_ok_entry(self):
-        entry = orchestrator.rebuild_capture_entry("clock", "baseline", "clock_baseline")
+        entry = collection_manifest.rebuild_capture_entry("clock", "baseline", "clock_baseline")
 
         self.assertFalse(entry["ok"])
         self.assertIn("missing", entry["error"])
@@ -370,7 +372,7 @@ class RebuildCaptureEntryTests(OrchestratorPathsTestCase):
             encoding="utf-8",
         )
 
-        entry = orchestrator.rebuild_capture_entry("clock", "baseline", stem)
+        entry = collection_manifest.rebuild_capture_entry("clock", "baseline", stem)
 
         self.assertTrue(entry["ok"])
         self.assertEqual(2, entry["label_count"])
@@ -380,7 +382,7 @@ class RebuildCaptureEntryTests(OrchestratorPathsTestCase):
         (self.images_dir / f"{stem}.png").write_bytes(b"\x89PNG")
         # xml and labels missing
 
-        entry = orchestrator.rebuild_capture_entry("clock", "baseline", stem)
+        entry = collection_manifest.rebuild_capture_entry("clock", "baseline", stem)
 
         self.assertFalse(entry["ok"])
 
@@ -398,7 +400,7 @@ class RebuildScreenTests(OrchestratorPathsTestCase):
         for profile in sequence_profiles():
             self.write_capture(f"clock_{profile}", ["Alarm", "8:30 AM"])
 
-        entries, drift = orchestrator.rebuild_screen("clock")
+        entries, drift = collection_manifest.rebuild_screen("clock")
 
         self.assertEqual(len(sequence_profiles()), len(entries))
         self.assertTrue(all(e["ok"] for e in entries))
@@ -412,7 +414,7 @@ class RebuildScreenTests(OrchestratorPathsTestCase):
                 continue
             self.write_capture(f"clock_{profile}", ["Alarm"])
 
-        entries, _drift = orchestrator.rebuild_screen("clock")
+        entries, _drift = collection_manifest.rebuild_screen("clock")
 
         by_profile = {e["profile"]: e for e in entries}
         self.assertFalse(by_profile["elder_zoom_heavy"]["ok"])
@@ -420,15 +422,33 @@ class RebuildScreenTests(OrchestratorPathsTestCase):
 
     def test_drift_between_open_and_close_baseline_is_detected(self):
         for profile in sequence_profiles():
-            if profile == orchestrator.DRIFT_PROBE:
+            if profile == collection_manifest.DRIFT_PROBE:
                 self.write_capture(f"clock_{profile}", ["Alarm", "Different Text"])
             else:
                 self.write_capture(f"clock_{profile}", ["Alarm", "8:30 AM"])
 
-        _entries, drift = orchestrator.rebuild_screen("clock")
+        _entries, drift = collection_manifest.rebuild_screen("clock")
 
         self.assertIsNotNone(drift)
         self.assertGreater(drift["drift_rate"], 0.0)
+
+
+class WorkflowDelegationTests(unittest.TestCase):
+    def test_collect_cli_delegates_rebuild_work_through_workflow_to_manifest(self):
+        with mock.patch.object(workflow, "ensure_dirs"), \
+             mock.patch.object(
+                 workflow.manifest, "rebuild_screen", return_value=([], None)
+             ) as rebuild, \
+             mock.patch.object(
+                 workflow.manifest, "write_manifest", return_value=[]
+             ) as write, \
+             contextlib.redirect_stdout(io.StringIO()):
+            collection_cli.collect_main(
+                ["--rebuild-manifest", "--screens", "clock"]
+            )
+
+        rebuild.assert_called_once_with("clock")
+        write.assert_called_once_with(["clock"], [], [], reconstructed=True)
 
 
 if __name__ == "__main__":

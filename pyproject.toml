@@ -1,7 +1,7 @@
 [project]
 name = "accessgroundbench"
 version = "0.1.0"
-description = "Add your description here"
+description = "A benchmark for accessibility-aware visual grounding"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -11,3 +11,27 @@ dependencies = [
     "python-dotenv>=1.0",
     "scipy>=1.17.1",
 ]
+
+[project.scripts]
+agb = "cli:main"
+orchestrator = "collection.cli:collect_main"
+vlm_evaluator = "evaluation.cli:evaluate_main"
+mcnemar_analysis = "analysis.cli:analyze_main"
+canonicalize_results = "evaluation.cli:canonicalize_main"
+rescore_coords = "evaluation.cli:rescore_main"
+layout_modifier = "collection.cli:profile_main"
+screenshot_pipeline = "collection.cli:capture_main"
+bound_extractor = "collection.cli:extract_main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+py-modules = ["cli", "paths"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["analysis", "analysis.*", "collection", "collection.*", "evaluation", "evaluation.*"]
+namespaces = false

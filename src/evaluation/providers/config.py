@@ -1,0 +1,107 @@
+"""Provider route, credential, and coordinate override configuration."""
+
+import os
+
+from ..config import COORD_SPACE_ENV_VAR, DEFAULT_COORD_SPACE
+
+NINEROUTER_PREFIX = "9router/"
+OPENAI_COMPATIBLE_PREFIX = "openai_compatible/"
+NINEROUTER_BASE_URL_ENV_VAR = "NINEROUTER_BASE_URL"
+NINEROUTER_API_KEY_ENV_VAR = "NINEROUTER_API_KEY"
+OPENAI_COMPATIBLE_BASE_URL_ENV_VAR = "OPENAI_COMPATIBLE_BASE_URL"
+OPENAI_COMPATIBLE_API_KEY_ENV_VAR = "OPENAI_COMPATIBLE_API_KEY"
+FERRET_MODEL_ID = "local/ferret-ui-llama8b"
+NORMALIZED_COORD_FAMILIES = ("gemini", "qwen", "glm")
+
+
+def uses_normalized_coords(model: str) -> bool:
+    """Return whether a model uses a native 0-1000 coordinate convention."""
+    if model == FERRET_MODEL_ID:
+        return False
+    name = model[len(NINEROUTER_PREFIX):] if model.startswith(NINEROUTER_PREFIX) else model
+    return any(family in name.lower() for family in NORMALIZED_COORD_FAMILIES)
+
+def _normalize_compatible_base_url(base_url: str) -> str:
+    """Return an OpenAI-compatible base URL ending in exactly one ``/v1``."""
+    normalized = base_url.strip().rstrip("/")
+    if not normalized:
+        return normalized
+    return normalized if normalized.endswith("/v1") else f"{normalized}/v1"
+
+
+def _is_configured_value(value: str | None) -> bool:
+    if not value:
+        return False
+    value_lower = value.lower()
+    return not ("your-" in value_lower and "-here" in value_lower)
+
+
+def model_configuration_error(model: str) -> str | None:
+    """Return a user-facing configuration error, or None when configured."""
+    if model.startswith(NINEROUTER_PREFIX):
+        if not model[len(NINEROUTER_PREFIX):].strip():
+            return f"A 9Router model route is required after {NINEROUTER_PREFIX}"
+        base_var = NINEROUTER_BASE_URL_ENV_VAR
+        key_var = NINEROUTER_API_KEY_ENV_VAR
+        example = "VLM_MODEL=9router/cx/gpt-5.3-codex"
+    elif model.startswith(OPENAI_COMPATIBLE_PREFIX):
+        if not model[len(OPENAI_COMPATIBLE_PREFIX):].strip():
+            return f"An OpenAI-compatible model is required after {OPENAI_COMPATIBLE_PREFIX}"
+        base_var = OPENAI_COMPATIBLE_BASE_URL_ENV_VAR
+        key_var = OPENAI_COMPATIBLE_API_KEY_ENV_VAR
+        example = "VLM_MODEL=openai_compatible/my-provider-model"
+    else:
+        return None
+
+    missing = [
+        name
+        for name in (base_var, key_var)
+        if not _is_configured_value(os.environ.get(name, "").strip())
+    ]
+    if not missing:
+        return None
+    return f"{', '.join(missing)} must be set for {model}. Example: {example}"
+
+
+def resolve_completion_config(model: str) -> dict[str, str]:
+    """Resolve a model name into stable LiteLLM completion arguments."""
+    error = model_configuration_error(model)
+    if error:
+        raise ValueError(error)
+
+    if model.startswith(NINEROUTER_PREFIX):
+        return {
+            "model": model[len(NINEROUTER_PREFIX):],
+            "custom_llm_provider": "openai",
+            "api_base": _normalize_compatible_base_url(
+                os.environ[NINEROUTER_BASE_URL_ENV_VAR]
+            ),
+            "api_key": os.environ[NINEROUTER_API_KEY_ENV_VAR].strip(),
+        }
+
+    if model.startswith(OPENAI_COMPATIBLE_PREFIX):
+        return {
+            "model": model[len(OPENAI_COMPATIBLE_PREFIX):],
+            "custom_llm_provider": "openai",
+            "api_base": _normalize_compatible_base_url(
+                os.environ[OPENAI_COMPATIBLE_BASE_URL_ENV_VAR]
+            ),
+            "api_key": os.environ[OPENAI_COMPATIBLE_API_KEY_ENV_VAR].strip(),
+        }
+
+    return {"model": model}
+
+
+def validate_coord_space(model: str, coord_space: str) -> str:
+    """Reject overrides that would double-convert a known model reply."""
+    if coord_space == DEFAULT_COORD_SPACE:
+        return coord_space
+    if uses_normalized_coords(model) or model == FERRET_MODEL_ID:
+        print(
+            f"[ERROR] {COORD_SPACE_ENV_VAR}={coord_space} is invalid for {model}: "
+            "this model already reports its own coordinate space per reply, so "
+            f"the override would convert twice. Unset {COORD_SPACE_ENV_VAR} "
+            f"(or set it to '{DEFAULT_COORD_SPACE}')."
+        )
+        raise SystemExit(1)
+    return coord_space
