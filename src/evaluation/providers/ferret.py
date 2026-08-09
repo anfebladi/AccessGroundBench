@@ -8,7 +8,7 @@ import urllib.request
 from pathlib import Path
 
 from .config import FERRET_MODEL_ID
-from .prompting import extract_target_from_prompt, resolve_image_dims
+from .coord_prompting import extract_target_from_prompt, resolve_image_dims
 from .retry import (
     DEFAULT_RATE_LIMIT_BACKOFF_SECONDS,
     REQUEST_TIMEOUT_ENV_VAR,

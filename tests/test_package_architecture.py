@@ -14,9 +14,10 @@ from unittest import mock
 import cli
 import paths
 from collection import cli as collection_cli
-from evaluation import locking, results
+from evaluation.storage import locking, results
 from evaluation.providers import config as provider_config
-from evaluation.providers import ferret, hosted, prompting, retry
+from evaluation.providers import coord_prompting as prompting
+from evaluation.providers import ferret, hosted, retry
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -59,7 +60,7 @@ class UnifiedCliTests(unittest.TestCase):
         }
         self.assertLessEqual(expected, scripts.keys())
 
-    def test_built_wheel_contains_flat_src_modules_and_packages(self):
+    def test_built_wheel_contains_reorganized_packages_and_no_retired_modules(self):
         if importlib.util.find_spec("pip") is None:
             self.skipTest("wheel builder unavailable in this test interpreter")
         with tempfile.TemporaryDirectory() as tmp:
@@ -93,10 +94,28 @@ class UnifiedCliTests(unittest.TestCase):
             "evaluation/__init__.py",
             "analysis/__init__.py",
             "evaluation/providers/__init__.py",
+            "analysis/data/results.py",
+            "analysis/data/samples.py",
+            "analysis/reports/comparison.py",
+            "collection/runtime/device.py",
+            "collection/pipeline/capture.py",
+            "collection/artifacts/manifest.py",
+            "evaluation/grounding/scoring.py",
+            "evaluation/grounding/targets.py",
+            "evaluation/storage/results.py",
+            "evaluation/providers/coord_prompting.py",
         }
         for path in expected:
             with self.subTest(path=path):
                 self.assertIn(path, contents)
+        for retired in (
+            "analysis/data.py", "analysis/samples.py", "analysis/comparison.py",
+            "collection/device.py", "collection/capture.py", "collection/manifest.py",
+            "evaluation/results.py", "evaluation/scoring.py", "evaluation/targets.py",
+            "evaluation/prompting.py",
+        ):
+            with self.subTest(retired=retired):
+                self.assertNotIn(retired, contents)
 
     def test_setuptools_explicitly_discovers_flat_src_packages(self):
         with (REPO_ROOT / "pyproject.toml").open("rb") as handle:
@@ -210,18 +229,37 @@ class PackageBoundaryTests(unittest.TestCase):
 
     def test_collection_modules_follow_concrete_dependency_direction(self):
         workflow_source = (SOURCE_ROOT / "collection" / "workflow.py").read_text(encoding="utf-8")
-        manifest_source = (SOURCE_ROOT / "collection" / "manifest.py").read_text(encoding="utf-8")
-        capture_source = (SOURCE_ROOT / "collection" / "capture.py").read_text(encoding="utf-8")
+        manifest_source = (SOURCE_ROOT / "collection" / "artifacts" / "manifest.py").read_text(encoding="utf-8")
+        capture_source = (SOURCE_ROOT / "collection" / "pipeline" / "capture.py").read_text(encoding="utf-8")
 
-        self.assertIn("from . import capture, labels, manifest, navigation, profiles", workflow_source)
-        self.assertIn("from . import diagnostics, profiles", manifest_source)
+        self.assertIn("from .artifacts import labels, manifest", workflow_source)
+        self.assertIn("from .pipeline import capture", workflow_source)
+        self.assertIn("from .runtime import navigation, profiles", workflow_source)
+        self.assertIn("from . import diagnostics", manifest_source)
         self.assertNotIn("workflow", manifest_source)
         self.assertIn("from .imaging import", capture_source)
-        self.assertNotIn("from .capture import", (SOURCE_ROOT / "collection" / "imaging.py").read_text(encoding="utf-8"))
+        self.assertNotIn("from .capture import", (SOURCE_ROOT / "collection" / "pipeline" / "imaging.py").read_text(encoding="utf-8"))
+
+    def test_collection_runtime_does_not_depend_on_pipeline_or_artifacts(self):
+        violations = []
+        for source_path in (SOURCE_ROOT / "collection" / "runtime").glob("*.py"):
+            tree = ast.parse(source_path.read_text(encoding="utf-8"))
+            for node in ast.walk(tree):
+                if not isinstance(node, ast.ImportFrom) or not node.module:
+                    continue
+                relative = node.level >= 2 and node.module.split(".", 1)[0] in {
+                    "pipeline", "artifacts"
+                }
+                absolute = node.level == 0 and node.module.startswith(
+                    "collection.pipeline"
+                ) or node.level == 0 and node.module.startswith("collection.artifacts")
+                if relative or absolute:
+                    violations.append((source_path.name, node.module, node.level))
+        self.assertEqual([], violations)
 
     def test_collection_domain_modules_do_not_parse_cli_or_define_main_blocks(self):
         violations = []
-        for source_path in (SOURCE_ROOT / "collection").glob("*.py"):
+        for source_path in (SOURCE_ROOT / "collection").rglob("*.py"):
             if source_path.name in {"__init__.py", "cli.py"}:
                 continue
             source = source_path.read_text(encoding="utf-8")
@@ -265,11 +303,11 @@ class PackageBoundaryTests(unittest.TestCase):
             for node in ast.walk(workflow_tree)
         ))
 
-    def test_prompting_is_owned_below_runner(self):
+    def test_prompting_is_owned_by_grounding_and_runner_consumes_it(self):
         runner_source = (SOURCE_ROOT / "evaluation" / "runner.py").read_text(encoding="utf-8")
-        prompting_source = (SOURCE_ROOT / "evaluation" / "prompting.py").read_text(encoding="utf-8")
+        prompting_source = (SOURCE_ROOT / "evaluation" / "grounding" / "task_prompting.py").read_text(encoding="utf-8")
 
-        self.assertIn("from .prompting import", runner_source)
+        self.assertIn("from .grounding.task_prompting import", runner_source)
         self.assertIn("from .scoring import hit_test", prompting_source)
         self.assertNotIn("runner", prompting_source)
 
@@ -355,6 +393,31 @@ class EvaluationBoundaryTests(unittest.TestCase):
 
         for module in graph:
             visit(module)
+
+    def test_provider_modules_do_not_depend_on_runner_or_storage(self):
+        violations = []
+        for source_path in (SOURCE_ROOT / "evaluation" / "providers").glob("*.py"):
+            tree = ast.parse(source_path.read_text(encoding="utf-8"))
+            for node in ast.walk(tree):
+                if not isinstance(node, ast.ImportFrom) or not node.module:
+                    continue
+                relative = node.level >= 2 and node.module.split(".", 1)[0] in {
+                    "runner", "storage"
+                }
+                absolute = node.level == 0 and node.module.startswith(
+                    "evaluation.runner"
+                ) or node.level == 0 and node.module.startswith("evaluation.storage")
+                if relative or absolute:
+                    violations.append((source_path.name, node.module, node.level))
+        self.assertEqual([], violations)
+
+    def test_workflows_are_the_cross_layer_coordinators(self):
+        collection_workflow = (SOURCE_ROOT / "collection" / "workflow.py").read_text(encoding="utf-8")
+        evaluation_workflow = (SOURCE_ROOT / "evaluation" / "workflow.py").read_text(encoding="utf-8")
+        self.assertIn("from .pipeline", collection_workflow)
+        self.assertIn("from .artifacts", collection_workflow)
+        self.assertIn("from .storage", evaluation_workflow)
+        self.assertIn("from .grounding", evaluation_workflow)
 
     def test_locking_is_separate_but_results_reuses_it(self):
         self.assertIs(results.acquire_lock, locking.acquire_lock)

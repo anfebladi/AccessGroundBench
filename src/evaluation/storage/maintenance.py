@@ -5,7 +5,7 @@ per (screen, target_text, profile) key, matching the current harvested
 target set.
 
 This is the same canonicalization evaluation.workflow now runs automatically on
-every resumed run (see evaluation.results.prepare_csv/finalize_csv); this
+every resumed run (see evaluation.storage.results.prepare_csv/finalize_csv); this
 script exists to repair files collected before that existed, or to recover
 if a future run somehow still produces duplicates (e.g. the .lock file was
 deleted mid-run).
@@ -23,8 +23,9 @@ import shutil
 import sys
 from pathlib import Path
 
-from .config import ALL_PROFILES, COORD_SPACES, DATASET_DIR, IMAGES_DIR, LABELS_DIR
+from ..config import ALL_PROFILES, COORD_SPACES, DATASET_DIR, IMAGES_DIR, LABELS_DIR
 from .results import (
+    CSV_COLUMNS,
     PROMPT_MODE_TREE,
     PROMPT_MODE_VISION,
     CsvLockError,
@@ -33,9 +34,8 @@ from .results import (
     prepare_csv,
     release_lock,
 )
-from .targets import build_expected_keys
-from .results import CSV_COLUMNS
-from .scoring import get_png_dimensions, hit_test, parse_coordinates, to_pixel_space
+from ..grounding.targets import build_expected_keys
+from ..grounding.scoring import get_png_dimensions, hit_test, parse_coordinates, to_pixel_space
 
 WITH_TREE_SUFFIX = "_with_tree"
 

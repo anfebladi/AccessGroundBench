@@ -129,7 +129,7 @@ def build_expected_keys(
 
     Order is screen (as given) outer, profile (as given) middle, target
     (harvest order) inner -- this is the single canonical ordering that
-    evaluation.results.prepare_csv/finalize_csv sort result rows into, so a
+    evaluation.storage.results.prepare_csv/finalize_csv sort result rows into, so a
     fresh collection and a repaired one are byte-comparable rather than
     differing by whatever order resume history happened to produce.
 

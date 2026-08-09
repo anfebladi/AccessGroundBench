@@ -3,12 +3,12 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
-from evaluation.results import STATUS_CO_PRESENT
-from .data import index_rows, load_results, reclassify_label_changed, reclassify_off_frame
+from evaluation.storage.results import STATUS_CO_PRESENT
+from ..data.results import index_rows, load_results, reclassify_label_changed, reclassify_off_frame
 from .grounding import ALPHA
 from .output import _fmt
-from .samples import DEFAULT_SAMPLE, compute_b2_targets, target_excluded_for_condition
-from .stats import mcnemar_test
+from ..data.samples import DEFAULT_SAMPLE, compute_b2_targets, target_excluded_for_condition
+from ..stats import mcnemar_test
 
 
 def run_cross_comparison(

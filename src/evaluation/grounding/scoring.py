@@ -9,7 +9,7 @@ def get_png_dimensions(image_path: str | Path) -> tuple[int, int]:
     """Extract width and height from a PNG file without external libraries.
 
     Lives here (no external deps) so
-    ``analysis.data.reclassify_off_frame`` can reuse
+    ``analysis.data.results.reclassify_off_frame`` can reuse
     it for offline box-vs-image checks without importing the provider chain.
     """
     with open(image_path, "rb") as f:

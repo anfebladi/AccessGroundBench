@@ -33,7 +33,7 @@ STATUS_API_ERROR = "api_error"
 
 # The element is still rendered somewhere in the modified layout, but its
 # label text no longer matches the baseline string exactly -- reflow
-# truncated or re-worded it (see evaluation.targets.locate_element). This is
+# truncated or re-worded it (see evaluation.grounding.targets.locate_element). This is
 # neither "the model looked in the wrong place" (co_present) nor "the element
 # left the screen" (off_screen), so it gets its own status rather than being
 # folded into either. Not queried or scored, since whether/how such a target
@@ -69,7 +69,7 @@ def canonicalize_rows(
     For each key, drops:
       - the row entirely, if its key is not in expected_keys (a stale
         target -- the harvested target set changed since this row was
-        collected, e.g. evaluation.targets.invalid_targets excluding it after
+        collected, e.g. evaluation.grounding.targets.invalid_targets excluding it after
         the fact);
       - every api_error row, once any real (non-api_error) row exists for
         that key -- api_error means the model was never actually asked the
@@ -307,7 +307,7 @@ def finalize_csv(
         never run against this file, or a row was appended after it).
 
     On a clean file, rewrites it sorted into expected_key_order -- screen,
-    then profile, then target (see evaluation.targets.build_expected_keys) --
+    then profile, then target (see evaluation.grounding.targets.build_expected_keys) --
     so two independent collection runs produce byte-comparable files instead
     of one whose row order is an artifact of resume history.
     """

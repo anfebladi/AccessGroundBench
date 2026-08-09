@@ -15,7 +15,7 @@ from .config import (
     resolve_trials,
     resolve_use_a11y_tree,
 )
-from .results import (
+from .storage.results import (
     PROMPT_MODE_TREE,
     PROMPT_MODE_VISION,
     CsvLockError,
@@ -26,7 +26,7 @@ from .results import (
     release_lock,
 )
 from .runner import evaluate_screen, summarize_run
-from .targets import build_expected_keys
+from .grounding.targets import build_expected_keys
 from .providers import model_configuration_error, validate_coord_space
 
 load_dotenv()

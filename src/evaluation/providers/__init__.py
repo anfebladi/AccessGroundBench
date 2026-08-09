@@ -8,7 +8,7 @@ from .config import (
 )
 from .ferret import build_ferret_prompt
 from .hosted import call_vlm, image_to_data_url
-from .prompting import (
+from .coord_prompting import (
     GEMINI_SPACE_NORMALIZED,
     GEMINI_SPACE_PIXEL,
     GEMINI_SPACE_UNVERIFIED,

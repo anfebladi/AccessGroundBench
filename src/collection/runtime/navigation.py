@@ -48,7 +48,7 @@ DENY_TEXTS = (
 )
 
 
-from .screens import SCREEN_TARGETS, ScreenTarget, TapTarget, get_screen_target
+from ..screens import SCREEN_TARGETS, ScreenTarget, TapTarget, get_screen_target
 
 
 # ---------------------------------------------------------------------------

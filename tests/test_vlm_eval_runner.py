@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from evaluation.results import (
+from evaluation.storage.results import (
     STATUS_API_ERROR,
     STATUS_CO_PRESENT,
     STATUS_LABEL_CHANGED,

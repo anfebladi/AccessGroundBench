@@ -6,7 +6,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from evaluation.results import (
+from evaluation.storage.results import (
     PROMPT_MODE_VISION,
     STATUS_API_ERROR,
     STATUS_CO_PRESENT,
@@ -14,8 +14,8 @@ from evaluation.results import (
     STATUS_OFF_FRAME,
     STATUS_OFF_SCREEN,
 )
-from evaluation.scoring import get_png_dimensions
-from evaluation.targets import locate_element
+from evaluation.grounding.scoring import get_png_dimensions
+from evaluation.grounding.targets import locate_element
 
 WITH_TREE_SUFFIX = "_with_tree"
 
@@ -104,7 +104,7 @@ def index_rows(rows: list[dict]) -> dict[tuple[str, str, str], dict]:
             f"[WARN] {len(duplicates)} duplicate (screen, target_text, profile) "
             f"key(s) found among {len(rows)} rows; kept the first real "
             "(non-api_error) row for each and ignored the rest. This CSV "
-            "should be canonicalized (evaluation.results.canonicalize_rows / "
+            "should be canonicalized (evaluation.storage.results.canonicalize_rows / "
             "finalize_csv) rather than analyzed repeatedly in this state."
         )
 

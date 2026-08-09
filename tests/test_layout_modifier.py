@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
 
-from collection import profiles as lm
+from collection.runtime import profiles as lm
 
 
 class FontScaleVerificationTests(unittest.TestCase):

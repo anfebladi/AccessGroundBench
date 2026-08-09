@@ -7,8 +7,8 @@ from pathlib import Path
 from unittest import mock
 
 from collection import cli as collection_cli
-from collection import profiles as layout_modifier
-from collection import manifest as collection_manifest
+from collection.runtime import profiles as layout_modifier
+from collection.artifacts import manifest as collection_manifest
 from collection import workflow
 
 

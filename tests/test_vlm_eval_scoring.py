@@ -1,6 +1,6 @@
 import unittest
 
-from evaluation.scoring import (
+from evaluation.grounding.scoring import (
     PARSE_BRACKET,
     PARSE_FAILED,
     PARSE_LOOSE,

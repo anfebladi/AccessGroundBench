@@ -8,7 +8,7 @@ from pathlib import Path
 from .providers import call_vlm
 
 from .config import ALL_PROFILES, DEFAULT_COORD_SPACE, IMAGES_DIR, LABELS_DIR
-from .results import (
+from .storage.results import (
     PROMPT_MODE_TREE,
     PROMPT_MODE_VISION,
     STATUS_API_ERROR,
@@ -18,16 +18,16 @@ from .results import (
     STATUS_OFF_SCREEN,
     append_result,
 )
-from .scoring import (
+from .grounding.scoring import (
     PARSE_FAILED,
     get_png_dimensions,
     hit_test,
     parse_coordinates_detailed,
     to_pixel_space,
 )
-from .targets import MATCH_EXACT, harvest_targets, locate_element
+from .grounding.targets import MATCH_EXACT, harvest_targets, locate_element
 
-from .prompting import (
+from .grounding.task_prompting import (
     PROMPT_TEMPLATE,
     PROMPT_TEMPLATE_WITH_TREE,
     build_tree_text,

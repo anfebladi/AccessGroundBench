@@ -3,8 +3,8 @@
 import argparse
 import sys
 
-from .maintenance import canonicalize_main as _canonicalize_main
-from .maintenance import rescore_main as _rescore_main
+from .storage.maintenance import canonicalize_main as _canonicalize_main
+from .storage.maintenance import rescore_main as _rescore_main
 from .workflow import evaluate
 
 

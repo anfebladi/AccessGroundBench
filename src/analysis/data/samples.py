@@ -2,8 +2,8 @@
 from __future__ import annotations
 from collections import defaultdict
 
-from evaluation.results import STATUS_CO_PRESENT
-from evaluation.targets import MAX_TARGET_CHARS, box_contains
+from evaluation.storage.results import STATUS_CO_PRESENT
+from evaluation.grounding.targets import MAX_TARGET_CHARS, box_contains
 
 _FONT_DENSITY_PROFILES = (
     "elder_text_heavy", "elder_zoom_heavy", "elder_combo_max", "elder_combo_mid",

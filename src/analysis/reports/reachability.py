@@ -2,9 +2,9 @@
 from __future__ import annotations
 from collections import defaultdict
 
-from evaluation.results import STATUS_LABEL_CHANGED, STATUS_OFF_SCREEN
-from .samples import target_excluded_for_condition
-from .stats import wilson_interval
+from evaluation.storage.results import STATUS_LABEL_CHANGED, STATUS_OFF_SCREEN
+from ..data.samples import target_excluded_for_condition
+from ..stats import wilson_interval
 
 LABEL_CHANGED_MODES = ("exclude", "unreachable", "reachable")
 DEFAULT_LABEL_CHANGED_MODE = "unreachable"

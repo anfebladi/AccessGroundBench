@@ -17,7 +17,7 @@ from .config import (
     _normalize_compatible_base_url,
 )
 from .ferret import build_ferret_prompt, call_ferret, parse_ferret_bbox
-from .prompting import (
+from .coord_prompting import (
     GEMINI_SPACE_NORMALIZED,
     GEMINI_SPACE_PIXEL,
     GEMINI_SPACE_UNVERIFIED,

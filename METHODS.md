@@ -16,7 +16,7 @@ The three modes:
    comparison between any two result files, most often used to compare mode 1 against
    mode 2.
 
-All formulas below are implemented in `evaluation.scoring` and the `analysis` package.
+All formulas below are implemented in `evaluation.grounding.scoring` and the `analysis` package.
 Every number in the worked examples is regenerated from
 `dataset/experiment_2/` at the time this document is written, not copied from elsewhere.
 
@@ -49,7 +49,7 @@ For a target with ground-truth box `[x_min, y_min, x_max, y_max]` and a baseline
 `baseline_box`, a predicted point `(x_pred, y_pred)` scores a hit when it falls within the
 **baseline** box's width and height (not the current, possibly reflowed, box), centred on
 the current box's centre, expanded by a ±30 px touch tolerance
-(`evaluation.scoring.TOLERANCE = 30`):
+(`evaluation.grounding.scoring.TOLERANCE = 30`):
 
 ```
 w = (baseline_x_max - baseline_x_min) + 2·TOLERANCE
@@ -67,9 +67,9 @@ does not become an easier target just because it is bigger on screen.
 `x_pred, y_pred` are always absolute pixels in the cropped image's space. Getting there
 depends on the model, because several families (Gemini, Qwen-VL, GLM-V) answer on a
 **0–1000 normalized grid** regardless of the real image size. Those models are recognised
-by `evaluation.providers.prompting.uses_normalized_coords`, prompted on
+by `evaluation.providers.config.uses_normalized_coords`, prompted on
 the scale they already use, and their reply is converted by
-`evaluation.scoring.to_pixel_space`:
+`evaluation.grounding.scoring.to_pixel_space`:
 
 ```
 x_pred = int( round_1dp( x_reply / 1000 · img_width  ) )
@@ -87,7 +87,7 @@ the `ToPixelSpaceTests` regression coverage pins it over the full input space.
 
 Conversion is decided **per reply, not per model**. A normalized-convention model can
 still answer a given query in pixel space, and
-`evaluation.providers.prompting.classify_normalized_reply`
+`evaluation.providers.coord_prompting.classify_normalized_reply`
 records which happened in the `coord_space` column:
 
 | `coord_space` | meaning | converted? |
@@ -114,7 +114,7 @@ records which happened in the `coord_space` column:
 ### 1.2 Row status
 
 Every evaluated row carries one of three statuses
-(`evaluation.results`):
+(`evaluation.storage.results`):
 
 | Status | Meaning | Carries a score? |
 |---|---|---|
@@ -130,7 +130,7 @@ looked in the wrong place" — a confound that inflated significant results from
 ### 1.2.1 Cross-profile comparability of the co-present set
 
 **Across models the sample is identical.** `off_screen` is decided by
-`evaluation.targets.find_element_in_profile`, which reads only the captured
+`evaluation.grounding.targets.find_element_in_profile`, which reads only the captured
 label JSON — no model is involved. In `dataset/experiment_2/` all 7 models carry
 exactly 865 `co_present` and 140 `off_screen` rows with the same per-profile split, so
 the pooled and per-model tests share one sample. Per-model `n` can only diverge through
@@ -150,7 +150,7 @@ targets evicted are systematically the ones the models were already worst at:
 Kept + dropped is 168 on every row except `elder_text_heavy`, which sums to 165: the
 `photos_elder_text_heavy` capture is missing from the archive entirely, so that
 screen's 3 targets generated no rows at all in that profile. Going forward
-`collection.manifest.write_manifest` exits non-zero on exactly this
+`collection.artifacts.manifest.write_manifest` exits non-zero on exactly this
 kind of gap.
 
 The mechanism is that harsher layouts evict long text first, and long text is what
@@ -194,13 +194,13 @@ Both are the shape of Gmail's `viewified_conversation_item_view` row nodes: one
 which are already separate, individually-visible targets. Asking a model to locate that
 concatenation is not asking it to find a rendered label.
 
-`evaluation.targets.invalid_targets` applies this filter at harvest time, before any
+`evaluation.grounding.targets.invalid_targets` applies this filter at harvest time, before any
 target is queried: `harvest_targets` never returns an invalid candidate, so no CSV row
 and no API call exists for it. This is a sample-*definition* rule, not a post-hoc
 statistical correction — it removes targets that were never valid instances of the
 grounding task, the same category of decision as requiring baseline-unique text.
 
-`analysis.samples.compute_b2_targets` recomputes the identical rule
+`analysis.data.samples.compute_b2_targets` recomputes the identical rule
 from a completed
 CSV's `co_present` rows. It exists for datasets collected before the harvest-time filter
 did (`dataset/experiment_2`, and any hosted-model CSV collected before this change),
@@ -217,7 +217,7 @@ container label enclosing a target with equally short text, e.g. two overlapping
 ### 1.3 The 2×2 contingency table
 
 For a set of paired (baseline, comparison) scores,
-`analysis.grounding.compute_contingency` counts:
+`analysis.reports.grounding.compute_contingency` counts:
 
 |  | Comparison PASS | Comparison FAIL |
 |---|---:|---:|
@@ -346,11 +346,11 @@ supplies enough discordant observations for the question to be answerable at all
 
 **Estimand, precisely.** This tests whether a profile degrades grounding *averaged over
 the models evaluated*. It is not a claim about any individual model — that is §1.4's job,
-run per model by `analysis.grounding.report_per_model`.
+run per model by `analysis.reports.grounding.report_per_model`.
 
 ### 1.9 Floor and ceiling power flags
 
-`analysis.grounding.power_flag` marks a per-model comparison as uninformative
+`analysis.reports.grounding.power_flag` marks a per-model comparison as uninformative
 in either direction:
 
 - **`floor`** — baseline accuracy < 50% (`FLOOR_ACC_THRESHOLD`). Most targets already
@@ -381,7 +381,7 @@ accuracy, relative to that same model's baseline?
 pixel** coordinates" against `PROMPT_TEMPLATE`'s "central **pixel (x, y)** coordinates" —
 a word-order difference that meant a vision-vs-tree comparison varied two things (tree
 presence *and* wording) instead of one. Both templates now share the identical sentence
-(`evaluation.prompting`). This is **mode 1's** `PROMPT_TEMPLATE`, unchanged by the
+(`evaluation.grounding.task_prompting`). This is **mode 1's** `PROMPT_TEMPLATE`, unchanged by the
 fix — the vision-only wording used for `dataset/experiment_2/` is byte-identical to what
 mode 1 sends today, so that archive stays comparable. It matters only for mode 2, noted
 in §3.
@@ -462,7 +462,7 @@ targets, where per-model McNemar has almost nothing left to detect. The pooled t
 
 **Trigger:** `USE_A11Y_TREE=true`. Same runner, `use_a11y_tree=True`. For hosted
 (vision-API) models, prompting with `PROMPT_TEMPLATE_WITH_TREE`, which appends a partial
-accessibility tree (`evaluation.prompting.build_tree_text`) to the
+accessibility tree (`evaluation.grounding.task_prompting.build_tree_text`) to the
 prompt: each visible element's best label
 and pixel bounds, `[x1,y1][x2,y2]`, absolute screenshot pixels. Results land in
 `dataset/evaluation_results_{model}_with_tree.csv`
@@ -484,7 +484,7 @@ permutation, per-model McNemar, and sign test all apply unchanged, run against t
 
 ### Analysis file discovery: vision and tree results are never pooled automatically
 
-`analysis.data.discover_result_csvs` globs
+`analysis.data.results.discover_result_csvs` globs
 `evaluation_results_*.csv` under `--data-dir` and
 **excludes** anything ending in `_with_tree` unless `--mode tree` is passed. Before this
 was added, the glob matched both suffixes, and `model_name_from_path` turned
@@ -497,8 +497,8 @@ maximally correlated, not independent measurements. Concretely: the sign test's 
 models down" (§2 worked example) would silently become "14/14" with zero new evidence,
 and the per-model Holm family would grow from 28 tests to 56, both without a single new
 observation. Every CSV row now also carries its own `prompt_mode` column
-(`vision`/`tree`; `evaluation.results`) as a second line of defence, and
-`analysis.data.load_results` defaults it to `vision` for archived CSVs that
+(`vision`/`tree`; `evaluation.storage.results`) as a second line of defence, and
+`analysis.data.results.load_results` defaults it to `vision` for archived CSVs that
 predate the column, so `dataset/experiment_2/`'s regression reproduction (CLAUDE.md §9)
 is unaffected.
 
@@ -508,7 +508,7 @@ intended way to compare a model's vision-only CSV against its `_with_tree` count
 
 ### The target must be withheld from its own tree entry
 
-`evaluation.prompting.build_tree_text(profile_labels,
+`evaluation.grounding.task_prompting.build_tree_text(profile_labels,
 exclude_text=target_text)` removes the target's own row
 from the injected tree before the prompt is built, so the model cannot simply read the
 answer's coordinates off the tree — it must still locate the element from the image, using
@@ -599,7 +599,7 @@ profiles generally *shrink* trees (fewer elements fit at larger font/density —
 expected to stay well inside budget; a screen would need to roughly double its element
 count to breach it.
 
-The leak-fix exclusion (`evaluation.prompting.collect_tree_rows`,
+The leak-fix exclusion (`evaluation.grounding.task_prompting.collect_tree_rows`,
 formerly folded into `build_tree_text`) is
 shared by both renderings: the hosted-model pixel format and Ferret's 0-1000 format are
 built from the same excluded row list, so the fix documented above holds for Ferret's
@@ -645,7 +645,7 @@ result and must not be cited as one.
 ## 4. Mode 3 — Cross-file comparison
 
 **Trigger:** `agb analyze --compare-a <fileA> --compare-b <fileB>`, which calls
-`analysis.comparison.run_cross_comparison`. Designed for, but not limited
+`analysis.reports.comparison.run_cross_comparison`. Designed for, but not limited
 to, comparing a mode-1 CSV against a mode-2 CSV for the same model.
 
 **Estimand, as currently implemented:** for a **given profile**, and for targets present

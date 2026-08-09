@@ -1,6 +1,6 @@
 import unittest
 
-from collection.diagnostics import (
+from collection.artifacts.diagnostics import (
     colour_only_contamination,
     drift_rate,
     loss_shape,

@@ -5,7 +5,10 @@ from __future__ import annotations
 import argparse
 import sys
 
-from . import capture, labels, profiles, workflow
+from .artifacts import labels
+from .pipeline import capture
+from .runtime import profiles
+from . import workflow
 from .screens import SCREENS
 
 

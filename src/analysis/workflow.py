@@ -3,14 +3,14 @@ from __future__ import annotations
 from pathlib import Path
 
 from evaluation.config import ALL_PROFILES
-from .data import (
+from .data.results import (
     discover_result_csvs, index_rows, load_results, model_name_from_path,
     reclassify_label_changed, reclassify_off_frame,
 )
-from .grounding import ALPHA, report_per_model, report_pooled, report_sign_test
-from .output import write_outputs
-from .reachability import report_label_changed_breakdown, report_reachability
-from .samples import SAMPLE_NAMES, compute_b2_targets
+from .reports.grounding import ALPHA, report_per_model, report_pooled, report_sign_test
+from .reports.output import write_outputs
+from .reports.reachability import report_label_changed_breakdown, report_reachability
+from .data.samples import SAMPLE_NAMES, compute_b2_targets
 
 EXPERIMENTAL_PROFILES = [p for p in ALL_PROFILES if p != "baseline"]
 

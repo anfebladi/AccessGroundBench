@@ -6,7 +6,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from collection import capture as sp
+from collection.pipeline import capture as sp
 
 
 class ApplyColorTransformTests(unittest.TestCase):

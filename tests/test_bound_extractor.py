@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from collection.labels import extract
+from collection.artifacts.labels import extract
 
 XML_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
 <hierarchy rotation="0">

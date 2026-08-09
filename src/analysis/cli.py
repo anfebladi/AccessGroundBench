@@ -4,9 +4,9 @@ import argparse
 from pathlib import Path
 
 from paths import DATASET_DIR
-from .comparison import run_cross_comparison
-from .reachability import DEFAULT_LABEL_CHANGED_MODE, LABEL_CHANGED_MODES
-from .samples import DEFAULT_SAMPLE, SAMPLE_NAMES
+from .reports.comparison import run_cross_comparison
+from .reports.reachability import DEFAULT_LABEL_CHANGED_MODE, LABEL_CHANGED_MODES
+from .data.samples import DEFAULT_SAMPLE, SAMPLE_NAMES
 from .stats import DEFAULT_PERMUTATIONS
 from .workflow import EXPERIMENTAL_PROFILES, run_analysis
 

@@ -4,8 +4,9 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 
-from analysis import comparison, data, grounding, reachability, samples
-from evaluation import results
+from analysis.reports import comparison, grounding, reachability
+from analysis.data import results as data, samples
+from evaluation.storage import results
 
 
 # Keep this broad historical regression suite readable while exercising the

@@ -2,9 +2,9 @@
 from __future__ import annotations
 from collections import defaultdict
 
-from evaluation.results import STATUS_CO_PRESENT
-from .samples import target_excluded_for_condition
-from .stats import (
+from evaluation.storage.results import STATUS_CO_PRESENT
+from ..data.samples import target_excluded_for_condition
+from ..stats import (
     cluster_permutation_test,
     conditional_odds_ratio,
     holm_bonferroni,

@@ -18,7 +18,7 @@ from paths import PROJECT_ROOT
 
 from .imaging import COLOR_TRANSFORMS, apply_color_transform, crop_screenshot
 
-from .device import (
+from ..runtime.device import (
     get_device_serial,
     get_system_bar_heights,
     resolve_adb,

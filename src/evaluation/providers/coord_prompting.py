@@ -106,7 +106,7 @@ def classify_normalized_reply(raw_text: str) -> str:
     UNVERIFIED.
 
     Classification only. The reply text is returned to the caller verbatim and
-    the pixel conversion happens in the runner (evaluation.scoring.to_pixel_space),
+    the pixel conversion happens in the runner (evaluation.grounding.scoring.to_pixel_space),
     driven by the space this returns. Converting here instead would discard the
     model's original answer, which is what made the already-collected Gemini
     rows impossible to re-score offline.

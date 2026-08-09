@@ -38,7 +38,9 @@ The command-line adapter is ``collection.cli.collect_main``.
 import json
 import sys
 
-from . import capture, labels, manifest, navigation, profiles
+from .artifacts import labels, manifest
+from .pipeline import capture
+from .runtime import navigation, profiles
 from .screens import SCREENS
 
 from paths import (

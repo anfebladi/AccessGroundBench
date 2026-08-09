@@ -76,9 +76,17 @@ AccessGroundBench/
 ├── src/
 │   ├── cli.py                # Unified `agb` command dispatcher
 │   ├── paths.py              # Repository and dataset path resolution
-│   ├── collection/           # ADB, navigation, profiles, capture, labels, diagnostics
-│   ├── evaluation/           # Configuration, targets, scoring, results, providers, workflow
-│   └── analysis/             # Reachability, grounding statistics, comparisons, outputs
+│   ├── collection/
+│   │   ├── runtime/          # Device, navigation, and accessibility profiles
+│   │   ├── pipeline/         # Screenshot and UI-hierarchy capture pipeline
+│   │   └── artifacts/        # Labels, manifests, and collection diagnostics
+│   ├── evaluation/
+│   │   ├── grounding/        # Targets, prompts, and coordinate scoring
+│   │   ├── storage/          # Result persistence, locking, and maintenance
+│   │   └── providers/        # Hosted/native VLM adapters, config, and retries
+│   └── analysis/
+│       ├── data/              # Result loading and analysis sample preparation
+│       └── reports/           # Reachability, grounding, comparison, and outputs
 │
 ├── ferret_ui/                # Local Ferret-UI inference server (optional)
 │   ├── ferret_server.py      # FastAPI server wrapping the Ferret-UI model
@@ -183,7 +191,7 @@ corner. The result is near-0% accuracy on every row, and McNemar reports
 mistaken for a weak model.
 
 Models known to answer on the 0-1000 grid are recognised automatically by
-`evaluation.providers.prompting.uses_normalized_coords` (Gemini,
+`evaluation.providers.config.uses_normalized_coords` (Gemini,
 Qwen, GLM). They are sent a
 prompt that states the scale explicitly, and a reply whose values fall outside
 0-1000 is retried once with a stricter restatement before being recorded as
@@ -297,7 +305,7 @@ Six layout profiles are applied programmatically to the emulator before each scr
 ### Profile verification
 
 Every profile is read back from the device after it is applied
-(`collection.profiles.verify_profile`), and a mismatch aborts that
+(`collection.runtime.profiles.verify_profile`), and a mismatch aborts that
 capture rather than
 producing data that measures the wrong condition. Profiles with a visible signature are
 additionally checked against the captured assets:
@@ -524,7 +532,7 @@ The `uiautomator dump` command hangs when a system popup is covering the screen.
 
 The app had not finished rendering when `uiautomator dump` was called. The collection
 workflow retries automatically. If this persists, inspect the settle-delay configuration
-in `collection.profiles`.
+in `collection.runtime.profiles`.
 
 ### Evaluator reports no screens found
 
@@ -560,7 +568,7 @@ under the unmodified baseline layout. Possible causes:
 - Prompt format mismatch (especially for Ferret-UI — it requires its specific training prompt)
 - Model has no vision capability
 - Bounding boxes are too small relative to model prediction precision (inspect
-  `TOLERANCE` in `evaluation.scoring`)
+  `TOLERANCE` in `evaluation.grounding.scoring`)
 
 ---
 

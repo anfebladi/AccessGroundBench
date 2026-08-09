@@ -49,14 +49,14 @@ STAGE 1 — COLLECT (needs a live Android emulator)
     for each of 13 screens, capture 7 assets:
       baseline -> 5 experimental profiles -> baseline_close (drift probe)
     per capture:
-      collection.profiles.apply_profile()  # font / density / rtl / daltonizer
+      collection.runtime.profiles.apply_profile()  # font / density / rtl / daltonizer
         └─ verify_profile()                # read all four vectors back; raise on mismatch
-      collection.navigation.navigate_to_screen() # launch and validate app
-      collection.capture.run_pipeline() # dump -> capture -> crop -> colour
-      collection.navigation.validate_xml_package() # validate captured app
-      collection.labels.run() # XML -> JSON boxes in cropped space
-      collection.diagnostics.* # empirical capture diagnostics
-    then: collection.manifest measures drift and writes manifest;
+      collection.runtime.navigation.navigate_to_screen() # launch and validate app
+      collection.pipeline.capture.run_pipeline() # dump -> capture -> crop -> colour
+      collection.runtime.navigation.validate_xml_package() # validate captured app
+      collection.artifacts.labels.run() # XML -> JSON boxes in cropped space
+      collection.artifacts.diagnostics.* # empirical capture diagnostics
+    then: collection.artifacts.manifest measures drift and writes manifest;
           exit 1 on any gap
   ->  dataset/{images,raw_xml,labels}/{screen}_{profile}.*
       dataset/collection_manifest.json
@@ -64,11 +64,11 @@ STAGE 1 — COLLECT (needs a live Android emulator)
 STAGE 2 — EVALUATE (offline, no emulator)
   agb evaluate → evaluation.workflow
     discover screens from dataset/labels/*_baseline.json
-    evaluation.targets.harvest_targets() # baseline-unique texts
+    evaluation.grounding.targets.harvest_targets() # baseline-unique texts
     for each (target × profile):
       absent from this layout -> status=off_screen, NO score (never queried)
       else evaluation.runner.evaluate_screen() # trial lifecycle
-           evaluation.scoring.hit_test() # baseline-sized box, ±30px
+           evaluation.grounding.scoring.hit_test() # baseline-sized box, ±30px
   ->  dataset/evaluation_results_{model_id}.csv   (appends; resumable)
 
 STAGE 3 — ANALYSE
@@ -130,7 +130,7 @@ mirroring across every screen — see §6. The arm is dropped, not just unverifi
 `ELDER_PROFILES` entry requests `rtl="1"` anymore.
 
 The colour filter is applied **in software to the PNG** (Machado et al. 2009 severity-1.0
-matrix, `collection.imaging.COLOR_TRANSFORMS`) because `adb screencap`
+matrix, `collection.pipeline.imaging.COLOR_TRANSFORMS`) because `adb screencap`
 reads display
 buffers *before* Android's hardware daltonizer. The on-device daltonizer is still
 toggled via ADB, which has a side effect — see §6.3.
@@ -177,12 +177,12 @@ with the main project. Needs ~10 GB VRAM.
 
 **Normalized-coordinate models.** Gemini, Qwen-VL and GLM-V answer on a 0–1000 grid
 rather than in pixels.
-`evaluation.providers.prompting.uses_normalized_coords`
+`evaluation.providers.config.uses_normalized_coords`
 recognises them (Ferret-UI is excluded — it converts its own output), they get
-`evaluation.providers.prompting.build_normalized_prompt`, and
-`evaluation.scoring.to_pixel_space` converts the reply. The decision is
+`evaluation.providers.coord_prompting.build_normalized_prompt`, and
+`evaluation.grounding.scoring.to_pixel_space` converts the reply. The decision is
 **per reply, not
-per model**: `evaluation.providers.prompting.classify_normalized_reply`
+per model**: `evaluation.providers.coord_prompting.classify_normalized_reply`
 writes `normalized` / `pixel` / `unverified`
 to the `coord_space` column and only `normalized` is scaled. `COORD_SPACE` remains a
 manual override for unregistered models;
@@ -268,20 +268,20 @@ landed and covered by tests.
 | Defect | Fix | Where |
 |---|---|---|
 | Off-screen targets auto-scored 0 without querying the model | `status` column; absent targets get `off_screen` and **no** score; analysis restricted to `co_present` | `evaluation.runner`, `.results`, and `analysis` |
-| RTL setting key never read by Android | write `debug.force_rtl` as both setting and system property | `collection.profiles.apply_rtl` |
-| Nothing verified a profile applied | read all four vectors back; raise `ProfileVerificationError` | `collection.profiles.verify_profile` |
-| RTL mirroring never checked visually | mirror check added on captured hierarchy — then, on re-collection, measured 0% mirrored across every screen even with the corrected setting key; the arm was dropped and renamed `elder_combo_mid` rather than kept as a nominal RTL condition, and the now-pointless check was removed | `collection.profiles.ELDER_PROFILES`; historical check was in the former capture diagnostics |
-| Colour transform could silently no-op | before/after diff inside the transform; raises on zero change | `collection.imaging.apply_color_transform` |
-| Content drift never measured | baseline-open / baseline-close bracketing per screen | `collection.manifest.measure_drift` |
-| Missing capture failed silently | completion manifest; run exits non-zero on any gap | `collection.manifest.write_manifest` |
+| RTL setting key never read by Android | write `debug.force_rtl` as both setting and system property | `collection.runtime.profiles.apply_rtl` |
+| Nothing verified a profile applied | read all four vectors back; raise `ProfileVerificationError` | `collection.runtime.profiles.verify_profile` |
+| RTL mirroring never checked visually | mirror check added on captured hierarchy — then, on re-collection, measured 0% mirrored across every screen even with the corrected setting key; the arm was dropped and renamed `elder_combo_mid` rather than kept as a nominal RTL condition, and the now-pointless check was removed | `collection.runtime.profiles.ELDER_PROFILES`; historical check was in the former capture diagnostics |
+| Colour transform could silently no-op | before/after diff inside the transform; raises on zero change | `collection.pipeline.imaging.apply_color_transform` |
+| Content drift never measured | baseline-open / baseline-close bracketing per screen | `collection.artifacts.manifest.measure_drift` |
+| Missing capture failed silently | completion manifest; run exits non-zero on any gap | `collection.artifacts.manifest.write_manifest` |
 | No multiple-comparison correction | Holm–Bonferroni across the family | `analysis.stats.holm_bonferroni` |
 | Per-model tests underpowered; targets non-independent | pooled cluster permutation test | `analysis.stats.cluster_permutation_test` |
-| No ceiling check (floor check existed) | `Ceiling_Limited` above 95% baseline | `analysis.grounding.power_flag` |
+| No ceiling check (floor check existed) | `Ceiling_Limited` above 95% baseline | `analysis.reports.grounding.power_flag` |
 | p-values only, no effect sizes | Newcombe paired risk difference + conditional odds ratio | `analysis.stats` |
 | Single stochastic draw per query | `VLM_TEMPERATURE=0`, `VLM_TRIALS` majority vote, flip rate | `evaluation.providers` and `.runner` |
-| Crash discarded ~1000 paid API calls | append + skip completed keys; `--fresh` to restart | `evaluation.results.prepare_csv` |
-| First `n, n` pair in a reply could be scored | bracket-anchored parse first, loose fallback, method logged | `evaluation.scoring` |
-| Tree mode leaked 13.1% of targets' names+bounds via `content_desc` fallback, letting the model read the answer off the tree | exclude on the rendered label (full fallback chain), not on `text` alone; re-measured leak rate 0/168 | `evaluation.prompting.build_tree_text` |
+| Crash discarded ~1000 paid API calls | append + skip completed keys; `--fresh` to restart | `evaluation.storage.results.prepare_csv` |
+| First `n, n` pair in a reply could be scored | bracket-anchored parse first, loose fallback, method logged | `evaluation.grounding.scoring` |
+| Tree mode leaked 13.1% of targets' names+bounds via `content_desc` fallback, letting the model read the answer off the tree | exclude on the rendered label (full fallback chain), not on `text` alone; re-measured leak rate 0/168 | `evaluation.grounding.task_prompting.build_tree_text` |
 
 ### Still open
 
@@ -300,7 +300,7 @@ landed and covered by tests.
 - **`play_store` drift, resolved.** Its rotating carousel produced 5 of 11 drifted
   texts in the archive; re-collection's offline drift rebuild
   (`agb collect --rebuild-manifest`, backed by
-  `collection.manifest.rebuild_screen`, 2026-07-30) measures 0.0%
+  `collection.artifacts.manifest.rebuild_screen`, 2026-07-30) measures 0.0%
   for `play_store` in the current
   dataset — the carousel did not rotate during this run's capture window. Not
   guaranteed to stay that way on a future re-collection; re-check rather than assume.
@@ -322,7 +322,7 @@ landed and covered by tests.
   bounds show a uniform 323px shift for every element between `baseline` and
   `colorblind_deuteranomaly`, with image dimensions unchanged. It also persists into
   `baseline_close`, which applies the `baseline` profile (daltonizer off) beforehand.
-  Investigated as a possible teardown leak in `collection.profiles` — it is not one:
+  Investigated as a possible teardown leak in `collection.runtime.profiles` — it is not one:
   `apply_profile("baseline")` and `reset_all` both correctly write
   `accessibility_display_daltonizer_enabled=0` and it verifies clean, including in
   the exact colorblind→baseline sequence the collection workflow runs (regression tests in
@@ -331,7 +331,7 @@ landed and covered by tests.
   out-of-band via `adb shell settings put` (rather than through the Settings UI)
   appears to trigger a persistent banner on the Display page that a value revert
   alone does not clear — the same category of problem as the RTL reflow issue in
-  `collection.profiles` (needs a full app restart, which nothing in this pipeline
+  `collection.runtime.profiles` (needs a full app restart, which nothing in this pipeline
   currently does). Exclude `settings_display` from the colorblind arm; this is not
   fixable by reordering or re-verifying the setting.
 - **Ferret-UI parse robustness.** 15 unparsed replies in the archive, versus 0–1 for
@@ -364,7 +364,7 @@ automated pass/fail.
 
 - **Coordinate space.** Labels are shifted into *cropped-image* space: status-bar
   height subtracted from all y values, nav bar removed from the bottom
-  (`collection.labels.extract(y_offset=, bottom_crop=)`). Bar heights come from
+  (`collection.artifacts.labels.extract(y_offset=, bottom_crop=)`). Bar heights come from
   `dumpsys window displays` and **change with density**, so image dimensions differ
   between profiles. Never compare raw y values across profiles without accounting for this.
 - **Scoring uses baseline geometry.** `hit_test` builds a box of *baseline* width/height
@@ -374,7 +374,7 @@ automated pass/fail.
 - **Targets come from baseline only** and must appear exactly once there. Duplicated
   text is dropped entirely, which is why 175 baseline texts yield 168 targets.
 - **A third filter removes targets that are not one rendered label**
-  (`evaluation.targets.invalid_targets`): text longer than
+  (`evaluation.grounding.targets.invalid_targets`): text longer than
   `MAX_TARGET_CHARS` (100), or a
   box that fully encloses another target's box on the same screen. Both are the shape of
   an Android list-row container node -- Gmail's conversation rows synthesize a single
@@ -384,7 +384,7 @@ automated pass/fail.
   (162 -> 155 targets overall). Applied at harvest time, before any model is queried --
   querying it anyway was what made Ferret-UI's fine-tuned reply format (which echoes the
   target string before the box) spend 38 minutes generating a reply for one 297-char
-  target. `analysis.samples.compute_b2_targets` recomputes the same
+  target. `analysis.data.samples.compute_b2_targets` recomputes the same
   rule from a CSV's rows,
   for datasets collected before this filter existed (`dataset/experiment_2`, and any
   hosted-model CSV collected before this change) that still contain the excluded rows.

@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from evaluation.results import (
+from evaluation.storage.results import (
     CSV_COLUMNS,
     PROMPT_MODE_TREE,
     PROMPT_MODE_VISION,

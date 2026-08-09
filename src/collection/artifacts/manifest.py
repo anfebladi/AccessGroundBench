@@ -9,7 +9,8 @@ from pathlib import Path
 
 from paths import IMAGES_DIR, LABELS_DIR, MANIFEST_PATH, RAW_XML_DIR
 
-from . import diagnostics, profiles
+from . import diagnostics
+from ..runtime import profiles
 
 DRIFT_PROBE = "baseline_close"
 DRIFT_WARN_RATIO = 0.05

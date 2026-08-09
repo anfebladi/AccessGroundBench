@@ -42,3 +42,9 @@
 - Invoke `redundancy-worker` after refactoring, consolidation, migration, reorganization, or meaningful code deletion.
 - Limit review to the changed paths and current diff. The worker must not modify files.
 - Treat its output as review feedback; address only findings supported by evidence and relevant to the requested work.
+
+### docs-worker
+
+- Invoke `docs-worker` only when behavior, APIs, setup, configuration, architecture, deployment, or operations change.
+- Assign only directly related documentation files. The worker must not modify application code, tests, migrations, or configuration.
+- The worker reports documentation files changed and summarizes each update.
