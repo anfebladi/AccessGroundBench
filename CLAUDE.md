@@ -36,8 +36,8 @@ stated limitations are required, not optional.
 
 > **For the full mathematics** — every formula, its rationale, and a worked example for
 > all three evaluation modes (vision-only, tree-injected, cross-file) — see
-> [`METHODS.md`](METHODS.md). This file's §5–6 below summarise results and defect
-> history; `METHODS.md` is the canonical statistics reference.
+> [`docs/methods.md`](docs/methods.md). This file's §5–6 below summarise results and defect
+> history; `docs/methods.md` is the canonical statistics reference.
 
 ---
 
@@ -193,7 +193,7 @@ value for any model that self-describes, rather than converting twice.
 > collected after the coordinate unification (merged 2026-08-08). Earlier Gemini rows
 > store the already-converted pixel value, so `agb rescore` cannot re-derive them.
 > Those rows' `x_pred`/`y_pred`/`score` stay authoritative. Full detail in
-> [`METHODS.md`](METHODS.md) §1.1.1 — including why `to_pixel_space` quantizes to one
+> [`docs/methods.md`](docs/methods.md) §1.1.1 — including why `to_pixel_space` quantizes to one
 > decimal (dropping it moves 267 of 3003 possible replies by a pixel and can flip a
 > score at a box edge).
 
@@ -237,7 +237,7 @@ Direction for font scaling: **10/11 models down, 1 tied**, sign test p = 0.00195
    inflation actually trends helpful, since targets get bigger. `elder_combo_max` is
    **not** claimable either way: it drops 43 of 155 targets, so its null is measured on
    the easiest 112 and is a selection artefact as much as a result (§6 "Still open",
-   `METHODS.md` §1.2.1).
+   `docs/methods.md` §1.2.1).
 
 **Robustness split that must be reported.** `gpt-5.4` (54.8% baseline) and `gpt-5.4-mini`
 (34.2%) are the only two models with real headroom and supply **289 of 501** discordant
@@ -296,7 +296,7 @@ landed and covered by tests.
   baseline accuracy vs 85.3%). This inflates the baseline arm itself: `gpt-5.4` reads
   51.2% over all 168 targets but 67.9% on combo_max's 112. **Do not report "the
   combined profile does not harm grounding"** — that null is measured on the easiest
-  third that survived. Full numbers and rationale in `METHODS.md` §1.2.1.
+  third that survived. Full numbers and rationale in `docs/methods.md` §1.2.1.
 - **`play_store` drift, resolved.** Its rotating carousel produced 5 of 11 drifted
   texts in the archive; re-collection's offline drift rebuild
   (`agb collect --rebuild-manifest`, backed by

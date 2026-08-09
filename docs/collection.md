@@ -4,6 +4,7 @@ This guide covers the reproducible live-capture workflow behind
 `dataset/collection_manifest.json`. Install the project and prepare the
 emulator as described in [`setup.md`](setup.md) before starting. For command
 syntax, see the [`agb collect` reference](cli-reference.md#agb-collect).
+For an operator-facing checklist, see the [live collection runbook](runbooks/collection.md).
 
 ## Prerequisites
 
@@ -91,4 +92,4 @@ not capture new assets. With `--screens`, selected screen records are rebuilt,
 while other existing screen records are preserved in the merged manifest.
 Inspect any reported `problems` before evaluation. For device, navigation, or
 provider failures, see [`troubleshooting.md`](troubleshooting.md); measurement
-assumptions and estimands are in [`METHODS.md`](../METHODS.md).
+assumptions and estimands are in [`methods.md`](methods.md).

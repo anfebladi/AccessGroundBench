@@ -1,3 +1,15 @@
+## Project context
+
+- `agb` is the unified command dispatcher. The main source areas are `src/collection`, `src/evaluation`, and `src/analysis`; the Ferret UI lives in `ferret_ui`, tests live in `tests`, local inputs and outputs in `dataset`, and operator documentation in `docs`.
+- Development uses Python 3.11 or newer. Install with `uv sync`; prefer the `agb` command and the CLI reference when documenting or invoking workflows.
+
+## Workflow and safety
+
+- Run the full test suite with `uv run python -m unittest discover -s tests -p "test_*.py"`; for behavior changes, also run the narrowest relevant tests. For documentation-only edits, run `git diff --check`.
+- Treat `.env` as sensitive: never add credentials, and do not change the selected model or provider implicitly. `agb evaluate` calls external providers, may incur cost, resumes through a lock by default, and `--fresh` discards and recreates the result CSV.
+- `agb collect`, `agb profile`, and `agb capture` mutate emulator state or captures; require explicit user authorization and preserve/reset a known baseline. `agb analyze` rewrites reports. `agb canonicalize` and non-check `agb rescore` rewrite CSVs with backups; `agb rescore --check` is read-only.
+- `agb collect --rebuild-manifest` works offline from existing assets but overwrites/merges the manifest for selected records while preserving other existing records. The archived `dataset/experiment_2` is historical and must not be cited as current evidence. There is no current RTL profile.
+
 ## Main orchestrator
 
 - The primary agent coordinates delegated work by default.
@@ -48,3 +60,18 @@
 - Invoke `docs-worker` only when behavior, APIs, setup, configuration, architecture, deployment, or operations change.
 - Assign only directly related documentation files. The worker must not modify application code, tests, migrations, or configuration.
 - The worker reports documentation files changed and summarizes each update.
+
+## Documentation authority
+
+Keep durable guidance in the canonical documents below; link to them instead of duplicating command specifications:
+
+- [Setup](docs/setup.md) — installation, environment, and emulator preparation.
+- [CLI reference](docs/cli-reference.md) — `agb` command syntax and effects.
+- [Collection guide](docs/collection.md) and [collection runbook](docs/runbooks/collection.md) — capture reference and live operator procedure.
+- [Evaluation runbook](docs/runbooks/evaluation.md) — evaluating existing captures and reporting.
+- [Ferret UI](docs/ferret-ui.md) — Ferret setup and operation.
+- [Troubleshooting](docs/troubleshooting.md) — common failures and recovery.
+- [Methods](docs/methods.md) — analysis methodology and interpretation.
+- [CLAUDE.md](CLAUDE.md) — architecture, invariants, and current project status.
+
+Update this guide when public behavior, configuration, operations, or methodology changes; keep detailed command specs in the CLI reference and avoid duplicating them here.

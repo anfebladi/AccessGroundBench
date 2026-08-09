@@ -1,26 +1,23 @@
-# METHODS
+# AccessGroundBench methods
 
-The mathematics behind AccessGroundBench's three evaluation modes, in one place. Each
-mode asks a different question of the same underlying data, and two of them have
-validity constraints that are invisible from the CSV output alone. This document states,
-per mode: the estimand, the unit of analysis, which formulas apply, a worked example,
-and — just as important — what the mode cannot tell you.
+This hub explains the estimands, validity constraints, formulas, examples, and
+limitations for all three evaluation modes. Start with [§1 Shared foundations](#1-shared-foundations), then read the section for the mode being run:
 
-The three modes:
+- [§2 Vision-only](#2-mode-1--vision-only) — `USE_A11Y_TREE=false`
+- [§3 Tree-injected](#3-mode-2--tree-injected) — `USE_A11Y_TREE=true`
+- [§4 Cross-file comparison](#4-mode-3--cross-file-comparison) — `agb analyze --compare-a --compare-b`
 
-1. **Vision-only** (`USE_A11Y_TREE=false`) — does an accessibility profile change a
-   VLM's grounding accuracy?
-2. **Tree-injected** (`USE_A11Y_TREE=true`) — the same question, with a partial
-   accessibility tree given to the model alongside the image.
-3. **Cross-file comparison** (`agb analyze --compare-a --compare-b`) — a direct
-   comparison between any two result files, most often used to compare mode 1 against
-   mode 2.
+The mode comparison and file reference are kept below for quick navigation.
 
-All formulas below are implemented in `evaluation.grounding.scoring` and the `analysis` package.
-Every number in the worked examples is regenerated from
-`dataset/experiment_2/` at the time this document is written, not copied from elsewhere.
+## Contents
 
----
+- [§0 Symbol table](#0-symbol-table)
+- [§1 Shared foundations](#1-shared-foundations)
+- [§2 Mode 1 — Vision-only](#2-mode-1--vision-only)
+- [§3 Mode 2 — Tree-injected](#3-mode-2--tree-injected)
+- [§4 Mode 3 — Cross-file comparison](#4-mode-3--cross-file-comparison)
+- [§5 Mode comparison at a glance](#5-mode-comparison-at-a-glance)
+- [§6 File reference](#6-file-reference)
 
 ## 0. Symbol table
 
@@ -365,7 +362,10 @@ evidence of anything.
 
 ---
 
+---
+
 ## 2. Mode 1 — Vision-only
+
 
 **Trigger:** `USE_A11Y_TREE=false` (the default). Evaluated via
 `agb evaluate` → `evaluation.runner.evaluate_screen` with
@@ -458,7 +458,10 @@ targets, where per-model McNemar has almost nothing left to detect. The pooled t
 
 ---
 
+---
+
 ## 3. Mode 2 — Tree-injected
+
 
 **Trigger:** `USE_A11Y_TREE=true`. Same runner, `use_a11y_tree=True`. For hosted
 (vision-API) models, prompting with `PROMPT_TEMPLATE_WITH_TREE`, which appends a partial
@@ -642,7 +645,10 @@ result and must not be cited as one.
 
 ---
 
+---
+
 ## 4. Mode 3 — Cross-file comparison
+
 
 **Trigger:** `agb analyze --compare-a <fileA> --compare-b <fileB>`, which calls
 `analysis.reports.comparison.run_cross_comparison`. Designed for, but not limited
@@ -721,6 +727,8 @@ license the claim "the tree changes how much this profile degrades grounding." T
 existing `cluster_permutation_test` function (§1.8) needs no modification to run this;
 only the input construction differs — a straightforward addition once mode 2 has real
 data.
+
+---
 
 ---
 

@@ -15,7 +15,7 @@ The benchmark reports two distinct measurements:
 - **Grounding accuracy:** whether the model locates a target present in both
   layouts. Off-screen targets are not model failures.
 
-The full mathematical treatment is in [`METHODS.md`](METHODS.md).
+The full mathematical treatment is in [`docs/methods.md`](docs/methods.md).
 
 ## Requirements
 
@@ -33,8 +33,11 @@ cp .env.example .env
 ```
 
 See [`docs/setup.md`](docs/setup.md) for provider configuration, emulator
-preparation, and coordinate conventions. The step-by-step capture procedure is
-in [`docs/collection.md`](docs/collection.md).
+preparation, and coordinate conventions. The collection reference guide is in
+[`docs/collection.md`](docs/collection.md); use the [live collection runbook](docs/runbooks/collection.md)
+for an operator checklist.
+For evaluation using captures that already exist, follow the
+[`docs/runbooks/evaluation.md`](docs/runbooks/evaluation.md) runbook.
 
 ## Layout
 
@@ -60,9 +63,10 @@ agb rescore --csv dataset/evaluation_results_MODEL.csv --check
 ```
 
 Collection can be checked without an emulator with `agb collect --dry-run`.
-For the capture workflow and recovery options, see
-[`docs/collection.md`](docs/collection.md); for every command and option, see
-[`docs/cli-reference.md`](docs/cli-reference.md).
+For the capture reference and recovery options, see
+[`docs/collection.md`](docs/collection.md); for a live operator checklist, see
+[`docs/runbooks/collection.md`](docs/runbooks/collection.md). For every command
+and option, see [`docs/cli-reference.md`](docs/cli-reference.md).
 
 ## Documentation
 
@@ -71,8 +75,12 @@ For the capture workflow and recovery options, see
 - [`docs/cli-reference.md`](docs/cli-reference.md) — complete `agb` command
   reference
 - [`docs/collection.md`](docs/collection.md) — Android emulator collection
-  workflow, artifacts, validation, and recovery
+  reference: workflow, artifacts, validation, and recovery
+- [`docs/runbooks/collection.md`](docs/runbooks/collection.md) — live collection
+  operator checklist and stop/recovery actions
+- [`docs/runbooks/evaluation.md`](docs/runbooks/evaluation.md) — evaluation of
+  existing captures, prompt modes, coordinate checks, and reporting
 - [`docs/ferret-ui.md`](docs/ferret-ui.md) — optional local Ferret-UI server
 - [`docs/troubleshooting.md`](docs/troubleshooting.md) — common failures and
   remedies
-- [`METHODS.md`](METHODS.md) — formulas, estimands, and interpretation limits
+- [`docs/methods.md`](docs/methods.md) — formulas, estimands, and interpretation limits
