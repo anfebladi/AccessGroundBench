@@ -1,6 +1,6 @@
 import unittest
 
-from capture_checks import (
+from collection.diagnostics import (
     colour_only_contamination,
     drift_rate,
     loss_shape,

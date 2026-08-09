@@ -1,6 +1,6 @@
 import unittest
 
-from vlm_eval.scoring import (
+from evaluation.scoring import (
     PARSE_BRACKET,
     PARSE_FAILED,
     PARSE_LOOSE,

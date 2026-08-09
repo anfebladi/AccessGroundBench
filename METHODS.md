@@ -12,12 +12,12 @@ The three modes:
    VLM's grounding accuracy?
 2. **Tree-injected** (`USE_A11Y_TREE=true`) — the same question, with a partial
    accessibility tree given to the model alongside the image.
-3. **Cross-file comparison** (`mcnemar_analysis.py --compare-a --compare-b`) — a direct
+3. **Cross-file comparison** (`agb analyze --compare-a --compare-b`) — a direct
    comparison between any two result files, most often used to compare mode 1 against
    mode 2.
 
-All formulas below are implemented in `vlm_eval/scoring.py`, `vlm_eval/stats.py`, and
-`mcnemar_analysis.py`. Every number in the worked examples is regenerated from
+All formulas below are implemented in `evaluation.scoring` and the `analysis` package.
+Every number in the worked examples is regenerated from
 `dataset/experiment_2/` at the time this document is written, not copied from elsewhere.
 
 ---
@@ -48,8 +48,8 @@ apply.
 For a target with ground-truth box `[x_min, y_min, x_max, y_max]` and a baseline box
 `baseline_box`, a predicted point `(x_pred, y_pred)` scores a hit when it falls within the
 **baseline** box's width and height (not the current, possibly reflowed, box), centred on
-the current box's centre, expanded by a ±30 px touch tolerance (`vlm_eval/scoring.py:44`,
-`TOLERANCE = 30`):
+the current box's centre, expanded by a ±30 px touch tolerance
+(`evaluation.scoring.TOLERANCE = 30`):
 
 ```
 w = (baseline_x_max - baseline_x_min) + 2·TOLERANCE
@@ -67,8 +67,9 @@ does not become an easier target just because it is bigger on screen.
 `x_pred, y_pred` are always absolute pixels in the cropped image's space. Getting there
 depends on the model, because several families (Gemini, Qwen-VL, GLM-V) answer on a
 **0–1000 normalized grid** regardless of the real image size. Those models are recognised
-by `vlm_provider._uses_normalized_coords`, prompted on the scale they already use, and
-their reply is converted by `vlm_eval.scoring.to_pixel_space`:
+by `evaluation.providers.prompting.uses_normalized_coords`, prompted on
+the scale they already use, and their reply is converted by
+`evaluation.scoring.to_pixel_space`:
 
 ```
 x_pred = int( round_1dp( x_reply / 1000 · img_width  ) )
@@ -76,16 +77,17 @@ y_pred = int( round_1dp( y_reply / 1000 · img_height ) )
 ```
 
 The `round_1dp` step is load-bearing and not cosmetic. Conversion originally happened
-inside `vlm_provider`, which formatted its output as `f"[{cx:.1f}, {cy:.1f}]"` before the
+inside the provider layer, which formatted its output as `f"[{cx:.1f}, {cy:.1f}]"` before the
 runner truncated with `int()`. Removing the intermediate rounding shifts `x_pred`/`y_pred`
 by one pixel for **267 of the 3003** possible integer replies across this dataset's three
 image dimensions (1080×2177, 1080×2196, 1080×2219) — ~4% per axis — and since
 `score = hit_test(x_pred, …)`, a one-pixel shift can flip a score at a box edge. Keeping
 the quantization means every already-collected row reproduces exactly;
-`tests/test_vlm_eval_scoring.py::ToPixelSpaceTests` pins it over the full input space.
+the `ToPixelSpaceTests` regression coverage pins it over the full input space.
 
 Conversion is decided **per reply, not per model**. A normalized-convention model can
-still answer a given query in pixel space, and `vlm_provider._classify_normalized_reply`
+still answer a given query in pixel space, and
+`evaluation.providers.prompting.classify_normalized_reply`
 records which happened in the `coord_space` column:
 
 | `coord_space` | meaning | converted? |
@@ -98,7 +100,7 @@ records which happened in the `coord_space` column:
 > **Non-comparability note (`CLAUDE.md` §9).** `raw_response` holds the model's **verbatim**
 > reply only for rows collected **after** the coordinate-mechanism unification (merged
 > 2026-08-08). Gemini rows collected before it store the *already-converted pixel value*,
-> so the original 0–1000 answer is unrecoverable for those rows and `rescore_coords.py`
+> so the original 0–1000 answer is unrecoverable for those rows and `agb rescore`
 > cannot re-derive them offline. Their `x_pred`/`y_pred`/`score` remain correct and
 > authoritative — this is a limit on re-analysis, not on validity. The 12 `unverified`
 > rows in `gemini-pro-agent` (both arms) are the only rows in that set that were never
@@ -111,7 +113,8 @@ records which happened in the `coord_space` column:
 
 ### 1.2 Row status
 
-Every evaluated row carries one of three statuses (`vlm_eval/results.py`):
+Every evaluated row carries one of three statuses
+(`evaluation.results`):
 
 | Status | Meaning | Carries a score? |
 |---|---|---|
@@ -127,7 +130,7 @@ looked in the wrong place" — a confound that inflated significant results from
 ### 1.2.1 Cross-profile comparability of the co-present set
 
 **Across models the sample is identical.** `off_screen` is decided by
-`find_element_in_profile` (`vlm_eval/targets.py:40`), which reads only the captured
+`evaluation.targets.find_element_in_profile`, which reads only the captured
 label JSON — no model is involved. In `dataset/experiment_2/` all 7 models carry
 exactly 865 `co_present` and 140 `off_screen` rows with the same per-profile split, so
 the pooled and per-model tests share one sample. Per-model `n` can only diverge through
@@ -147,7 +150,8 @@ targets evicted are systematically the ones the models were already worst at:
 Kept + dropped is 168 on every row except `elder_text_heavy`, which sums to 165: the
 `photos_elder_text_heavy` capture is missing from the archive entirely, so that
 screen's 3 targets generated no rows at all in that profile. Going forward
-`orchestrator.write_manifest` exits non-zero on exactly this kind of gap.
+`collection.manifest.write_manifest` exits non-zero on exactly this
+kind of gap.
 
 The mechanism is that harsher layouts evict long text first, and long text is what
 grounding fails on. Because the pairing is within-target, this moves the **baseline arm
@@ -190,13 +194,14 @@ Both are the shape of Gmail's `viewified_conversation_item_view` row nodes: one
 which are already separate, individually-visible targets. Asking a model to locate that
 concatenation is not asking it to find a rendered label.
 
-`vlm_eval.targets.invalid_targets` applies this filter at harvest time, before any
+`evaluation.targets.invalid_targets` applies this filter at harvest time, before any
 target is queried: `harvest_targets` never returns an invalid candidate, so no CSV row
 and no API call exists for it. This is a sample-*definition* rule, not a post-hoc
 statistical correction — it removes targets that were never valid instances of the
 grounding task, the same category of decision as requiring baseline-unique text.
 
-`mcnemar_analysis.compute_b2_targets` recomputes the identical rule from a completed
+`analysis.samples.compute_b2_targets` recomputes the identical rule
+from a completed
 CSV's `co_present` rows. It exists for datasets collected before the harvest-time filter
 did (`dataset/experiment_2`, and any hosted-model CSV collected before this change),
 where the invalid rows are already on disk and must be filtered out after the fact
@@ -211,8 +216,8 @@ container label enclosing a target with equally short text, e.g. two overlapping
 
 ### 1.3 The 2×2 contingency table
 
-For a set of paired (baseline, comparison) scores, `compute_contingency`
-(`mcnemar_analysis.py:272`) counts:
+For a set of paired (baseline, comparison) scores,
+`analysis.grounding.compute_contingency` counts:
 
 |  | Comparison PASS | Comparison FAIL |
 |---|---:|---:|
@@ -222,7 +227,8 @@ For a set of paired (baseline, comparison) scores, `compute_contingency`
 ### 1.4 McNemar's test and test selection
 
 McNemar's test asks whether the discordant pairs favour one direction — whether *b* and
-*c* differ from what a fair coin would produce. `mcnemar_test` (`vlm_eval/stats.py:119`)
+*c* differ from what a fair coin would produce.
+`analysis.stats.mcnemar_test`
 picks the variant by discordant count:
 
 - **n = b+c < 25** — exact two-tailed binomial: discordant pairs ~ Binomial(*n*, 0.5).
@@ -248,7 +254,7 @@ at all — regardless of how lopsided the model's actual behaviour is below that
 
 ### 1.5 Holm–Bonferroni correction
 
-`holm_bonferroni` (`vlm_eval/stats.py:183`) corrects a family of *m* tests: sort
+`analysis.stats.holm_bonferroni` corrects a family of *m* tests: sort
 p-values ascending, test rank *i* (0-indexed) against `α / (m - i)`, and stop rejecting
 at the first failure — every later (larger) p-value is retained regardless of its own
 value. Chosen over plain Bonferroni because it is uniformly more powerful at the same
@@ -258,7 +264,7 @@ arm).
 
 ### 1.6 Confidence intervals
 
-**Wilson score interval** (`wilson_interval`, `vlm_eval/stats.py:39`) — for a single
+**Wilson score interval** (`analysis.stats.wilson_interval`) — for a single
 proportion *k/n*:
 
 ```
@@ -272,7 +278,8 @@ Wald interval `p̂ ± z√(p̂(1-p̂)/n)` because Wald can run outside [0, 1] an
 coverage near the boundary — exactly where this benchmark sits, with baseline
 accuracies of 88–99%.
 
-**Newcombe method-10 interval** (`paired_difference_interval`, `vlm_eval/stats.py:62`) —
+**Newcombe method-10 interval**
+(`analysis.stats.paired_difference_interval`) —
 for the *difference* between two proportions computed on the **same** paired sample
 (baseline accuracy − comparison accuracy). An ordinary two-sample interval assumes
 independence; these two arms share every target, so their outcomes are correlated and an
@@ -289,7 +296,8 @@ upper = diff + √((u1-p1)² - 2φ(u1-p1)(p2-l2) + (p2-l2)²)
 
 ### 1.7 Conditional odds ratio
 
-`conditional_odds_ratio` (`vlm_eval/stats.py:144`) reports the size of an effect, since a
+`analysis.stats.conditional_odds_ratio` reports the size of an effect,
+since a
 p-value alone says only that one exists:
 
 ```
@@ -304,7 +312,7 @@ of that result is the interval's finite *lower* bound.
 
 ### 1.8 The cluster permutation test
 
-`cluster_permutation_test` (`vlm_eval/stats.py:213`) is the primary grounding test in
+`analysis.stats.cluster_permutation_test` is the primary grounding test in
 mode 1 (and, once tree data exists, mode 2). It pools every model's paired outcome for a
 given profile into one test.
 
@@ -338,11 +346,11 @@ supplies enough discordant observations for the question to be answerable at all
 
 **Estimand, precisely.** This tests whether a profile degrades grounding *averaged over
 the models evaluated*. It is not a claim about any individual model — that is §1.4's job,
-run per model in Section 3 of `mcnemar_analysis.py`.
+run per model by `analysis.grounding.report_per_model`.
 
 ### 1.9 Floor and ceiling power flags
 
-`power_flag` (`mcnemar_analysis.py:306`) marks a per-model comparison as uninformative
+`analysis.grounding.power_flag` marks a per-model comparison as uninformative
 in either direction:
 
 - **`floor`** — baseline accuracy < 50% (`FLOOR_ACC_THRESHOLD`). Most targets already
@@ -360,9 +368,10 @@ evidence of anything.
 ## 2. Mode 1 — Vision-only
 
 **Trigger:** `USE_A11Y_TREE=false` (the default). Evaluated via
-`vlm_evaluator.py` → `vlm_eval/runner.evaluate_screen` with `use_a11y_tree=False`,
+`agb evaluate` → `evaluation.runner.evaluate_screen` with
+`use_a11y_tree=False`,
 prompting with `PROMPT_TEMPLATE` (image only). Results land in
-`dataset/evaluation_results_{model}.csv`. Analysed with `python mcnemar_analysis.py`.
+`dataset/evaluation_results_{model}.csv`. Analysed with `agb analyze`.
 
 **Estimand:** does an accessibility profile change a vision-only VLM's grounding
 accuracy, relative to that same model's baseline?
@@ -372,7 +381,7 @@ accuracy, relative to that same model's baseline?
 pixel** coordinates" against `PROMPT_TEMPLATE`'s "central **pixel (x, y)** coordinates" —
 a word-order difference that meant a vision-vs-tree comparison varied two things (tree
 presence *and* wording) instead of one. Both templates now share the identical sentence
-(`vlm_eval/runner.py:21-40`). This is **mode 1's** `PROMPT_TEMPLATE`, unchanged by the
+(`evaluation.prompting`). This is **mode 1's** `PROMPT_TEMPLATE`, unchanged by the
 fix — the vision-only wording used for `dataset/experiment_2/` is byte-identical to what
 mode 1 sends today, so that archive stays comparable. It matters only for mode 2, noted
 in §3.
@@ -384,14 +393,14 @@ depends only on the capture, not on any model's answer.
 
 **Formulas applied — all of them.** This is the mode the analysis pipeline was built for.
 
-| Section in `mcnemar_analysis.py` | What it reports |
+| Analysis report section | What it reports |
 |---|---|
 | §1 Reachability | Wilson interval on targets-present / targets-total |
 | §2 Pooled permutation (**primary**) | §1.8 above, per profile |
 | §3 Per-model McNemar (secondary) | §1.4 + §1.5 + §1.6 + §1.7 + §1.9, per model × profile |
 | §4 Sign test (descriptive) | direction consistency across models — see below |
 
-**The sign test** (`sign_test`, `vlm_eval/stats.py:291`) counts, per profile, how many
+**The sign test** (`analysis.stats.sign_test`) counts, per profile, how many
 models' per-model McNemar favoured degradation (`b > c`) versus improvement (`c > b`),
 and runs an exact binomial on that count. It is explicitly **descriptive, not
 inferential**: the 7 evaluated models are not a random sample of "all VLMs," so this
@@ -453,10 +462,12 @@ targets, where per-model McNemar has almost nothing left to detect. The pooled t
 
 **Trigger:** `USE_A11Y_TREE=true`. Same runner, `use_a11y_tree=True`. For hosted
 (vision-API) models, prompting with `PROMPT_TEMPLATE_WITH_TREE`, which appends a partial
-accessibility tree (`build_tree_text`) to the prompt: each visible element's best label
+accessibility tree (`evaluation.prompting.build_tree_text`) to the
+prompt: each visible element's best label
 and pixel bounds, `[x1,y1][x2,y2]`, absolute screenshot pixels. Results land in
-`dataset/evaluation_results_{model}_with_tree.csv` (`vlm_eval/config.get_results_csv`).
-Analysed by pointing `mcnemar_analysis.py` at the `_with_tree` files — either explicitly
+`dataset/evaluation_results_{model}_with_tree.csv`
+(`evaluation.config.get_results_csv`). Analysed by pointing
+`agb analyze` at the `_with_tree` files — either explicitly
 via `--csv`, or via `--mode tree` when discovering from `--data-dir` (see "Analysis file
 discovery" below).
 
@@ -473,8 +484,8 @@ permutation, per-model McNemar, and sign test all apply unchanged, run against t
 
 ### Analysis file discovery: vision and tree results are never pooled automatically
 
-`mcnemar_analysis.py`'s default file discovery (`discover_result_csvs`,
-`mcnemar_analysis.py:166-179`) globs `evaluation_results_*.csv` under `--data-dir` and
+`analysis.data.discover_result_csvs` globs
+`evaluation_results_*.csv` under `--data-dir` and
 **excludes** anything ending in `_with_tree` unless `--mode tree` is passed. Before this
 was added, the glob matched both suffixes, and `model_name_from_path` turned
 `evaluation_results_local_ferret-ui-llama8b_with_tree.csv` into a distinct model id
@@ -486,8 +497,8 @@ maximally correlated, not independent measurements. Concretely: the sign test's 
 models down" (§2 worked example) would silently become "14/14" with zero new evidence,
 and the per-model Holm family would grow from 28 tests to 56, both without a single new
 observation. Every CSV row now also carries its own `prompt_mode` column
-(`vision`/`tree`; `vlm_eval/results.py`) as a second line of defence, and
-`load_results` (`mcnemar_analysis.py`) defaults it to `vision` for archived CSVs that
+(`vision`/`tree`; `evaluation.results`) as a second line of defence, and
+`analysis.data.load_results` defaults it to `vision` for archived CSVs that
 predate the column, so `dataset/experiment_2/`'s regression reproduction (CLAUDE.md §9)
 is unaffected.
 
@@ -497,7 +508,8 @@ intended way to compare a model's vision-only CSV against its `_with_tree` count
 
 ### The target must be withheld from its own tree entry
 
-`build_tree_text(profile_labels, exclude_text=target_text)` removes the target's own row
+`evaluation.prompting.build_tree_text(profile_labels,
+exclude_text=target_text)` removes the target's own row
 from the injected tree before the prompt is built, so the model cannot simply read the
 answer's coordinates off the tree — it must still locate the element from the image, using
 the tree only as spatial context for neighbouring elements.
@@ -519,8 +531,8 @@ clock / 'World Clock'   leaked node  [216,2051][432,2219]  centre (324, 2135)
 
 The fix computes the rendered label first and excludes on *that*, matching what is
 actually printed. Re-measured with the same method after the fix: **0/168 (0.0%)**.
-Regression-tested in `tests/test_vlm_eval_runner.py`
-(`test_excludes_target_reached_only_via_content_desc_fallback` and
+Regression-tested by the runner cases
+`test_excludes_target_reached_only_via_content_desc_fallback` and
 `test_excludes_target_reached_only_via_resource_id_fallback`). No tree-mode data existed
 before this fix landed, so nothing collected so far is contaminated by it.
 
@@ -535,9 +547,11 @@ report it once, not as corroborating evidence from a second, independent measure
 ### Per-model tree rendering: Ferret-UI required a native format, not the vision-model one
 
 `local/ferret-ui-llama8b` does not receive `PROMPT_TEMPLATE_WITH_TREE`'s rendered string.
-`vlm_provider.call_vlm` rewrites the prompt for this model regardless of mode (see mode 1
-for why — Ferret is fine-tuned on a fixed single-line grounding instruction, and the
-generic zero-shot prompt causes it to just repeat the target text back). Until 2026-07-29
+The provider facade delegates this model to
+`evaluation.providers.ferret.call_ferret`, which renders its native
+prompt regardless of mode (see mode 1 for why — Ferret is fine-tuned on a fixed
+single-line grounding instruction, and the generic zero-shot prompt causes it to just
+repeat the target text back). Until 2026-07-29
 this rewrite **replaced the prompt outright**: the regex anchor it matched on
 (`click on the text element:`) also appears inside `PROMPT_TEMPLATE_WITH_TREE`, so the
 substitution fired in tree mode too, discarding the entire injected tree. Vision mode and
@@ -547,20 +561,21 @@ was ever collected before this was caught, so nothing is contaminated by it — 
 would have been invisible in the results themselves (both arms would simply show
 whatever vision-only grounding looked like) rather than raising an error.
 
-The fix (`vlm_provider.build_ferret_prompt`) augments instead of replacing, and renders
+The fix (`evaluation.providers.ferret.build_ferret_prompt`) augments
+instead of replacing, and renders
 the tree in Ferret's own input convention rather than the hosted-model one:
 
-- **Scale:** `ferret_ui/model_UI.py:126-140` reads an input box after multiplying by
+- **Scale:** Ferret-UI's `model_UI.py` box-coordinate conversion reads an input box after multiplying by
   `VOCAB_IMAGE_W / image_w` (`VOCAB_IMAGE_W = VOCAB_IMAGE_H = 1000`;
-  `ferret_ui/model_UI.py:16-17`), and the `ferret_llama_3` system prompt
-  (`ferret_ui/conversation.py:443-448`) tells the model "Image size: 1000x1000"
+  `ferret_ui/model_UI.py`), and the `ferret_llama_3` system prompt in
+  `ferret_ui/conversation.py` tells the model "Image size: 1000x1000"
   unconditionally. A tree rendered in absolute screenshot pixels — what
   `PROMPT_TEMPLATE_WITH_TREE` sends hosted models — is out of distribution for Ferret:
   e.g. a pixel y of 2000 on a 2274px screenshot would be read as roughly twice the image
   height. `build_ferret_prompt` scales every box the same way Ferret's own code does
-  (`int()`-truncated, not rounded, matching `model_UI.py:131,136` exactly).
+  (`int()`-truncated, not rounded, matching `model_UI.py`'s conversion exactly).
 - **Format:** single bracket, comma-space (`[x1, y1, x2, y2]`), matching
-  `model_UI.py:140`'s own formatting — not the hosted-model tree's `[x1,y1][x2,y2]`
+  `model_UI.py`'s own formatting — not the hosted-model tree's `[x1,y1][x2,y2]`
   double-bracket-pair shape.
 - **Order:** tree block first, the unchanged fine-tuned grounding line
   (`Provide the bounding box of the text '{target}'.`) always last, since Ferret's
@@ -584,12 +599,13 @@ profiles generally *shrink* trees (fewer elements fit at larger font/density —
 expected to stay well inside budget; a screen would need to roughly double its element
 count to breach it.
 
-The leak-fix exclusion (`collect_tree_rows`, formerly folded into `build_tree_text`) is
+The leak-fix exclusion (`evaluation.prompting.collect_tree_rows`,
+formerly folded into `build_tree_text`) is
 shared by both renderings: the hosted-model pixel format and Ferret's 0-1000 format are
 built from the same excluded row list, so the fix documented above holds for Ferret's
-prompt too, not just the hosted-model one. `tests/test_vlm_provider.py` covers this
-(`test_build_ferret_prompt_excludes_target_row`) since the tree tests in
-`tests/test_vlm_eval_runner.py` mock `call_vlm` at the runner boundary and therefore
+prompt too, not just the hosted-model one. The provider regression case
+`test_build_ferret_prompt_excludes_target_row` covers this, since the tree runner tests
+mock `call_vlm` at the runner boundary and therefore
 never observed what the wire format actually was for Ferret — the gap that let the
 discard bug go unnoticed for as long as it did.
 
@@ -628,8 +644,8 @@ result and must not be cited as one.
 
 ## 4. Mode 3 — Cross-file comparison
 
-**Trigger:** `python mcnemar_analysis.py --compare-a <fileA> --compare-b <fileB>`, which
-calls `run_cross_comparison` (`mcnemar_analysis.py:500`). Designed for, but not limited
+**Trigger:** `agb analyze --compare-a <fileA> --compare-b <fileB>`, which calls
+`analysis.comparison.run_cross_comparison`. Designed for, but not limited
 to, comparing a mode-1 CSV against a mode-2 CSV for the same model.
 
 **Estimand, as currently implemented:** for a **given profile**, and for targets present
@@ -656,7 +672,7 @@ vision-vs-tree use case even though the function accepts any two files.
 
 **`baseline` is never compared.** `main()` builds the profile list from
 `EXPERIMENTAL_PROFILES`, which excludes `"baseline"`
-(`mcnemar_analysis.py:70-75`), and passes that same list into
+(`analysis.workflow.EXPERIMENTAL_PROFILES`), and passes that same list into
 `run_cross_comparison`. Consequently "does file B differ from file A on the *undistorted*
 screen" is never tested by this mode as it stands — only the five experimental profiles
 are compared.

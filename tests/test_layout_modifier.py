@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
 
-import layout_modifier as lm
+from collection import profiles as lm
 
 
 class FontScaleVerificationTests(unittest.TestCase):

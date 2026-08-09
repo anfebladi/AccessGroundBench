@@ -6,7 +6,7 @@ from pathlib import Path
 
 from PIL import Image
 
-import screenshot_pipeline as sp
+from collection import capture as sp
 
 
 class ApplyColorTransformTests(unittest.TestCase):

@@ -73,26 +73,12 @@ pip install scipy
 
 ```
 AccessGroundBench/
-├── orchestrator.py           # Master collection driver — runs all screens × profiles
-├── app_navigator.py          # Android app launching, permission handling, XML validation
-├── adb_utils.py              # Shared ADB helper functions (resolve, run, retry)
-├── layout_modifier.py        # Apply/verify/reset accessibility profiles via ADB
-├── screenshot_pipeline.py    # Capture screenshot + UI XML, crop system bars, color filter
-├── capture_checks.py         # Empirical checks on captured assets (mirroring, drift)
-├── bound_extractor.py        # Parse XML → JSON bounding-box label files
-├── vlm_evaluator.py          # Entry point: load labels, query VLM, score predictions
-├── vlm_provider.py           # LiteLLM + Ferret-UI server calls with retry handling
-├── mcnemar_analysis.py       # Reachability, pooled permutation, per-model McNemar
-├── rescore_coords.py         # Offline re-scoring under a different coordinate space
-├── main.py                   # Minimal package entry point
-│
-├── vlm_eval/
-│   ├── config.py             # VLM model / pacing / retry / trials settings from .env
-│   ├── runner.py             # Per-screen evaluation loop and prompt templates
-│   ├── targets.py            # Harvest unambiguous text targets from baseline labels
-│   ├── scoring.py            # Coordinate parsing and ±30 px hit-test
-│   ├── stats.py              # Statistical primitives (permutation, Holm, CIs)
-│   └── results.py            # CSV read/write, resume support
+├── src/
+│   ├── cli.py                # Unified `agb` command dispatcher
+│   ├── paths.py              # Repository and dataset path resolution
+│   ├── collection/           # ADB, navigation, profiles, capture, labels, diagnostics
+│   ├── evaluation/           # Configuration, targets, scoring, results, providers, workflow
+│   └── analysis/             # Reachability, grounding statistics, comparisons, outputs
 │
 ├── ferret_ui/                # Local Ferret-UI inference server (optional)
 │   ├── ferret_server.py      # FastAPI server wrapping the Ferret-UI model
@@ -101,9 +87,9 @@ AccessGroundBench/
 │   └── ...                   # Model architecture modules
 │
 ├── dataset/
-│   ├── images/               # Collected PNGs  — gitignored, created by orchestrator
-│   ├── raw_xml/              # Collected UI XML — gitignored, created by orchestrator
-│   ├── labels/               # Extracted JSON labels — gitignored, created by orchestrator
+│   ├── images/               # Collected PNGs  — gitignored, created by `agb collect`
+│   ├── raw_xml/              # Collected UI XML — gitignored, created by `agb collect`
+│   ├── labels/               # Extracted JSON labels — gitignored, created by `agb collect`
 │   └── experiment_1/         # Committed reference results from Experiment 1
 │
 ├── tests/                    # Unit tests
@@ -112,6 +98,19 @@ AccessGroundBench/
 ├── .python-version           # Python version pin
 └── pyproject.toml            # Project metadata and dependencies
 ```
+
+The installed `agb` CLI exposes the complete workflow:
+
+| Command | Purpose |
+|---|---|
+| `agb collect` | Collect and validate benchmark captures |
+| `agb evaluate` | Run VLM grounding evaluation |
+| `agb analyze` | Run reachability and grounding analysis |
+| `agb canonicalize` | Repair and canonicalize stored result CSVs |
+| `agb rescore` | Re-score stored coordinates offline |
+| `agb profile` | Apply or reset an emulator accessibility profile |
+| `agb capture` | Capture one screenshot and UI hierarchy |
+| `agb extract` | Extract bounding-box labels from UI XML |
 
 ---
 
@@ -184,7 +183,8 @@ corner. The result is near-0% accuracy on every row, and McNemar reports
 mistaken for a weak model.
 
 Models known to answer on the 0-1000 grid are recognised automatically by
-`vlm_provider._uses_normalized_coords` (Gemini, Qwen, GLM). They are sent a
+`evaluation.providers.prompting.uses_normalized_coords` (Gemini,
+Qwen, GLM). They are sent a
 prompt that states the scale explicitly, and a reply whose values fall outside
 0-1000 is retried once with a stricter restatement before being recorded as
 pixel-space non-compliance. The convention actually resolved for each reply is
@@ -197,16 +197,16 @@ model that already self-describes — or for Ferret-UI, which converts its own
 0-1000 output — is rejected at startup rather than silently double-converting.
 
 To determine a model's convention from an existing results file, or to repair a
-run scored under the wrong one, use `rescore_coords.py`. It re-reads the stored
+run scored under the wrong one, use `agb rescore`. It re-reads the stored
 `raw_response`, so both operations are offline and cost no API calls:
 
 ```bash
-python rescore_coords.py --csv dataset/evaluation_results_MODEL.csv --check
-python rescore_coords.py --csv dataset/evaluation_results_MODEL.csv --coord-space norm1000
+agb rescore --csv dataset/evaluation_results_MODEL.csv --check
+agb rescore --csv dataset/evaluation_results_MODEL.csv --coord-space norm1000
 ```
 
 Rewriting a CSV writes a `.csv.bak` alongside it first. Rerun
-`mcnemar_analysis.py` afterwards to refresh the statistics.
+`agb analyze` afterwards to refresh the statistics.
 
 > **Note.** `raw_response` holds the model's verbatim reply only for rows
 > collected after this change. Gemini rows collected earlier store the
@@ -240,7 +240,9 @@ comma-separated `VLM_MODEL` list.
 
 Compatibility requests time out after 120 seconds by default and retry
 transient timeout, connection, and rate-limit failures according to
-`VLM_MAX_RETRIES`. Adjust `VLM_REQUEST_TIMEOUT_SECONDS` for slower gateways.
+`VLM_MAX_RETRIES`. This policy is owned by
+`evaluation.providers.retry`; adjust
+`VLM_REQUEST_TIMEOUT_SECONDS` for slower gateways.
 
 ### Step 4 — Set up the Android emulator
 
@@ -262,14 +264,14 @@ adb devices
 
 ### Step 5 — Prepare the emulator
 
-Some apps require a one-time manual setup before the orchestrator can navigate to them automatically:
+Some apps require a one-time manual setup before the collection workflow can navigate to them automatically:
 
 1. **Sign in with a Google Account** — open the Play Store app and sign in. This unlocks Gmail, YouTube, Maps, and Photos automatically.
 2. **Dismiss first-run dialogs** — manually open each of the following apps once and tap through any welcome screens or permission dialogs:
    - Messages
    - Gmail
    - Google Maps
-3. Verify the emulator is back on the home screen before running the orchestrator.
+3. Verify the emulator is back on the home screen before running `agb collect`.
 
 ---
 
@@ -295,7 +297,8 @@ Six layout profiles are applied programmatically to the emulator before each scr
 ### Profile verification
 
 Every profile is read back from the device after it is applied
-(`layout_modifier.verify_profile`), and a mismatch aborts that capture rather than
+(`collection.profiles.verify_profile`), and a mismatch aborts that
+capture rather than
 producing data that measures the wrong condition. Profiles with a visible signature are
 additionally checked against the captured assets:
 
@@ -326,10 +329,10 @@ adb shell setprop debug.force_rtl 1
 ### Stage 1 — Collect screenshots and labels
 
 ```bash
-python orchestrator.py
+agb collect
 ```
 
-For each of the 13 target screens the orchestrator captures **7 assets** — an opening
+For each of the 13 target screens, `agb collect` captures **7 assets** — an opening
 baseline, the 5 experimental profiles, then a closing baseline — and for each one will:
 - Apply the accessibility profile via ADB settings commands
 - Verify all four display vectors read back correctly from the device
@@ -364,12 +367,12 @@ say so.
 
 **Dry run (no emulator needed):**
 ```bash
-python orchestrator.py --dry-run
+agb collect --dry-run
 ```
 
 **Collect specific screens only:**
 ```bash
-python orchestrator.py --screens settings_main contacts dialer
+agb collect --screens settings_main contacts dialer
 ```
 
 > **Target apps:** `settings_main`, `settings_display`, `settings_network`, `settings_accessibility`, `contacts`, `dialer`, `messages`, `clock`, `maps`, `play_store`, `gmail`, `youtube`, `photos`
@@ -379,7 +382,7 @@ python orchestrator.py --screens settings_main contacts dialer
 ### Stage 2 — Run VLM evaluation
 
 ```bash
-python vlm_evaluator.py
+agb evaluate
 ```
 
 The evaluator:
@@ -414,14 +417,14 @@ add statistical power. `VLM_TRIALS_MODELS` restricts repeats to specific models.
 ### Stage 3 — Run statistical analysis
 
 ```bash
-python mcnemar_analysis.py
+agb analyze
 ```
 
 Analyzes all `evaluation_results_*.csv` files in `dataset/` automatically.
 
 ```bash
-python mcnemar_analysis.py --csv dataset/evaluation_results_openai_gpt-4o-mini.csv
-python mcnemar_analysis.py --data-dir dataset/experiment_2   # re-analyse the archive
+agb analyze --csv dataset/evaluation_results_openai_gpt-4o-mini.csv
+agb analyze --data-dir dataset/experiment_2   # re-analyse the archive
 ```
 
 The script reports four sections:
@@ -486,17 +489,22 @@ The collection tools can be run independently when an emulator is connected:
 
 ```bash
 # Apply an accessibility profile manually
-python layout_modifier.py elder_combo_max
+agb profile elder_combo_max
 
 # Reset emulator to baseline
-python layout_modifier.py reset
+agb profile reset
 
 # Capture a single screen (output goes to outputs/)
-python screenshot_pipeline.py my_capture
+agb capture my_capture
 
 # Extract labels from a single XML file
-python bound_extractor.py outputs/my_capture.xml
+agb extract outputs/my_capture.xml
 ```
+
+For existing automation, installed compatibility commands remain available:
+`orchestrator`, `vlm_evaluator`, `mcnemar_analysis`, `canonicalize_results`,
+`rescore_coords`, `layout_modifier`, `screenshot_pipeline`, and `bound_extractor`.
+New documentation and scripts should use `agb`.
 
 ---
 
@@ -514,11 +522,14 @@ The `uiautomator dump` command hangs when a system popup is covering the screen.
 
 ### `ERROR: null root node returned by UiTestAutomationBridge`
 
-The app had not finished rendering when `uiautomator dump` was called. The orchestrator retries automatically. If this persists, try increasing `SETTLE_DELAY` in `layout_modifier.py`.
+The app had not finished rendering when `uiautomator dump` was called. The collection
+workflow retries automatically. If this persists, inspect the settle-delay configuration
+in `collection.profiles`.
 
 ### Evaluator reports no screens found
 
-No baseline label files exist in `dataset/labels/`. Run `python orchestrator.py` first to collect the dataset.
+No baseline label files exist in `dataset/labels/`. Run `agb collect` first to collect
+the dataset.
 
 ### Model key is missing
 
@@ -533,7 +544,7 @@ other compatible gateways, set both `OPENAI_COMPATIBLE_BASE_URL` and
 
 ```bash
 # Set temporarily for a single run
-VLM_MODEL=openai/gpt-4o-mini python vlm_evaluator.py
+VLM_MODEL=openai/gpt-4o-mini agb evaluate
 ```
 
 ### Analysis shows a `floor` or `ceiling` power flag
@@ -548,7 +559,8 @@ state for frontier models on this benchmark and is not a bug.
 under the unmodified baseline layout. Possible causes:
 - Prompt format mismatch (especially for Ferret-UI — it requires its specific training prompt)
 - Model has no vision capability
-- Bounding boxes are too small relative to model prediction precision (increase `TOLERANCE` in `vlm_eval/scoring.py`)
+- Bounding boxes are too small relative to model prediction precision (inspect
+  `TOLERANCE` in `evaluation.scoring`)
 
 ---
 
@@ -715,7 +727,7 @@ interpretable.
 Sections 7.1–7.6 describe the vision-only mode (`USE_A11Y_TREE=false`, the default).
 AccessGroundBench also supports **accessibility-tree injection**
 (`USE_A11Y_TREE=true`, prompts the model with a partial a11y tree alongside the image)
-and **cross-file comparison** (`mcnemar_analysis.py --compare-a --compare-b`, typically
+and **cross-file comparison** (`agb analyze --compare-a --compare-b`, typically
 used to compare a vision-only run against a tree-injected run of the same model).
 
 The same machinery in 7.1–7.5 applies to tree-injected results unchanged, run against

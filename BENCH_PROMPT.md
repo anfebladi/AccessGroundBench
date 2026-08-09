@@ -18,10 +18,10 @@ Rules:
 - On any failure: report the real error and stop. Do **not** change `VLM_MODEL`
   to work around it — that silently benchmarks the wrong model and writes a
   mislabeled CSV.
-- Do not run `orchestrator.py`, `layout_modifier.py`, `screenshot_pipeline.py`,
-  or anything using `adb`. There is no emulator; the dataset is already captured.
-- `vlm_evaluator.py` takes **no** CLI flags. It reads `.env` only. Flags are
-  silently ignored.
+- Do not run `agb collect`, `agb profile`, `agb capture`, or anything using `adb`.
+  There is no emulator; the dataset is already captured.
+- `agb evaluate` reads model and experiment settings from `.env`. Its only operational
+  flags are `--fresh` and `--force-unlock`; do not pass model or prompt-mode flags.
 
 ## Paths
 
@@ -42,7 +42,7 @@ If baseline accuracy comes out at or near zero, this is almost certainly why.
 Diagnose it from an existing CSV without spending any API calls:
 
 ```bash
-python rescore_coords.py --csv R.csv --check
+agb rescore --csv R.csv --check
 ```
 
 Whichever convention shows materially higher accuracy is the right one. Set
@@ -50,7 +50,7 @@ Whichever convention shows materially higher accuracy is the right one. Set
 CSV that was already scored wrong (no API calls, writes a `.bak` first):
 
 ```bash
-python rescore_coords.py --csv R.csv --coord-space norm1000
+agb rescore --csv R.csv --coord-space norm1000
 ```
 
 The convention belongs to the **model plus the prompt**, not the model alone.
@@ -75,7 +75,7 @@ non-trivially, the run has mixed formats — report it rather than picking one.
 Set `USE_A11Y_TREE=false` in `.env`, then:
 
 ```bash
-python vlm_evaluator.py
+agb evaluate
 ```
 
 ~335 rows, several minutes. Do not abort on individual row failures.
@@ -84,7 +84,7 @@ On repeated 429s, set `VLM_PACE_SECONDS=1` and rerun.
 ## Stage 2 — McNemar
 
 ```bash
-python mcnemar_analysis.py --csv R.csv
+agb analyze --csv R.csv
 ```
 
 Always pass `--csv`; the bare command reanalyzes every old CSV in `dataset/`.
@@ -105,9 +105,9 @@ Profiles: `elder_text_heavy`, `elder_zoom_heavy`, `elder_combo_max`,
 Set `USE_A11Y_TREE=true` in `.env` (leave `VLM_MODEL` alone), then:
 
 ```bash
-python vlm_evaluator.py
-python mcnemar_analysis.py --csv R_with_tree.csv
-python mcnemar_analysis.py --compare-a R.csv --compare-b R_with_tree.csv
+agb evaluate
+agb analyze --csv R_with_tree.csv
+agb analyze --compare-a R.csv --compare-b R_with_tree.csv
 ```
 
 Stage 1 output is not overwritten — the tree run writes a separate `_with_tree` file.

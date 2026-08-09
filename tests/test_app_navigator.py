@@ -2,8 +2,8 @@ import contextlib
 import io
 import unittest
 
-import app_navigator
-import orchestrator
+from collection import navigation as app_navigator
+from collection import workflow as orchestrator
 
 
 class AppNavigatorTests(unittest.TestCase):

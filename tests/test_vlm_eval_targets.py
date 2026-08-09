@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from vlm_eval.targets import (
+from evaluation.targets import (
     MATCH_EXACT,
     MATCH_RELAXED,
     MAX_TARGET_CHARS,

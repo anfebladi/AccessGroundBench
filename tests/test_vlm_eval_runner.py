@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from vlm_eval.results import (
+from evaluation.results import (
     STATUS_API_ERROR,
     STATUS_CO_PRESENT,
     STATUS_LABEL_CHANGED,
@@ -14,7 +14,7 @@ from vlm_eval.results import (
     STATUS_OFF_SCREEN,
     init_csv,
 )
-from vlm_eval.runner import (
+from evaluation.runner import (
     build_tree_text,
     collect_tree_rows,
     evaluate_screen,
@@ -59,7 +59,7 @@ class VlmEvalRunnerTests(unittest.TestCase):
         with self.results_csv.open(newline="", encoding="utf-8") as f:
             return list(csv.DictReader(f))
 
-    @mock.patch("vlm_eval.runner.call_vlm", return_value="[215, 286]")
+    @mock.patch("evaluation.runner.call_vlm", return_value="[215, 286]")
     def test_prompt_requests_pixel_coordinates_with_image_dimensions(self, call_vlm_mock):
         evaluate_screen(
             "test-model",
@@ -77,7 +77,7 @@ class VlmEvalRunnerTests(unittest.TestCase):
         self.assertNotIn("0-1000", prompt)
         self.assertNotIn("Normalize", prompt)
 
-    @mock.patch("vlm_eval.runner.call_vlm", return_value="[215, 286]")
+    @mock.patch("evaluation.runner.call_vlm", return_value="[215, 286]")
     def test_pixel_response_is_scored_without_rescaling(self, call_vlm_mock):
         evaluate_screen(
             "test-model",
@@ -94,7 +94,7 @@ class VlmEvalRunnerTests(unittest.TestCase):
         self.assertEqual("286", row["y_pred"])
         self.assertEqual("1", row["score"])
 
-    @mock.patch("vlm_eval.runner.call_vlm", return_value="no coordinate here")
+    @mock.patch("evaluation.runner.call_vlm", return_value="no coordinate here")
     def test_unparsable_response_scores_miss(self, call_vlm_mock):
         evaluate_screen(
             "test-model",
@@ -112,7 +112,7 @@ class VlmEvalRunnerTests(unittest.TestCase):
         self.assertEqual("0", row["score"])
         self.assertEqual("no coordinate here", row["raw_response"])
 
-    @mock.patch("vlm_eval.runner.call_vlm", return_value="[2000, 286]")
+    @mock.patch("evaluation.runner.call_vlm", return_value="[2000, 286]")
     def test_out_of_bounds_response_scores_miss(self, call_vlm_mock):
         evaluate_screen(
             "test-model",
@@ -129,7 +129,7 @@ class VlmEvalRunnerTests(unittest.TestCase):
         self.assertEqual("-1", row["y_pred"])
         self.assertEqual("0", row["score"])
 
-    @mock.patch("vlm_eval.runner.call_vlm", return_value="[215, 286]")
+    @mock.patch("evaluation.runner.call_vlm", return_value="[215, 286]")
     def test_absent_target_is_recorded_off_screen_without_querying_model(self, call_vlm_mock):
         # A target missing from the modified layout is a property of the layout,
         # not a grounding failure. It must not be scored 0, and the model must
@@ -156,7 +156,7 @@ class VlmEvalRunnerTests(unittest.TestCase):
         self.assertEqual("", row["score"])
         call_vlm_mock.assert_not_called()
 
-    @mock.patch("vlm_eval.runner.call_vlm", return_value="[215, 286]")
+    @mock.patch("evaluation.runner.call_vlm", return_value="[215, 286]")
     def test_relabeled_target_is_recorded_label_changed_without_querying_model(
         self, call_vlm_mock
     ):
@@ -187,7 +187,7 @@ class VlmEvalRunnerTests(unittest.TestCase):
         self.assertIn("LABEL-CHANGED", row["raw_response"])
         call_vlm_mock.assert_not_called()
 
-    @mock.patch("vlm_eval.runner.call_vlm", return_value="[215, 286]")
+    @mock.patch("evaluation.runner.call_vlm", return_value="[215, 286]")
     def test_off_frame_box_is_recorded_without_querying_model(self, call_vlm_mock):
         # A box whose center falls outside the screenshot cannot be scored --
         # hit_test would compare against a point that isn't on the image.
@@ -216,7 +216,7 @@ class VlmEvalRunnerTests(unittest.TestCase):
         self.assertEqual("2200", row["y_min"])
         call_vlm_mock.assert_not_called()
 
-    @mock.patch("vlm_eval.runner.call_vlm", return_value="[215, 286]")
+    @mock.patch("evaluation.runner.call_vlm", return_value="[215, 286]")
     def test_box_center_on_image_boundary_is_not_off_frame(self, call_vlm_mock):
         # A box whose center sits exactly at the image's bottom-right corner
         # is still a valid, answerable point -- the boundary check must be
@@ -237,7 +237,7 @@ class VlmEvalRunnerTests(unittest.TestCase):
         self.assertNotEqual(STATUS_OFF_FRAME, row["status"])
         call_vlm_mock.assert_called_once()
 
-    @mock.patch("vlm_eval.runner.call_vlm", return_value="[215, 286]")
+    @mock.patch("evaluation.runner.call_vlm", return_value="[215, 286]")
     def test_present_target_is_marked_co_present(self, call_vlm_mock):
         evaluate_screen(
             "test-model", "clock", 0, self.results_csv,
@@ -247,7 +247,7 @@ class VlmEvalRunnerTests(unittest.TestCase):
 
         self.assertEqual(STATUS_CO_PRESENT, self.read_result()["status"])
 
-    @mock.patch("vlm_eval.runner.call_vlm", side_effect=RuntimeError("boom"))
+    @mock.patch("evaluation.runner.call_vlm", side_effect=RuntimeError("boom"))
     def test_api_error_is_recorded_without_a_score(self, call_vlm_mock):
         evaluate_screen(
             "test-model", "clock", 0, self.results_csv,
@@ -260,7 +260,7 @@ class VlmEvalRunnerTests(unittest.TestCase):
         self.assertEqual("", row["score"])
 
     @mock.patch(
-        "vlm_eval.runner.call_vlm",
+        "evaluation.runner.call_vlm",
         side_effect=["[215, 286]", "[9000, 9000]", "[215, 286]"],
     )
     def test_majority_vote_across_trials(self, call_vlm_mock):
@@ -279,7 +279,7 @@ class VlmEvalRunnerTests(unittest.TestCase):
         self.assertEqual("215", row["x_pred"])
 
     @mock.patch(
-        "vlm_eval.runner.call_vlm",
+        "evaluation.runner.call_vlm",
         side_effect=["[215, 286]", "[9000, 9000]"],
     )
     def test_tied_trials_resolve_to_a_miss(self, call_vlm_mock):
@@ -291,7 +291,7 @@ class VlmEvalRunnerTests(unittest.TestCase):
 
         self.assertEqual("0", self.read_result()["score"])
 
-    @mock.patch("vlm_eval.runner.call_vlm", return_value="[215, 286]")
+    @mock.patch("evaluation.runner.call_vlm", return_value="[215, 286]")
     def test_completed_keys_are_skipped(self, call_vlm_mock):
         evaluate_screen(
             "test-model", "clock", 0, self.results_csv,
@@ -304,7 +304,7 @@ class VlmEvalRunnerTests(unittest.TestCase):
         self.assertEqual([], self.read_results())
 
     @mock.patch(
-        "vlm_eval.runner.call_vlm",
+        "evaluation.runner.call_vlm",
         side_effect=["[215, 286]", "[9000, 9000]", "[215, 286]"],
     )
     def test_summarize_run_reports_flip_rate(self, call_vlm_mock):
@@ -376,7 +376,7 @@ class BuildTreeTextTests(unittest.TestCase):
 
         self.assertIn('"Wi-Fi settings" [0,0][100,50]', tree)
 
-    @mock.patch("vlm_eval.runner.call_vlm", return_value="[50, 85]")
+    @mock.patch("evaluation.runner.call_vlm", return_value="[50, 85]")
     def test_a11y_tree_prompt_withholds_target(self, call_vlm_mock):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
@@ -477,7 +477,7 @@ class BuildTreeTextTests(unittest.TestCase):
 
         self.assertEqual(["container"], [label for label, _box in rows])
 
-    @mock.patch("vlm_eval.runner.call_vlm", return_value="[50, 85]")
+    @mock.patch("evaluation.runner.call_vlm", return_value="[50, 85]")
     def test_evaluate_screen_withholds_hitting_rows_from_the_prompt(self, call_vlm_mock):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
@@ -529,7 +529,7 @@ class BuildTreeTextTests(unittest.TestCase):
             rows,
         )
 
-    @mock.patch("vlm_eval.runner.call_vlm", return_value="[50, 85]")
+    @mock.patch("evaluation.runner.call_vlm", return_value="[50, 85]")
     def test_call_vlm_receives_structured_tree_rows_and_target_text(
         self, call_vlm_mock
     ):
@@ -569,7 +569,7 @@ class BuildTreeTextTests(unittest.TestCase):
         self.assertEqual(1080, call_kwargs["img_width"])
         self.assertEqual(2274, call_kwargs["img_height"])
 
-    @mock.patch("vlm_eval.runner.call_vlm", return_value="[50, 85]")
+    @mock.patch("evaluation.runner.call_vlm", return_value="[50, 85]")
     def test_call_vlm_gets_none_tree_rows_in_vision_mode(self, call_vlm_mock):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)

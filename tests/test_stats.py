@@ -1,6 +1,6 @@
 import unittest
 
-from vlm_eval.stats import (
+from analysis.stats import (
     cluster_permutation_test,
     conditional_odds_ratio,
     exact_binomial_two_tailed,

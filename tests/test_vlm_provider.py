@@ -7,7 +7,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest import mock
 
-import vlm_provider
+from evaluation.providers import hosted as vlm_provider
 
 
 class FakeRateLimitError(Exception):
@@ -16,7 +16,7 @@ class FakeRateLimitError(Exception):
 
 class VlmProviderTests(unittest.TestCase):
     @mock.patch.dict(
-        "vlm_provider.os.environ",
+        "evaluation.providers.hosted.os.environ",
         {
             "NINEROUTER_BASE_URL": "http://localhost:20128/v1",
             "NINEROUTER_API_KEY": "router-key",
@@ -45,12 +45,12 @@ class VlmProviderTests(unittest.TestCase):
         vlm_provider._register_compatible_model("openai/gpt-4o-mini")
         self.assertEqual(before, set(litellm.open_ai_chat_completion_models))
 
-    @mock.patch.dict("vlm_provider.os.environ", {}, clear=True)
+    @mock.patch.dict("evaluation.providers.hosted.os.environ", {}, clear=True)
     def test_request_timeout_defaults_to_120_seconds(self):
         self.assertEqual(120.0, vlm_provider._resolve_request_timeout())
 
     @mock.patch.dict(
-        "vlm_provider.os.environ", {"VLM_REQUEST_TIMEOUT_SECONDS": "30"}, clear=True
+        "evaluation.providers.hosted.os.environ", {"VLM_REQUEST_TIMEOUT_SECONDS": "30"}, clear=True
     )
     def test_request_timeout_uses_environment(self):
         self.assertEqual(30.0, vlm_provider._resolve_request_timeout())
@@ -63,7 +63,7 @@ class VlmProviderTests(unittest.TestCase):
         self.assertTrue(vlm_provider._is_retryable_error(Exception("Connection error.")))
 
     @mock.patch.dict(
-        "vlm_provider.os.environ",
+        "evaluation.providers.hosted.os.environ",
         {
             "NINEROUTER_BASE_URL": "http://localhost:20128",
             "NINEROUTER_API_KEY": "router-key",
@@ -81,7 +81,7 @@ class VlmProviderTests(unittest.TestCase):
             vlm_provider.resolve_completion_config("9router/cx/gpt-5.3-codex"),
         )
 
-    @mock.patch.dict("vlm_provider.os.environ", {"NINEROUTER_API_KEY": "key"}, clear=True)
+    @mock.patch.dict("evaluation.providers.hosted.os.environ", {"NINEROUTER_API_KEY": "key"}, clear=True)
     def test_resolve_9router_requires_base_url(self):
         with self.assertRaisesRegex(ValueError, "NINEROUTER_BASE_URL"):
             vlm_provider.resolve_completion_config("9router/cx/gpt-5.3-codex")
@@ -104,7 +104,7 @@ class VlmProviderTests(unittest.TestCase):
                 )
 
     @mock.patch.dict(
-        "vlm_provider.os.environ",
+        "evaluation.providers.hosted.os.environ",
         {
             "OPENAI_COMPATIBLE_BASE_URL": "https://provider.example.com/v1/",
             "OPENAI_COMPATIBLE_API_KEY": "provider-key",
@@ -124,14 +124,14 @@ class VlmProviderTests(unittest.TestCase):
             ),
         )
 
-    @mock.patch.dict("vlm_provider.os.environ", {}, clear=True)
+    @mock.patch.dict("evaluation.providers.hosted.os.environ", {}, clear=True)
     def test_compatible_model_reports_missing_configuration(self):
         error = vlm_provider.model_configuration_error("9router/cx/gpt-5.3-codex")
         self.assertIn("NINEROUTER_BASE_URL", error)
         self.assertIn("NINEROUTER_API_KEY", error)
 
     @mock.patch.dict(
-        "vlm_provider.os.environ",
+        "evaluation.providers.hosted.os.environ",
         {
             "OPENAI_COMPATIBLE_BASE_URL": "https://provider.example.com/v1",
             "OPENAI_COMPATIBLE_API_KEY": "your-compatible-provider-key-here",
@@ -144,7 +144,7 @@ class VlmProviderTests(unittest.TestCase):
         )
         self.assertIn("OPENAI_COMPATIBLE_API_KEY", error)
 
-    @mock.patch.dict("vlm_provider.os.environ", {}, clear=True)
+    @mock.patch.dict("evaluation.providers.hosted.os.environ", {}, clear=True)
     def test_native_model_configuration_is_unchanged(self):
         self.assertIsNone(vlm_provider.model_configuration_error("openai/gpt-4o-mini"))
         self.assertEqual(
@@ -164,7 +164,7 @@ class VlmProviderTests(unittest.TestCase):
         expected = base64.b64encode(png_bytes).decode("ascii")
         self.assertEqual(f"data:image/png;base64,{expected}", data_url)
 
-    @mock.patch("vlm_provider._completion")
+    @mock.patch("evaluation.providers.hosted._completion")
     def test_call_vlm_sends_litellm_vision_message(self, completion_mock):
         completion_mock.return_value = {
             "choices": [{"message": {"content": "[123, 456]"}}],
@@ -192,15 +192,15 @@ class VlmProviderTests(unittest.TestCase):
         )
 
     @mock.patch.dict(
-        "vlm_provider.os.environ",
+        "evaluation.providers.hosted.os.environ",
         {
             "NINEROUTER_BASE_URL": "http://localhost:20128/v1/",
             "NINEROUTER_API_KEY": "router-key",
         },
         clear=True,
     )
-    @mock.patch("vlm_provider._register_compatible_model")
-    @mock.patch("vlm_provider._completion")
+    @mock.patch("evaluation.providers.hosted._register_compatible_model")
+    @mock.patch("evaluation.providers.hosted._completion")
     def test_call_vlm_passes_9router_compatibility_arguments(
         self, completion_mock, register_model_mock
     ):
@@ -219,7 +219,7 @@ class VlmProviderTests(unittest.TestCase):
         self.assertEqual(120.0, call_kwargs["timeout"])
 
     @mock.patch.dict(
-        "vlm_provider.os.environ",
+        "evaluation.providers.hosted.os.environ",
         {
             "NINEROUTER_BASE_URL": "http://localhost:20128/v1",
             "NINEROUTER_API_KEY": "router-key",
@@ -250,8 +250,8 @@ class VlmProviderTests(unittest.TestCase):
         self.assertNotIn("Provider List", output.getvalue())
         self.assertEqual("ok", response.choices[0].message.content)
 
-    @mock.patch("vlm_provider.time.sleep")
-    @mock.patch("vlm_provider._completion")
+    @mock.patch("evaluation.providers.hosted.time.sleep")
+    @mock.patch("evaluation.providers.hosted._completion")
     def test_call_vlm_retries_timeout_then_succeeds(self, completion_mock, sleep_mock):
         class FakeReadTimeout(Exception):
             pass
@@ -299,8 +299,8 @@ class VlmProviderTests(unittest.TestCase):
 
         self.assertEqual("[7, 8]", vlm_provider._extract_response_text(response))
 
-    @mock.patch("vlm_provider.time.sleep")
-    @mock.patch("vlm_provider._completion")
+    @mock.patch("evaluation.providers.hosted.time.sleep")
+    @mock.patch("evaluation.providers.hosted._completion")
     def test_call_vlm_retries_rate_limit_then_succeeds(self, completion_mock, sleep_mock):
         completion_mock.side_effect = [
             FakeRateLimitError("Please try again in 249ms."),
@@ -413,7 +413,7 @@ class VlmProviderTests(unittest.TestCase):
     def test_parse_ferret_bbox_returns_none_when_unparseable(self):
         self.assertIsNone(vlm_provider._parse_ferret_bbox("no bounding box here"))
 
-    @mock.patch("vlm_provider.urllib.request.urlopen")
+    @mock.patch("evaluation.providers.hosted.urllib.request.urlopen")
     def test_call_vlm_ferret_vision_mode_sends_unchanged_prompt(self, urlopen_mock):
         import json as _json
 
@@ -445,7 +445,7 @@ class VlmProviderTests(unittest.TestCase):
             sent_body["prompt"],
         )
 
-    @mock.patch("vlm_provider.urllib.request.urlopen")
+    @mock.patch("evaluation.providers.hosted.urllib.request.urlopen")
     def test_call_vlm_ferret_tree_mode_includes_tree_text(self, urlopen_mock):
         import json as _json
 
@@ -480,7 +480,7 @@ class VlmProviderTests(unittest.TestCase):
             )
         )
 
-    @mock.patch("vlm_provider.urllib.request.urlopen")
+    @mock.patch("evaluation.providers.hosted.urllib.request.urlopen")
     def test_call_vlm_ferret_converts_vocab_scale_response_to_pixel_center(
         self, urlopen_mock
     ):
@@ -508,7 +508,7 @@ class VlmProviderTests(unittest.TestCase):
 
         self.assertEqual("[540.0, 1109.5]", result)
 
-    @mock.patch("vlm_provider.urllib.request.urlopen")
+    @mock.patch("evaluation.providers.hosted.urllib.request.urlopen")
     def test_call_vlm_ferret_surfaces_server_budget_error(self, urlopen_mock):
         import urllib.error
 
@@ -613,7 +613,7 @@ class VlmProviderTests(unittest.TestCase):
             "Bluetooth", None, 1080, 2219, strict=True)
         self.assertIn("Your previous answer used raw pixel coordinates", prompt)
 
-    @mock.patch("vlm_provider._completion")
+    @mock.patch("evaluation.providers.hosted._completion")
     def test_call_vlm_returns_normalized_reply_verbatim(self, completion_mock):
         completion_mock.return_value = {
             "choices": [{"message": {"content": "[500, 500]"}}],
@@ -642,8 +642,8 @@ class VlmProviderTests(unittest.TestCase):
         sent_prompt = completion_mock.call_args.kwargs["messages"][0]["content"][0]["text"]
         self.assertIn("0-1000", sent_prompt)
 
-    @mock.patch("vlm_provider.time.sleep")
-    @mock.patch("vlm_provider._completion")
+    @mock.patch("evaluation.providers.hosted.time.sleep")
+    @mock.patch("evaluation.providers.hosted._completion")
     def test_call_vlm_retries_normalized_model_pixel_space_reply_then_succeeds(
         self, completion_mock, sleep_mock
     ):
@@ -675,7 +675,7 @@ class VlmProviderTests(unittest.TestCase):
         second_prompt = completion_mock.call_args_list[1].kwargs["messages"][0]["content"][0]["text"]
         self.assertIn("Your previous answer used raw pixel coordinates", second_prompt)
 
-    @mock.patch("vlm_provider._completion")
+    @mock.patch("evaluation.providers.hosted._completion")
     def test_call_vlm_flags_reply_still_pixel_space_after_retries(
         self, completion_mock
     ):
@@ -704,7 +704,7 @@ class VlmProviderTests(unittest.TestCase):
         self.assertEqual(vlm_provider.GEMINI_SPACE_PIXEL, coord_space_out["value"])
         self.assertEqual(1, completion_mock.call_count)
 
-    @mock.patch("vlm_provider._completion")
+    @mock.patch("evaluation.providers.hosted._completion")
     def test_call_vlm_pixel_space_model_unaffected_by_normalized_path(self, completion_mock):
         completion_mock.return_value = {
             "choices": [{"message": {"content": "[123, 456]"}}],
@@ -732,8 +732,8 @@ class VlmProviderTests(unittest.TestCase):
         sent_prompt = completion_mock.call_args.kwargs["messages"][0]["content"][0]["text"]
         self.assertEqual("Find Bluetooth", sent_prompt)
 
-    @mock.patch("vlm_provider.time.sleep")
-    @mock.patch("vlm_provider._completion")
+    @mock.patch("evaluation.providers.hosted.time.sleep")
+    @mock.patch("evaluation.providers.hosted._completion")
     def test_call_vlm_raises_after_repeated_rate_limits(self, completion_mock, sleep_mock):
         completion_mock.side_effect = FakeRateLimitError("Rate limit reached")
 

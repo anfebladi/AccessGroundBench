@@ -2,8 +2,31 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 
-import mcnemar_analysis
+from analysis import comparison, data, grounding, reachability, samples
+from evaluation import results
+
+
+# Keep this broad historical regression suite readable while exercising the
+# new responsibility-based modules rather than restoring a production facade.
+mcnemar_analysis = SimpleNamespace(
+    B2_LENGTH_CAP=samples.B2_LENGTH_CAP,
+    PROMPT_MODE_VISION=results.PROMPT_MODE_VISION,
+    STATUS_API_ERROR=results.STATUS_API_ERROR,
+    STATUS_CO_PRESENT=results.STATUS_CO_PRESENT,
+    build_clusters=grounding.build_clusters,
+    compute_b2_targets=samples.compute_b2_targets,
+    compute_contingency=grounding.compute_contingency,
+    compute_reachability=reachability.compute_reachability,
+    discover_result_csvs=data.discover_result_csvs,
+    index_rows=data.index_rows,
+    load_results=data.load_results,
+    reclassify_label_changed=data.reclassify_label_changed,
+    reclassify_off_frame=data.reclassify_off_frame,
+    run_cross_comparison=comparison.run_cross_comparison,
+    target_excluded_for_condition=samples.target_excluded_for_condition,
+)
 
 
 def touch_csv(path: Path) -> None:
