@@ -172,12 +172,41 @@ def resolve_pace_seconds(cli_pace_seconds: str | None) -> float:
     return pace_seconds
 
 
+# Characters illegal (or merely troublesome) in a Windows filename, beyond
+# '/' which is handled separately to keep existing result filenames stable.
+# Control characters are covered by the range check in sanitize_model_filename.
+_WINDOWS_ILLEGAL_CHARS = '<>:"\\|?*'
+_MAX_CLEAN_MODEL_LENGTH = 150
+
+
+def sanitize_model_filename(model: str) -> str:
+    """Turn a model id into a safe Windows filename component.
+
+    A bare '/' -> '_' substitution (the original behaviour, kept as-is so
+    every previously collected CSV keeps its name) is not enough for
+    bring-your-own model ids: Ollama and Bedrock ids commonly contain ':'
+    (e.g. "ollama/llama3.2-vision:11b"), which is illegal in a Windows
+    filename and crashes at file-open time with no indication of why.
+    """
+    cleaned = model.replace("/", "_")
+    cleaned = "".join(
+        "_" if ch in _WINDOWS_ILLEGAL_CHARS or ord(ch) < 32 else ch
+        for ch in cleaned
+    )
+    # Windows silently strips trailing dots/spaces from filenames, which
+    # would make two distinct model ids collide on disk.
+    cleaned = cleaned.rstrip(". ")
+    if not cleaned:
+        cleaned = "_"
+    return cleaned[:_MAX_CLEAN_MODEL_LENGTH]
+
+
 def get_results_csv(model: str, use_a11y_tree: bool = False) -> Path:
     """Generate a dynamic CSV path based on the model name.
 
     When use_a11y_tree is True, appends '_with_tree' to distinguish
     tree-injected results from vision-only results.
     """
-    clean_model = model.replace("/", "_")
+    clean_model = sanitize_model_filename(model)
     suffix = "_with_tree" if use_a11y_tree else ""
     return DATASET_DIR / f"evaluation_results_{clean_model}{suffix}.csv"

@@ -12,6 +12,12 @@ dependencies = [
     "scipy>=1.17.1",
 ]
 
+[project.optional-dependencies]
+ui = [
+    "fastapi>=0.115",
+    "uvicorn>=0.32",
+]
+
 [project.scripts]
 agb = "cli:main"
 orchestrator = "collection.cli:collect_main"
@@ -33,5 +39,8 @@ py-modules = ["cli", "paths"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["analysis", "analysis.*", "collection", "collection.*", "evaluation", "evaluation.*"]
+include = ["analysis", "analysis.*", "collection", "collection.*", "evaluation", "evaluation.*", "webui", "webui.*"]
 namespaces = false
+
+[tool.setuptools.package-data]
+webui = ["static/*"]

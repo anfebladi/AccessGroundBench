@@ -56,3 +56,6 @@ dataset/*.lock
 
 # Stale local Ferret-UI input fixture at the repository root only.
 /eval.json
+
+# Analysis output from the web UI (derived, regenerable; never the dataset itself)
+ui_experiments/
