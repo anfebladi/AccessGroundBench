@@ -372,7 +372,9 @@
           </form>
           <p class="field-hint" style="margin-top: var(--space-4);">
             Analysis runs in this server process and blocks until it finishes.
-            Results are written to <code>ui_experiments/</code>, never into the dataset.
+            Results are written to the selected dataset's own
+            <code>outputs/&lt;dataset&gt;/analysis/</code> directory, never into the dataset
+            itself and never over another dataset's tables.
           </p>
         </div>
 

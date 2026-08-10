@@ -24,7 +24,7 @@ import sys
 from pathlib import Path
 
 from ..config import ALL_PROFILES, COORD_SPACES, DATASET_DIR, IMAGES_DIR, LABELS_DIR
-from paths import EVALUATIONS_DIR
+from paths import evaluations_dir
 from .results import (
     CSV_COLUMNS,
     PROMPT_MODE_TREE,
@@ -52,7 +52,9 @@ def discover_screens() -> list[str]:
 
 def canonicalize_one(results_csv: Path, expected_key_order: list[tuple[str, str, str]]) -> list[str]:
     """Canonicalize and finalize a single CSV; returns any problems found."""
-    expected_prompt_mode = PROMPT_MODE_TREE if results_csv.parent.name == "tree" or results_csv.stem.endswith(WITH_TREE_SUFFIX) else PROMPT_MODE_VISION
+    # Current files end in `_tree`; pre-reorganization ones in `_with_tree`.
+    is_tree = results_csv.stem.endswith(("_tree", WITH_TREE_SUFFIX))
+    expected_prompt_mode = PROMPT_MODE_TREE if is_tree else PROMPT_MODE_VISION
     try:
         acquire_lock(results_csv)
     except CsvLockError as e:
@@ -87,15 +89,14 @@ def canonicalize_main(argv: list[str] | None = None) -> None:
     print(f"Canonical key count: {len(expected_key_order)} "
           f"({len(screens)} screens x {len(ALL_PROFILES)} profiles)")
 
-    csv_files = args.csv or sorted(
-        p for p in EVALUATIONS_DIR.glob("*/*/results.csv")
-        if p.parent.name in {"vision", "tree"}
-    )
+    outputs_dir = evaluations_dir()
+    csv_files = args.csv or sorted(outputs_dir.glob("*.csv"))
     if not args.csv and not csv_files:
-        # Compatibility for legacy datasets; new runs never write here.
+        # Datasets collected before the reorganization keep their results
+        # beside the captures; new runs never write there.
         csv_files = sorted(DATASET_DIR.glob("evaluation_results_*.csv"))
     if not csv_files:
-        print(f"[ERROR] No evaluation result files found in {EVALUATIONS_DIR}")
+        print(f"[ERROR] No evaluation result files found in {outputs_dir}")
         sys.exit(1)
 
     all_problems: list[str] = []

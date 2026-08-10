@@ -33,8 +33,9 @@ dist/
 .DS_Store
 ._*
 
-
-
+# Scratch output from the standalone `agb capture` command. Everything else
+# under outputs/ is per-dataset results and is committed.
+outputs/captures/
 
 
 # Generated JSON from committed sample inputs

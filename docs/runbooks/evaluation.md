@@ -17,7 +17,7 @@ Do not change `VLM_MODEL` while a run is in progress. A model ID and prompt mode
 determine the result path:
 
 ```text
-outputs/evaluations/<model>/<vision|tree>/results.csv
+outputs/<dataset>/evaluations/<model>_<vision|tree>.csv
 ```
 
 The tree and vision arms therefore never share a result file.
@@ -41,14 +41,14 @@ overridden (that would convert twice). For an existing result, compare both
 conventions without API calls first:
 
 ```bash
-agb rescore --csv outputs/evaluations/MODEL/vision/results.csv --check
+agb rescore --csv outputs/dataset/evaluations/MODEL_vision.csv --check
 ```
 
 If the check identifies the other convention, repair stored scores (the command
 writes a `.csv.bak` backup) and rerun analysis:
 
 ```bash
-agb rescore --csv outputs/evaluations/MODEL/vision/results.csv --coord-space norm1000
+agb rescore --csv outputs/dataset/evaluations/MODEL_vision.csv --coord-space norm1000
 ```
 
 Use the matching `pixel` command when that is selected. Re-check after changing
@@ -70,10 +70,10 @@ captures:
 
 ```bash
 agb evaluate
-agb analyze --csv outputs/evaluations/MODEL/vision/results.csv
+agb analyze --csv outputs/dataset/evaluations/MODEL_vision.csv
 ```
 
-Analysis reports are written under `outputs/analysis/<mode>_<sample>/`.
+Analysis reports are written under `outputs/<dataset>/analysis/<mode>_<sample>/`.
 
 ### 2. Tree evaluation (only when the question requires it)
 
@@ -81,7 +81,7 @@ Set `USE_A11Y_TREE=true` without changing `VLM_MODEL`, then run:
 
 ```bash
 agb evaluate
-agb analyze --csv outputs/evaluations/MODEL/tree/results.csv --mode tree
+agb analyze --csv outputs/dataset/evaluations/MODEL_tree.csv --mode tree
 ```
 
 Tree results are a separate path and do not overwrite vision-only results. Run
@@ -93,8 +93,8 @@ When both files exist, supply both paths together:
 
 ```bash
 agb analyze \
-  --compare-a outputs/evaluations/MODEL/vision/results.csv \
-  --compare-b outputs/evaluations/MODEL/tree/results.csv
+  --compare-a outputs/dataset/evaluations/MODEL_vision.csv \
+  --compare-b outputs/dataset/evaluations/MODEL_tree.csv
 ```
 
 Comparison mode requires both `--compare-a` and `--compare-b` and ignores

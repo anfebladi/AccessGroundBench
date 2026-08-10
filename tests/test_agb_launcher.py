@@ -9,7 +9,14 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 LAUNCHER = PROJECT_ROOT / "scripts" / "agb"
 INSTALLER = PROJECT_ROOT / "scripts" / "install-agb.sh"
 
+# The launcher and its installer are POSIX shell scripts installed via a
+# symlink. Windows cannot execute them (WinError 193) and cannot create the
+# symlink without elevation (WinError 1314); the documented Windows workflow
+# is `uv run agb ...`, which needs no launcher.
+posix_only = unittest.skipIf(os.name == "nt", "POSIX shell launcher; Windows uses `uv run agb`")
 
+
+@posix_only
 class AgbLauncherTests(unittest.TestCase):
     def test_launcher_uses_project_root_through_symlink_and_forwards_arguments(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -49,6 +56,7 @@ class AgbLauncherTests(unittest.TestCase):
             )
 
 
+@posix_only
 class AgbInstallerTests(unittest.TestCase):
     def run_installer(self, bin_home: Path, *args: str):
         env = os.environ.copy()

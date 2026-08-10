@@ -6,7 +6,6 @@ from pathlib import Path
 from unittest import mock
 
 import paths
-from analysis.data import results as analysis_results
 from evaluation.storage.results import CSV_COLUMNS, append_result, init_csv
 from webui import keys as keys_mod
 from webui.server import create_app
@@ -48,38 +47,13 @@ class WebuiServerTests(unittest.TestCase):
         (exp1 / "labels").mkdir(parents=True)
         (exp1 / "labels" / "clock_baseline.json").write_text("[]", encoding="utf-8")
 
+        # Every output root is derived from PROJECT_ROOT at call time, so this
+        # one patch isolates the whole test from the real checkout's outputs.
+        # If a second patch ever becomes necessary here, some module has gone
+        # back to freezing a root at import time.
         self._root_patch = mock.patch.object(paths, "PROJECT_ROOT", self.root)
         self._root_patch.start()
         self.addCleanup(self._root_patch.stop)
-        # Organized outputs are rooted at the active project root.  Keep the
-        # path constants deterministic and isolated from the checkout's real
-        # outputs directory.
-        self._outputs_patch = mock.patch.object(paths, "OUTPUTS_DIR", self.root / "outputs")
-        self._outputs_patch.start()
-        self.addCleanup(self._outputs_patch.stop)
-        self._evaluations_patch = mock.patch.object(
-            paths, "EVALUATIONS_DIR", self.root / "outputs" / "evaluations"
-        )
-        self._evaluations_patch.start()
-        self.addCleanup(self._evaluations_patch.stop)
-        self._analysis_patch = mock.patch.object(
-            paths, "ANALYSIS_DIR", self.root / "outputs" / "analysis"
-        )
-        self._analysis_patch.start()
-        self.addCleanup(self._analysis_patch.stop)
-        # Result discovery keeps patchable aliases for the active dataset and
-        # evaluations root. Patch both aliases so UI requests cannot inspect
-        # or mutate outputs from the real checkout.
-        self._analysis_dataset_patch = mock.patch.object(
-            analysis_results, "DATASET_DIR", self.dataset_dir
-        )
-        self._analysis_dataset_patch.start()
-        self.addCleanup(self._analysis_dataset_patch.stop)
-        self._analysis_evaluations_patch = mock.patch.object(
-            analysis_results, "EVALUATIONS_DIR", self.root / "outputs" / "evaluations"
-        )
-        self._analysis_evaluations_patch.start()
-        self.addCleanup(self._analysis_evaluations_patch.stop)
 
         for provider in keys_mod.PROVIDER_ENV_VARS:
             keys_mod.clear_key(provider)
@@ -87,19 +61,13 @@ class WebuiServerTests(unittest.TestCase):
 
         self.client = TestClient(create_app())
 
-    def write_results_csv(self, filename: str, rows: list[dict], *, output_root: Path | None = None) -> Path:
-        # Evaluation output is organized by sanitized model and prompt mode;
-        # retain the legacy-looking argument at call sites to make fixtures
-        # easy to read while writing to the canonical location.
-        stem = Path(filename).stem
-        prefix = "evaluation_results_"
-        self.assertTrue(stem.startswith(prefix), filename)
-        model = stem[len(prefix):]
-        mode = "tree" if model.endswith("_with_tree") else "vision"
-        if mode == "tree":
-            model = model[:-len("_with_tree")]
-        evaluations_root = output_root or paths.EVALUATIONS_DIR
-        path = evaluations_root / model / mode / "results.csv"
+    def write_results_csv(self, model: str, rows: list[dict], *,
+                          use_a11y_tree: bool = False,
+                          dataset_dir: Path | None = None) -> Path:
+        """Write a fixture result file into a dataset's own output root."""
+        path = paths.evaluation_results_path(
+            model, use_a11y_tree, dataset_dir or self.dataset_dir,
+        )
         path.parent.mkdir(parents=True, exist_ok=True)
         init_csv(path)
         for row in rows:
@@ -180,7 +148,7 @@ class WebuiServerTests(unittest.TestCase):
         self.assertEqual(400, resp.status_code)
 
     def test_dataset_results_computes_accuracy_from_co_present_rows(self):
-        self.write_results_csv("evaluation_results_test-model.csv", [
+        self.write_results_csv("test-model", [
             {"screen": "clock", "target_text": "8:30 AM", "profile": "baseline",
              "status": "co_present", "score": "1", "prompt_mode": "vision"},
             {"screen": "clock", "target_text": "8:30 AM", "profile": "elder_text_heavy",
@@ -194,10 +162,10 @@ class WebuiServerTests(unittest.TestCase):
         self.assertEqual(2, rows[0]["co_present_count"])
         self.assertEqual(1, rows[0]["hits"])
         self.assertAlmostEqual(0.5, rows[0]["accuracy"])
-        self.assertEqual("test-model/vision/results.csv", rows[0]["filename"])
+        self.assertEqual("test-model_vision.csv", rows[0]["filename"])
 
     def test_result_rows_endpoint_returns_scoreable_fields(self):
-        self.write_results_csv("evaluation_results_test-model.csv", [
+        self.write_results_csv("test-model", [
             {"screen": "clock", "target_text": "8:30 AM", "profile": "baseline",
              "status": "co_present", "score": "1", "x_pred": "200", "y_pred": "300",
              "x_min": "84", "y_min": "231", "x_max": "429", "y_max": "414",
@@ -207,7 +175,7 @@ class WebuiServerTests(unittest.TestCase):
              "x_min": "84", "y_min": "231", "x_max": "429", "y_max": "414",
              "raw_response": "[10, 10]", "prompt_mode": "vision"},
         ])
-        resp = self.client.get("/api/datasets/dataset/results/test-model/vision/results.csv/rows")
+        resp = self.client.get("/api/datasets/dataset/results/test-model_vision.csv/rows")
         self.assertEqual(200, resp.status_code)
         rows = resp.json()
         self.assertEqual(2, len(rows))
@@ -221,7 +189,7 @@ class WebuiServerTests(unittest.TestCase):
         self.assertIn(resp.status_code, (404, 400))
 
     def test_result_rows_missing_file_is_404(self):
-        resp = self.client.get("/api/datasets/dataset/results/nope/vision/results.csv/rows")
+        resp = self.client.get("/api/datasets/dataset/results/nope_vision.csv/rows")
         self.assertEqual(404, resp.status_code)
 
     def test_preflight_reports_expected_and_completed_counts(self):
@@ -236,10 +204,10 @@ class WebuiServerTests(unittest.TestCase):
         self.assertEqual(6, body["expected_total"])
         self.assertEqual(0, body["already_done"])
         self.assertFalse(body["lock_present"])
-        self.assertEqual("openai_gpt-4o-mini/vision/results.csv", body["results_csv"])
+        self.assertEqual("openai_gpt-4o-mini_vision.csv", body["results_csv"])
 
     def test_preflight_counts_already_completed_rows(self):
-        self.write_results_csv("evaluation_results_openai_gpt-4o-mini.csv", [
+        self.write_results_csv("openai/gpt-4o-mini", [
             {"screen": "clock", "target_text": "8:30 AM", "profile": "baseline",
              "status": "co_present", "score": "1", "prompt_mode": "vision"},
         ])
@@ -252,7 +220,7 @@ class WebuiServerTests(unittest.TestCase):
     def test_preflight_detects_a_stale_lock(self):
         from evaluation.storage.locking import acquire_lock, lock_path
 
-        results_csv = paths.EVALUATIONS_DIR / "openai_gpt-4o-mini" / "vision" / "results.csv"
+        results_csv = paths.evaluation_results_path("openai/gpt-4o-mini", dataset_dir=self.dataset_dir)
         acquire_lock(results_csv)
         self.addCleanup(lambda: lock_path(results_csv).unlink(missing_ok=True))
 
@@ -381,10 +349,11 @@ class WebuiServerTests(unittest.TestCase):
         resp = self.client.post("/api/analyze", json={"dataset": "dataset", "mode": "vision"})
         self.assertEqual(400, resp.status_code)
 
-    def write_analyzable_results(self, filename: str, *, output_root: Path | None = None) -> None:
+    def write_analyzable_results(self, model: str = "m1", *, use_a11y_tree: bool = False,
+                                 dataset_dir: Path | None = None) -> None:
         """One model, one target, present at baseline and under one profile."""
         box = {"x_min": "84", "y_min": "231", "x_max": "429", "y_max": "414"}
-        mode = "tree" if filename.endswith("_with_tree.csv") else "vision"
+        mode = "tree" if use_a11y_tree else "vision"
         rows = [
             {"screen": "clock", "target_text": "8:30 AM", "profile": "baseline",
              "status": "co_present", "score": "1", "prompt_mode": mode,
@@ -393,7 +362,8 @@ class WebuiServerTests(unittest.TestCase):
              "status": "co_present", "score": "0", "prompt_mode": mode,
              "x_pred": "900", "y_pred": "1800", **box},
         ]
-        self.write_results_csv(filename, rows, output_root=output_root)
+        self.write_results_csv(model, rows, use_a11y_tree=use_a11y_tree,
+                               dataset_dir=dataset_dir)
 
     def run_analysis_request(self, **overrides):
         payload = {"dataset": "dataset", "mode": "vision", "sample": "primary",
@@ -408,7 +378,7 @@ class WebuiServerTests(unittest.TestCase):
         so writing into the dataset would silently narrow the committed tables
         to whichever sample happened to be selected in the form.
         """
-        self.write_analyzable_results("evaluation_results_m1.csv")
+        self.write_analyzable_results()
         committed = self.dataset_dir / "reachability_results.csv"
         committed.write_text("Sample,Profile\ncommitted,do-not-touch\n", encoding="utf-8")
 
@@ -424,25 +394,25 @@ class WebuiServerTests(unittest.TestCase):
             self.assertFalse((self.dataset_dir / name).exists(), name)
 
     def test_analyze_writes_under_ui_experiments_and_reports_the_path(self):
-        self.write_analyzable_results("evaluation_results_m1.csv")
+        self.write_analyzable_results()
 
         resp = self.run_analysis_request()
         self.assertEqual(200, resp.status_code, resp.text)
-        self.assertEqual("outputs/analysis/vision_primary", resp.json()["output_dir"])
+        self.assertEqual("outputs/dataset/analysis/vision_primary", resp.json()["output_dir"])
 
-        out = self.root / "outputs" / "analysis" / "vision_primary"
+        out = self.root / "outputs" / "dataset" / "analysis" / "vision_primary"
         self.assertTrue((out / "reachability_results.csv").is_file())
         self.assertTrue(resp.json()["reachability"])
 
     def test_analyze_keeps_vision_and_tree_output_apart(self):
         """The two arms answer different questions and must never be conflated."""
-        self.write_analyzable_results("evaluation_results_m1.csv")
-        self.write_analyzable_results("evaluation_results_m1_with_tree.csv")
+        self.write_analyzable_results()
+        self.write_analyzable_results(use_a11y_tree=True)
 
         self.assertEqual(200, self.run_analysis_request(mode="vision").status_code)
         self.assertEqual(200, self.run_analysis_request(mode="tree").status_code)
 
-        root = self.root / "outputs" / "analysis"
+        root = self.root / "outputs" / "dataset" / "analysis"
         self.assertTrue((root / "vision_primary" / "reachability_results.csv").is_file())
         self.assertTrue((root / "tree_primary" / "reachability_results.csv").is_file())
 
@@ -456,15 +426,14 @@ class WebuiServerTests(unittest.TestCase):
             (archive / "labels" / f"clock_{profile}.json").write_text(
                 json.dumps(labels), encoding="utf-8")
 
-        original = self.dataset_dir
-        self.dataset_dir = archive
-        try:
-            self.write_analyzable_results(
-                "evaluation_results_m1.csv",
-                output_root=self.root / "outputs" / "archives" / "experiment_1" / "evaluations",
-            )
-        finally:
-            self.dataset_dir = original
+        self.write_analyzable_results(dataset_dir=archive)
+        # The current dataset's own tables must survive untouched: an archive
+        # analysis writes to the archive's output root, not the shared one.
+        self.write_analyzable_results()
+        self.assertEqual(200, self.run_analysis_request().status_code)
+        current_table = (self.root / "outputs" / "dataset" / "analysis"
+                         / "vision_primary" / "reachability_results.csv")
+        current_before = current_table.read_text(encoding="utf-8")
 
         before = sorted(p.name for p in archive.iterdir())
         resp = self.run_analysis_request(dataset="experiment_1")
@@ -472,15 +441,16 @@ class WebuiServerTests(unittest.TestCase):
 
         self.assertEqual(before, sorted(p.name for p in archive.iterdir()))
         self.assertTrue(
-            (self.root / "outputs" / "analysis" / "vision_primary"
+            (self.root / "outputs" / "experiment_1" / "analysis" / "vision_primary"
              / "reachability_results.csv").is_file()
         )
+        self.assertEqual(current_before, current_table.read_text(encoding="utf-8"))
 
     def test_analyze_rejects_an_unknown_sample_or_mode(self):
-        self.write_analyzable_results("evaluation_results_m1.csv")
+        self.write_analyzable_results()
         self.assertEqual(400, self.run_analysis_request(sample="../escape").status_code)
         self.assertEqual(400, self.run_analysis_request(mode="../escape").status_code)
-        self.assertFalse((self.root / "outputs" / "analysis").exists())
+        self.assertFalse((self.root / "outputs" / "dataset" / "analysis").exists())
 
 
 if __name__ == "__main__":

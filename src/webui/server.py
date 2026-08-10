@@ -42,33 +42,34 @@ PROVIDER_ENV_VARS = {
 # cannot interleave and borrow each other's temporary key.
 _env_mutation_lock = threading.Lock()
 
-# Where UI-triggered analyses write their result tables.
+# Dataset, mode, and sample are all part of an analysis output path.
 #
-# NOT the dataset directory. `agb analyze` names its outputs after the analysis
-# rather than the run, so re-analysing a dataset overwrites the previous
-# reachability/pooled/McNemar/sign tables in place. From a terminal that is a
-# deliberate act; from the browser it is one click on the page you land on, and
-# it would silently narrow the tables committed alongside `dataset/` to
-# whichever sample happened to be selected. Routing UI output here means a
-# click in the browser can never overwrite a prior experiment -- including an
-# archived one, which must never be written to at all.
-# Mode and sample are part of the path, not just the contents: a vision run and
-# a tree run answer different research questions and must never be mistaken for
-# one another (CLAUDE.md 5), and they would otherwise overwrite each other.
+# The dataset, because `agb analyze` names its outputs after the analysis
+# rather than the run: without it, re-analysing an archive from the browser
+# would overwrite the current run's reachability/pooled/McNemar/sign tables.
+# From a terminal that would at least be a deliberate act; from the browser it
+# is one click on the page you land on. Archived datasets in particular must
+# never be written to, and their outputs must never displace anyone else's.
+# Mode and sample, because a vision run and a tree run answer different
+# research questions and must never be mistaken for one another (CLAUDE.md 5),
+# and because two samples would otherwise overwrite each other.
 ANALYSIS_MODES = ("vision", "tree")
 ANALYSIS_SAMPLES = ("all", "primary", "full", "precautionary", "uniform")
 
 
-def analysis_output_dir(mode: str, sample: str) -> Path:
-    """Return the organized analysis output directory for one mode/sample."""
-    return paths.analysis_output_path(mode, sample)
+def analysis_output_dir(dataset_dir: Path, mode: str, sample: str) -> Path:
+    """Return the analysis output directory for one dataset/mode/sample.
+
+    Callers must validate mode and sample against ANALYSIS_MODES /
+    ANALYSIS_SAMPLES first; dataset_dir comes from the dataset registry, so
+    all three components are known-good directory names rather than free text.
+    """
+    return paths.analysis_output_path(mode, sample, dataset_dir)
 
 
 def _evaluations_root(info) -> Path:
-    """Return current or archive evaluation outputs for a dataset record."""
-    if info.is_archived:
-        return paths.OUTPUTS_DIR / "archives" / info.name / "evaluations"
-    return paths.EVALUATIONS_DIR
+    """Return the evaluation outputs owned by one dataset record."""
+    return paths.evaluations_dir(info.path)
 
 
 def _is_configured_value(value: str | None) -> bool:
@@ -156,43 +157,45 @@ def create_app():
     def dataset_results(name: str) -> list[dict]:
         from collections import Counter
 
-        from analysis.data.results import load_results, model_name_from_path
+        from analysis.data.results import (
+            discover_result_csvs, load_results, model_name_from_path,
+        )
 
         info = _dataset_or_404(name)
         out = []
-        from analysis.data.results import discover_result_csvs
-        for csv_path in discover_result_csvs(info.path, "tree") + discover_result_csvs(info.path, "vision"):
-            with contextlib.redirect_stdout(io.StringIO()):
-                rows = load_results(csv_path)
-            statuses = Counter(r["status"] for r in rows)
-            co_present = [r for r in rows if r["status"] == "co_present"]
-            hits = sum(1 for r in co_present if r.get("score") == "1")
-            evaluations_root = _evaluations_root(info)
-            try:
-                display_filename = csv_path.relative_to(evaluations_root).as_posix()
-            except ValueError:
-                display_filename = csv_path.name
-            out.append({
-                "filename": display_filename,
-                "model": model_name_from_path(csv_path),
-                "prompt_mode": rows[0]["prompt_mode"] if rows else "",
-                "row_count": len(rows),
-                "statuses": dict(statuses),
-                "co_present_count": len(co_present),
-                "hits": hits,
-                "accuracy": (hits / len(co_present)) if co_present else None,
-            })
+        # Both arms, listed separately: discovery deliberately refuses to
+        # return them together so no caller can pool them by accident.
+        for mode in ANALYSIS_MODES:
+            for csv_path in discover_result_csvs(info.path, mode):
+                with contextlib.redirect_stdout(io.StringIO()):
+                    rows = load_results(csv_path)
+                statuses = Counter(r["status"] for r in rows)
+                co_present = [r for r in rows if r["status"] == "co_present"]
+                hits = sum(1 for r in co_present if r.get("score") == "1")
+                out.append({
+                    "filename": csv_path.name,
+                    "model": model_name_from_path(csv_path),
+                    "prompt_mode": rows[0]["prompt_mode"] if rows else "",
+                    "row_count": len(rows),
+                    "statuses": dict(statuses),
+                    "co_present_count": len(co_present),
+                    "hits": hits,
+                    "accuracy": (hits / len(co_present)) if co_present else None,
+                })
         return out
 
-    @app.get("/api/datasets/{name}/results/{filename:path}/rows")
+    @app.get("/api/datasets/{name}/results/{filename}/rows")
     def dataset_result_rows(name: str, filename: str) -> list[dict]:
         from analysis.data.results import load_results
 
         info = _dataset_or_404(name)
         evaluations_root = _evaluations_root(info)
         csv_path = (evaluations_root / filename).resolve()
+        # Resolve first, then confirm the result is still inside the dataset's
+        # own evaluations directory: `filename` is caller-supplied, and a
+        # traversal must not reach another dataset's rows or the wider disk.
         if (evaluations_root.resolve() not in csv_path.parents or
-                not csv_path.is_file() or not filename.endswith("results.csv")):
+                not csv_path.is_file() or not csv_path.name.endswith(".csv")):
             raise HTTPException(status_code=404, detail=f"No such results file: {filename}")
         with contextlib.redirect_stdout(io.StringIO()):
             rows = load_results(csv_path)
@@ -235,12 +238,12 @@ def create_app():
         )
         expected_keys = build_expected_keys(screens, labels_dir, ALL_PROFILES)
 
-        # Mirrors evaluation.config.get_results_csv without relying on its
-        # module-level DATASET_DIR, which reflects whatever dataset this
-        # server process happened to import under -- not necessarily the
-        # dataset the caller selected in the UI.
-        from paths import evaluation_results_path
-        results_csv = evaluation_results_path(model, use_a11y_tree)
+        # Scoped to the selected dataset explicitly. evaluation.config's
+        # module-level DATASET_DIR reflects whatever dataset this server
+        # process happened to import under -- not necessarily the one the
+        # caller picked in the UI -- so the preflight would otherwise count
+        # another dataset's completed rows as this run's progress.
+        results_csv = paths.evaluation_results_path(model, use_a11y_tree, info.path)
 
         already_done = len(load_completed_keys(results_csv)) if results_csv.is_file() else 0
         lock_file = lock_path(results_csv)
@@ -251,7 +254,7 @@ def create_app():
 
         return {
             "model": model,
-            "results_csv": results_csv.relative_to(paths.EVALUATIONS_DIR).as_posix(),
+            "results_csv": results_csv.name,
             "expected_total": len(expected_keys),
             "already_done": min(already_done, len(expected_keys)),
             "lock_present": lock_file.is_file(),
@@ -416,7 +419,7 @@ def create_app():
         if mode not in ANALYSIS_MODES:
             raise HTTPException(status_code=400, detail=f"Unknown mode: {mode}")
 
-        output_dir = analysis_output_dir(mode, sample)
+        output_dir = analysis_output_dir(info.path, mode, sample)
         output_dir.mkdir(parents=True, exist_ok=True)
 
         buf = io.StringIO()

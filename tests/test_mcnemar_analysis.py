@@ -129,27 +129,40 @@ class DiscoverResultCsvsTests(unittest.TestCase):
         self.assertEqual([], found)
 
     def test_organized_outputs_are_selected_by_mode(self):
-        """The active dataset discovers canonical outputs/evaluations files."""
-        evaluations = self.data_dir / "outputs" / "evaluations"
-        vision = evaluations / "openai_gpt-4o-mini" / "vision" / "results.csv"
-        tree = evaluations / "openai_gpt-4o-mini" / "tree" / "results.csv"
-        vision.parent.mkdir(parents=True)
-        tree.parent.mkdir(parents=True)
-        touch_csv(vision)
-        touch_csv(tree)
+        """A dataset's own output root supplies its results, split by arm."""
+        root = Path(self.tmp.name)
+        dataset = root / "dataset"
+        (dataset / "labels").mkdir(parents=True)
+        with mock.patch.object(paths, "PROJECT_ROOT", root):
+            vision = paths.evaluation_results_path("openai/gpt-4o-mini", False, dataset)
+            tree = paths.evaluation_results_path("openai/gpt-4o-mini", True, dataset)
+            vision.parent.mkdir(parents=True)
+            touch_csv(vision)
+            touch_csv(tree)
 
-        # discover_result_csvs intentionally preserves legacy behavior for an
-        # arbitrary --data-dir, but uses organized outputs for the active
-        # dataset. Patch the imported constants as well as paths so this test
-        # remains isolated from the checkout's real outputs directory.
-        with mock.patch.object(data, "DATASET_DIR", self.data_dir), \
-             mock.patch.object(data, "EVALUATIONS_DIR", evaluations), \
-             mock.patch.object(paths, "EVALUATIONS_DIR", evaluations):
-            found_vision = mcnemar_analysis.discover_result_csvs(self.data_dir, "vision")
-            found_tree = mcnemar_analysis.discover_result_csvs(self.data_dir, "tree")
+            found_vision = mcnemar_analysis.discover_result_csvs(dataset, "vision")
+            found_tree = mcnemar_analysis.discover_result_csvs(dataset, "tree")
 
         self.assertEqual([vision], found_vision)
         self.assertEqual([tree], found_tree)
+
+    def test_a_datasets_results_are_invisible_to_another_dataset(self):
+        """Scoping by dataset is what stops two runs sharing a result file."""
+        root = Path(self.tmp.name)
+        dataset_a = root / "dataset"
+        dataset_b = root / "datasets" / "other"
+        for d in (dataset_a, dataset_b):
+            (d / "labels").mkdir(parents=True)
+        with mock.patch.object(paths, "PROJECT_ROOT", root):
+            csv_a = paths.evaluation_results_path("openai/gpt-4o-mini", False, dataset_a)
+            csv_a.parent.mkdir(parents=True)
+            touch_csv(csv_a)
+
+            self.assertEqual([csv_a], mcnemar_analysis.discover_result_csvs(dataset_a, "vision"))
+            self.assertEqual([], mcnemar_analysis.discover_result_csvs(dataset_b, "vision"))
+            self.assertNotEqual(
+                csv_a, paths.evaluation_results_path("openai/gpt-4o-mini", False, dataset_b),
+            )
 
 
 class LoadResultsPromptModeDefaultTests(unittest.TestCase):
@@ -602,6 +615,44 @@ class SampleExclusionIntegrationTests(unittest.TestCase):
         self.assertEqual(2, a + b + c + d)
 
 
+class ResolveDataDirTests(unittest.TestCase):
+    """--csv must be corrected against the captures it was collected from.
+
+    reclassify_label_changed and reclassify_off_frame read <data_dir>/labels
+    and <data_dir>/images. Pointing those at a different run's captures would
+    reclassify rows against screenshots the model never saw.
+    """
+
+    def setUp(self):
+        from analysis.cli import resolve_data_dir
+
+        self.resolve = resolve_data_dir
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+
+    def test_explicit_data_dir_always_wins(self):
+        explicit = self.root / "explicit"
+        csv_path = self.root / "elsewhere" / "results.csv"
+        self.assertEqual(explicit, self.resolve(explicit, csv_path))
+
+    def test_a_csv_beside_its_captures_identifies_its_own_dataset(self):
+        # The pre-reorganization layout: results sat next to labels/ and
+        # images/ inside the dataset directory.
+        archive = self.root / "dataset" / "experiment_2"
+        (archive / "labels").mkdir(parents=True)
+        csv_path = archive / "evaluation_results_gpt-5.5.csv"
+        self.assertEqual(archive, self.resolve(None, csv_path))
+
+    def test_a_csv_under_outputs_falls_back_to_the_active_dataset(self):
+        csv_path = self.root / "outputs" / "dataset" / "evaluations" / "m_vision.csv"
+        csv_path.parent.mkdir(parents=True)
+        self.assertEqual(paths.DATASET_DIR, self.resolve(None, csv_path))
+
+    def test_no_csv_and_no_flag_uses_the_active_dataset(self):
+        self.assertEqual(paths.DATASET_DIR, self.resolve(None, None))
+
+
 CROSS_HEADER = (
     "screen,target_text,profile,status,raw_response,x_pred,y_pred,"
     "x_min,y_min,x_max,y_max,score,trials,trial_scores,parse_method,"
@@ -613,11 +664,13 @@ class RunCrossComparisonTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.dir = Path(self.tmp.name)
-        self.analysis_dir = self.dir / "outputs" / "analysis"
-        self.analysis_patch = mock.patch.object(comparison, "ANALYSIS_DIR", self.analysis_dir)
-        self.analysis_patch.start()
-        self.addCleanup(self.analysis_patch.stop)
+        self.root = Path(self.tmp.name)
+        self.dir = self.root / "dataset"
+        self.dir.mkdir()
+        self._root_patch = mock.patch.object(paths, "PROJECT_ROOT", self.root)
+        self._root_patch.start()
+        self.addCleanup(self._root_patch.stop)
+        self.analysis_dir = self.root / "outputs" / "dataset" / "analysis"
 
     def write_csv(self, name: str, rows: list[str]) -> Path:
         path = self.dir / name

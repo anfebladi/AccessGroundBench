@@ -14,7 +14,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from paths import PROJECT_ROOT
+from paths import captures_dir
 
 from .imaging import COLOR_TRANSFORMS, apply_color_transform, crop_screenshot
 
@@ -31,9 +31,11 @@ from ..runtime.device import (
 REMOTE_XML = "/sdcard/ui_layout.xml"
 REMOTE_PNG = "/sdcard/ui_screen.png"
 
-# Output directory: outputs/ subfolder inside the project root
-OUTPUT_DIR = PROJECT_ROOT / "outputs"
-OUTPUT_DIR.mkdir(exist_ok=True)
+# Scratch output for the standalone `agb capture` command. Kept out of the
+# dataset output roots (and gitignored) because these are ad-hoc captures, not
+# results belonging to any dataset.
+OUTPUT_DIR = captures_dir()
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 # ---------------------------------------------------------------------------

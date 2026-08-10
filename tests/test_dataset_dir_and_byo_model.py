@@ -17,6 +17,67 @@ from evaluation import cli as evaluation_cli
 from evaluation.config import get_results_csv, sanitize_model_filename
 
 
+class OutputScopingTests(unittest.TestCase):
+    """Two datasets must never reach the same generated file.
+
+    Sharing one would let an evaluation of dataset B resume against dataset
+    A's completed keys, and let an analysis of an archive overwrite the
+    current run's tables -- in both cases silently, with no column or path
+    recording which dataset a row came from.
+    """
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+        patch = mock.patch.object(paths, "PROJECT_ROOT", self.root)
+        patch.start()
+        self.addCleanup(patch.stop)
+
+    def test_each_dataset_gets_its_own_result_file(self):
+        default = paths.evaluation_results_path("openai/gpt-4o", dataset_dir=self.root / "dataset")
+        archive = paths.evaluation_results_path(
+            "openai/gpt-4o", dataset_dir=self.root / "dataset" / "experiment_2")
+        collected = paths.evaluation_results_path(
+            "openai/gpt-4o", dataset_dir=self.root / "datasets" / "rerun")
+
+        self.assertEqual(3, len({default, archive, collected}))
+        self.assertEqual(self.root / "outputs" / "dataset" / "evaluations", default.parent)
+        self.assertEqual(self.root / "outputs" / "experiment_2" / "evaluations", archive.parent)
+        self.assertEqual(self.root / "outputs" / "rerun" / "evaluations", collected.parent)
+
+    def test_vision_and_tree_are_separate_files_for_one_model(self):
+        vision = paths.evaluation_results_path("openai/gpt-4o", False)
+        tree = paths.evaluation_results_path("openai/gpt-4o", True)
+        self.assertNotEqual(vision, tree)
+        self.assertEqual("openai_gpt-4o_vision.csv", vision.name)
+        self.assertEqual("openai_gpt-4o_tree.csv", tree.name)
+
+    def test_analysis_output_is_scoped_by_dataset_mode_and_sample(self):
+        current = paths.analysis_output_path("vision", "all", self.root / "dataset")
+        archive = paths.analysis_output_path(
+            "vision", "all", self.root / "dataset" / "experiment_2")
+        self.assertNotEqual(current, archive)
+        self.assertNotEqual(current, paths.analysis_output_path("tree", "all", self.root / "dataset"))
+        self.assertNotEqual(
+            current, paths.analysis_output_path("vision", "primary", self.root / "dataset"))
+
+    def test_model_name_survives_a_round_trip_through_the_filename(self):
+        from analysis.data.results import model_name_from_path
+
+        for model in ("openai/gpt-4o", "ollama/llama3.2-vision:11b", "9router/cx/gpt-5.6-sol"):
+            for tree in (False, True):
+                path = paths.evaluation_results_path(model, tree)
+                self.assertEqual(sanitize_model_filename(model), model_name_from_path(path))
+
+    def test_env_override_moves_the_result_file_with_the_dataset(self):
+        with mock.patch.object(paths, "DATASET_DIR", self.root / "datasets" / "rerun"):
+            self.assertEqual(
+                self.root / "outputs" / "rerun" / "evaluations" / "openai_gpt-4o_vision.csv",
+                paths.evaluation_results_path("openai/gpt-4o"),
+            )
+
+
 class DatasetDirOverrideTests(unittest.TestCase):
     def test_no_override_defaults_to_project_root_dataset(self):
         root = Path("C:/somewhere/accessgroundbench")
@@ -169,10 +230,8 @@ class RealSubprocessDataDirTests(unittest.TestCase):
 class FilenameSanitizationTests(unittest.TestCase):
     def test_slash_replacement_is_unchanged_from_original_behavior(self):
         path = get_results_csv("9router/cx/gpt-5.5")
-        self.assertEqual("results.csv", path.name)
-        self.assertEqual(("9router_cx_gpt-5.5", "vision"),
-                         (path.parent.parent.name, path.parent.name))
-        self.assertEqual("evaluations", path.parent.parent.parent.name)
+        self.assertEqual("9router_cx_gpt-5.5_vision.csv", path.name)
+        self.assertEqual("evaluations", path.parent.name)
 
     def test_colon_is_sanitized(self):
         # Ollama-style ids embed a tag after a colon, which is illegal in a
@@ -195,10 +254,10 @@ class FilenameSanitizationTests(unittest.TestCase):
 
     def test_tree_suffix_still_appends_after_sanitization(self):
         path = get_results_csv("ollama/llama3.2-vision:11b", use_a11y_tree=True)
-        self.assertEqual("results.csv", path.name)
-        self.assertEqual("tree", path.parent.name)
-        self.assertEqual("ollama_llama3.2-vision_11b", path.parent.parent.name)
-        self.assertNotIn(":", str(path))
+        self.assertEqual("ollama_llama3.2-vision_11b_tree.csv", path.name)
+        # The filename itself must stay Windows-legal; a drive letter in the
+        # surrounding absolute path is not the model's doing.
+        self.assertNotIn(":", path.name)
 
 
 if __name__ == "__main__":
