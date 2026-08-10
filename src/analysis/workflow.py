@@ -23,8 +23,17 @@ def run_analysis(
     mode: str,
     sample: str,
     label_changed_mode: str,
+    output_dir: Path | None = None,
 ) -> None:
-    """Load, correct, analyze, report, and serialize one analysis request."""
+    """Load, correct, analyze, report, and serialize one analysis request.
+
+    Results are written back into *data_dir* unless *output_dir* is given.
+    Separating the two matters because the result tables are named after the
+    analysis, not the run that produced them: re-analysing a dataset with a
+    different --sample or --mode overwrites the previous tables in place. The
+    web UI passes an output_dir for exactly that reason, so a click in the
+    browser can never clobber the tables committed alongside a dataset.
+    """
     profiles = list(EXPERIMENTAL_PROFILES)
     if csv_path:
         csv_files = [csv_path]
@@ -90,7 +99,7 @@ def run_analysis(
             print(f"  {sample_name:<16}{total_obs:>18}{total_obs / n_models:>12.0f}")
 
     write_outputs(
-        data_dir, reachability_all, pooled_all, per_model_all, signs_all,
+        output_dir or data_dir, reachability_all, pooled_all, per_model_all, signs_all,
         label_changed_breakdown,
     )
     print()

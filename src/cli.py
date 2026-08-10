@@ -51,6 +51,11 @@ COMMANDS: dict[str, tuple[str, str, str]] = {
         "extract_main",
         "extract element bounds from UI XML",
     ),
+    "ui": (
+        "webui.server",
+        "ui_main",
+        "launch the local web UI (needs the 'ui' extra)",
+    ),
 }
 
 

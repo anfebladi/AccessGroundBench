@@ -68,10 +68,44 @@ For the capture reference and recovery options, see
 [`docs/runbooks/collection.md`](docs/runbooks/collection.md). For every command
 and option, see [`docs/cli-reference.md`](docs/cli-reference.md).
 
+## Web UI
+
+A local, browser-based alternative to the commands above — evaluate your own
+model against the shipped dataset (or one you collect), browse results, and
+run the analysis, without memorizing env vars:
+
+```bash
+uv sync --extra ui
+agb ui
+```
+
+Opens on `http://127.0.0.1:8080` (127.0.0.1 only, never exposed to the
+network). Every action shows the equivalent `agb` command it ran, and it
+writes results in exactly the same place and format the CLI does — the UI is
+a front end, not a second pipeline. See [`docs/ui.md`](docs/ui.md).
+
+## Web UI
+
+A local, browser-based alternative to the commands above — evaluate your own
+model against the shipped dataset (or one you collect), browse results, and
+run the analysis, without memorizing env vars:
+
+```bash
+uv sync --extra ui
+agb ui
+```
+
+Opens on `http://127.0.0.1:8080` (127.0.0.1 only, never exposed to the
+network). Every action shows the equivalent `agb` command it ran, and it
+writes results in exactly the same place and format the CLI does — the UI is
+a front end, not a second pipeline. See [`docs/ui.md`](docs/ui.md).
+
 ## Documentation
 
 - [`docs/setup.md`](docs/setup.md) — installation, environment variables,
   emulator preparation, and coordinate-space guidance
+- [`docs/ui.md`](docs/ui.md) — local web UI: install, tour, dataset picker,
+  bring-your-own-model, and how it maps to the CLI
 - [`docs/cli-reference.md`](docs/cli-reference.md) — complete `agb` command
   reference
 - [`docs/collection.md`](docs/collection.md) — Android emulator collection

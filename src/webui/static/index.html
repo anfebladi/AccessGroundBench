@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AccessGroundBench</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">AGB</span>
+      <span class="brand-name">AccessGroundBench</span>
+    </div>
+    <div class="header-controls">
+      <label for="dataset-select">Dataset</label>
+      <select id="dataset-select"></select>
+      <span id="dataset-meta" class="meta"></span>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <nav id="rail" aria-label="Workflow">
+      <p class="rail-group" id="rail-group-setup">Set up</p>
+      <a href="#dataset" data-tab="dataset">
+        <span class="rail-num" aria-hidden="true">1</span>
+        <span class="rail-label">Dataset</span>
+        <span class="rail-chip" data-chip="dataset"></span>
+      </a>
+      <a href="#models" data-tab="models">
+        <span class="rail-num" aria-hidden="true">2</span>
+        <span class="rail-label">Models</span>
+        <span class="rail-chip" data-chip="models"></span>
+      </a>
+
+      <p class="rail-group">Run</p>
+      <a href="#evaluate" data-tab="evaluate">
+        <span class="rail-num" aria-hidden="true">3</span>
+        <span class="rail-label">Evaluate</span>
+        <span class="rail-chip" data-chip="evaluate"></span>
+      </a>
+      <a href="#collect" data-tab="collect">
+        <span class="rail-num" aria-hidden="true">4</span>
+        <span class="rail-label">Collect</span>
+        <span class="rail-chip" data-chip="collect"></span>
+      </a>
+
+      <p class="rail-group">Read</p>
+      <a href="#results" data-tab="results">
+        <span class="rail-num" aria-hidden="true">5</span>
+        <span class="rail-label">Results</span>
+        <span class="rail-chip" data-chip="results"></span>
+      </a>
+      <a href="#analyze" data-tab="analyze">
+        <span class="rail-num" aria-hidden="true">6</span>
+        <span class="rail-label">Analyze</span>
+        <span class="rail-chip" data-chip="analyze"></span>
+      </a>
+    </nav>
+
+    <main>
+      <!-- ============================ Dataset ============================ -->
+      <section id="tab-dataset" class="tab" aria-labelledby="head-dataset">
+        <div class="view-head">
+          <h2 id="head-dataset">Dataset</h2>
+          <p class="lead">
+            The screens this benchmark grounds against, captured under each
+            accessibility profile. Check the capture warnings here before you
+            read any number reported against this dataset.
+          </p>
+        </div>
+
+        <div id="dataset-warnings"></div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3>Screen comparison</h3>
+              <p class="card-sub">Baseline against one accessibility profile, with ground-truth boxes.</p>
+            </div>
+            <div class="card-head-actions" id="compare-overlay-toggles"></div>
+          </div>
+          <div class="row">
+            <div class="picker" style="flex: 0 0 15rem;">
+              <input id="screen-filter" type="search" placeholder="Filter screens" aria-label="Filter screens" />
+              <ul id="screen-list" class="list picker-list"></ul>
+            </div>
+            <div class="grow" id="screen-browser"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================ Models ============================ -->
+      <section id="tab-models" class="tab" hidden aria-labelledby="head-models">
+        <div class="view-head">
+          <h2 id="head-models">Models</h2>
+          <p class="lead">
+            Configure the models to evaluate and check each one with a single
+            real query before spending a full run. This catches a bad key, a
+            wrong coordinate convention, or a malformed model id early.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3>Providers</h3>
+              <p class="card-sub">Session keys stay in this server's memory and are never written to disk.</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table id="provider-table">
+              <thead>
+                <tr><th>Provider</th><th>Environment variable</th><th>Status</th><th>Session key</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card card-primary">
+          <div class="card-head"><h3>Add a model</h3></div>
+          <form id="add-model-form">
+            <div class="field-row">
+              <div class="field field-wide">
+                <label for="model-id-input">Model id</label>
+                <input id="model-id-input" placeholder="openai/gpt-4o-mini" required />
+                <p class="field-hint">Any LiteLLM model string, or a <code>9router/</code> / <code>openai_compatible/</code> route.</p>
+              </div>
+              <div class="field">
+                <label for="model-coord-space">Coordinate space</label>
+                <select id="model-coord-space">
+                  <option value="pixel">Pixel</option>
+                  <option value="norm1000">Normalized (0-1000 grid)</option>
+                </select>
+                <p class="field-hint">Gemini, Qwen and GLM answer normalized.</p>
+              </div>
+              <button type="submit">Add model</button>
+            </div>
+          </form>
+          <div id="add-model-error"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Configured models</h3></div>
+          <div id="model-list"></div>
+        </div>
+
+        <div id="smoke-test-result"></div>
+      </section>
+
+      <!-- ============================ Evaluate ============================ -->
+      <section id="tab-evaluate" class="tab" hidden aria-labelledby="head-evaluate">
+        <div class="view-head">
+          <h2 id="head-evaluate">Evaluate</h2>
+          <p class="lead">
+            Query one model against every target on every profile. Runs append
+            as they go and resume where they stopped, so an interrupted run
+            never loses the calls it already paid for.
+          </p>
+        </div>
+
+        <div class="card card-primary">
+          <form id="evaluate-form">
+            <div class="field-row">
+              <div class="field field-wide">
+                <label for="eval-model-select">Model</label>
+                <select id="eval-model-select"></select>
+              </div>
+              <div class="field">
+                <label for="eval-mode-select">Prompt mode</label>
+                <select id="eval-mode-select">
+                  <option value="vision">Vision only</option>
+                  <option value="tree">Vision + a11y tree</option>
+                </select>
+              </div>
+              <button type="submit" id="eval-start">Start evaluation</button>
+            </div>
+
+            <details class="advanced">
+              <summary>Advanced options</summary>
+              <div class="advanced-body">
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="eval-trials">Trials per query</label>
+                    <input id="eval-trials" type="number" min="1" value="1" />
+                    <p class="field-hint">Above 1, answers are majority-voted and a flip rate is reported.</p>
+                  </div>
+                  <div class="field">
+                    <label for="eval-pace">Pace (seconds)</label>
+                    <input id="eval-pace" type="number" min="0" step="0.1" value="0" />
+                    <p class="field-hint">Delay between calls, for rate-limited providers.</p>
+                  </div>
+                  <div class="field">
+                    <label for="eval-coord-space">Coordinate space</label>
+                    <select id="eval-coord-space">
+                      <option value="pixel">Pixel</option>
+                      <option value="norm1000">Normalized (0-1000 grid)</option>
+                    </select>
+                    <p class="field-hint">Set per run, from the model's configuration.</p>
+                  </div>
+                </div>
+                <div class="field-grid" style="margin-top: var(--space-4);">
+                  <label class="check">
+                    <input id="eval-fresh" type="checkbox" />
+                    <span class="check-body">
+                      Start fresh
+                      <span class="field-hint">Discards existing rows and re-runs every query. You pay the full call count again.</span>
+                    </span>
+                  </label>
+                  <div id="eval-unlock-field"></div>
+                </div>
+              </div>
+            </details>
+          </form>
+
+          <div id="eval-preflight"></div>
+          <div id="eval-error"></div>
+          <div id="eval-command"></div>
+        </div>
+
+        <div id="eval-run"></div>
+      </section>
+
+      <!-- ============================ Collect ============================ -->
+      <section id="tab-collect" class="tab" hidden aria-labelledby="head-collect">
+        <div class="view-head">
+          <h2 id="head-collect">Collect</h2>
+          <p class="lead">
+            Capture a new dataset from a live Android emulator. Collection
+            always writes to <code>datasets/&lt;name&gt;/</code>, so it can
+            never overwrite the shipped dataset or an archived run.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3>Emulator preflight</h3>
+              <p class="card-sub">Checks that adb sees an authorized device.</p>
+            </div>
+            <div class="card-head-actions">
+              <button type="button" class="secondary" id="collect-preflight-btn">Check emulator</button>
+            </div>
+          </div>
+          <div id="collect-preflight-result"></div>
+          <div class="note">
+            Not verifiable from here: Pixel 6 / API 34 / 1080x2400 at 420 dpi, a
+            signed-in Google account, and Messages, Gmail and Maps each opened
+            once to clear their first-run dialogs. See <code>docs/collection.md</code>.
+          </div>
+        </div>
+
+        <div class="card card-primary">
+          <div class="card-head"><h3>New collection</h3></div>
+          <form id="collect-form">
+            <div class="field-grid">
+              <div class="field field-wide">
+                <label for="collect-name">Dataset name</label>
+                <input id="collect-name" placeholder="my-app" required />
+                <p class="field-hint">Captures land in <code>datasets/&lt;name&gt;/</code>.</p>
+              </div>
+              <div class="field">
+                <label for="collect-screens">Screens</label>
+                <select id="collect-screens" multiple size="6"></select>
+                <p class="field-hint">Select none to capture every screen.</p>
+              </div>
+            </div>
+            <div class="field-grid" style="margin-top: var(--space-4);">
+              <label class="check">
+                <input id="collect-dry-run" type="checkbox" checked />
+                <span class="check-body">
+                  Dry run
+                  <span class="field-hint">Validates the run plan without touching the emulator.</span>
+                </span>
+              </label>
+              <label class="check">
+                <input id="collect-rebuild-manifest" type="checkbox" />
+                <span class="check-body">
+                  Rebuild manifest only
+                  <span class="field-hint">Recomputes drift from existing captures. Takes no new screenshots.</span>
+                </span>
+              </label>
+            </div>
+            <div class="form-actions">
+              <button type="submit">Start collection</button>
+            </div>
+          </form>
+          <div id="collect-error"></div>
+          <div id="collect-command"></div>
+        </div>
+
+        <div id="collect-run"></div>
+      </section>
+
+      <!-- ============================ Results ============================ -->
+      <section id="tab-results" class="tab" hidden aria-labelledby="head-results">
+        <div class="view-head">
+          <h2 id="head-results">Results</h2>
+          <p class="lead">
+            Per-model accuracy over the targets that are present on both the
+            baseline and the profile being compared. Step through any model's
+            misses to see what it actually pointed at.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3>Evaluated models</h3>
+              <p class="card-sub">Accuracy is measured on co-present targets only.</p>
+            </div>
+            <div class="card-head-actions" id="results-mode-filter"></div>
+          </div>
+          <div id="results-body"></div>
+        </div>
+      </section>
+
+      <!-- ============================ Analyze ============================ -->
+      <section id="tab-analyze" class="tab" hidden aria-labelledby="head-analyze">
+        <div class="view-head">
+          <h2 id="head-analyze">Analyze</h2>
+          <p class="lead">
+            Reachability, the pooled permutation test across models, per-model
+            McNemar tests, and direction consistency. Vision and tree results
+            are analysed separately and never pooled.
+          </p>
+        </div>
+
+        <div class="card card-primary">
+          <form id="analyze-form">
+            <div class="field-row">
+              <div class="field field-wide">
+                <label for="analyze-sample">Sample</label>
+                <select id="analyze-sample">
+                  <option value="all">All samples</option>
+                  <option value="primary">Primary</option>
+                  <option value="full">Full</option>
+                  <option value="precautionary">Precautionary</option>
+                  <option value="uniform">Uniform</option>
+                </select>
+                <p class="field-hint">Which target subset the tests run over.</p>
+              </div>
+              <div class="field">
+                <label for="analyze-mode">Prompt mode</label>
+                <select id="analyze-mode">
+                  <option value="vision">Vision only</option>
+                  <option value="tree">Vision + a11y tree</option>
+                </select>
+                <p class="field-hint">The two arms are never pooled.</p>
+              </div>
+              <button type="submit" id="analyze-submit">Run analysis</button>
+            </div>
+
+            <details class="advanced">
+              <summary>Advanced options</summary>
+              <div class="advanced-body">
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="analyze-permutations">Permutations</label>
+                    <input id="analyze-permutations" type="number" value="20000" min="1" />
+                    <p class="field-hint">Higher is more precise and slower.</p>
+                  </div>
+                  <div class="field">
+                    <label for="analyze-seed">Seed</label>
+                    <input id="analyze-seed" type="number" value="0" />
+                    <p class="field-hint">A fixed seed keeps the run reproducible.</p>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </form>
+          <p class="field-hint" style="margin-top: var(--space-4);">
+            Analysis runs in this server process and blocks until it finishes.
+            Results are written to <code>ui_experiments/</code>, never into the dataset.
+          </p>
+        </div>
+
+        <div id="analyze-results"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="drawer-root"></div>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

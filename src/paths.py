@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
+
+DATASET_DIR_ENV_VAR = "AGB_DATASET_DIR"
 
 
 def _is_project_root(path: Path) -> bool:
@@ -54,8 +57,26 @@ def find_project_root(start: str | Path | None = None) -> Path:
     return Path(start).expanduser().resolve() if start is not None else Path.cwd().resolve()
 
 
+def _resolve_dataset_dir(project_root: Path) -> Path:
+    """Return the active dataset directory.
+
+    AGB_DATASET_DIR, when set, overrides the default `<project_root>/dataset`
+    so a caller (the web UI, or a --data-dir CLI flag) can point commands at a
+    different dataset without the emulator-collection code ever seeing it --
+    it reads DATASET_DIR the same way regardless of where the value came
+    from. This is only read once, at import time: every downstream module
+    that does `from paths import DATASET_DIR` captures the value at its own
+    import time, so the override must be set in the environment before this
+    module (or anything importing it) is first imported in the process.
+    """
+    override = os.environ.get(DATASET_DIR_ENV_VAR, "").strip()
+    if override:
+        return Path(override).expanduser().resolve()
+    return project_root / "dataset"
+
+
 PROJECT_ROOT = find_project_root()
-DATASET_DIR = PROJECT_ROOT / "dataset"
+DATASET_DIR = _resolve_dataset_dir(PROJECT_ROOT)
 IMAGES_DIR = DATASET_DIR / "images"
 RAW_XML_DIR = DATASET_DIR / "raw_xml"
 LABELS_DIR = DATASET_DIR / "labels"
@@ -69,6 +90,7 @@ def dataset_path(*parts: str | Path) -> Path:
 
 __all__ = [
     "DATASET_DIR",
+    "DATASET_DIR_ENV_VAR",
     "IMAGES_DIR",
     "LABELS_DIR",
     "MANIFEST_PATH",

@@ -4,6 +4,11 @@ This runbook evaluates captures already under `dataset/`. It does not collect
 data or change an Android device. Do not run `agb collect`, `agb profile`, `agb
 capture`, or any command that uses ADB.
 
+> `agb ui` (see [`docs/ui.md`](../ui.md)) is a browser front end for this same
+> workflow — same commands, same output files, plus a live preflight/resume
+> view and a per-target miss inspector. Use whichever is more convenient; the
+> results are identical either way.
+
 ## Before starting
 
 Configure `VLM_MODEL` and provider credentials in `.env` as described in the

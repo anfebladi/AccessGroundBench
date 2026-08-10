@@ -134,6 +134,8 @@ class UnifiedCliTests(unittest.TestCase):
                 "collection.*",
                 "evaluation",
                 "evaluation.*",
+                "webui",
+                "webui.*",
             },
             set(finder["include"]),
         )

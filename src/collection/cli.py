@@ -3,12 +3,19 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
+from pathlib import Path
 
-from .artifacts import labels
-from .pipeline import capture
+# Deliberately NOT `from paths import DATASET_DIR_ENV_VAR`: importing the
+# `paths` module at all runs its top-level DATASET_DIR computation
+# immediately, before --data-dir has been parsed below -- which would freeze
+# DATASET_DIR to the default and silently ignore the override for the rest
+# of the process. Kept in sync with paths.DATASET_DIR_ENV_VAR by
+# tests/test_dataset_dir_and_byo_model.py.
+_DATASET_DIR_ENV_VAR = "AGB_DATASET_DIR"
+
 from .runtime import profiles
-from . import workflow
 from .screens import SCREENS
 
 
@@ -37,7 +44,22 @@ def collect_main(argv: list[str] | None = None) -> None:
              "subset run overwrote it, or to get a provenance record for a "
              "dataset collected before this flag existed.",
     )
+    parser.add_argument(
+        "--data-dir",
+        type=Path,
+        default=None,
+        help="Directory to capture into (default: ./dataset, or "
+             "$AGB_DATASET_DIR if set)",
+    )
     args = parser.parse_args(argv)
+    if args.data_dir is not None:
+        # Must land in os.environ before `paths` (and anything importing it,
+        # e.g. .workflow) is first imported in this process -- paths.py reads
+        # this once at import time. Hence the lazy import below.
+        os.environ[_DATASET_DIR_ENV_VAR] = str(args.data_dir.expanduser().resolve())
+
+    from . import workflow
+
     workflow.run_collection(
         args.screens or SCREENS,
         dry_run=args.dry_run,
@@ -75,6 +97,9 @@ def capture_main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Capture synchronized Android UI assets")
     parser.add_argument("output_name", nargs="?", default=None)
     args = parser.parse_args(argv)
+
+    from .pipeline import capture
+
     capture.run_pipeline(output_name=args.output_name)
 
 
@@ -90,6 +115,9 @@ def extract_main(argv: list[str] | None = None) -> None:
     parser.add_argument("--y-offset", type=int, default=0)
     parser.add_argument("--bottom-crop", type=int, default=0)
     args = parser.parse_args(arguments)
+
+    from .artifacts import labels
+
     labels.run(
         args.xml_path,
         output_path=args.output,
