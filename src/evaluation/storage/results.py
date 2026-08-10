@@ -1,10 +1,10 @@
 """CSV result writing for VLM evaluation."""
 
 import csv
-import shutil
 from collections import Counter
 from pathlib import Path
 
+from backups import preserve
 from .locking import CsvLockError, acquire_lock, release_lock
 
 CSV_COLUMNS = [
@@ -169,10 +169,15 @@ def prepare_csv(
     their keys returned so the runner can skip them -- a full run is ~1000
     paid API calls per model, so resuming matters.
 
+    Every path that discards rows preserves the file under .backups/ first
+    (src/backups.py), including the schema-mismatch path below, which is
+    reached by an ordinary resume rather than by anything the caller asked
+    for.
+
     When expected_keys is given, the file is canonicalized against it first
     (see canonicalize_rows): stale-target rows, superseded api_error rows,
     and duplicate copies of the same key are dropped, with the original
-    backed up to a sibling .bak file. Without this, a key whose only surviving
+    preserved under .backups/ first. Without this, a key whose only surviving
     copy (after whatever order retries happened to land in) is a stale
     api_error silently drops out of every downstream analysis that indexes by
     key -- see CLAUDE.md's canonicalization notes for the case this caught.
@@ -183,6 +188,9 @@ def prepare_csv(
     # query (and vice versa) with nothing in the schema to reveal the
     # mismatch afterwards.
     if fresh or not results_csv.is_file():
+        # --fresh is explicit, but what it discards is still ~930 rows of paid
+        # API calls; keep a copy so a mistyped command is recoverable.
+        preserve(results_csv, reason="--fresh discards the existing rows")
         init_csv(results_csv)
         return set()
 
@@ -201,6 +209,11 @@ def prepare_csv(
         and CSV_COLUMNS[: len(header)] == header
     )
     if header != CSV_COLUMNS and not is_additive_upgrade:
+        # Nobody asked for this: an ordinary resume hits it whenever a column
+        # was renamed, reordered, or removed since the file was written. It
+        # discards every row -- the most expensive data the pipeline produces
+        # -- so the copy has to happen before init_csv truncates.
+        preserve(results_csv, reason="schema is not resumable; rows would be lost")
         print(f"  [CSV] {results_csv.name} uses an older schema; starting fresh.")
         init_csv(results_csv)
         return set()
@@ -234,8 +247,7 @@ def prepare_csv(
             rows = list(csv.DictReader(f))
         canonical_rows, counts = canonicalize_rows(rows, expected_keys)
         if any(counts.values()) or is_additive_upgrade:
-            backup_path = results_csv.with_name(results_csv.name + ".bak")
-            shutil.copy2(results_csv, backup_path)
+            preserve(results_csv, reason="canonicalization rewrites the file")
             with open(results_csv, "w", newline="", encoding="utf-8") as f:
                 writer = csv.writer(f)
                 writer.writerow(CSV_COLUMNS)
@@ -245,8 +257,7 @@ def prepare_csv(
                 f"  [CSV] Canonicalized {results_csv.name}: dropped "
                 f"{counts['stale_target']} stale-target row(s), "
                 f"{counts['api_error']} api_error row(s), "
-                f"{counts['duplicate']} duplicate real row(s) "
-                f"(original backed up to {backup_path.name})"
+                f"{counts['duplicate']} duplicate real row(s)"
             )
             # completed was derived from the file before this rewrite, but
             # canonicalization never changes key membership: it only removes

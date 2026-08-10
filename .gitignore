@@ -37,6 +37,11 @@ dist/
 # under outputs/ is per-dataset results and is committed.
 outputs/captures/
 
+# Copies kept aside before a command replaces a result file (src/backups.py).
+# Local safety net, not a record: committing them would put stale evaluation
+# rows in the repo looking like results. Safe to delete at any time.
+.backups/
+
 
 # Generated JSON from committed sample inputs
 sample_input/capture_*.json

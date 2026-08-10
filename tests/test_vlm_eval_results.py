@@ -3,6 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from backups import BACKUP_DIR_NAME
 from evaluation.storage.results import (
     CSV_COLUMNS,
     PROMPT_MODE_TREE,
@@ -359,12 +360,16 @@ class PrepareCsvCanonicalizationTests(unittest.TestCase):
         )
 
         self.assertEqual({("clock", "Timer", "baseline")}, completed)
-        backup_path = self.csv_path.with_name(self.csv_path.name + ".bak")
-        self.assertTrue(backup_path.is_file())
         with open(self.csv_path, "r", newline="", encoding="utf-8") as f:
             rows = list(csv.DictReader(f))
         self.assertEqual(1, len(rows))
         self.assertEqual(STATUS_CO_PRESENT, rows[0]["status"])
+
+        # The pre-canonicalization file is recoverable, with both rows intact.
+        backups_made = list((self.csv_path.parent / BACKUP_DIR_NAME).glob("*.csv"))
+        self.assertEqual(1, len(backups_made))
+        with open(backups_made[0], "r", newline="", encoding="utf-8") as f:
+            self.assertEqual(2, len(list(csv.DictReader(f))))
 
     def test_dropped_api_error_key_is_re_queried_by_returned_completed_set(self):
         # "Deleted rows must come back": a key whose only row was api_error
