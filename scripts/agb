@@ -1,0 +1,36 @@
+#!/bin/sh
+set -eu
+
+# Resolve this file without relying on GNU readlink -f (unavailable on macOS).
+script=$0
+case $script in
+    /*) ;;
+    *) script=$(pwd -P)/$script ;;
+esac
+while [ -L "$script" ]; do
+    target=$(readlink "$script") || {
+        echo "agb: unable to resolve launcher symlink: $script" >&2
+        exit 1
+    }
+    case $target in
+        /*) script=$target ;;
+        *) script=$(dirname "$script")/$target ;;
+    esac
+done
+
+script_dir=$(CDPATH= cd -P "$(dirname "$script")" 2>/dev/null && pwd -P) || {
+    echo "agb: unable to locate launcher directory" >&2
+    exit 1
+}
+root=$(CDPATH= cd -P "$script_dir/.." 2>/dev/null && pwd -P) || {
+    echo "agb: unable to locate repository root" >&2
+    exit 1
+}
+cd "$root"
+
+if ! command -v uv >/dev/null 2>&1; then
+    echo "agb: uv is required but was not found on PATH; install uv and try again" >&2
+    exit 127
+fi
+
+exec uv run --project "$root" agb "$@"

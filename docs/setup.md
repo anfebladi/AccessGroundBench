@@ -6,10 +6,22 @@ AccessGroundBench requires Python 3.11 or later. From the repository root:
 
 ```bash
 uv sync
+./scripts/install-agb.sh
 cp .env.example .env
 ```
 
-`pip install .` is also supported, but `uv sync` is the recommended setup.
+On macOS and Linux, the installer creates an `agb` symlink in
+`${XDG_BIN_HOME:-$HOME/.local/bin}` that points to this clone's project
+launcher. The launcher resolves the repository before invoking its environment,
+so bare `agb ...` works from any directory inside the cloned repository. The
+installer is idempotent for its own launcher, refuses to replace an unrelated
+file unless `--force` is supplied, and does not edit shell configuration. If
+the destination is not already on `PATH`, follow the PATH guidance printed by
+the installer. On Windows, or without installing the launcher, run commands as
+`uv run agb ...` instead.
+
+`pip install .` is also supported, but `uv sync` is the recommended setup and
+keeps the project launcher tied to the checkout.
 
 ## Configure providers
 

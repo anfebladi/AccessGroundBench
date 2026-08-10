@@ -28,9 +28,18 @@ Quickstart:
 
 ```bash
 uv sync
+./scripts/install-agb.sh
 cp .env.example .env
 # edit .env with VLM_MODEL and the provider key it requires
 ```
+
+On macOS and Linux, `./scripts/install-agb.sh` installs a project launcher at
+`${XDG_BIN_HOME:-$HOME/.local/bin}/agb`. The launcher resolves this clone and
+can run bare `agb ...` commands from any directory inside it. The installer
+does not edit shell configuration; if the destination directory is not on
+`PATH`, add it using the guidance printed by the installer and start a new
+shell. On Windows, or when no launcher is installed, use `uv run agb ...`
+instead.
 
 See [`docs/setup.md`](docs/setup.md) for provider configuration, emulator
 preparation, and coordinate conventions. The collection reference guide is in
@@ -61,6 +70,10 @@ agb analyze
 agb analyze --csv dataset/evaluation_results_MODEL.csv
 agb rescore --csv dataset/evaluation_results_MODEL.csv --check
 ```
+
+These commands assume the macOS/Linux launcher setup above. The portable
+equivalent is to prefix each command with `uv run` (for example,
+`uv run agb collect`); this is also the Windows workflow.
 
 Collection can be checked without an emulator with `agb collect --dry-run`.
 For the capture reference and recovery options, see
