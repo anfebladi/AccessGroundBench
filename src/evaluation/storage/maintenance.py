@@ -12,18 +12,19 @@ deleted mid-run).
 
 Zero API calls are made -- every expected key already present in these files
 already has at least one real measurement, so this is pure deletion of
-stale-target, api_error, and duplicate rows, plus a canonical sort. A .bak
-copy of each file is kept before rewriting (see .gitignore).
+stale-target, api_error, and duplicate rows, plus a canonical sort. A
+timestamped copy of each file is kept under .backups/ before rewriting
+(src/backups.py; gitignored).
 
 """
 
 import argparse
 import csv
-import shutil
 import sys
 from pathlib import Path
 
 from ..config import ALL_PROFILES, COORD_SPACES, DATASET_DIR, IMAGES_DIR, LABELS_DIR
+from backups import preserve
 from paths import evaluations_dir
 from .results import (
     CSV_COLUMNS,
@@ -206,8 +207,7 @@ def rescore_main(argv: list[str] | None = None) -> None:
         return
 
     rows, scored, hits = rescore(original, args.coord_space)
-    backup = args.csv.with_suffix(".csv.bak")
-    shutil.copy2(args.csv, backup)
+    backup = preserve(args.csv, reason="rescoring rewrites every score")
     with open(args.csv, "w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
         writer.writerow(CSV_COLUMNS)
@@ -215,7 +215,7 @@ def rescore_main(argv: list[str] | None = None) -> None:
             writer.writerow([row.get(column, "") for column in CSV_COLUMNS])
     accuracy = f"{hits / scored * 100:.1f}%" if scored else "n/a"
     print(f"  Rescored {args.csv.name} as {args.coord_space}")
-    print(f"  Backup:   {backup.name}")
+    print(f"  Backup:   {backup.name if backup else 'none'}")
     print(f"  Scored:   {scored} rows, {hits} hits ({accuracy})")
     print(f"\n  Now rerun: agb analyze --csv {args.csv}")
 

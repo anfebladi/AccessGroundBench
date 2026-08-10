@@ -9,6 +9,7 @@ from .grounding import ALPHA
 from .output import _fmt
 from ..data.samples import DEFAULT_SAMPLE, compute_b2_targets, target_excluded_for_condition
 from ..stats import mcnemar_test
+from backups import preserve
 from paths import analysis_dir
 
 
@@ -51,6 +52,7 @@ def run_cross_comparison(
     label = csv_a.stem.replace("evaluation_results_", "")
     out_path = analysis_dir(data_dir) / "comparisons" / f"mcnemar_compare_{label}.csv"
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    preserve(out_path, reason="re-running the comparison replaces it")
     with open(out_path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["Sample", "Profile", "Total_Pairs", "Both_Pass_a", "Tree_Hurt_b",

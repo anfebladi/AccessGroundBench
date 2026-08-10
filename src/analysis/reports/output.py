@@ -3,6 +3,8 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
+from backups import preserve
+
 
 def _fmt(value, spec: str = ".6f") -> str:
     """Format a float for CSV, leaving None and infinities readable."""
@@ -21,7 +23,14 @@ def write_outputs(
     signs: list[dict],
     label_changed: list[dict] | None = None,
 ) -> None:
-    """Write the result tables to CSV."""
+    """Write the result tables to CSV.
+
+    Any existing tables here are preserved first. The tables are named after
+    the analysis rather than the run, so a re-run with a different
+    --permutations or --seed replaces the numbers behind a finished
+    experiment; the copy is what makes that recoverable.
+    """
+    preserve(data_dir, reason="re-analysis replaces these tables")
     data_dir.mkdir(parents=True, exist_ok=True)
 
     reach_path = data_dir / "reachability_results.csv"

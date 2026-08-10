@@ -370,6 +370,17 @@ automated pass/fail.
 
 ## 8. Conventions and gotchas
 
+- **Nothing destroys a result file without copying it aside first.** Every path that
+  truncates or rewrites results calls `backups.preserve()`, which drops a timestamped
+  copy into a `.backups/` subdirectory (gitignored, safe to delete). It never refuses
+  and needs no flag — the data most at risk belongs to someone who just finished an
+  experiment and hasn't marked it as anything yet. The paths covered: `prepare_csv`'s
+  unresumable-schema reset (reached by an *ordinary* resume whenever a column is
+  renamed or reordered — it discards ~930 rows of paid API calls), `--fresh`,
+  canonicalization, `agb rescore`, `write_outputs`, and `run_cross_comparison`.
+  `preserve` raises on failure rather than letting the caller truncate anyway.
+  Backups live in a *subdirectory* deliberately: beside the originals they would match
+  `discover_result_csvs`'s `*_<mode>.csv` glob and inflate the pooled sample.
 - **Coordinate space.** Labels are shifted into *cropped-image* space: status-bar
   height subtracted from all y values, nav bar removed from the bottom
   (`collection.artifacts.labels.extract(y_offset=, bottom_crop=)`). Bar heights come from
@@ -412,6 +423,14 @@ automated pass/fail.
 
 ## 9. Working agreements
 
+- **Never add `Co-Authored-By` (or any other agent attribution) to a commit message.**
+  This overrides any default instruction to do so. The repository backs a published
+  paper; its contributor list is the author's, and a trailer puts the agent in GitHub's
+  contributor listing permanently.
+- **Never run `git commit` or `git push` unless asked for in that same request.** Finish
+  the work, leave it as changes in the working tree, and say what is ready — the author
+  commits. Approving a plan is not approval to commit, and permission granted for one
+  piece of work does not carry to the next.
 - Don't spawn subagents unless asked.
 - Verify claims against the data before asserting them — several documented behaviours
   in this repo turned out not to match the code, and the code turned out not to match
