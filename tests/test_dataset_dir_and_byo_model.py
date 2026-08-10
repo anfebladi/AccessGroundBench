@@ -168,10 +168,11 @@ class RealSubprocessDataDirTests(unittest.TestCase):
 
 class FilenameSanitizationTests(unittest.TestCase):
     def test_slash_replacement_is_unchanged_from_original_behavior(self):
-        self.assertEqual(
-            "evaluation_results_9router_cx_gpt-5.5.csv",
-            get_results_csv("9router/cx/gpt-5.5").name,
-        )
+        path = get_results_csv("9router/cx/gpt-5.5")
+        self.assertEqual("results.csv", path.name)
+        self.assertEqual(("9router_cx_gpt-5.5", "vision"),
+                         (path.parent.parent.name, path.parent.name))
+        self.assertEqual("evaluations", path.parent.parent.parent.name)
 
     def test_colon_is_sanitized(self):
         # Ollama-style ids embed a tag after a colon, which is illegal in a
@@ -194,8 +195,10 @@ class FilenameSanitizationTests(unittest.TestCase):
 
     def test_tree_suffix_still_appends_after_sanitization(self):
         path = get_results_csv("ollama/llama3.2-vision:11b", use_a11y_tree=True)
-        self.assertTrue(path.name.endswith("_with_tree.csv"))
-        self.assertNotIn(":", path.name)
+        self.assertEqual("results.csv", path.name)
+        self.assertEqual("tree", path.parent.name)
+        self.assertEqual("ollama_llama3.2-vision_11b", path.parent.parent.name)
+        self.assertNotIn(":", str(path))
 
 
 if __name__ == "__main__":

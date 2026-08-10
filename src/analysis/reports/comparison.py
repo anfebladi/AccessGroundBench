@@ -9,6 +9,7 @@ from .grounding import ALPHA
 from .output import _fmt
 from ..data.samples import DEFAULT_SAMPLE, compute_b2_targets, target_excluded_for_condition
 from ..stats import mcnemar_test
+from paths import ANALYSIS_DIR
 
 
 def run_cross_comparison(
@@ -47,7 +48,11 @@ def run_cross_comparison(
     baseline_rows = [row for (_s, _t, prof), row in index_a.items() if prof == "baseline"]
     b2_targets = compute_b2_targets(baseline_rows)
 
-    out_path = csv_a.parent / f"mcnemar_compare_{csv_a.stem.replace('evaluation_results_', '')}.csv"
+    label = csv_a.stem.replace("evaluation_results_", "")
+    if csv_a.name == "results.csv" and csv_a.parent.name in {"vision", "tree"}:
+        label = f"{csv_a.parent.parent.name}_{csv_a.parent.name}"
+    out_path = ANALYSIS_DIR / "comparisons" / f"mcnemar_compare_{label}.csv"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["Sample", "Profile", "Total_Pairs", "Both_Pass_a", "Tree_Hurt_b",

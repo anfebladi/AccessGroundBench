@@ -69,8 +69,8 @@ for a model that already self-describes its coordinates or for Ferret-UI.
 To inspect or repair an existing CSV without API calls:
 
 ```bash
-agb rescore --csv dataset/evaluation_results_MODEL.csv --check
-agb rescore --csv dataset/evaluation_results_MODEL.csv --coord-space norm1000
+agb rescore --csv outputs/evaluations/MODEL/vision/results.csv --check
+agb rescore --csv outputs/evaluations/MODEL/vision/results.csv --coord-space norm1000
 ```
 
 Re-scoring writes a `.csv.bak`; run `agb analyze` again afterward. See the

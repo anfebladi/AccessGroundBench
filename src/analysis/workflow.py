@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from evaluation.config import ALL_PROFILES
+from paths import analysis_output_path
 from .data.results import (
     discover_result_csvs, index_rows, load_results, model_name_from_path,
     reclassify_label_changed, reclassify_off_frame,
@@ -37,7 +38,6 @@ def run_analysis(
     profiles = list(EXPERIMENTAL_PROFILES)
     if csv_path:
         csv_files = [csv_path]
-        data_dir = csv_path.parent
     else:
         csv_files = discover_result_csvs(data_dir, mode)
         if not csv_files:
@@ -99,7 +99,7 @@ def run_analysis(
             print(f"  {sample_name:<16}{total_obs:>18}{total_obs / n_models:>12.0f}")
 
     write_outputs(
-        output_dir or data_dir, reachability_all, pooled_all, per_model_all, signs_all,
+        output_dir or analysis_output_path(mode, sample), reachability_all, pooled_all, per_model_all, signs_all,
         label_changed_breakdown,
     )
     print()

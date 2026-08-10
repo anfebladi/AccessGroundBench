@@ -78,6 +78,27 @@ class AgbInstallerTests(unittest.TestCase):
             self.assertTrue(target.is_symlink())
             self.assertEqual(target.resolve(), LAUNCHER.resolve())
 
+    def test_installer_defaults_to_home_local_bin_when_xdg_bin_home_is_unset(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp) / "home"
+            env = os.environ.copy()
+            env.pop("XDG_BIN_HOME", None)
+            env["HOME"] = str(home)
+
+            result = subprocess.run(
+                [str(INSTALLER)],
+                cwd=PROJECT_ROOT,
+                env=env,
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            target = home / ".local" / "bin" / "agb"
+            self.assertTrue(target.is_symlink())
+            self.assertEqual(target.resolve(), LAUNCHER.resolve())
+            self.assertFalse((home / "agb").exists())
+
     def test_installer_refuses_conflict_without_force(self):
         with tempfile.TemporaryDirectory() as tmp:
             bin_home = Path(tmp) / "bin"

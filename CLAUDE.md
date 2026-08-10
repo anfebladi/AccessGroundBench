@@ -69,7 +69,7 @@ STAGE 2 — EVALUATE (offline, no emulator)
       absent from this layout -> status=off_screen, NO score (never queried)
       else evaluation.runner.evaluate_screen() # trial lifecycle
            evaluation.grounding.scoring.hit_test() # baseline-sized box, ±30px
-  ->  dataset/evaluation_results_{model_id}.csv   (appends; resumable)
+  ->  outputs/evaluations/<model_id>/<vision|tree>/results.csv (appends; resumable)
 
 STAGE 3 — ANALYSE
   agb analyze → analysis.workflow
@@ -77,8 +77,8 @@ STAGE 3 — ANALYSE
     2 pooled permutation    PRIMARY: cluster permutation across models, per profile
     3 per-model McNemar     SECONDARY: co-present only, Holm, floor/ceiling flags
     4 sign test             descriptive direction consistency
-  ->  dataset/{reachability,pooled_permutation,direction_consistency}_results.csv
-      dataset/mcnemar_results_per_model.csv
+  ->  outputs/analysis/<mode>_<sample>/{reachability,pooled_permutation,direction_consistency}_results.csv
+      outputs/analysis/<mode>_<sample>/mcnemar_results_per_model.csv
 ```
 
 ### Commands
@@ -89,7 +89,7 @@ agb collect --dry-run                        # logic check, no emulator
 agb collect --screens clock dialer           # subset
 agb evaluate                                 # evaluate; resumes by default
 agb evaluate --fresh                         # discard existing rows and restart
-agb analyze                                  # analyse dataset/
+agb analyze                                  # analyse dataset/ inputs; write outputs/analysis/
 agb analyze --data-dir dataset/experiment_2  # re-analyse the archive
 agb canonicalize --csv <result.csv>          # repair stale/duplicate result rows
 agb rescore --csv <result.csv> --check       # diagnose coordinate convention offline
@@ -202,13 +202,14 @@ value for any model that self-describes, rather than converting twice.
 ## 5. Current state of results
 
 **Experiment 3 (current, 2026-08-03).** 13 screens, 155 targets, 11 models, 930 rows
-each. Vision-only arm analysed; the 6 `_with_tree.csv` files are collected and clean but
+each. Vision-only arm analysed; the 6 tree-mode result files are collected and clean but
 **not yet analysed** — that is a separate research question and must not be pooled with
-the vision arm (`discover_result_csvs` enforces this).
+the vision arm (`discover_result_csvs` enforces this). Tree results are stored
+under `outputs/evaluations/<model>/tree/`.
 
-- `dataset/` — the current run. 17 result CSVs, all exactly 930 rows, one row per
+- `dataset/` — current input captures, labels, and manifest; generated results live under `outputs/`.
   `(screen, target_text, profile)`, zero `api_error`.
-- `dataset/experiment_2/` — the July run: 168 targets, 1005 rows. **Superseded, do not
+- `dataset/experiment_2/` — archived source captures from the July run. **Superseded, do not
   cite.** Full defect list in its README.
 - `dataset/experiment_1/` — an earlier, smaller run. Also superseded.
 

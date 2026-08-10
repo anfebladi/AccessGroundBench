@@ -16,6 +16,8 @@ from evaluation.storage.results import (
 )
 from evaluation.grounding.scoring import get_png_dimensions
 from evaluation.grounding.targets import locate_element
+import paths
+from paths import DATASET_DIR, EVALUATIONS_DIR
 
 WITH_TREE_SUFFIX = "_with_tree"
 
@@ -254,6 +256,8 @@ def reclassify_off_frame(rows: list[dict], images_dir: Path) -> list[dict]:
 
 def model_name_from_path(csv_path: Path) -> str:
     """Recover the model id from an evaluation_results_*.csv filename."""
+    if csv_path.name == "results.csv" and csv_path.parent.name in {"vision", "tree"}:
+        return csv_path.parent.parent.name
     name = csv_path.stem.replace("evaluation_results_", "")
     return "default" if name == "evaluation_results" else name
 
@@ -269,7 +273,27 @@ def discover_result_csvs(data_dir: Path, mode: str) -> list[Path]:
     pooled cluster permutation test and the sign test as if they were two
     independent models, silently doubling the effective sample.
     """
-    all_csv_files = sorted(data_dir.glob("evaluation_results_*.csv"))
+    resolved_data = data_dir.expanduser().resolve()
+    default_dataset = DATASET_DIR.resolve()
+    # Tests/UI may override the centralized roots at runtime; recognize a
+    # project-local ``dataset`` beside the configured outputs root as active.
+    configured_dataset = EVALUATIONS_DIR.parent.parent / "dataset"
+    archive_root = paths.OUTPUTS_DIR / "archives" / resolved_data.name / "evaluations"
+    if resolved_data.name.startswith("experiment_"):
+        evaluations_root = archive_root
+        use_organized = True
+    else:
+        evaluations_root = EVALUATIONS_DIR
+        use_organized = resolved_data in {default_dataset, configured_dataset.resolve()}
+    organized = sorted(
+        p for p in evaluations_root.glob("*/*/results.csv")
+        if p.parent.name in {"vision", "tree"}
+    ) if use_organized else []
+    if organized:
+        return [p for p in organized if p.parent.name == mode]
+
+    # Legacy files encode prompt mode in the filename suffix.
+    legacy_files = sorted(data_dir.glob("evaluation_results_*.csv"))
     if mode == "tree":
-        return [p for p in all_csv_files if p.stem.endswith(WITH_TREE_SUFFIX)]
-    return [p for p in all_csv_files if not p.stem.endswith(WITH_TREE_SUFFIX)]
+        return [p for p in legacy_files if p.stem.endswith(WITH_TREE_SUFFIX)]
+    return [p for p in legacy_files if not p.stem.endswith(WITH_TREE_SUFFIX)]

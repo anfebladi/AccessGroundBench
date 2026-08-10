@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 
-from paths import DATASET_DIR
+from paths import DATASET_DIR, evaluation_results_path
 
 IMAGES_DIR = DATASET_DIR / "images"
 LABELS_DIR = DATASET_DIR / "labels"
@@ -207,6 +207,4 @@ def get_results_csv(model: str, use_a11y_tree: bool = False) -> Path:
     When use_a11y_tree is True, appends '_with_tree' to distinguish
     tree-injected results from vision-only results.
     """
-    clean_model = sanitize_model_filename(model)
-    suffix = "_with_tree" if use_a11y_tree else ""
-    return DATASET_DIR / f"evaluation_results_{clean_model}{suffix}.csv"
+    return evaluation_results_path(model, use_a11y_tree)

@@ -81,6 +81,22 @@ IMAGES_DIR = DATASET_DIR / "images"
 RAW_XML_DIR = DATASET_DIR / "raw_xml"
 LABELS_DIR = DATASET_DIR / "labels"
 MANIFEST_PATH = DATASET_DIR / "collection_manifest.json"
+OUTPUTS_DIR = PROJECT_ROOT / "outputs"
+EVALUATIONS_DIR = OUTPUTS_DIR / "evaluations"
+ANALYSIS_DIR = OUTPUTS_DIR / "analysis"
+
+
+def evaluation_results_path(model: str, use_a11y_tree: bool = False) -> Path:
+    """Return the organized evaluation result path for *model*."""
+    from evaluation.config import sanitize_model_filename
+
+    mode = "tree" if use_a11y_tree else "vision"
+    return EVALUATIONS_DIR / sanitize_model_filename(model) / mode / "results.csv"
+
+
+def analysis_output_path(mode: str, sample: str) -> Path:
+    """Return the organized analysis output directory."""
+    return ANALYSIS_DIR / f"{mode}_{sample}"
 
 
 def dataset_path(*parts: str | Path) -> Path:
@@ -96,6 +112,11 @@ __all__ = [
     "MANIFEST_PATH",
     "PROJECT_ROOT",
     "RAW_XML_DIR",
+    "OUTPUTS_DIR",
+    "EVALUATIONS_DIR",
+    "ANALYSIS_DIR",
+    "evaluation_results_path",
+    "analysis_output_path",
     "dataset_path",
     "find_project_root",
 ]

@@ -32,7 +32,11 @@ script_dir=$(CDPATH= cd -P "$(dirname "$script")" 2>/dev/null && pwd -P) || {
 }
 launcher=$script_dir/agb
 
-bin_dir=${XDG_BIN_HOME:-${HOME:?HOME must be set to install agb}}
+if [ -n "${XDG_BIN_HOME-}" ]; then
+    bin_dir=$XDG_BIN_HOME
+else
+    bin_dir=${HOME:?HOME must be set to install agb}/.local/bin
+fi
 destination=$bin_dir/agb
 mkdir -p "$bin_dir"
 

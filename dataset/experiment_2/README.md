@@ -9,8 +9,8 @@
 | Path | Description |
 |---|---|
 | `images/`, `raw_xml/`, `labels/` | 77 captures (13 screens × 6 profiles, minus one — see Defect 4) |
-| `evaluation_results_*.csv` | 7 models × 1005 rows, vision-only (`USE_A11Y_TREE=false`) |
-| `mcnemar_results_*.csv` | Per-model McNemar output, uncorrected |
+| `outputs/archives/experiment_2/evaluation_results_*.csv` | 7 models × 1005 rows, vision-only (`USE_A11Y_TREE=false`) |
+| `outputs/archives/experiment_2/mcnemar_results_*.csv` | Per-model McNemar output, uncorrected |
 
 **Collected:** 2026-07-24 (commit `86a7435`, "new dataset")
 **Evaluated:** 2026-07-25 to 2026-07-26 (commits `c75993f`, `4092619`)
@@ -55,7 +55,7 @@ Restricting to targets present in both layouts: **24/35 significant → 4/35 →
 Holm–Bonferroni.** `gpt-5.5` and `gpt-5.6-sol` drop to zero significant profiles.
 
 Illustrative: `gpt-5.6-sol` / `elder_combo_max` reads 97.0% → 66.1% (p = 1.5e-12) in
-`mcnemar_results_9router_cx_gpt-5.6-sol.csv`. On co-present targets it is
+`outputs/archives/experiment_2/mcnemar_results_9router_cx_gpt-5.6-sol.csv`. On co-present targets it is
 99.1% → 99.1%, `b = 0, c = 0` — not one changed answer.
 
 ### Defect 2 — RTL was never applied
@@ -115,6 +115,7 @@ Plus a clean model-independent result: **`elder_combo_max` removes 56 of 168 tar
 
 ## Regression use
 
-These CSVs are the fixture for verification step 7 of the remediation plan: the rewritten
-`mcnemar_analysis.py` must reproduce the numbers in the table above when run against this
+These archived CSVs are the fixture for verification step 7 of the remediation plan: the
+rewritten `mcnemar_analysis.py` must reproduce the numbers in the table above when run
+against `outputs/archives/experiment_2/` with source captures and labels from this
 directory. If it does not, the rewrite is wrong.

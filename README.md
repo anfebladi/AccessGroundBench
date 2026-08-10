@@ -53,9 +53,9 @@ For evaluation using captures that already exist, follow the
 ```text
 src/          Python package and `agb` command
 ferret_ui/    Optional local Ferret-UI server (separate environment)
-dataset/      Local captures, labels, manifests, and archived results
+dataset/      Input captures, labels, and manifests
 tests/        Unit tests
-outputs/      Standalone utility output
+outputs/      Evaluation results, analysis reports, and historical outputs
 ```
 
 Captures under `dataset/images/`, `dataset/raw_xml/`, and `dataset/labels/` are
@@ -67,9 +67,16 @@ generated locally by the collection workflow; they are not gitignored.
 agb collect
 agb evaluate
 agb analyze
-agb analyze --csv dataset/evaluation_results_MODEL.csv
-agb rescore --csv dataset/evaluation_results_MODEL.csv --check
+agb analyze --csv outputs/evaluations/MODEL/vision/results.csv
+agb rescore --csv outputs/evaluations/MODEL/vision/results.csv --check
 ```
+
+Evaluation writes one result file per model and prompt mode under
+`outputs/evaluations/<model>/<vision|tree>/results.csv`. Analysis reports are
+written under `outputs/analysis/<mode>_<sample>/`; comparisons are under
+`outputs/analysis/comparisons/`. Historical generated outputs live under
+`outputs/archives/`. Archived source captures remain under
+`dataset/experiment_N/`.
 
 These commands assume the macOS/Linux launcher setup above. The portable
 equivalent is to prefix each command with `uv run` (for example,

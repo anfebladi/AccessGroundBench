@@ -3,10 +3,12 @@ import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
+from unittest import mock
 
 from analysis.reports import comparison, grounding, reachability
 from analysis.data import results as data, samples
 from evaluation.storage import results
+import paths
 
 
 # Keep this broad historical regression suite readable while exercising the
@@ -125,6 +127,29 @@ class DiscoverResultCsvsTests(unittest.TestCase):
         found = mcnemar_analysis.discover_result_csvs(self.data_dir, "tree")
 
         self.assertEqual([], found)
+
+    def test_organized_outputs_are_selected_by_mode(self):
+        """The active dataset discovers canonical outputs/evaluations files."""
+        evaluations = self.data_dir / "outputs" / "evaluations"
+        vision = evaluations / "openai_gpt-4o-mini" / "vision" / "results.csv"
+        tree = evaluations / "openai_gpt-4o-mini" / "tree" / "results.csv"
+        vision.parent.mkdir(parents=True)
+        tree.parent.mkdir(parents=True)
+        touch_csv(vision)
+        touch_csv(tree)
+
+        # discover_result_csvs intentionally preserves legacy behavior for an
+        # arbitrary --data-dir, but uses organized outputs for the active
+        # dataset. Patch the imported constants as well as paths so this test
+        # remains isolated from the checkout's real outputs directory.
+        with mock.patch.object(data, "DATASET_DIR", self.data_dir), \
+             mock.patch.object(data, "EVALUATIONS_DIR", evaluations), \
+             mock.patch.object(paths, "EVALUATIONS_DIR", evaluations):
+            found_vision = mcnemar_analysis.discover_result_csvs(self.data_dir, "vision")
+            found_tree = mcnemar_analysis.discover_result_csvs(self.data_dir, "tree")
+
+        self.assertEqual([vision], found_vision)
+        self.assertEqual([tree], found_tree)
 
 
 class LoadResultsPromptModeDefaultTests(unittest.TestCase):
@@ -589,6 +614,10 @@ class RunCrossComparisonTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.dir = Path(self.tmp.name)
+        self.analysis_dir = self.dir / "outputs" / "analysis"
+        self.analysis_patch = mock.patch.object(comparison, "ANALYSIS_DIR", self.analysis_dir)
+        self.analysis_patch.start()
+        self.addCleanup(self.analysis_patch.stop)
 
     def write_csv(self, name: str, rows: list[str]) -> Path:
         path = self.dir / name
@@ -596,7 +625,7 @@ class RunCrossComparisonTests(unittest.TestCase):
         return path
 
     def read_out(self) -> list[dict]:
-        out = next(self.dir.glob("mcnemar_compare_*.csv"))
+        out = next((self.analysis_dir / "comparisons").glob("mcnemar_compare_*.csv"))
         import csv as _csv
         with open(out, encoding="utf-8") as f:
             return list(_csv.DictReader(f))
@@ -613,6 +642,8 @@ class RunCrossComparisonTests(unittest.TestCase):
 
         out = self.read_out()
         self.assertEqual("primary", out[0]["Sample"])
+        self.assertTrue((self.analysis_dir / "comparisons").is_dir())
+        self.assertFalse(list(self.dir.glob("mcnemar_compare_*.csv")))
 
     def test_identical_files_produce_no_discordant_pairs(self):
         # Parity check: a file compared against itself cannot disagree, so

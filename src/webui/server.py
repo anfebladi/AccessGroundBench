@@ -52,8 +52,6 @@ _env_mutation_lock = threading.Lock()
 # whichever sample happened to be selected. Routing UI output here means a
 # click in the browser can never overwrite a prior experiment -- including an
 # archived one, which must never be written to at all.
-UI_ANALYSIS_ROOT_NAME = "ui_experiments"
-
 # Mode and sample are part of the path, not just the contents: a vision run and
 # a tree run answer different research questions and must never be mistaken for
 # one another (CLAUDE.md 5), and they would otherwise overwrite each other.
@@ -61,14 +59,16 @@ ANALYSIS_MODES = ("vision", "tree")
 ANALYSIS_SAMPLES = ("all", "primary", "full", "precautionary", "uniform")
 
 
-def analysis_output_dir(dataset_name: str, mode: str, sample: str) -> Path:
-    """Return the UI's analysis output directory for one dataset/mode/sample.
+def analysis_output_dir(mode: str, sample: str) -> Path:
+    """Return the organized analysis output directory for one mode/sample."""
+    return paths.analysis_output_path(mode, sample)
 
-    Callers must validate mode and sample against ANALYSIS_MODES /
-    ANALYSIS_SAMPLES first; dataset_name comes from the dataset registry, so
-    all three components are known-good directory names rather than free text.
-    """
-    return paths.PROJECT_ROOT / UI_ANALYSIS_ROOT_NAME / dataset_name / f"{mode}_{sample}"
+
+def _evaluations_root(info) -> Path:
+    """Return current or archive evaluation outputs for a dataset record."""
+    if info.is_archived:
+        return paths.OUTPUTS_DIR / "archives" / info.name / "evaluations"
+    return paths.EVALUATIONS_DIR
 
 
 def _is_configured_value(value: str | None) -> bool:
@@ -160,14 +160,20 @@ def create_app():
 
         info = _dataset_or_404(name)
         out = []
-        for csv_path in sorted(info.path.glob("evaluation_results_*.csv")):
+        from analysis.data.results import discover_result_csvs
+        for csv_path in discover_result_csvs(info.path, "tree") + discover_result_csvs(info.path, "vision"):
             with contextlib.redirect_stdout(io.StringIO()):
                 rows = load_results(csv_path)
             statuses = Counter(r["status"] for r in rows)
             co_present = [r for r in rows if r["status"] == "co_present"]
             hits = sum(1 for r in co_present if r.get("score") == "1")
+            evaluations_root = _evaluations_root(info)
+            try:
+                display_filename = csv_path.relative_to(evaluations_root).as_posix()
+            except ValueError:
+                display_filename = csv_path.name
             out.append({
-                "filename": csv_path.name,
+                "filename": display_filename,
                 "model": model_name_from_path(csv_path),
                 "prompt_mode": rows[0]["prompt_mode"] if rows else "",
                 "row_count": len(rows),
@@ -178,13 +184,15 @@ def create_app():
             })
         return out
 
-    @app.get("/api/datasets/{name}/results/{filename}/rows")
+    @app.get("/api/datasets/{name}/results/{filename:path}/rows")
     def dataset_result_rows(name: str, filename: str) -> list[dict]:
         from analysis.data.results import load_results
 
         info = _dataset_or_404(name)
-        csv_path = info.path / filename
-        if not csv_path.is_file() or not filename.startswith("evaluation_results_"):
+        evaluations_root = _evaluations_root(info)
+        csv_path = (evaluations_root / filename).resolve()
+        if (evaluations_root.resolve() not in csv_path.parents or
+                not csv_path.is_file() or not filename.endswith("results.csv")):
             raise HTTPException(status_code=404, detail=f"No such results file: {filename}")
         with contextlib.redirect_stdout(io.StringIO()):
             rows = load_results(csv_path)
@@ -212,7 +220,7 @@ def create_app():
 
     @app.get("/api/datasets/{name}/preflight")
     def evaluate_preflight(name: str, model: str, use_a11y_tree: bool = False) -> dict:
-        from evaluation.config import ALL_PROFILES, sanitize_model_filename
+        from evaluation.config import ALL_PROFILES
         from evaluation.grounding.targets import build_expected_keys
         from evaluation.storage.locking import lock_path
         from evaluation.storage.results import load_completed_keys
@@ -231,9 +239,8 @@ def create_app():
         # module-level DATASET_DIR, which reflects whatever dataset this
         # server process happened to import under -- not necessarily the
         # dataset the caller selected in the UI.
-        clean_model = sanitize_model_filename(model)
-        suffix = "_with_tree" if use_a11y_tree else ""
-        results_csv = info.path / f"evaluation_results_{clean_model}{suffix}.csv"
+        from paths import evaluation_results_path
+        results_csv = evaluation_results_path(model, use_a11y_tree)
 
         already_done = len(load_completed_keys(results_csv)) if results_csv.is_file() else 0
         lock_file = lock_path(results_csv)
@@ -244,7 +251,7 @@ def create_app():
 
         return {
             "model": model,
-            "results_csv": results_csv.name,
+            "results_csv": results_csv.relative_to(paths.EVALUATIONS_DIR).as_posix(),
             "expected_total": len(expected_keys),
             "already_done": min(already_done, len(expected_keys)),
             "lock_present": lock_file.is_file(),
@@ -409,7 +416,7 @@ def create_app():
         if mode not in ANALYSIS_MODES:
             raise HTTPException(status_code=400, detail=f"Unknown mode: {mode}")
 
-        output_dir = analysis_output_dir(info.name, mode, sample)
+        output_dir = analysis_output_dir(mode, sample)
         output_dir.mkdir(parents=True, exist_ok=True)
 
         buf = io.StringIO()
