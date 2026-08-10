@@ -81,6 +81,85 @@ IMAGES_DIR = DATASET_DIR / "images"
 RAW_XML_DIR = DATASET_DIR / "raw_xml"
 LABELS_DIR = DATASET_DIR / "labels"
 MANIFEST_PATH = DATASET_DIR / "collection_manifest.json"
+PROMPT_MODES = ("vision", "tree")
+
+
+def outputs_dir() -> Path:
+    """Return the repository's generated-output root."""
+    return PROJECT_ROOT / "outputs"
+
+
+def captures_dir() -> Path:
+    """Return the scratch directory for standalone `agb capture` output."""
+    return outputs_dir() / "captures"
+
+
+def dataset_name(dataset_dir: str | Path | None = None) -> str:
+    """Return the registry name for *dataset_dir* (default: the active one).
+
+    Matches the names webui.datasets.discover_datasets assigns, so the UI's
+    dataset dropdown and the CLI's --data-dir agree on where a run's outputs
+    belong: `dataset` for the default, otherwise the directory's own name
+    (`experiment_2`, or whatever `datasets/<name>` was collected as).
+    """
+    resolved = Path(dataset_dir or DATASET_DIR).expanduser().resolve()
+    return "dataset" if resolved == (PROJECT_ROOT / "dataset").resolve() else resolved.name
+
+
+def outputs_root_for(dataset_dir: str | Path | None = None) -> Path:
+    """Return the output root owned by one dataset.
+
+    Every generated file -- evaluation results, analysis tables, comparisons --
+    lives beneath the root of the dataset it was derived from, and nothing
+    writes outside it. Two datasets can therefore never reach the same file:
+    evaluating the same model against a second dataset cannot append into (or
+    be skipped against) the first dataset's rows, and re-analysing an archive
+    cannot overwrite the current run's tables.
+
+    These are functions rather than module constants because the dataset is
+    not always known at import time: `agb analyze --data-dir` and the web UI
+    both choose one per call, while `agb evaluate` and `agb collect` inherit
+    theirs from AGB_DATASET_DIR before import. A constant would freeze
+    whichever dataset happened to be active first.
+    """
+    return outputs_dir() / dataset_name(dataset_dir)
+
+
+def evaluations_dir(dataset_dir: str | Path | None = None) -> Path:
+    """Return one dataset's evaluation-results directory."""
+    return outputs_root_for(dataset_dir) / "evaluations"
+
+
+def analysis_dir(dataset_dir: str | Path | None = None) -> Path:
+    """Return one dataset's analysis-output directory."""
+    return outputs_root_for(dataset_dir) / "analysis"
+
+
+def evaluation_results_path(
+    model: str, use_a11y_tree: bool = False, dataset_dir: str | Path | None = None
+) -> Path:
+    """Return the evaluation result file for one model and prompt mode.
+
+    The prompt mode is part of the filename because vision and tree results
+    answer different research questions and must never be pooled (CLAUDE.md
+    §5); naming them apart is what lets discover_result_csvs separate the arms.
+    """
+    from evaluation.config import sanitize_model_filename
+
+    mode = "tree" if use_a11y_tree else "vision"
+    return evaluations_dir(dataset_dir) / f"{sanitize_model_filename(model)}_{mode}.csv"
+
+
+def analysis_output_path(
+    mode: str, sample: str, dataset_dir: str | Path | None = None
+) -> Path:
+    """Return the analysis output directory for one mode/sample of a dataset.
+
+    Mode and sample are in the path because the result tables are named after
+    the analysis, not the run: re-analysing with a different --sample or --mode
+    would otherwise overwrite the previous tables in place.
+    """
+    return analysis_dir(dataset_dir) / f"{mode}_{sample}"
 
 
 def dataset_path(*parts: str | Path) -> Path:
@@ -96,6 +175,15 @@ __all__ = [
     "MANIFEST_PATH",
     "PROJECT_ROOT",
     "RAW_XML_DIR",
+    "PROMPT_MODES",
+    "analysis_dir",
+    "captures_dir",
+    "outputs_dir",
+    "analysis_output_path",
+    "dataset_name",
+    "evaluation_results_path",
+    "evaluations_dir",
+    "outputs_root_for",
     "dataset_path",
     "find_project_root",
 ]

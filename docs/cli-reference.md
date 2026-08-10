@@ -53,14 +53,14 @@ agb collect --rebuild-manifest --screens settings_main
 agb evaluate [--fresh] [--force-unlock]
 ```
 
-**Purpose.** Call the configured VLM APIs for the collected targets and write
-one `dataset/evaluation_results_*.csv` per configured model (with the tree
-suffix when applicable).
+**Purpose.** Call the configured VLM APIs for targets in the input captures and
+write one result file per configured model and prompt mode at
+`outputs/<dataset>/evaluations/<model>_<vision|tree>.csv`.
 
 **Use when.** Evaluate new captures or continue an interrupted evaluation.
 
-**Inputs and outputs.** Inputs are baseline labels and captured images (plus
-the configured model/API credentials and evaluation environment). Results are
+**Inputs and outputs.** Inputs are baseline labels and captured images under
+`dataset/` (plus the configured model/API credentials and evaluation environment). Results are
 CSV rows containing each model response and score.
 
 **Effects and safety.** This command calls external VLM APIs; it does not
@@ -94,14 +94,10 @@ reports, and serialize analysis tables.
 **Use when.** Summarize all matching model CSVs, analyze one CSV, or compare a
 vision-only file with a with-tree file.
 
-**Inputs and outputs.** By default, `--data-dir` is the repository `dataset/`
-directory and discovery selects `evaluation_results_*.csv` for `--mode`
-(`vision` by default). `--csv` selects one file. Reports are written under
-the selected data directory: `reachability_results.csv`,
-`pooled_permutation_results.csv`, `mcnemar_results_per_model.csv`,
-`direction_consistency.csv`, and (when applicable)
-`label_changed_breakdown.csv`. Paired comparison writes
-`mcnemar_compare_<A-stem>.csv`.
+**Inputs and outputs.** `--csv` selects one result file; otherwise discovery
+uses evaluation results under `outputs/<dataset>/evaluations/` for `--mode` (`vision` by
+default). Reports are written under `outputs/<dataset>/analysis/<mode>_<sample>/`.
+Paired comparisons are written under `outputs/<dataset>/analysis/comparisons/`.
 
 **Effects and safety.** Analysis reads and reclassifies data in memory; it
 does not mutate source evaluation CSVs. Report files are rewritten. The
@@ -114,7 +110,7 @@ uses `primary` when `--sample all` is selected.
 ```bash
 agb analyze
 agb analyze --data-dir dataset/experiment_2 --mode vision
-agb analyze --csv dataset/evaluation_results_MODEL.csv --sample primary
+agb analyze --csv outputs/dataset/evaluations/MODEL_vision.csv --sample primary
 agb analyze --compare-a a.csv --compare-b b.csv
 ```
 
@@ -135,7 +131,7 @@ mid-run.
 expected key order, removes stale-target, `api_error`, and duplicate rows,
 sorts canonically, and rewrites each selected CSV. A `.csv.bak` backup is
 created before each rewrite. By default it processes all
-`evaluation_results_*.csv` files in `dataset/`; `--csv` selects one or more.
+evaluation result files under `outputs/<dataset>/evaluations/`; `--csv` selects one or more.
 
 **Effects and safety.** No API calls or emulator calls are made. Per-CSV locks
 guard the rewrite; a held lock is reported as a problem. Rewriting replaces
@@ -143,7 +139,7 @@ the CSV, while the `.bak` copy preserves the prior bytes.
 
 ```bash
 agb canonicalize
-agb canonicalize --csv dataset/evaluation_results_MODEL.csv
+agb canonicalize --csv outputs/dataset/evaluations/MODEL_vision.csv
 ```
 
 ## `agb rescore`
@@ -169,8 +165,8 @@ after making the backup; rerun `agb analyze --csv PATH` afterward.
 accepts `pixel` or `norm1000`.
 
 ```bash
-agb rescore --csv dataset/evaluation_results_MODEL.csv --check
-agb rescore --csv dataset/evaluation_results_MODEL.csv --coord-space norm1000
+agb rescore --csv outputs/dataset/evaluations/MODEL_vision.csv --check
+agb rescore --csv outputs/dataset/evaluations/MODEL_vision.csv --coord-space norm1000
 ```
 
 ## `agb profile`
@@ -211,7 +207,7 @@ workflow.
 
 **Inputs and outputs.** The optional `output_name` is the file stem. With no
 name, the pipeline uses `capture_YYYYMMDD_HHMMSS` (UTC). It writes
-`outputs/<stem>.png` and `outputs/<stem>.xml` by default.
+`outputs/captures/<stem>.png` and `outputs/captures/<stem>.xml` by default.
 
 **Effects and safety.** Requires ADB and an attached device; captures and pulls
 files, crops system bars, and cleans temporary device files.
@@ -235,7 +231,7 @@ cropping offsets.
 
 **Inputs and outputs.** `XML_PATH` is required. The JSON output defaults to the
 same directory and filename stem as the XML (for example,
-`outputs/capture.xml` becomes `outputs/capture.json`); `--output` selects a
+`outputs/captures/capture.xml` becomes `outputs/captures/capture.json`); `--output` selects a
 different path and overwrites it if present. `--y-offset` and `--bottom-crop`
 default to `0` pixels.
 
@@ -243,6 +239,6 @@ default to `0` pixels.
 ADB. Invalid or missing XML is an error.
 
 ```bash
-agb extract outputs/my_capture.xml
-agb extract outputs/my_capture.xml --output outputs/my_capture.json --y-offset 0 --bottom-crop 0
+agb extract outputs/captures/my_capture.xml
+agb extract outputs/captures/my_capture.xml --output outputs/captures/my_capture.json --y-offset 0 --bottom-crop 0
 ```

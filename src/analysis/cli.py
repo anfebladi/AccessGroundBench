@@ -13,8 +13,8 @@ from .workflow import EXPERIMENTAL_PROFILES, run_analysis
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="AccessGroundBench -- statistical analysis")
-    parser.add_argument("--data-dir", type=Path, default=DATASET_DIR,
-                        help="Directory holding evaluation_results_*.csv")
+    parser.add_argument("--data-dir", type=Path, default=None,
+                        help="Dataset directory to analyse (default: the active dataset)")
     parser.add_argument("--csv", type=Path, default=None,
                         help="Analyse a single evaluation CSV")
     parser.add_argument("--permutations", type=int, default=DEFAULT_PERMUTATIONS,
@@ -33,6 +33,25 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def resolve_data_dir(data_dir: Path | None, csv_path: Path | None) -> Path:
+    """Decide which dataset supplies the labels and images for a run.
+
+    The reclassification passes read `<data_dir>/labels` and
+    `<data_dir>/images`, so this has to name the dataset the CSV was collected
+    against -- correcting one run's rows against another run's captures would
+    silently mislabel them. An explicit --data-dir always wins. Otherwise a
+    --csv sitting beside a `labels/` directory identifies its own dataset,
+    which is how the pre-reorganization archives are laid out; a CSV under
+    `outputs/` has no captures beside it and falls through to the active
+    dataset.
+    """
+    if data_dir is not None:
+        return data_dir
+    if csv_path is not None and (csv_path.parent / "labels").is_dir():
+        return csv_path.parent
+    return DATASET_DIR
+
+
 def analyze_main(argv: list[str] | None = None) -> None:
     """Run the analysis CLI with an explicit, testable argument vector."""
     args = build_parser().parse_args(argv)
@@ -43,12 +62,12 @@ def analyze_main(argv: list[str] | None = None) -> None:
         sample = DEFAULT_SAMPLE if args.sample == "all" else args.sample
         run_cross_comparison(
             args.compare_a, args.compare_b, list(EXPERIMENTAL_PROFILES), sample,
-            args.data_dir,
+            resolve_data_dir(args.data_dir, args.compare_a),
         )
         return
     run_analysis(
-        args.data_dir, args.csv, args.permutations, args.seed, args.mode,
-        args.sample, args.label_changed,
+        resolve_data_dir(args.data_dir, args.csv), args.csv, args.permutations,
+        args.seed, args.mode, args.sample, args.label_changed,
     )
 
 

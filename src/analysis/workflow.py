@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from evaluation.config import ALL_PROFILES
+from paths import analysis_output_path
 from .data.results import (
     discover_result_csvs, index_rows, load_results, model_name_from_path,
     reclassify_label_changed, reclassify_off_frame,
@@ -27,21 +28,19 @@ def run_analysis(
 ) -> None:
     """Load, correct, analyze, report, and serialize one analysis request.
 
-    Results are written back into *data_dir* unless *output_dir* is given.
-    Separating the two matters because the result tables are named after the
-    analysis, not the run that produced them: re-analysing a dataset with a
-    different --sample or --mode overwrites the previous tables in place. The
-    web UI passes an output_dir for exactly that reason, so a click in the
-    browser can never clobber the tables committed alongside a dataset.
+    Results go to *data_dir*'s own analysis directory unless *output_dir* is
+    given. Scoping the output to the dataset is what keeps two runs apart:
+    re-analysing an archive writes the archive's tables, never the current
+    run's. Mode and sample are in the directory name for the same reason,
+    since the tables are named after the analysis rather than the run.
     """
     profiles = list(EXPERIMENTAL_PROFILES)
     if csv_path:
         csv_files = [csv_path]
-        data_dir = csv_path.parent
     else:
         csv_files = discover_result_csvs(data_dir, mode)
         if not csv_files:
-            print(f"[ERROR] No evaluation_results_*.csv files for mode={mode!r} found in {data_dir}")
+            print(f"[ERROR] No {mode!r} result files found for the dataset at {data_dir}")
             raise SystemExit(1)
 
     print("=" * 78)
@@ -99,7 +98,8 @@ def run_analysis(
             print(f"  {sample_name:<16}{total_obs:>18}{total_obs / n_models:>12.0f}")
 
     write_outputs(
-        output_dir or data_dir, reachability_all, pooled_all, per_model_all, signs_all,
+        output_dir or analysis_output_path(mode, sample, data_dir),
+        reachability_all, pooled_all, per_model_all, signs_all,
         label_changed_breakdown,
     )
     print()

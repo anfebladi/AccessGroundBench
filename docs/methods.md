@@ -371,7 +371,7 @@ evidence of anything.
 `agb evaluate` → `evaluation.runner.evaluate_screen` with
 `use_a11y_tree=False`,
 prompting with `PROMPT_TEMPLATE` (image only). Results land in
-`dataset/evaluation_results_{model}.csv`. Analysed with `agb analyze`.
+`outputs/<dataset>/evaluations/<model>_vision.csv`. Analysed with `agb analyze`.
 
 **Estimand:** does an accessibility profile change a vision-only VLM's grounding
 accuracy, relative to that same model's baseline?
@@ -468,10 +468,10 @@ targets, where per-model McNemar has almost nothing left to detect. The pooled t
 accessibility tree (`evaluation.grounding.task_prompting.build_tree_text`) to the
 prompt: each visible element's best label
 and pixel bounds, `[x1,y1][x2,y2]`, absolute screenshot pixels. Results land in
-`dataset/evaluation_results_{model}_with_tree.csv`
+`outputs/<dataset>/evaluations/<model>_tree.csv`
 (`evaluation.config.get_results_csv`). Analysed by pointing
-`agb analyze` at the `_with_tree` files — either explicitly
-via `--csv`, or via `--mode tree` when discovering from `--data-dir` (see "Analysis file
+`agb analyze` at the tree result path via `--csv`, or via `--mode tree` when
+discovering from the evaluation output directory (see "Analysis file
 discovery" below).
 
 **Estimand:** the same question as mode 1 — does the profile change grounding accuracy —
@@ -483,14 +483,18 @@ for a model that additionally receives a partial accessibility tree. Mode 2 alon
 
 **Formulas applied:** identical machinery to mode 1 — §1's reachability, pooled
 permutation, per-model McNemar, and sign test all apply unchanged, run against the
-`_with_tree` CSVs.
+`*_tree.csv` files.
 
 ### Analysis file discovery: vision and tree results are never pooled automatically
 
-`analysis.data.results.discover_result_csvs` globs
-`evaluation_results_*.csv` under `--data-dir` and
-**excludes** anything ending in `_with_tree` unless `--mode tree` is passed. Before this
-was added, the glob matched both suffixes, and `model_name_from_path` turned
+`analysis.data.results.discover_result_csvs` globs `*_<mode>.csv` in the output root
+belonging to `--data-dir` (`paths.evaluations_dir`), so one call returns exactly one
+arm — `--mode tree` is required to see the tree files, and neither mode can reach
+another dataset's results. Datasets collected before the outputs reorganization keep
+`evaluation_results_*.csv` beside their captures and are still read, with the same
+one-arm-at-a-time split applied to the older `_with_tree` suffix.
+
+Before the arms were separated, one glob matched both, and `model_name_from_path` turned
 `evaluation_results_local_ferret-ui-llama8b_with_tree.csv` into a distinct model id
 (`local_ferret-ui-llama8b_with_tree`) rather than recognising it as the same model's
 second arm. A default run after any tree collection would have fed both arms of the same
@@ -507,7 +511,7 @@ is unaffected.
 
 This does not remove the ability to compare arms — `run_cross_comparison` (mode 3, §4
 below) takes explicit file paths and is unaffected by the default glob; it remains the
-intended way to compare a model's vision-only CSV against its `_with_tree` counterpart.
+intended way to compare a model's `_vision.csv` against its `_tree.csv` counterpart.
 
 ### The target must be withheld from its own tree entry
 
@@ -614,10 +618,10 @@ discard bug go unnoticed for as long as it did.
 
 ### Illustrative worked example
 
-No tree-mode evaluation has been run yet — `dataset/` contains no `*_with_tree.csv`
-files. The numbers below are a small **synthetic illustration** of the pooled-permutation
-mechanics (§1.8), clearly not benchmark data, to show the shape of a mode-2 report before
-real data exists:
+The tree arm is collected (6 `*_tree.csv` files under `outputs/dataset/evaluations/`)
+but deliberately not yet analysed — see CLAUDE.md §5. The numbers below are therefore
+still a small **synthetic illustration** of the pooled-permutation mechanics (§1.8),
+clearly not benchmark data, showing the shape of a mode-2 report:
 
 ```
 Illustrative only -- 3 targets, 2 models, elder_text_heavy
@@ -685,8 +689,8 @@ are compared.
 
 ### Illustrative worked example
 
-No `_with_tree` file exists yet, so cross-file mode has never been run against real data.
-A small **synthetic illustration** of the mechanics:
+Cross-file mode has not yet been run against the collected tree data. A small
+**synthetic illustration** of the mechanics:
 
 ```
 Illustrative only -- elder_text_heavy, file A (vision) vs file B (tree), 20 co-present pairs
@@ -751,10 +755,10 @@ data.
 
 | File | Written by | Contents |
 |---|---|---|
-| `dataset/evaluation_results_{model}.csv` | mode 1 | raw per-query rows, `status` column |
-| `dataset/evaluation_results_{model}_with_tree.csv` | mode 2 | same schema, tree-injected |
-| `dataset/reachability_results.csv` | §1 (either mode) | Profile, Present, Total, Reachability, CI |
-| `dataset/pooled_permutation_results.csv` | §1.8 (either mode) | Profile, clusters, b, c, p, Holm threshold |
-| `dataset/mcnemar_results_per_model.csv` | §1.4+§1.5+§1.6+§1.7+§1.9 | one row per model × profile |
-| `dataset/direction_consistency.csv` | sign test | Profile, down, up, tied, p |
-| `dataset/mcnemar_compare_{model}.csv` | mode 3 | one row per profile compared |
+| `outputs/<dataset>/evaluations/<model>_vision.csv` | mode 1 | raw per-query rows, `status` column |
+| `outputs/<dataset>/evaluations/<model>_tree.csv` | mode 2 | same schema, tree-injected |
+| `outputs/<dataset>/analysis/<mode>_<sample>/reachability_results.csv` | §1 (either mode) | Profile, Present, Total, Reachability, CI |
+| `outputs/<dataset>/analysis/<mode>_<sample>/pooled_permutation_results.csv` | §1.8 (either mode) | Profile, clusters, b, c, p, Holm threshold |
+| `outputs/<dataset>/analysis/<mode>_<sample>/mcnemar_results_per_model.csv` | §1.4+§1.5+§1.6+§1.7+§1.9 | one row per model × profile |
+| `outputs/<dataset>/analysis/<mode>_<sample>/direction_consistency.csv` | sign test | Profile, down, up, tied, p |
+| `outputs/<dataset>/analysis/comparisons/mcnemar_compare_{model}.csv` | mode 3 | one row per profile compared |

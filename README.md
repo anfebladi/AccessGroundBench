@@ -28,9 +28,18 @@ Quickstart:
 
 ```bash
 uv sync
+./scripts/install-agb.sh
 cp .env.example .env
 # edit .env with VLM_MODEL and the provider key it requires
 ```
+
+On macOS and Linux, `./scripts/install-agb.sh` installs a project launcher at
+`${XDG_BIN_HOME:-$HOME/.local/bin}/agb`. The launcher resolves this clone and
+can run bare `agb ...` commands from any directory inside it. The installer
+does not edit shell configuration; if the destination directory is not on
+`PATH`, add it using the guidance printed by the installer and start a new
+shell. On Windows, or when no launcher is installed, use `uv run agb ...`
+instead.
 
 See [`docs/setup.md`](docs/setup.md) for provider configuration, emulator
 preparation, and coordinate conventions. The collection reference guide is in
@@ -44,9 +53,9 @@ For evaluation using captures that already exist, follow the
 ```text
 src/          Python package and `agb` command
 ferret_ui/    Optional local Ferret-UI server (separate environment)
-dataset/      Local captures, labels, manifests, and archived results
+dataset/      Input captures, labels, and manifests
 tests/        Unit tests
-outputs/      Standalone utility output
+outputs/      Generated results, one directory per dataset
 ```
 
 Captures under `dataset/images/`, `dataset/raw_xml/`, and `dataset/labels/` are
@@ -58,9 +67,20 @@ generated locally by the collection workflow; they are not gitignored.
 agb collect
 agb evaluate
 agb analyze
-agb analyze --csv dataset/evaluation_results_MODEL.csv
-agb rescore --csv dataset/evaluation_results_MODEL.csv --check
+agb analyze --csv outputs/dataset/evaluations/MODEL_vision.csv
+agb rescore --csv outputs/dataset/evaluations/MODEL_vision.csv --check
 ```
+
+Evaluation writes one result file per model and prompt mode under
+`outputs/<dataset>/evaluations/<model>_<vision|tree>.csv`. Analysis reports are
+written under `outputs/<dataset>/analysis/<mode>_<sample>/`; comparisons are under
+`outputs/<dataset>/analysis/comparisons/`. Historical generated outputs live under
+`outputs/<dataset>/`, one root per dataset. Archived source captures remain under
+`dataset/experiment_N/`.
+
+These commands assume the macOS/Linux launcher setup above. The portable
+equivalent is to prefix each command with `uv run` (for example,
+`uv run agb collect`); this is also the Windows workflow.
 
 Collection can be checked without an emulator with `agb collect --dry-run`.
 For the capture reference and recovery options, see

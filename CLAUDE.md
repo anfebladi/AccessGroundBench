@@ -31,7 +31,7 @@ stated limitations are required, not optional.
 > space while the pipeline scored pixels (`gemini-pro-agent` read 8.4%, actually 96.8%),
 > and result CSVs accumulated duplicate/stale rows from concurrent writers and unremoved
 > `api_error` retries. Both are fixed in code and the data is repaired — see §6.
-> **Remaining: analyse the tree arm** (6 `_with_tree.csv` files, collected and clean but
+> **Remaining: analyse the tree arm** (10 `*_tree.csv` files, collected and clean but
 > deliberately not pooled with vision), and resolve the repo privacy items in §10.
 
 > **For the full mathematics** — every formula, its rationale, and a worked example for
@@ -69,7 +69,7 @@ STAGE 2 — EVALUATE (offline, no emulator)
       absent from this layout -> status=off_screen, NO score (never queried)
       else evaluation.runner.evaluate_screen() # trial lifecycle
            evaluation.grounding.scoring.hit_test() # baseline-sized box, ±30px
-  ->  dataset/evaluation_results_{model_id}.csv   (appends; resumable)
+  ->  outputs/<dataset>/evaluations/<model_id>_<vision|tree>.csv (appends; resumable)
 
 STAGE 3 — ANALYSE
   agb analyze → analysis.workflow
@@ -77,8 +77,8 @@ STAGE 3 — ANALYSE
     2 pooled permutation    PRIMARY: cluster permutation across models, per profile
     3 per-model McNemar     SECONDARY: co-present only, Holm, floor/ceiling flags
     4 sign test             descriptive direction consistency
-  ->  dataset/{reachability,pooled_permutation,direction_consistency}_results.csv
-      dataset/mcnemar_results_per_model.csv
+  ->  outputs/<dataset>/analysis/<mode>_<sample>/{reachability,pooled_permutation,direction_consistency}_results.csv
+      outputs/<dataset>/analysis/<mode>_<sample>/mcnemar_results_per_model.csv
 ```
 
 ### Commands
@@ -89,8 +89,8 @@ agb collect --dry-run                        # logic check, no emulator
 agb collect --screens clock dialer           # subset
 agb evaluate                                 # evaluate; resumes by default
 agb evaluate --fresh                         # discard existing rows and restart
-agb analyze                                  # analyse dataset/
-agb analyze --data-dir dataset/experiment_2  # re-analyse the archive
+agb analyze                                  # analyse dataset/; writes outputs/dataset/analysis/
+agb analyze --data-dir dataset/experiment_2  # re-analyse the archive -> outputs/experiment_2/
 agb canonicalize --csv <result.csv>          # repair stale/duplicate result rows
 agb rescore --csv <result.csv> --check       # diagnose coordinate convention offline
 agb profile <profile-or-reset>               # standalone profile control
@@ -143,7 +143,7 @@ toggled via ADB, which has a side effect — see §6.3.
 
 ```dotenv
 VLM_MODEL=9router/cx/gpt-5.6-sol, 9router/cx/gpt-5.5   # comma-separated, run in sequence
-USE_A11Y_TREE=false        # true -> inject partial a11y tree into prompt, writes *_with_tree.csv
+USE_A11Y_TREE=false        # true -> inject partial a11y tree into prompt, writes *_tree.csv
 VLM_PACE_SECONDS=0
 VLM_MAX_RETRIES=3
 VLM_REQUEST_TIMEOUT_SECONDS=120
@@ -153,7 +153,7 @@ VLM_TRIALS_MODELS=         # empty -> VLM_TRIALS applies to all models
 ```
 
 > The local `.env` currently has `USE_A11Y_TREE=true`. Tests pin it explicitly, but any
-> ad-hoc script that reads it will run in tree mode and write `*_with_tree.csv`.
+> ad-hoc script that reads it will run in tree mode and write `*_tree.csv`.
 
 Model prefix routing
 (`evaluation.providers.config.resolve_completion_config`):
@@ -202,15 +202,23 @@ value for any model that self-describes, rather than converting twice.
 ## 5. Current state of results
 
 **Experiment 3 (current, 2026-08-03).** 13 screens, 155 targets, 11 models, 930 rows
-each. Vision-only arm analysed; the 6 `_with_tree.csv` files are collected and clean but
+each. Vision-only arm analysed; the 10 tree-mode result files are collected and clean but
 **not yet analysed** — that is a separate research question and must not be pooled with
-the vision arm (`discover_result_csvs` enforces this).
+the vision arm (`discover_result_csvs` enforces this). Tree results are the
+`*_tree.csv` files in `outputs/dataset/evaluations/`.
 
-- `dataset/` — the current run. 17 result CSVs, all exactly 930 rows, one row per
-  `(screen, target_text, profile)`, zero `api_error`.
-- `dataset/experiment_2/` — the July run: 168 targets, 1005 rows. **Superseded, do not
-  cite.** Full defect list in its README.
-- `dataset/experiment_1/` — an earlier, smaller run. Also superseded.
+- `dataset/` — the current run's input captures, labels, and manifest.
+- `outputs/dataset/` — its generated results: 21 result CSVs (11 vision, 10 tree), all
+  exactly 930 rows, one row per `(screen, target_text, profile)`, zero `api_error`.
+- `dataset/experiment_2/` + `outputs/experiment_2/` — the July run: 168 targets, 1005
+  rows. **Superseded, do not cite.** Full defect list in its README.
+- `dataset/experiment_1/` + `outputs/experiment_1/` — an earlier, smaller run. Also
+  superseded.
+
+Every dataset owns exactly one output root, `outputs/<dataset-name>/`, and nothing
+writes outside it — that is what keeps a re-analysis of an archive from overwriting the
+current run's tables, and two datasets evaluating the same model from sharing a
+resumable result file.
 
 ### Headline results (sample=primary)
 

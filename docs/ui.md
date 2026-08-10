@@ -87,7 +87,8 @@ outcome -- so an `api_error` streak is visible as it happens rather than after
 the fact. Progress is counted on the client from the run's own stdout, which
 prints one line per query; there is no second source of truth about how far
 along a run is. The raw log is one disclosure away, and stops auto-scrolling
-as soon as you scroll back through it. Results land in the dataset directory
+as soon as you scroll back through it. Results land in
+`outputs/<dataset>/evaluations/<model>_<vision|tree>.csv`
 exactly as `agb evaluate` would leave them, including the append/resume/lock
 semantics documented in the [evaluation runbook](runbooks/evaluation.md).
 
@@ -115,7 +116,7 @@ depends on colour alone. Vision and tree arms are analysed one at a time and
 are never pooled.
 
 **Analysis from the UI never writes into a dataset.** Results go to
-`ui_experiments/<dataset>/<mode>_<sample>/`, and the path is shown above the
+`outputs/<dataset>/analysis/<mode>_<sample>/`, and the path is shown above the
 charts. This is not cosmetic: `agb analyze` names its outputs after the
 analysis rather than the run, so running it twice with different `--sample`
 values overwrites the earlier tables in place. From a terminal that is a
@@ -125,9 +126,10 @@ sample was selected. Mode and sample are part of the directory name so a
 vision run and a tree run cannot overwrite each other either. Archived
 datasets can be analysed freely, because nothing is written inside them.
 
-`ui_experiments/` is gitignored -- it is derived output, regenerable in
-seconds, and deleting it loses nothing. The CLI is unchanged: `agb analyze
---data-dir <dir>` still writes its tables into `<dir>`.
+Analysis output is written under `outputs/<dataset>/analysis/<mode>_<sample>/`; prompt-arm
+comparisons use `outputs/<dataset>/analysis/comparisons/`. Historical generated outputs
+are kept under `outputs/<dataset>/`, one root per dataset; archived source captures remain in
+`dataset/experiment_N/`.
 
 Analysis runs in the server process and blocks until it finishes; the form is
 locked for the duration. Unlike Evaluate it is not supervised as a subprocess,
@@ -203,7 +205,7 @@ something the bare CLI cannot currently do in a single invocation.
   charts read the same `*_results.csv` files `agb analyze` writes and compute
   nothing of their own.
 - **Modify a dataset it is reading.** Collect writes only to
-  `datasets/<name>/`, analysis writes only to `ui_experiments/`, and Evaluate
+  `datasets/<name>/`, analysis writes only to `outputs/<dataset>/analysis/`, and Evaluate
   appends to its own result CSV. Nothing in the UI rewrites a dataset's
   captures, labels, or committed analysis tables.
 - **Run over a network.** Local-only, by design (see [Launch](#install-and-launch)).

@@ -16,6 +16,7 @@ from evaluation.storage.results import (
 )
 from evaluation.grounding.scoring import get_png_dimensions
 from evaluation.grounding.targets import locate_element
+import paths
 
 WITH_TREE_SUFFIX = "_with_tree"
 
@@ -253,23 +254,44 @@ def reclassify_off_frame(rows: list[dict], images_dir: Path) -> list[dict]:
 
 
 def model_name_from_path(csv_path: Path) -> str:
-    """Recover the model id from an evaluation_results_*.csv filename."""
-    name = csv_path.stem.replace("evaluation_results_", "")
-    return "default" if name == "evaluation_results" else name
+    """Recover the model id from a result filename.
+
+    Current files are `<model>_<mode>.csv`; the mode suffix is stripped so a
+    model's vision and tree arms report under one name. Datasets collected
+    before the outputs reorganization use `evaluation_results_<model>.csv`
+    with a `_with_tree` suffix, and are still readable.
+    """
+    stem = csv_path.stem
+    for mode in paths.PROMPT_MODES:
+        if stem.endswith(f"_{mode}"):
+            return stem[: -len(mode) - 1]
+    name = stem.replace("evaluation_results_", "")
+    if name.endswith(WITH_TREE_SUFFIX):
+        name = name[: -len(WITH_TREE_SUFFIX)]
+    return "default" if name in ("", "evaluation_results") else name
 
 
 def discover_result_csvs(data_dir: Path, mode: str) -> list[Path]:
     """
-    Find evaluation_results_*.csv files for one prompt-mode arm.
+    Find the result files for one dataset and one prompt-mode arm.
 
     Vision and tree results for the same model are correlated, not
     independent measurements (the tree run repeats the same queries with
-    context added), so the default glob must never pool a model's *.csv with
-    its *_with_tree.csv counterpart -- doing so would feed both arms into the
-    pooled cluster permutation test and the sign test as if they were two
-    independent models, silently doubling the effective sample.
+    context added), so this must never pool a model's vision file with its
+    tree counterpart -- doing so would feed both arms into the pooled cluster
+    permutation test and the sign test as if they were two independent models,
+    silently doubling the effective sample.
+
+    Discovery is scoped to *data_dir*'s own output root, so an analysis of one
+    dataset can never pick up another dataset's results.
     """
-    all_csv_files = sorted(data_dir.glob("evaluation_results_*.csv"))
+    organized = sorted(paths.evaluations_dir(data_dir).glob(f"*_{mode}.csv"))
+    if organized:
+        return organized
+
+    # Datasets collected before the reorganization keep their result files
+    # beside the captures, with the prompt mode encoded as a filename suffix.
+    legacy_files = sorted(data_dir.glob("evaluation_results_*.csv"))
     if mode == "tree":
-        return [p for p in all_csv_files if p.stem.endswith(WITH_TREE_SUFFIX)]
-    return [p for p in all_csv_files if not p.stem.endswith(WITH_TREE_SUFFIX)]
+        return [p for p in legacy_files if p.stem.endswith(WITH_TREE_SUFFIX)]
+    return [p for p in legacy_files if not p.stem.endswith(WITH_TREE_SUFFIX)]

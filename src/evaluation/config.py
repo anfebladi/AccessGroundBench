@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 
-from paths import DATASET_DIR
+from paths import DATASET_DIR, evaluation_results_path
 
 IMAGES_DIR = DATASET_DIR / "images"
 LABELS_DIR = DATASET_DIR / "labels"
@@ -72,7 +72,7 @@ def resolve_use_a11y_tree() -> bool:
     Unrecognised values exit rather than silently defaulting to False: a typo
     like USE_A11Y_TREE=on would otherwise run a full, expensive vision-only
     evaluation while the operator believes tree mode is active, with no
-    _with_tree marker on the output file to reveal the mismatch afterwards.
+    `_tree` marker on the output file to reveal the mismatch afterwards.
     """
     raw = os.environ.get(A11Y_TREE_ENV_VAR, "").strip().lower()
     if raw in _A11Y_TREE_TRUE_VALUES:
@@ -202,11 +202,11 @@ def sanitize_model_filename(model: str) -> str:
 
 
 def get_results_csv(model: str, use_a11y_tree: bool = False) -> Path:
-    """Generate a dynamic CSV path based on the model name.
+    """Return the result file for *model* under the active dataset's outputs.
 
-    When use_a11y_tree is True, appends '_with_tree' to distinguish
-    tree-injected results from vision-only results.
+    Scoped to DATASET_DIR (so AGB_DATASET_DIR carries through) rather than to a
+    single shared directory: two datasets evaluating the same model must not
+    reach the same file, or the second run would resume against the first
+    run's completed keys.
     """
-    clean_model = sanitize_model_filename(model)
-    suffix = "_with_tree" if use_a11y_tree else ""
-    return DATASET_DIR / f"evaluation_results_{clean_model}{suffix}.csv"
+    return evaluation_results_path(model, use_a11y_tree)
