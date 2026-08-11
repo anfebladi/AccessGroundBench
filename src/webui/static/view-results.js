@@ -82,6 +82,7 @@ function render() {
   host.innerHTML = html`
     ${modes.length > 1 ? raw(html`
       <div class="note">
+        <span class="note-label">Note</span>
         Vision and tree results answer different research questions and are
         never pooled. Analyze runs one arm at a time.
       </div>`) : ""}

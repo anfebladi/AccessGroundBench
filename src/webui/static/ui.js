@@ -145,8 +145,9 @@ export function duration(seconds) {
  * Resolve a CSS custom property to its current value.
  *
  * Canvas and SVG strokes cannot reference var(), so overlay colours are read
- * from the same tokens the stylesheet uses -- otherwise dark mode would keep
- * drawing the light-theme palette onto every screenshot.
+ * from the same tokens the stylesheet uses -- otherwise a future palette
+ * change would leave the canvas overlays drawing the old colours while the
+ * rest of the page moved on.
  */
 export function cssVar(name, fallback = "#000") {
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -157,8 +158,14 @@ export function cssVar(name, fallback = "#000") {
  * Draw an image into a canvas, then run `decorate(ctx, img)` for overlays.
  * Every view that shows a screenshot needs the same load/error/scale dance;
  * the error path draws a readable message instead of leaving a blank canvas.
+ *
+ * `onSettle(img)`, if given, fires once the load has settled -- loaded or
+ * failed -- separately from `decorate`, which only runs on success. A caller
+ * that wants to react either way (e.g. reveal a canvas hidden behind a
+ * loading skeleton) checks `img.naturalWidth` inside it rather than getting
+ * a second callback wired to only one of the two outcomes.
  */
-export function drawScreenshot(canvas, src, decorate) {
+export function drawScreenshot(canvas, src, decorate, onSettle) {
   const ctx = canvas.getContext("2d");
   const img = new Image();
   img.onload = () => {
@@ -166,6 +173,7 @@ export function drawScreenshot(canvas, src, decorate) {
     canvas.height = img.height;
     ctx.drawImage(img, 0, 0);
     if (decorate) decorate(ctx, img);
+    onSettle?.(img);
   };
   img.onerror = () => {
     canvas.width = 400;
@@ -174,9 +182,20 @@ export function drawScreenshot(canvas, src, decorate) {
     ctx.fillStyle = "#b3221a";
     ctx.font = "14px sans-serif";
     ctx.fillText("Screenshot not available", 12, 44);
+    onSettle?.(img);
   };
   img.src = src;
   return img;
+}
+
+/**
+ * Whether a drawScreenshot() image actually decoded and can be redrawn from
+ * cache. `img.complete` alone is not enough: it is also true once a *failed*
+ * load has settled, and that image's canvas already carries the "Screenshot
+ * not available" message drawScreenshot's onerror painted onto it.
+ */
+export function imageIsDrawable(img) {
+  return Boolean(img?.complete && img.naturalWidth > 0);
 }
 
 /** Line width that stays visible whatever the capture resolution is. */

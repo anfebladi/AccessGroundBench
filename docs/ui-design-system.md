@@ -13,45 +13,54 @@ The UI ships as flat files in `static/`, covered by `pyproject.toml`'s
 
 ## 1. Typography
 
-Self-hosted, two roles. Headings and body both run on Inter -- one modern sans instead of
-a serif-for-headings/sans-for-body split, to match the reference sites this pass was built
-against (Coursera, EventAura-style landing pages). Numerals and code stay on a mono face:
-a UI sans doesn't give you tabular figures.
+Self-hosted, three roles. Headings, the brand mark, pane titles and card titles run on
+Oswald — condensed, meant to be held at a glance, not read at length. Everything read as
+prose (body, controls, the `.lead` subtitle under a view's h2) stays on Inter; a condensed
+face on a full sentence, a table cell or a long target string would hurt legibility the
+same way it would on a data table. Numerals and code stay on a mono face: neither of the
+other two gives you tabular figures.
 
 | Role | Token | Family | Used for |
 |---|---|---|---|
-| Display / UI | `--font-display`, `--font-ui` | Inter (variable 400–700) | Headings, lead paragraphs, pane titles, body, controls |
+| Display | `--font-display` | Oswald (variable 200–700) | Brand mark, h1–h3, card titles, pane titles, empty-state titles |
+| UI | `--font-ui` | Inter (variable 400–700) | Body, lead paragraphs, controls, everything read at length |
 | Mono | `--font-mono` | IBM Plex Mono 400/500 | All numerals, code, table heads, status labels |
 
-Bundled files (~76 KB total), both families SIL OFL 1.1 — the licence ships beside them
-in `static/FONTS-LICENSE.txt` because the licence requires it:
+Bundled files (~106 KB total), all three families SIL OFL 1.1 — the licence ships beside
+them in `static/FONTS-LICENSE.txt` because the licence requires it:
 
 ```
 inter.woff2            48,256 B   variable 400-700, latin
+oswald.woff2           28,488 B   variable 200-700, latin -- headings and brand only
 plexmono-400.woff2     14,708 B
 plexmono-500.woff2     14,888 B
 ```
 
-`font-display: swap`, so a missing or slow font never blocks render.
+`font-display: swap`, so a missing or slow font never blocks render. `--font-display`'s
+stack falls back to Inter before the system sans, so a failed Oswald load still reads as
+the same brand rather than jumping straight to a browser default.
 
 ### Scale
 
 1.25 ratio on a 17px base (up from 16px — sized up a step across every role, not just
-headings). Line-height tightens as size grows; tracking goes negative on display sizes and
-positive on small caps.
+headings). Line-height tightens as size grows. Display sizes carry a small *positive*
+tracking, not negative: Oswald is condensed and tight by design, so the negative tracking
+tuned for Inter's old heading role would double up and read cramped. Small caps (`--ls-xs`,
+still on `--font-ui`) keep their positive tracking as before.
 
 | Token | Size | Line-height | Tracking | Use |
 |---|---:|---:|---:|---|
-| `--text-display` | 2.25rem | 1.15 | −0.02em | View title |
-| `--text-h2` | 1.625rem | 1.25 | −0.015em | Section heading |
-| `--text-h3` | 1.1875rem | 1.35 | −0.01em | Card heading |
+| `--text-display` | 2.5rem | 1.15 | 0em | View title |
+| `--text-h2` | 1.75rem | 1.25 | 0em | Section heading |
+| `--text-h3` | 1.25rem | 1.35 | +0.005em | Card heading |
 | `--text-lead` | 1.125rem | 1.6 | — | Lead paragraph |
 | `--text-body` | 1.0625rem | 1.6 | — | Body, controls |
 | `--text-sm` | 0.9375rem | 1.5 | — | Table cells, hints |
 | `--text-xs` | 0.8125rem | 1.4 | +0.04em | Labels, overlines |
 
 **Before:** ad-hoc `em`/`rem` values scattered through the file, no line-height or
-letter-spacing system, `-apple-system` for every role.
+letter-spacing system, `-apple-system` for every role; then a single-face pass (Inter for
+both headings and body) that this display/UI split superseded.
 
 Every numeral carries `font-variant-numeric: tabular-nums` so columns align.
 
@@ -154,22 +163,32 @@ inline styles are gone.
 
 ## 4. Radii and elevation
 
-`--radius-sm: 8px` (buttons, inputs, badges, chips) · `--radius-md: 12px` (cards, panels,
+`--radius-sm: 10px` (buttons, inputs, badges, chips) · `--radius-md: 14px` (cards, panels,
 drawer, image frames) · `--radius-full: 999px` (pills, progress bars).
-**Before:** an inconsistent 5 / 6 / 9 / 10 / 14px.
+**Before:** an inconsistent 5 / 6 / 9 / 10 / 14px, then a first pass at 8 / 12px that this
+softer geometry superseded.
 
-Elevation is layered and tied to interaction, never decorative. Borders remain the
-primary separator; shadow is secondary.
+Two weights, not four, and shadow is now the **primary** separator for resting surfaces on
+the plain white page (`--bg` and `--surface` are both `#ffffff`) — the doctrine used to be
+the reverse (border primary, shadow secondary), which is why `.card` no longer sets a
+border at all.
 
 | Token | Use |
 |---|---|
-| `--elev-1` | Cards at rest |
-| `--elev-2` | Hover, sticky header, primary card |
-| `--elev-3` | Run panel |
-| `--elev-4` | Drawer |
+| `--elev-card` | Cards, panels, hover/pressed feedback on a button or segmented pill, the mobile table-row card |
+| `--elev-overlay` | Sticky run header (`.run-panel`), drawer — anything floating over scrolling content that needs a stronger lift than a resting card |
 
-`--inner-hi` is reserved for a future dark surface — shadow alone won't read there, so a
-1px top inner highlight would carry the edge instead. Unused while the UI is light-only.
+Three deliberate exceptions keep a border alongside (or in place of) the shadow:
+`.card-primary`'s tinted border is what marks the view's primary card now that plain cards
+have none; inputs and selects keep theirs regardless of surface, since a form field needs
+a visible boundary whether or not it sits on a shadowed background; and `.app-header` keeps
+both border and shadow — it is sticky chrome with content scrolling underneath it, and a
+shadow alone is not a reliable division line once arbitrary scrolled content can sit right
+behind it. The drawer also keeps its border: it floats over a dimmed backdrop, not the
+plain page, so the shadow-only reasoning for `.card` does not transfer.
+
+`--inner-hi` is removed. It was reserved for a future dark surface that would need a 1px
+top inner highlight to read against — moot once dark mode itself was removed (§0).
 
 ---
 
@@ -179,7 +198,7 @@ Applied to every interactive element, not just `<button>`.
 
 | Element | hover | active | focus-visible | disabled | loading | error |
 |---|---|---|---|---|---|---|
-| Button ×4 variants | darker fill + `elev-2` | `translateY(1px)`, darkest fill, no shadow | 2px ring, 2px offset | 45% opacity, no pointer | spinner + `aria-busy`, label kept | — |
+| Button ×4 variants | darker fill + `elev-card` | darkest fill, no shadow, **no translate** | 2px ring, 2px offset | 45% opacity, no pointer | spinner + `aria-busy`, label kept | — |
 | Input / select | `border-strong` → `text-2` | — | primary border + 3px soft ring | `surface-2`, muted text | — | `aria-invalid` + red border + message |
 | Checkbox | outline on the box | — | ring | dimmed | — | — |
 | Rail item | `surface-2` | — | ring | — | — | — |
@@ -190,7 +209,22 @@ Applied to every interactive element, not just `<button>`.
 
 Loading keeps the label in place so the button does not resize and shift its neighbours;
 `aria-busy` carries the state to assistive tech. Errors are never the red border alone —
-`aria-invalid` exposes them programmatically and a message states what is wrong.
+`aria-invalid` exposes them programmatically and a message states what is wrong. Buttons no
+longer press down 1px on `:active` — the colour change on its own is enough click feedback,
+and the translate read as dated once the rest of the chrome went flatter.
+
+**Select.** `appearance: none` so a `<select>` matches the text input beside it instead of
+rendering the OS's own control; the dropdown affordance is redrawn as a self-hosted inline
+SVG chevron (no icon font, no CDN), muted further on `:disabled` to match the disabled
+text colour. `select[multiple]` opts back into the native `appearance: auto` — a listbox
+has no dropdown to hint at.
+
+**`.note`.** Neutral is the default; colour is earned. A tinted background made every note
+read as alarming regardless of what it said, so severity is now a 3px left rule and an
+uppercase `.note-label`, not a fill — `.note` (grey, `--muted`), `.note-info` (blue,
+`--primary`) for a headline finding rather than a fault, `.note-warn` (amber, `--warn`) for
+the small minority of notes that are an actual actionable warning. All three share the same
+geometry; only the rule colour and label text change.
 
 **Skeletons** (`.skeleton`) replace bare "Loading…" text wherever the result's shape is
 known, so the layout does not jump when data lands.
@@ -242,7 +276,9 @@ One filled primary action per view; everything else demotes.
 | Analyze | Run analysis |
 
 `secondary` (outlined) for supporting actions, `ghost` for tertiary, `danger` reserved for
-cancel/destructive. The view's primary card also carries a tinted border and `--elev-2`.
+cancel/destructive. The view's primary card also carries a tinted border -- the one
+exception to plain cards being shadow-only (§4) -- but the same `--elev-card` shadow as
+every other card; elevation no longer marks it, the border does.
 
 ---
 

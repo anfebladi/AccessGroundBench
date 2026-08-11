@@ -11,7 +11,7 @@
 
 import { api, enc, imageUrl } from "./api.js";
 import {
-  badge, cssVar, drawScreenshot, emptyState, html,
+  badge, cssVar, drawScreenshot, emptyState, html, imageIsDrawable,
   pct, raw, stateError, stateLoading, strokeWidthFor,
 } from "./ui.js";
 
@@ -69,7 +69,8 @@ async function loadWarnings(dataset) {
 
   if (!data.available) {
     container.innerHTML = html`
-      <div class="note">
+      <div class="note note-warn">
+        <span class="note-label">Warning</span>
         No <code>collection_manifest.json</code> for this dataset, so capture
         completeness and content drift are unknown.
       </div>`;
@@ -94,7 +95,8 @@ async function loadWarnings(dataset) {
         </div>
       </div>
       ${problems.length ? raw(html`
-        <div class="note">
+        <div class="note note-warn">
+          <span class="note-label">Warning</span>
           <b>${problems.length} warning${problems.length === 1 ? "" : "s"}</b> --
           affected screens carry a caveat, they are not automatically excluded.
           <ul>${problems.map((p) => raw(html`<li>${p}</li>`))}</ul>
@@ -248,7 +250,10 @@ async function renderBrowser(dataset) {
           <span class="pane-title">Baseline</span>
           <span class="pane-dims" id="dims-baseline"></span>
         </div>
-        <div class="pane-canvas"><canvas id="canvas-baseline"></canvas></div>
+        <div class="pane-canvas">
+          <div class="skeleton skeleton-block" id="skel-baseline" aria-hidden="true"></div>
+          <canvas id="canvas-baseline" hidden></canvas>
+        </div>
         <p class="image-caption">${targets.length} groundable target${targets.length === 1 ? "" : "s"}</p>
       </div>
       <div class="pane">
@@ -256,13 +261,17 @@ async function renderBrowser(dataset) {
           <span class="pane-title">${profileLabel}</span>
           <span class="pane-dims" id="dims-profile"></span>
         </div>
-        <div class="pane-canvas"><canvas id="canvas-profile"></canvas></div>
+        <div class="pane-canvas">
+          <div class="skeleton skeleton-block" id="skel-profile" aria-hidden="true"></div>
+          <canvas id="canvas-profile" hidden></canvas>
+        </div>
         <p class="image-caption">${profileCaption}</p>
       </div>
     </div>
 
     ${!isBaselineBoth && missing.length ? raw(html`
-      <div class="note" style="margin-top: var(--space-4);">
+      <div class="note note-info" style="margin-top: var(--space-4);">
+        <span class="note-label">Note</span>
         <b>${missing.length} target${missing.length === 1 ? "" : "s"} evicted by this profile.</b>
         They are outlined on the baseline pane. A target that no longer renders
         cannot be grounded by any model, so it is scored as
@@ -300,18 +309,25 @@ async function renderBrowser(dataset) {
  * call, so ticking "Target boxes" on or off is an instant local redraw, not
  * a full reload of the comparison panel.
  *
- * The screenshot images are cached on `lastComparison` after their first
- * load and redrawn from that cache here. `imageUrl()` appends a cache-busting
- * timestamp (so a re-collected capture is never served stale), which also
- * means a naive re-fetch would hit the network for the same pixels on every
- * toggle click -- a visible flash for zero new information.
+ * The screenshot images are cached on `lastComparison` once their load
+ * settles and redrawn from that cache here. `imageUrl()` appends a
+ * cache-busting timestamp (so a re-collected capture is never served stale),
+ * which also means a naive re-fetch would hit the network for the same
+ * pixels on every toggle click -- a visible flash for zero new information.
+ *
+ * A cached image can be in three states, not two: `img.complete` alone
+ * conflates "loaded" with "failed" (both leave it `true`), so `show()` below
+ * checks `imageIsDrawable()` instead and treats "still in flight" as its own
+ * case rather than folding it into "not loaded yet, start a load".
  */
 function redrawOverlays() {
   if (!lastComparison) return;
   const c = lastComparison;
   const canvasBaseline = document.getElementById("canvas-baseline");
   const canvasProfile = document.getElementById("canvas-profile");
-  if (!canvasBaseline || !canvasProfile) return;
+  const skelBaseline = document.getElementById("skel-baseline");
+  const skelProfile = document.getElementById("skel-profile");
+  if (!canvasBaseline || !canvasProfile || !skelBaseline || !skelProfile) return;
 
   const accent = cssVar("--viz-blue", "#2a78d6");
   const err = cssVar("--err", "#b3221a");
@@ -343,17 +359,36 @@ function redrawOverlays() {
     }
   };
 
-  if (c.imgBaseline?.complete) {
-    redrawCached(canvasBaseline, c.imgBaseline, decorateBaseline);
-  } else {
-    c.imgBaseline = drawScreenshot(canvasBaseline, imageUrl(c.dataset, c.screen, "baseline"), decorateBaseline);
-  }
+  // Starts a load only when none is in flight yet; redraws from cache once
+  // one has decoded; otherwise leaves the pane exactly as it is -- a load
+  // still in flight will paint with whatever toggle state is current once
+  // its onload fires, and a load that already failed is not worth
+  // re-requesting on every click, so its "Screenshot not available" message
+  // (and the skeleton/canvas visibility from when it settled) just stays put.
+  const show = (canvas, skel, dimsId, key, url, decorate) => {
+    if (imageIsDrawable(c[key])) {
+      redrawCached(canvas, c[key], decorate);
+      return;
+    }
+    if (c[key]) return; // in flight or already failed: nothing changes
+    skel.hidden = false;
+    canvas.hidden = true;
+    c[key] = drawScreenshot(canvas, url, decorate, (img) => {
+      skel.hidden = true;
+      canvas.hidden = false;
+      // A failed load never runs `decorate`, so nothing else writes this --
+      // left alone it would keep showing whatever the previous pane's
+      // dimensions were.
+      if (img.naturalWidth === 0) {
+        document.getElementById(dimsId).textContent = "—";
+      }
+    });
+  };
 
-  if (c.imgProfile?.complete) {
-    redrawCached(canvasProfile, c.imgProfile, decorateProfile);
-  } else {
-    c.imgProfile = drawScreenshot(canvasProfile, imageUrl(c.dataset, c.screen, c.profile), decorateProfile);
-  }
+  show(canvasBaseline, skelBaseline, "dims-baseline", "imgBaseline",
+    imageUrl(c.dataset, c.screen, "baseline"), decorateBaseline);
+  show(canvasProfile, skelProfile, "dims-profile", "imgProfile",
+    imageUrl(c.dataset, c.screen, c.profile), decorateProfile);
 }
 
 function redrawCached(canvas, img, decorate) {

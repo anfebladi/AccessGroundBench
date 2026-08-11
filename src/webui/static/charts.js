@@ -8,7 +8,8 @@
  * height, a 4px rounded data-end square at the baseline, hairline recessive
  * gridlines, values labelled selectively rather than on every mark, and text in
  * ink tokens rather than the series colour. Colours come from the --viz-*
- * custom properties, so dark mode is a token swap and the SVG needs no JS.
+ * custom properties, so a future palette change is a token swap and the SVG
+ * needs no JS.
  *
  * Identity is never carried by hue alone: the diverging chart marks
  * significance with a filled vs hollow square, and underpowered rows carry a
