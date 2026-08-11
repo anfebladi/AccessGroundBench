@@ -1,6 +1,7 @@
 """Hosted LiteLLM transport, response extraction, and provider dispatch."""
 
 import base64
+import io
 import os
 import time
 import urllib
@@ -11,6 +12,7 @@ from .config import (
     FERRET_MODEL_ID,
     NINEROUTER_PREFIX,
     OPENAI_COMPATIBLE_PREFIX,
+    image_send_scale,
     model_configuration_error,
     resolve_completion_config,
     validate_coord_space,
@@ -29,20 +31,32 @@ from .coord_prompting import (
 )
 from .retry import (
     DEFAULT_RATE_LIMIT_BACKOFF_SECONDS,
+    MAX_TOKENS_ENV_VAR,
+    THINKING_ENV_VAR,
     is_rate_limit_error,
     is_retryable_error,
     is_temperature_rejection,
     resolve_max_retries,
+    resolve_max_tokens,
     resolve_request_timeout,
+    resolve_structured_coords,
     resolve_temperature,
+    resolve_thinking,
     retry_delay_seconds,
 )
+
+# Providers whose models accept an extended-thinking configuration. Sending it
+# to anyone else is an unrecognised parameter, so it is opt-in by prefix.
+_THINKING_PREFIXES = ("anthropic/", "claude-")
 
 _TEMPERATURE_UNSUPPORTED: set[str] = set()
 
 # Private aliases retained for focused compatibility and tests.
 _resolve_request_timeout = resolve_request_timeout
 _resolve_temperature = resolve_temperature
+_resolve_max_tokens = resolve_max_tokens
+_resolve_thinking = resolve_thinking
+_resolve_structured_coords = resolve_structured_coords
 _is_temperature_rejection = is_temperature_rejection
 _resolve_max_retries = resolve_max_retries
 _is_rate_limit_error = is_rate_limit_error
@@ -55,9 +69,30 @@ _classify_normalized_reply = classify_normalized_reply
 _call_ferret = call_ferret
 _parse_ferret_bbox = parse_ferret_bbox
 
-def image_to_data_url(image_path: Path) -> str:
-    """Convert a local PNG screenshot to a base64 data URL."""
-    image_bytes = image_path.read_bytes()
+def image_to_data_url(image_path: Path, scale: float = 1.0) -> str:
+    """Convert a local PNG screenshot to a base64 data URL.
+
+    A scale below 1.0 downsizes the image first, so the model is shown -- and
+    therefore answers in -- a coordinate space this pipeline chose. Left to the
+    provider, the same downscale happens silently and the reply lands in a
+    space nothing recorded (see MAX_IMAGE_EDGE).
+
+    scale == 1.0 re-reads and re-encodes the original bytes untouched, so an
+    uncapped model's request is byte-identical to what it was before capping
+    existed.
+    """
+    if scale >= 1.0:
+        image_bytes = image_path.read_bytes()
+    else:
+        from PIL import Image
+
+        with Image.open(image_path) as img:
+            img = img.convert("RGB")
+            target = (round(img.width * scale), round(img.height * scale))
+            buffer = io.BytesIO()
+            img.resize(target, Image.LANCZOS).save(buffer, format="PNG")
+        image_bytes = buffer.getvalue()
+
     encoded = base64.b64encode(image_bytes).decode("ascii")
     return f"data:image/png;base64,{encoded}"
 
@@ -114,6 +149,41 @@ def _register_compatible_model(model: str) -> None:
         litellm.suppress_debug_info = previous_suppress_debug_info
 
 
+class TruncatedReplyError(RuntimeError):
+    """A reply hit the token budget before the model finished answering.
+
+    Raised rather than parsed because a truncated reply is a failed call, not a
+    wrong answer. Left to the parser it reads as an unparseable coordinate and
+    scores as a grounding miss -- and on a model that thinks, truncation gets
+    likelier the longer the model reasons, so the misses would land on exactly
+    the hard targets and make the accessibility profiles look worse than they
+    are. Deliberately not retryable: the same budget truncates again.
+    """
+
+
+def _finish_reason(response: Any) -> str | None:
+    """Read the finish reason from LiteLLM's OpenAI-compatible response shape."""
+    try:
+        return response.choices[0].finish_reason
+    except (AttributeError, IndexError, KeyError, TypeError):
+        try:
+            return response["choices"][0]["finish_reason"]
+        except (KeyError, IndexError, TypeError):
+            return None
+
+
+def _raise_if_truncated(response: Any, max_tokens: int | None) -> None:
+    """Fail the call when the provider stopped at the token budget."""
+    if _finish_reason(response) != "length":
+        return
+    budget = f"{max_tokens}-token" if max_tokens is not None else "provider default"
+    raise TruncatedReplyError(
+        f"reply hit the {budget} budget before completing. "
+        f"Set {MAX_TOKENS_ENV_VAR} higher, or disable thinking with "
+        f"{THINKING_ENV_VAR}=disabled."
+    )
+
+
 def _extract_response_text(response: Any) -> str:
     """Extract assistant text from LiteLLM's OpenAI-compatible response shape."""
     try:
@@ -150,6 +220,7 @@ def call_vlm(
     tree_rows: list[tuple[str, list[int]]] | None = None,
     img_width: int | None = None,
     img_height: int | None = None,
+    image_scale: float = 1.0,
     coord_space_out: dict | None = None,
 ) -> str:
     """
@@ -172,6 +243,12 @@ def call_vlm(
     for Gemini models once the reply is resolved, so a caller can log
     per-row format compliance (see build_gemini_prompt / _resolve_gemini_reply).
     It is left untouched for every other model family.
+
+    image_scale downsizes the screenshot before sending, for models whose
+    provider would otherwise downscale it silently (see MAX_IMAGE_EDGE). The
+    reply is then in the scaled image's coordinate space, and the caller is
+    responsible for scaling predictions back -- `prompt` must already state
+    the scaled dimensions. The default 1.0 sends the image untouched.
     """
     if model == FERRET_MODEL_ID:
         return _call_ferret(
@@ -195,10 +272,14 @@ def call_vlm(
         if norm_target is not None:
             norm_w, norm_h = _resolve_image_dims(image_path, img_width, img_height)
 
-    data_url = image_to_data_url(image_path)
+    data_url = image_to_data_url(image_path, image_scale)
     retries = _resolve_max_retries(max_retries)
     timeout = _resolve_request_timeout(request_timeout)
     resolved_temperature = _resolve_temperature(temperature)
+    resolved_max_tokens = _resolve_max_tokens(max_tokens)
+    is_anthropic = any(model.startswith(p) for p in _THINKING_PREFIXES)
+    resolved_thinking = _resolve_thinking() if is_anthropic else None
+    resolved_format = _resolve_structured_coords() if is_anthropic else None
     _register_compatible_model(model)
     delay = DEFAULT_RATE_LIMIT_BACKOFF_SECONDS
 
@@ -227,12 +308,17 @@ def call_vlm(
                     }
                 ],
             )
-            if max_tokens is not None:
-                kwargs["max_tokens"] = max_tokens
+            if resolved_max_tokens is not None:
+                kwargs["max_tokens"] = resolved_max_tokens
+            if resolved_thinking is not None:
+                kwargs["thinking"] = resolved_thinking
+            if resolved_format is not None:
+                kwargs["response_format"] = resolved_format
             if resolved_temperature is not None and model not in _TEMPERATURE_UNSUPPORTED:
                 kwargs["temperature"] = resolved_temperature
             kwargs["timeout"] = timeout
             response = _completion(**kwargs)
+            _raise_if_truncated(response, resolved_max_tokens)
             raw_text = _extract_response_text(response)
         except Exception as exc:
             # Some reasoning models reject an explicit temperature. Drop it for

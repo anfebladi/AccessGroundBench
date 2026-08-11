@@ -16,6 +16,7 @@ CSV_COLUMNS = [
     "trials", "trial_scores", "parse_method",
     "prompt_mode", "tree_rows_sent",
     "coord_space",
+    "image_sent_size",
 ]
 
 # Per-row output-format compliance for models with their own coordinate

@@ -57,22 +57,41 @@ Every numeral carries `font-variant-numeric: tabular-nums` so columns align.
 
 ## 2. Colour
 
-Warm-tinted neutrals rather than pure grey, and an indigo primary rather than the default
-`#2451c9` blue — the two cheapest ways to stop looking bootstrapped.
+Warm bone neutrals and a deep forest primary — an academic, printed register rather than
+the default product blue. The neutrals are yellow-tinted so they sit *under* the greens
+instead of fighting them.
 
 | Role | Light | Dark |
 |---|---|---|
-| `--bg` | `#f7f7f5` | `#0e0e10` |
-| `--surface` | `#ffffff` | `#17171a` |
-| `--surface-2` | `#f2f2ef` | `#1e1e22` |
-| `--surface-3` | `#ebebe7` | `#26262b` |
-| `--border` | `#e4e4df` | `#2a2a2f` |
-| `--border-strong` | `#cfcfc8` | `#3a3a41` |
-| `--text` | `#17171a` | `#f0f0ee` |
-| `--text-2` | `#4a4a52` | `#b4b4bd` |
-| `--muted` | `#6e6e78` | `#86868f` |
-| `--primary` | `#4f39cf` | `#8b7af0` |
-| `--ok` / `--warn` / `--err` | `#157a41` / `#a45c00` / `#b3221a` | `#46c97a` / `#e0a244` / `#ff6f63` |
+| `--bg` | `#e5e1d1` | `#0f1310` |
+| `--surface` | `#fbfaf4` | `#16201a` |
+| `--surface-2` | `#f1eee2` | `#1c2a1e` |
+| `--surface-3` | `#e4e0d0` | `#253524` |
+| `--border` | `#d9d5c3` | `#2c3a2c` |
+| `--border-strong` | `#bfbaa4` | `#3b4a3a` |
+| `--text` | `#16201a` | `#eceadd` |
+| `--text-2` | `#3b4a3a` | `#c2cfb4` |
+| `--muted` | `#576351` | `#8d9a86` |
+| `--primary` | `#213921` | `#a8c33f` |
+| `--ok` / `--warn` / `--err` | `#3d6b1f` / `#755509` / `#a3301f` | `#7cc44a` / `#d9a83c` / `#ff7a6b` |
+
+**Accents**, used sparingly and only for chrome:
+
+| Token | Light | Dark | Used for |
+|---|---|---|---|
+| `--forest` | `#213921` | `#213921` | masthead, active rail step, active segment |
+| `--forest-deep` | `#16201a` | `#0f1310` | pane headers over device captures |
+| `--chartreuse` | `#cfd82d` | `#cfd82d` | brand mark, header rule, active rail numeral, completion badge |
+| `--moss` | `#6d8d24` | `#7ea62b` | non-text fills only — data bars, bullets |
+| `--sage` | `#c2cfb4` | `#8d9a86` | quiet labels on forest |
+
+`--moss` sits at 3.7:1 and is deliberately **never** used for text; it clears the 3:1
+threshold that applies to UI components and data marks.
+
+**Cards sit lighter than the page, not darker.** The source design insets its panels, but
+`input, select, textarea` share `--surface` with cards here — darkening it makes every
+form field stop reading as a field, and collapses page, card, table band and input into
+four near-identical warm greys. Paper on a desk, not panels in a sheet.
 
 ### Measured contrast
 
@@ -80,12 +99,16 @@ Computed, not eyeballed. All pass WCAG AA for their role.
 
 | Pair | Light | Dark |
 |---|---:|---:|
-| text on surface | 17.89:1 | 15.68:1 |
-| text-2 on surface | 8.78:1 | 8.69:1 |
-| muted on surface | 5.04:1 | 4.96:1 |
-| muted on bg | 4.70:1 | 5.34:1 |
-| primary on surface | 7.45:1 | 5.23:1 |
-| ok / warn / err on surface | 5.40 / 5.11 / 6.64 | 8.43 / 8.03 / 6.56 |
+| text on surface | 15.99:1 | 13.84:1 |
+| text-2 on surface | 9.02:1 | 10.26:1 |
+| muted on surface | 6.07:1 | 5.65:1 |
+| muted on bg | 4.84:1 | 6.33:1 |
+| primary on surface | 12.01:1 | 8.40:1 |
+| ok / warn / err on surface | 6.05 / 6.56 / 6.69 | 7.85 / 7.66 / 6.57 |
+
+Surface separation is only ~1.2:1 in both modes — warm neighbours do not separate by
+luminance alone — so the **card border is load-bearing, not decorative**. Removing it
+makes cards disappear into the page.
 
 ### Chart palette (separate, separately validated)
 

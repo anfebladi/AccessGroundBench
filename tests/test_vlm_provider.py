@@ -1,4 +1,6 @@
 import base64
+import io
+import os
 import tempfile
 import unittest
 from contextlib import redirect_stdout
@@ -755,3 +757,237 @@ class VlmProviderTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ReplyBudgetAndThinkingTests(unittest.TestCase):
+    """max_tokens / thinking plumbing, and the truncation guard.
+
+    A truncated reply used to reach the coordinate parser, fail to parse, and
+    score as a grounding miss. On a model that thinks, truncation gets likelier
+    the longer the model reasons, so those misses would concentrate on the hard
+    targets and overstate the accessibility profiles' effect.
+    """
+
+    def _png(self, tmp_dir):
+        path = Path(tmp_dir) / "screen.png"
+        path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
+        return path
+
+    def _call(self, model="openai/gpt-4o-mini", finish_reason="stop"):
+        with mock.patch("evaluation.providers.hosted._completion") as completion, \
+             mock.patch("evaluation.providers.hosted._register_compatible_model"), \
+             tempfile.TemporaryDirectory() as tmp_dir:
+            completion.return_value = {
+                "choices": [{"finish_reason": finish_reason,
+                             "message": {"content": "[1, 2]"}}],
+            }
+            text = vlm_provider.call_vlm(model, self._png(tmp_dir), "Find Settings")
+            return text, completion.call_args.kwargs
+
+    def test_no_budget_is_sent_by_default(self):
+        """The already-collected roster ran with no max_tokens; keep it that way."""
+        _, kwargs = self._call()
+        self.assertNotIn("max_tokens", kwargs)
+
+    @mock.patch.dict(os.environ, {"VLM_MAX_TOKENS": "8192"}, clear=False)
+    def test_budget_is_sent_when_configured(self):
+        _, kwargs = self._call()
+        self.assertEqual(8192, kwargs["max_tokens"])
+
+    def test_thinking_is_not_sent_by_default(self):
+        _, kwargs = self._call("anthropic/claude-opus-5")
+        self.assertNotIn("thinking", kwargs)
+
+    @mock.patch.dict(os.environ, {"VLM_THINKING": "disabled"}, clear=False)
+    def test_thinking_goes_only_to_anthropic_models(self):
+        _, anthropic_kwargs = self._call("anthropic/claude-opus-5")
+        self.assertEqual({"type": "disabled"}, anthropic_kwargs["thinking"])
+
+        # Any other provider would reject it as an unrecognised parameter.
+        _, other_kwargs = self._call("openai/gpt-4o-mini")
+        self.assertNotIn("thinking", other_kwargs)
+
+    @mock.patch.dict(os.environ, {"VLM_THINKING": "sometimes"}, clear=False)
+    def test_an_unrecognised_thinking_mode_exits_rather_than_guessing(self):
+        with self.assertRaises(SystemExit):
+            self._call("anthropic/claude-opus-5")
+
+    def test_truncated_reply_raises_instead_of_being_scored(self):
+        with self.assertRaises(vlm_provider.TruncatedReplyError):
+            self._call(finish_reason="length")
+
+    def test_truncation_is_not_retried(self):
+        """The same budget truncates again; it must surface as an api_error."""
+        from evaluation.providers.retry import is_retryable_error
+
+        self.assertFalse(is_retryable_error(vlm_provider.TruncatedReplyError("x")))
+
+
+class ImageCapTests(unittest.TestCase):
+    """Per-model image caps, and the coordinate space they silently create.
+
+    A provider given an oversized image downscales it and the model answers in
+    the space it was actually shown -- measured at 17% instead of ~100% for
+    Haiku 4.5 and Sonnet 4.6, the same defect class as the gemini-pro-agent
+    8.4%-vs-96.8% error. The pipeline does the resize itself so the space is
+    known and recorded.
+    """
+
+    def test_uncapped_models_are_untouched(self):
+        from evaluation.providers.config import image_send_scale
+
+        for model in ("openai/gpt-4o-mini", "9router/cx/gpt-5.5",
+                      "anthropic/claude-opus-5", "anthropic/claude-sonnet-5"):
+            self.assertEqual(1.0, image_send_scale(model, 1080, 2219), model)
+
+    def test_capped_models_scale_to_their_cap(self):
+        from evaluation.providers.config import image_send_scale, max_image_edge
+
+        for model in ("anthropic/claude-haiku-4-5", "anthropic/claude-sonnet-4-6"):
+            self.assertEqual(1568, max_image_edge(model))
+            self.assertAlmostEqual(1568 / 2219,
+                                   image_send_scale(model, 1080, 2219), places=6)
+
+    def test_an_image_already_under_the_cap_is_not_scaled(self):
+        from evaluation.providers.config import image_send_scale
+
+        self.assertEqual(1.0, image_send_scale("anthropic/claude-haiku-4-5", 800, 1200))
+
+    def test_scale_one_reencodes_the_original_bytes_untouched(self):
+        """The comparability guarantee: an uncapped model's request is unchanged."""
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            path = Path(tmp_dir) / "screen.png"
+            path.write_bytes(b"\x89PNG\r\n\x1a\nnot-a-real-png")
+
+            # scale >= 1.0 must not even open the file as an image, so a
+            # non-decodable payload round-trips byte for byte.
+            expected = base64.b64encode(path.read_bytes()).decode("ascii")
+            self.assertEqual(f"data:image/png;base64,{expected}",
+                             vlm_provider.image_to_data_url(path, 1.0))
+
+    def test_a_scaled_image_is_actually_smaller(self):
+        from PIL import Image
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            path = Path(tmp_dir) / "screen.png"
+            Image.new("RGB", (1080, 2219), "white").save(path)
+
+            url = vlm_provider.image_to_data_url(path, 1568 / 2219)
+            raw = base64.b64decode(url.split(",", 1)[1])
+            with Image.open(io.BytesIO(raw)) as img:
+                self.assertEqual((763, 1568), img.size)
+                self.assertEqual(1568, max(img.size))
+
+
+class ScaledPredictionScoringTests(unittest.TestCase):
+    """A reply in downscaled space must be rescaled before it is scored."""
+
+    BOX = [95, 221, 266, 283]          # true centre (180, 252)
+    SCALE = 1568 / 2219
+
+    def test_downscaled_reply_scores_as_a_hit_once_rescaled(self):
+        from evaluation.runner import score_one_trial
+
+        # What Haiku actually returned for this target on clock_baseline.
+        x, y, score, _ = score_one_trial(
+            "[127, 177]", self.BOX, self.BOX, 1080, 2219, image_scale=self.SCALE,
+        )
+        self.assertEqual(1, score)
+        self.assertAlmostEqual(180, x, delta=3)
+        self.assertAlmostEqual(252, y, delta=4)
+
+    def test_the_same_reply_is_a_miss_without_the_rescale(self):
+        """Pins the defect this fix exists for -- 17% instead of ~100%."""
+        from evaluation.runner import score_one_trial
+
+        _, _, score, _ = score_one_trial(
+            "[127, 177]", self.BOX, self.BOX, 1080, 2219,
+        )
+        self.assertEqual(0, score)
+
+    def test_scale_one_reproduces_the_previous_scoring_exactly(self):
+        from evaluation.runner import score_one_trial
+
+        for reply in ("[180, 252]", "[127, 177]", "not a coordinate", "[9999, 9999]"):
+            self.assertEqual(
+                score_one_trial(reply, self.BOX, self.BOX, 1080, 2219),
+                score_one_trial(reply, self.BOX, self.BOX, 1080, 2219, image_scale=1.0),
+                reply,
+            )
+
+
+class CappedModelTreeModeTests(unittest.TestCase):
+    def test_tree_mode_refuses_a_capped_model(self):
+        """The tree lists element bounds in full-size pixels; the image would be
+        downscaled. Sending both hands the model two coordinate systems."""
+        import json as _json
+        import struct as _struct
+
+        from evaluation.runner import evaluate_screen
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            images, labels = root / "images", root / "labels"
+            images.mkdir(); labels.mkdir()
+            (images / "clock_baseline.png").write_bytes(
+                b"\x89PNG\r\n\x1a\n" + _struct.pack(">I", 13) + b"IHDR"
+                + _struct.pack(">II", 1080, 2219)
+            )
+            (labels / "clock_baseline.json").write_text(
+                _json.dumps([{"text": "Alarm", "box": [10, 10, 100, 60]}]),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "vision-only"):
+                evaluate_screen(
+                    "anthropic/claude-haiku-4-5", "clock",
+                    [{"text": "Alarm", "baseline_box": [10, 10, 100, 60]}],
+                    images_dir=images, labels_dir=labels, use_a11y_tree=True,
+                    results_csv=root / "r.csv", profiles=["baseline"],
+                )
+
+
+class StructuredCoordinateTests(unittest.TestCase):
+    """Constraining the reply to coordinates, for models that ignore the prompt.
+
+    The schema returns an array, so the rendered JSON contains a literal
+    "[x, y]" that the existing bracket parser reads unchanged -- turning this
+    on cannot alter how any reply is interpreted, only what the model sends.
+    """
+
+    def _call(self, model, **env):
+        with mock.patch("evaluation.providers.hosted._completion") as completion, \
+             mock.patch("evaluation.providers.hosted._register_compatible_model"), \
+             mock.patch.dict(os.environ, env, clear=False), \
+             tempfile.TemporaryDirectory() as tmp_dir:
+            path = Path(tmp_dir) / "screen.png"
+            path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
+            completion.return_value = {
+                "choices": [{"finish_reason": "stop",
+                             "message": {"content": '{"coordinates": [126, 176]}'}}],
+            }
+            vlm_provider.call_vlm(model, path, "Find Settings")
+            return completion.call_args.kwargs
+
+    def test_off_by_default(self):
+        self.assertNotIn("response_format", self._call("anthropic/claude-haiku-4-5"))
+
+    def test_enabled_sends_a_strict_schema(self):
+        kwargs = self._call("anthropic/claude-haiku-4-5", VLM_STRUCTURED_COORDS="true")
+        schema = kwargs["response_format"]["json_schema"]
+        self.assertTrue(schema["strict"])
+        self.assertEqual(["coordinates"], schema["schema"]["required"])
+        self.assertFalse(schema["schema"]["additionalProperties"])
+
+    def test_not_sent_to_non_anthropic_models(self):
+        self.assertNotIn(
+            "response_format",
+            self._call("openai/gpt-4o-mini", VLM_STRUCTURED_COORDS="true"),
+        )
+
+    def test_the_schema_reply_parses_with_the_unchanged_bracket_rule(self):
+        from evaluation.grounding.scoring import parse_coordinates_detailed
+
+        self.assertEqual(
+            (126.0, 176.0, "bracket"),
+            parse_coordinates_detailed('{"coordinates": [126, 176]}'),
+        )

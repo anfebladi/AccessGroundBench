@@ -117,3 +117,40 @@ class ToPixelSpaceTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LastCoordinatePairTests(unittest.TestCase):
+    """A prose reply states intermediates first and its answer last.
+
+    Every model collected before Haiku 4.5 answered in the requested bracket
+    format -- one pair, so first and last are the same and this rule is a
+    no-op for them. Haiku reasons in prose, which exposed the first-match
+    parser turning its answer into an out-of-frame miss.
+    """
+
+    def test_a_compliant_reply_is_unaffected(self):
+        self.assertEqual((179.0, 251.0, "bracket"),
+                         parse_coordinates_detailed("[179, 251]"))
+
+    def test_the_final_pair_wins_over_intermediate_spans(self):
+        reply = "the span is [70, 280] wide and [235, 305] tall, so the centre is [175, 270]"
+        self.assertEqual((175.0, 270.0, "bracket"), parse_coordinates_detailed(reply))
+
+    def test_the_real_haiku_reply_resolves_to_its_answer(self):
+        reply = ("the item appears around [228, 1758]. Let me be more precise: "
+                 "the centre is [228, 1520]. Final answer: [228, 1520]")
+        x, y, method = parse_coordinates_detailed(reply)
+        self.assertEqual((228.0, 1520.0, "bracket"), (x, y, method))
+
+    def test_the_loose_fallback_also_takes_the_last_pair(self):
+        self.assertEqual((179.0, 251.0, "loose"),
+                         parse_coordinates_detailed("first 10, 20 then finally 179, 251"))
+
+    def test_a_bracket_anywhere_still_beats_a_loose_match(self):
+        """Bracket anchoring stays the primary rule; position only breaks ties."""
+        reply = "candidates 10, 20 and 30, 40 -- the answer is [175, 270] in the end"
+        self.assertEqual((175.0, 270.0, "bracket"), parse_coordinates_detailed(reply))
+
+    def test_unparseable_is_still_a_failure(self):
+        self.assertEqual((-1.0, -1.0, "failed"),
+                         parse_coordinates_detailed("I cannot locate that element"))
