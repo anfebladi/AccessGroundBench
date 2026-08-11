@@ -41,15 +41,16 @@ the `package-data` glob in `pyproject.toml` is `static/*` and does not recurse.
 Every colour, size, radius, shadow and duration is a CSS custom property defined
 once at the top of `style.css`, which is organised into layers (`FONTS → TOKENS →
 BASE → LAYOUT → COMPONENTS → UTILITIES → RESPONSIVE`) in place of a preprocessor.
-Dark mode is a token swap, not a second stylesheet. The full token reference,
-measured contrast ratios, the component state matrix and the responsive rules are
-in [`docs/ui-design-system.md`](ui-design-system.md).
+Light-only by design -- the OS dark-mode setting is not followed, so the page
+never lands on a heavier, bluer theme than the one it was designed against. The
+full token reference, measured contrast ratios, the component state matrix and
+the responsive rules are in [`docs/ui-design-system.md`](ui-design-system.md).
 
-Two typefaces are bundled (~162 KB) rather than loaded from a CDN, because the
-server binds localhost and must work offline: **Newsreader** for headings and
-lead prose and **IBM Plex Mono** for numerals, code and data labels, with the
-system sans for controls. Both are SIL OFL 1.1 and their licence ships beside
-them in `static/FONTS-LICENSE.txt`, which the licence requires.
+Two typefaces are bundled (~76 KB) rather than loaded from a CDN, because the
+server binds localhost and must work offline: **Inter** for everything but
+numerals, code and data labels, which stay on **IBM Plex Mono** for tabular
+figures. Both are SIL OFL 1.1 and their licence ships beside them in
+`static/FONTS-LICENSE.txt`, which the licence requires.
 
 ## Steps
 
