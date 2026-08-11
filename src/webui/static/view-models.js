@@ -238,7 +238,8 @@ async function runSmokeTest(model, triggerBtn) {
       </div>
 
       ${result.coord_space_mismatch ? raw(html`
-        <div class="note">
+        <div class="note note-warn">
+          <span class="note-label">Warning</span>
           <b>Coordinate-space mismatch.</b> This reply looks like
           <code>${result.coord_space_detected}</code> but the model is configured
           as <code>${result.coord_space_used}</code>. Switch this model's

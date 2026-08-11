@@ -17,14 +17,21 @@
 /* ==========================================================================
    1  FONTS
    Self-hosted, no CDN: the server binds localhost and must work offline.
-   Both families are SIL OFL 1.1 -- see static/FONTS-LICENSE.txt, which ships
-   alongside them because the licence requires it.
+   All three families are SIL OFL 1.1 -- see static/FONTS-LICENSE.txt, which
+   ships alongside them because the licence requires it.
    ========================================================================== */
 
 @font-face {
   font-family: "Inter";
   src: url("/inter.woff2") format("woff2-variations");
   font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Oswald";
+  src: url("/oswald.woff2") format("woff2-variations");
+  font-weight: 200 700;
   font-style: normal;
   font-display: swap;
 }
@@ -51,21 +58,26 @@
   color-scheme: light;
 
   /* -- Type ------------------------------------------------------------- */
-  /* Headings and body both run on Inter now -- one modern sans instead of
-     the previous serif-for-headings/sans-for-body split, to match the
-     reference sites this pass was built against (Coursera, EventAura-style
-     landing pages). --font-mono stays separate: numerals, code and data
-     labels still want tabular figures a UI sans doesn't give you. */
-  --font-display: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* --font-display carries the brand mark and every heading (h1-h3, card
+     titles, pane titles); --font-ui carries everything read at length --
+     body copy, labels, table cells, the .lead subtitle under a view's h2.
+     Oswald is condensed and meant for short strings held at a glance, not
+     for the McNemar tables or long target strings --font-ui still handles.
+     --font-mono stays separate again: numerals, code and data labels want
+     tabular figures neither of the other two gives you. */
+  --font-display: "Oswald", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* 1.25 scale on a 17px base (up from 16px -- "a little bigger" across the
-     board, not just headings). Line-height tightens as size grows; tracking
-     goes negative on display sizes and positive on small caps. */
-  --text-display: 2.25rem;   --lh-display: 1.15;  --ls-display: -0.02em;
-  --text-h2: 1.625rem;       --lh-h2: 1.25;       --ls-h2: -0.015em;
-  --text-h3: 1.1875rem;      --lh-h3: 1.35;       --ls-h3: -0.01em;
+     board, not just headings). Line-height tightens as size grows. Display
+     sizes carry a small *positive* tracking, not negative: Oswald is already
+     condensed and tight by design, so the negative tracking tuned for
+     Inter's h1-h3 would double up and read cramped. Small caps (--ls-xs)
+     stay on --font-ui and keep their positive tracking as before. */
+  --text-display: 2.5rem;    --lh-display: 1.15;  --ls-display: 0em;
+  --text-h2: 1.75rem;        --lh-h2: 1.25;       --ls-h2: 0em;
+  --text-h3: 1.25rem;        --lh-h3: 1.35;       --ls-h3: 0.005em;
   --text-lead: 1.125rem;     --lh-lead: 1.6;
   --text-body: 1.0625rem;    --lh-body: 1.6;
   --text-sm: 0.9375rem;      --lh-sm: 1.5;
@@ -85,8 +97,8 @@
   --page-gutter: var(--space-5);
 
   /* -- Radii ------------------------------------------------------------ */
-  --radius-sm: 8px;
-  --radius-md: 12px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
   --radius-full: 999px;
 
   /* -- Colour ----------------------------------------------------------- */
@@ -131,21 +143,23 @@
   --moss: #6497b1;       /*  3.2:1 on surface -- non-text fills only */
   --sage: #b3cde0;
 
-  --ok: #3d6b1f;        /*  5.1:1 on surface -- kept outside the brand ramp: status colour, not chrome */
-  --warn: #755509;      /*  5.5:1 -- darkened for the inset card ground */
-  --err: #a3301f;       /*  5.6:1 */
+  --ok: #3d6b1f;        /*  6.3:1 on surface -- kept outside the brand ramp: status colour, not chrome */
+  --warn: #755509;      /*  6.9:1 on surface -- a matched set with --ok/--err now that nothing tints its ground */
+  --err: #a3301f;       /*  7.0:1 */
   --danger: #a3301f;
   --danger-hover: #8a2819;
   --danger-active: #712014;
 
   /* -- Elevation -------------------------------------------------------- */
-  /* Layered and tied to interaction: rest -> hover -> overlay -> modal.
-     Borders still do the primary separating; shadow is secondary. */
-  --elev-1: 0 1px 2px rgba(1, 31, 75, 0.06), 0 1px 3px rgba(1, 31, 75, 0.08);
-  --elev-2: 0 2px 4px rgba(1, 31, 75, 0.06), 0 4px 8px rgba(1, 31, 75, 0.08);
-  --elev-3: 0 4px 8px rgba(1, 31, 75, 0.07), 0 12px 24px rgba(1, 31, 75, 0.12);
-  --elev-4: 0 8px 16px rgba(1, 31, 75, 0.10), 0 24px 48px rgba(1, 31, 75, 0.18);
-  --inner-hi: none;
+  /* Two weights, not four: shadow is now the primary separator for resting
+     surfaces on the plain white page (cards carry no border), so borders
+     stop doing double duty with it. --elev-card is that one soft shadow --
+     cards, panels, the pressed/hovered state on a button or segmented pill.
+     --elev-overlay is for anything that floats over scrolling content
+     regardless of whether it also keeps a border: the sticky app header, the
+     sticky run header, the drawer. */
+  --elev-card: 0 1px 3px rgba(1, 31, 75, 0.06), 0 8px 20px rgba(1, 31, 75, 0.08);
+  --elev-overlay: 0 8px 16px rgba(1, 31, 75, 0.10), 0 24px 48px rgba(1, 31, 75, 0.18);
 
   /* -- Motion ----------------------------------------------------------- */
   --dur-fast: 120ms;
@@ -235,10 +249,15 @@ a:hover { color: var(--primary-hover); }
   background: var(--surface);
   color: var(--text);
   border-bottom: 1px solid var(--border);
-  box-shadow: var(--elev-1);
+  /* --elev-card, not --elev-overlay -- the header keeps its border as the
+     primary separator (see the shadow-only-cards note below); the shadow is
+     only ever meant to be a faint lift, not modal-strength. */
+  box-shadow: var(--elev-card);
 }
 .app-header select {
-  background: var(--surface);
+  /* background-color, not the `background` shorthand -- the shorthand would
+     reset the chevron background-image the base `select` rule sets. */
+  background-color: var(--surface);
   color: var(--text);
   border-color: var(--border-strong);
 }
@@ -262,7 +281,10 @@ a:hover { color: var(--primary-hover); }
   font-family: var(--font-display);
   font-size: 1.1875rem;
   font-weight: 600;
-  letter-spacing: -0.015em;
+  /* Not the negative tracking Inter headings used to carry here -- Oswald is
+     condensed and tight by design, so a small positive value keeps the
+     wordmark from reading cramped instead of doubling up on tightness. */
+  letter-spacing: 0.01em;
   white-space: nowrap;
 }
 
@@ -299,7 +321,11 @@ main {
   margin-bottom: var(--space-3);
 }
 .view-head .lead {
-  font-family: var(--font-display);
+  /* --font-ui, not --font-display: this is a full sentence of prose under
+     the view's h2, not a heading -- Oswald's condensed form is meant for
+     short strings held at a glance, and would hurt legibility here the same
+     way it would on a table cell. */
+  font-family: var(--font-ui);
   font-size: var(--text-lead);
   line-height: var(--lh-lead);
   color: var(--text-2);
@@ -390,11 +416,12 @@ main {
 
 /* -- Card ---------------------------------------------------------------- */
 
+/* Shadow-only, no border: --surface and --bg are both plain white, so the
+   shadow alone carries the separation from the page. */
 .card {
   background: var(--surface);
-  border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  box-shadow: var(--elev-1), var(--inner-hi);
+  box-shadow: var(--elev-card);
   padding: var(--card-pad);
   margin-bottom: var(--space-4);
 }
@@ -415,10 +442,12 @@ main {
 }
 .card-head-actions { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
 
-/* The one card per view carrying that view's primary action. */
+/* The one card per view carrying that view's primary action. Its tinted
+   border is the one deliberate exception to the shadow-only rule above --
+   with borders gone everywhere else, a border is what marks this card as
+   the primary one; the shadow underneath is unchanged from a plain .card. */
 .card.card-primary {
-  border-color: color-mix(in srgb, var(--primary) 28%, var(--border));
-  box-shadow: var(--elev-2), var(--inner-hi);
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
 }
 
 .row { display: flex; gap: var(--space-5); align-items: flex-start; }
@@ -462,8 +491,28 @@ input, select, textarea {
   width: 100%;
   transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
 }
-select { cursor: pointer; }
-select[multiple] { min-height: 0; padding: var(--space-2); }
+/* appearance: none so a select matches the text input beside it instead of
+   rendering the OS's own control -- the chevron is redrawn as an inline SVG
+   (self-hosted, no icon font/CDN) so the affordance survives losing the
+   native one. The stroke colour is a literal hex, not var(--text-2): a data
+   URI is static text, so a custom property inside it would not resolve --
+   if the token's value ever moves, this baked-in copy has to move with it. */
+select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2303396c' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 8px;
+  padding-right: 36px;
+}
+/* A multi-select is a listbox, not a one-line dropdown -- no chevron affordance applies. */
+select[multiple] {
+  min-height: 0;
+  padding: var(--space-2);
+  appearance: auto;
+  background-image: none;
+}
 input:hover:not(:disabled), select:hover:not(:disabled) { border-color: var(--text-2); }
 input:focus-visible, select:focus-visible, textarea:focus-visible {
   outline: none;
@@ -474,6 +523,18 @@ input:disabled, select:disabled {
   background: var(--surface-2);
   color: var(--muted);
   cursor: not-allowed;
+}
+/* The `background` shorthand above resets every background sub-property to
+   its initial value, not just background-image -- repeat, position and size
+   all need restating here too, or the chevron tiles across the whole select
+   at its natural size instead of sitting once in the corner. Colour is
+   fainter than the enabled chevron, matching the disabled text's own
+   --muted (vs. --text-2 when enabled). */
+select:disabled {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23005b96' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 8px;
 }
 input::placeholder { color: var(--muted); }
 
@@ -615,21 +676,21 @@ button {
   white-space: nowrap;
   transition: background-color var(--dur-fast) var(--ease),
               border-color var(--dur-fast) var(--ease),
-              box-shadow var(--dur-mid) var(--ease),
-              transform var(--dur-fast) var(--ease);
+              box-shadow var(--dur-mid) var(--ease);
 }
 button:hover:not(:disabled) {
   background: var(--primary-hover);
   border-color: var(--primary-hover);
-  box-shadow: var(--elev-2);
+  box-shadow: var(--elev-card);
 }
+/* No press translate -- the bounce read as dated; the colour change on its
+   own is enough feedback for a click. */
 button:active:not(:disabled) {
   background: var(--primary-active);
   border-color: var(--primary-active);
-  transform: translateY(1px);
   box-shadow: none;
 }
-button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+button:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
 
 button.secondary {
   background: var(--surface);
@@ -696,7 +757,7 @@ button[aria-busy="true"]::before {
 .segmented button[aria-pressed="true"] {
   background: var(--primary);
   color: var(--primary-fg);
-  box-shadow: var(--elev-1);
+  box-shadow: var(--elev-card);
 }
 
 /* -- Tables -------------------------------------------------------------- */
@@ -925,33 +986,52 @@ code {
 }
 .empty-state-action { margin-top: var(--space-5); display: flex; gap: var(--space-2); justify-content: center; flex-wrap: wrap; }
 
+/* Neutral is the default; colour is earned. A tinted box read as alarming
+   for information that was never a warning -- emulator prerequisites, "add a
+   model first" -- so severity is now carried by a thin rule and a label
+   instead of a filled background, and grey (not amber) is what a caller gets
+   by default. `.note-info` and `.note-warn` opt into colour; the base `.note`
+   does not. Every variant shares the same geometry -- only the rule colour
+   and label change -- so severity reads at a glance without three different
+   box shapes competing on one page. */
 .note {
-  border: 1px solid color-mix(in srgb, var(--warn) 28%, var(--border));
-  border-left: 3px solid var(--warn);
-  background: color-mix(in srgb, var(--warn) 7%, transparent);
-  border-radius: var(--radius-sm);
-  padding: var(--space-4);
+  border-left: 3px solid var(--muted);
+  padding: 2px 0 2px var(--space-4);
   margin: var(--space-4) 0;
   font-size: var(--text-sm);
   max-width: var(--prose-max);
 }
-.note :first-child { margin-top: 0; }
-.note :last-child { margin-bottom: 0; }
+/* A real element, not a ::before -- generated content is not reliably
+   announced by screen readers, and callers occasionally want a specific
+   label (PREREQUISITES) instead of the generic NOTE/WARNING. */
+.note-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--ls-xs);
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--space-1);
+}
+.note > :last-child { margin-bottom: 0; }
 .note ul { margin: var(--space-2) 0 0; padding-left: 1.25rem; }
 .note li + li { margin-top: var(--space-1); }
-.note-info {
-  border-color: color-mix(in srgb, var(--primary) 25%, var(--border));
-  border-left-color: var(--primary);
-  background: var(--primary-soft);
-  max-width: none;
-}
+
+.note-info { border-left-color: var(--primary); max-width: none; }
+.note-info .note-label { color: var(--primary); }
+
+/* var(--warn) measures 6.86:1 on plain --surface -- between --ok (6.32:1)
+   and --err (7.0:1), a matched set once the tinted background it was
+   originally darkened for is gone. No lightening needed. */
+.note-warn { border-left-color: var(--warn); }
+.note-warn .note-label { color: var(--warn); }
 
 /* -- Run monitor --------------------------------------------------------- */
 
 /* No overflow:hidden here -- an overflow ancestor makes the sticky run header
    position against this card instead of the viewport, which pushes it out of
    place and lets it overlap the log below it. */
-.run-panel { padding: 0; box-shadow: var(--elev-3), var(--inner-hi); }
+.run-panel { padding: 0; box-shadow: var(--elev-overlay); }
 
 .run-header {
   position: sticky;
@@ -1097,6 +1177,10 @@ canvas { max-width: 100%; display: block; }
 /* Both panes cap to the same display height, so a denser capture reads as
    denser rather than merely larger. */
 .pane-canvas canvas { max-height: 62vh; width: auto; max-width: 100%; }
+/* .pane-canvas centers its content via place-items, which sizes a grid item
+   to its own content -- a width-less .skeleton-block would collapse to a
+   sliver instead of filling the cell the way normal block flow would. */
+.pane-canvas .skeleton-block { width: 100%; }
 
 .overlay-legend { display: flex; flex-wrap: wrap; gap: var(--space-4); font-size: var(--text-xs); color: var(--muted); }
 .legend-item { display: inline-flex; align-items: center; gap: 6px; }
@@ -1120,7 +1204,7 @@ canvas { max-width: 100%; display: block; }
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  box-shadow: var(--elev-4);
+  box-shadow: var(--elev-overlay);
   width: min(1000px, 100%);
   max-height: min(88vh, 100%);
   display: flex;
@@ -1306,12 +1390,13 @@ details.data-table > summary:hover { color: var(--primary); }
     overflow: hidden;
     clip: rect(0 0 0 0);
   }
+  /* A row-as-card on mobile, so it follows the same shadow-only rule as
+     .card rather than keeping the border .card no longer carries. */
   .table-stack tbody tr {
     display: block;
     background: var(--surface);
-    border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    box-shadow: var(--elev-1), var(--inner-hi);
+    box-shadow: var(--elev-card);
     padding: var(--space-4);
     margin-bottom: var(--space-3);
   }

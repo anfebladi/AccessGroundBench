@@ -40,6 +40,7 @@ export function syncModelOptions() {
     document.getElementById("eval-start").disabled = true;
     document.getElementById("eval-preflight").innerHTML = html`
       <div class="note" style="margin-top: var(--space-4);">
+        <span class="note-label">Note</span>
         Add a model on the <a href="#models">Models</a> step first, then come back here.
       </div>`;
     return;
@@ -92,7 +93,8 @@ export async function refreshPreflight() {
       <span class="field-hint">Writes to <code>${preflight.results_csv}</code></span>
     </div>
     ${preflight.lock_present ? raw(html`
-      <div class="note">
+      <div class="note note-warn">
+        <span class="note-label">Warning</span>
         <b>This results file is locked.</b>
         ${preflight.lock_holder ? raw(html`Held by <code>${preflight.lock_holder}</code>.`) : ""}
         If no run is actually active -- a crashed process leaves its lock behind --

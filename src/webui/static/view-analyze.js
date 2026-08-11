@@ -102,6 +102,7 @@ function writtenTo(dir) {
 function caveats() {
   return `
     <div class="note note-info">
+      <span class="note-label">Note</span>
       <b>Pooled permutation is the primary test; per-model McNemar is secondary.</b>
       Rows flagged ceiling or floor are underpowered, and an underpowered null is
       not evidence that a model is resilient. Reachability carries a survivorship
