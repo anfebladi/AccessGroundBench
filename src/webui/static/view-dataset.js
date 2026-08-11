@@ -33,6 +33,16 @@ const state = {
   showMissing: true,
 };
 
+// Last-loaded comparison data, kept so the overlay toggles can redraw the
+// two canvases in place -- no re-fetch, no rebuilding the panes -- instead
+// of running the full fetch-and-rebuild path a screen/profile change needs.
+let lastComparison = null;
+
+// Bumped on every renderBrowser() call so a slower, older fetch can tell it
+// has been superseded by a newer screen/profile pick and bail out instead of
+// overwriting the panel with stale data that arrived late.
+let renderToken = 0;
+
 export function selectedScreen() {
   return state.selected;
 }
@@ -116,8 +126,13 @@ function renderScreenList(dataset) {
   `).join("");
   list.querySelectorAll("li[data-screen]").forEach((li) => {
     li.addEventListener("click", () => {
+      if (li.dataset.screen === state.selected) return;
+      // Move the .selected class directly rather than rebuilding the whole
+      // list -- picking a screen shouldn't tear down and recreate every
+      // other row's DOM node and click listener.
+      list.querySelector("li.selected")?.classList.remove("selected");
+      li.classList.add("selected");
       state.selected = li.dataset.screen;
-      renderScreenList(dataset);
       renderBrowser(dataset);
     });
   });
@@ -132,20 +147,27 @@ export function initDatasetView(getDataset) {
 
 // ---------- Comparison ----------
 
+// Real checkboxes, not segmented-tab buttons: unlike the profile picker
+// below (a single-select group -- exactly one profile is ever active),
+// these two are independent on/off overlays that can be any combination of
+// checked. Styling them like the exclusive-choice segmented control implied
+// "pick one of these," which is the wrong affordance for what they do.
 function renderOverlayToggles(dataset) {
   const host = document.getElementById("compare-overlay-toggles");
   host.innerHTML = html`
-    <div class="segmented">
-      <button type="button" data-toggle="showBoxes" aria-pressed="${String(state.showBoxes)}">Target boxes</button>
-      <button type="button" data-toggle="showMissing" aria-pressed="${String(state.showMissing)}">Missing targets</button>
-    </div>
+    <label class="chip-check">
+      <input type="checkbox" data-toggle="showBoxes" ${raw(state.showBoxes ? "checked" : "")} />
+      Target boxes
+    </label>
+    <label class="chip-check">
+      <input type="checkbox" data-toggle="showMissing" ${raw(state.showMissing ? "checked" : "")} />
+      Missing targets
+    </label>
   `;
-  host.querySelectorAll("button[data-toggle]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const key = btn.dataset.toggle;
-      state[key] = !state[key];
-      renderOverlayToggles(dataset);
-      renderBrowser(dataset);
+  host.querySelectorAll("input[data-toggle]").forEach((box) => {
+    box.addEventListener("change", () => {
+      state[box.dataset.toggle] = box.checked;
+      redrawOverlays();
     });
   });
 }
@@ -153,8 +175,11 @@ function renderOverlayToggles(dataset) {
 async function renderBrowser(dataset) {
   const container = document.getElementById("screen-browser");
   renderOverlayToggles(dataset);
+  const token = ++renderToken;
 
   if (!dataset || !state.selected) {
+    lastComparison = null;
+    container.classList.remove("is-loading");
     container.innerHTML = emptyState({
       title: "No screen selected",
       body: "Pick a screen from the list to compare its baseline capture against an accessibility profile.",
@@ -163,7 +188,17 @@ async function renderBrowser(dataset) {
   }
 
   const screen = state.selected;
-  container.innerHTML = stateLoading("Loading captures...");
+
+  // Switching screen or profile keeps the current screenshots on screen,
+  // just dimmed, while the next ones load -- blanking the whole panel to a
+  // bare "Loading..." line on every click is what read as a glitch. The
+  // first-ever load has nothing to keep visible, so it still shows the
+  // loading state outright.
+  if (container.querySelector(".compare")) {
+    container.classList.add("is-loading");
+  } else {
+    container.innerHTML = stateLoading("Loading captures...");
+  }
 
   let targets = [];
   let profileLabels = [];
@@ -172,9 +207,13 @@ async function renderBrowser(dataset) {
       api(`/api/datasets/${enc(dataset)}/targets/${enc(screen)}`),
       api(`/api/datasets/${enc(dataset)}/labels/${enc(screen)}/${enc(state.profile)}`).catch(() => []),
     ]);
+    if (token !== renderToken) return; // a newer pick has already superseded this fetch
     targets = targetsRes.targets || [];
     profileLabels = labelsRes || [];
   } catch (e) {
+    if (token !== renderToken) return;
+    lastComparison = null;
+    container.classList.remove("is-loading");
     container.innerHTML = stateError(e.message);
     return;
   }
@@ -195,6 +234,7 @@ async function renderBrowser(dataset) {
     : `${present.length} of ${targets.length} baseline targets still present`
       + (reachability === null ? "" : ` (${pct(reachability)} reachable)`);
 
+  container.classList.remove("is-loading");
   container.innerHTML = html`
     <div class="segmented" id="profile-picker" role="group" aria-label="Accessibility profile">
       ${PROFILES.map(([id, label]) => raw(html`
@@ -246,43 +286,82 @@ async function renderBrowser(dataset) {
     });
   });
 
+  lastComparison = {
+    dataset, screen, profile: state.profile,
+    present, missing, profileLabels, isBaselineBoth,
+  };
+  redrawOverlays();
+}
+
+/**
+ * Redraw the two canvases from the last-fetched comparison data, honouring
+ * the current showBoxes/showMissing toggle state. No network call and no
+ * touching the surrounding panes -- this is what the overlay toggle buttons
+ * call, so ticking "Target boxes" on or off is an instant local redraw, not
+ * a full reload of the comparison panel.
+ *
+ * The screenshot images are cached on `lastComparison` after their first
+ * load and redrawn from that cache here. `imageUrl()` appends a cache-busting
+ * timestamp (so a re-collected capture is never served stale), which also
+ * means a naive re-fetch would hit the network for the same pixels on every
+ * toggle click -- a visible flash for zero new information.
+ */
+function redrawOverlays() {
+  if (!lastComparison) return;
+  const c = lastComparison;
+  const canvasBaseline = document.getElementById("canvas-baseline");
+  const canvasProfile = document.getElementById("canvas-profile");
+  if (!canvasBaseline || !canvasProfile) return;
+
   const accent = cssVar("--viz-blue", "#2a78d6");
   const err = cssVar("--err", "#b3221a");
 
-  drawScreenshot(
-    document.getElementById("canvas-baseline"),
-    imageUrl(dataset, screen, "baseline"),
-    (ctx, img) => {
-      document.getElementById("dims-baseline").textContent = `${img.width} x ${img.height}`;
-      ctx.lineWidth = strokeWidthFor(img);
-      if (state.showBoxes) {
-        ctx.strokeStyle = accent;
-        for (const t of present) strokeBox(ctx, t.baseline_box);
-      }
-      if (state.showMissing && !isBaselineBoth) {
-        ctx.strokeStyle = err;
-        for (const t of missing) strokeBox(ctx, t.baseline_box);
-      }
-    }
-  );
-
-  drawScreenshot(
-    document.getElementById("canvas-profile"),
-    imageUrl(dataset, screen, state.profile),
-    (ctx, img) => {
-      // Dimensions differ from baseline whenever density changes -- surfacing
-      // that is the point, since label coordinates are not comparable across
-      // profiles without accounting for it.
-      document.getElementById("dims-profile").textContent = `${img.width} x ${img.height}`;
-      if (!state.showBoxes) return;
-      ctx.lineWidth = strokeWidthFor(img);
+  const decorateBaseline = (ctx, img) => {
+    document.getElementById("dims-baseline").textContent = `${img.width} x ${img.height}`;
+    ctx.lineWidth = strokeWidthFor(img);
+    if (state.showBoxes) {
       ctx.strokeStyle = accent;
-      const wanted = new Set(present.map((t) => t.text));
-      for (const rec of profileLabels) {
-        if (rec.box && wanted.has((rec.text || "").trim())) strokeBox(ctx, rec.box);
-      }
+      for (const t of c.present) strokeBox(ctx, t.baseline_box);
     }
-  );
+    if (state.showMissing && !c.isBaselineBoth) {
+      ctx.strokeStyle = err;
+      for (const t of c.missing) strokeBox(ctx, t.baseline_box);
+    }
+  };
+
+  const decorateProfile = (ctx, img) => {
+    // Dimensions differ from baseline whenever density changes -- surfacing
+    // that is the point, since label coordinates are not comparable across
+    // profiles without accounting for it.
+    document.getElementById("dims-profile").textContent = `${img.width} x ${img.height}`;
+    if (!state.showBoxes) return;
+    ctx.lineWidth = strokeWidthFor(img);
+    ctx.strokeStyle = accent;
+    const wanted = new Set(c.present.map((t) => t.text));
+    for (const rec of c.profileLabels) {
+      if (rec.box && wanted.has((rec.text || "").trim())) strokeBox(ctx, rec.box);
+    }
+  };
+
+  if (c.imgBaseline?.complete) {
+    redrawCached(canvasBaseline, c.imgBaseline, decorateBaseline);
+  } else {
+    c.imgBaseline = drawScreenshot(canvasBaseline, imageUrl(c.dataset, c.screen, "baseline"), decorateBaseline);
+  }
+
+  if (c.imgProfile?.complete) {
+    redrawCached(canvasProfile, c.imgProfile, decorateProfile);
+  } else {
+    c.imgProfile = drawScreenshot(canvasProfile, imageUrl(c.dataset, c.screen, c.profile), decorateProfile);
+  }
+}
+
+function redrawCached(canvas, img, decorate) {
+  const ctx = canvas.getContext("2d");
+  canvas.width = img.width;
+  canvas.height = img.height;
+  ctx.drawImage(img, 0, 0);
+  decorate(ctx, img);
 }
 
 function strokeBox(ctx, box) {

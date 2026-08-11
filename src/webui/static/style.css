@@ -2,8 +2,9 @@
  *
  * Hand-written, no build step, no framework -- the UI ships as package data
  * inside an optional pip extra, so a Node toolchain would be a real cost for
- * every install. Plain CSS custom properties throughout; dark mode is a token
- * swap, not a second stylesheet.
+ * every install. Plain CSS custom properties throughout. Light-only by
+ * design: see the FONTS/dark-mode note further down for why the OS dark
+ * setting is deliberately not followed.
  *
  * Layers, in order:
  *   1 FONTS      2 TOKENS      3 BASE        4 LAYOUT
@@ -21,8 +22,8 @@
    ========================================================================== */
 
 @font-face {
-  font-family: "Newsreader";
-  src: url("/newsreader.woff2") format("woff2-variations");
+  font-family: "Inter";
+  src: url("/inter.woff2") format("woff2-variations");
   font-weight: 400 700;
   font-style: normal;
   font-display: swap;
@@ -47,24 +48,28 @@
    ========================================================================== */
 
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 
   /* -- Type ------------------------------------------------------------- */
-  /* Three roles, each with a job. One face for everything is what made the
-     previous build read as a template. */
-  --font-display: "Newsreader", "Iowan Old Style", Georgia, serif;
-  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* Headings and body both run on Inter now -- one modern sans instead of
+     the previous serif-for-headings/sans-for-body split, to match the
+     reference sites this pass was built against (Coursera, EventAura-style
+     landing pages). --font-mono stays separate: numerals, code and data
+     labels still want tabular figures a UI sans doesn't give you. */
+  --font-display: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* 1.25 scale on a 16px base. Line-height tightens as size grows; tracking
+  /* 1.25 scale on a 17px base (up from 16px -- "a little bigger" across the
+     board, not just headings). Line-height tightens as size grows; tracking
      goes negative on display sizes and positive on small caps. */
-  --text-display: 2rem;      --lh-display: 1.15;  --ls-display: -0.02em;
-  --text-h2: 1.5rem;         --lh-h2: 1.25;       --ls-h2: -0.015em;
-  --text-h3: 1.125rem;       --lh-h3: 1.35;       --ls-h3: -0.01em;
-  --text-lead: 1.0625rem;    --lh-lead: 1.6;
-  --text-body: 0.9375rem;    --lh-body: 1.6;
-  --text-sm: 0.875rem;       --lh-sm: 1.5;
-  --text-xs: 0.75rem;        --lh-xs: 1.4;        --ls-xs: 0.04em;
+  --text-display: 2.25rem;   --lh-display: 1.15;  --ls-display: -0.02em;
+  --text-h2: 1.625rem;       --lh-h2: 1.25;       --ls-h2: -0.015em;
+  --text-h3: 1.1875rem;      --lh-h3: 1.35;       --ls-h3: -0.01em;
+  --text-lead: 1.125rem;     --lh-lead: 1.6;
+  --text-body: 1.0625rem;    --lh-body: 1.6;
+  --text-sm: 0.9375rem;      --lh-sm: 1.5;
+  --text-xs: 0.8125rem;      --lh-xs: 1.4;        --ls-xs: 0.04em;
 
   /* -- Space ------------------------------------------------------------ */
   --space-1: 4px;
@@ -85,47 +90,48 @@
   --radius-full: 999px;
 
   /* -- Colour ----------------------------------------------------------- */
-  /* Bone paper and deep forest green: an academic, printed register rather
-     than the default product blue. Neutrals are warm (yellow-tinted) so they
-     sit under the greens instead of fighting them.
-     Every text pair below is contrast-measured against --surface and clears
-     WCAG AA; the measured ratio is on each line. --moss is the only value
-     below 4.5:1 and is used exclusively as a non-text fill (bars, dots,
-     rules), where the 3:1 UI-component threshold applies. */
-  /* The desk is warm bone; paper sits on top of it. The source design insets
-     its panels instead, but that only works there because heavy rules carry
-     the structure -- transplanted here it collapsed page, card, table band and
-     input into four near-identical greys, and the form fields stopped reading
-     as fields at all. Cards lift, and the surface token stays light because
-     `input, select, textarea` share it. */
-  --bg: #e5e1d1;        /* the desk -- deep enough that paper reads as paper */
-  --surface: #fbfaf4;   /* paper -- cards, panels, and every input */
-  --surface-2: #f1eee2; /* quiet bands: table heads, hovers */
-  --surface-3: #e4e0d0;
-  --border: #d9d5c3;
-  --border-strong: #bfbaa4;
+  /* Six-stop navy-to-white blue ramp: #011f4b, #03396c, #005b96, #6497b1,
+     #b3cde0, #ffffff. Blue is an ACCENT, not a surface colour -- the page,
+     cards and header are white/near-white, the same way the ramp's own
+     #ffffff carries every large area. Saturated blue is reserved for things
+     that ask to be touched: buttons, the active step, a link. Reference:
+     Coursera and similar SaaS marketing sites keep nav bars and page canvas
+     white and confine blue to CTAs and small badges -- a page that tints
+     every surface blue reads as heavier and less legible, not more branded.
+     One rule still drives every text pairing below: a light surface always
+     carries dark-navy text, a dark surface always carries white or
+     pale-blue text -- never the reverse. Every pair is contrast-checked
+     (WCAG AA, 4.5:1 body text, 3:1 large text/non-text UI); --moss is the
+     one value that only ever fills non-text shapes (bars, dots). */
+  --bg: #ffffff;         /* the page canvas -- plain white, not tinted */
+  --surface: #ffffff;    /* paper -- cards, panels, and every input. 16.5:1 with --text */
+  --surface-2: color-mix(in srgb, #b3cde0 12%, #ffffff); /* quiet bands: table heads, hovers -- a hint, not a wash */
+  --surface-3: color-mix(in srgb, #b3cde0 22%, #ffffff);
+  --border: color-mix(in srgb, #6497b1 35%, #ffffff); /* hairline, not a blue rule */
+  --border-strong: color-mix(in srgb, #6497b1 70%, #ffffff);
 
-  --text: #16201a;      /* 13.4:1 on surface */
-  --text-2: #3b4a3a;    /*  7.5:1 */
-  --muted: #576351;     /*  5.1:1 */
+  --text: #011f4b;      /* 16.5:1 on surface -- reads as near-black at this darkness */
+  --text-2: #03396c;    /* 11.6:1 */
+  --muted: #005b96;     /*  7.1:1 */
 
-  --primary: #213921;   /* 10.0:1 -- forest; the design's one interactive fill */
-  --primary-hover: #2c3a2c;
-  --primary-active: #16201a;
-  --primary-fg: #ffffff; /* 12.6:1 on --primary */
-  --primary-soft: color-mix(in srgb, #6d8d24 16%, transparent);
+  --primary: #005b96;   /*  7.1:1 -- the one saturated fill: buttons, links, active state */
+  --primary-hover: #03396c;
+  --primary-active: #011f4b;
+  --primary-fg: #ffffff; /* 7.1:1 on --primary */
+  --primary-soft: color-mix(in srgb, #005b96 10%, transparent); /* active-state tint, not a block */
 
-  /* Accents. --forest is the filled chrome (header, active rail, active
-     segment); --chartreuse is the high-visibility marker that sits on it;
-     --moss is the mid-tone fill for data bars and bullets. */
-  --forest: #213921;
-  --forest-2: #2c3a2c;
-  --forest-deep: #16201a; /* darkest block -- pane headers over device captures */
-  --chartreuse: #cfd82d; /* 8.1:1 on --forest, 10.8:1 as text-on-chartreuse */
-  --moss: #6d8d24;      /*  3.5:1 -- non-text fills only */
-  --sage: #c2cfb4;
+  /* --forest/--forest-deep stay a fixed dark navy for the few small dark
+     overlays that need it regardless of theme (pane captions over device
+     screenshots) -- not for header or rail chrome, which now read as
+     --surface with a hairline border, like the rest of the page. */
+  --forest: #011f4b;
+  --forest-2: #03396c;
+  --forest-deep: #011f4b;
+  --chartreuse: #b3cde0; /* 10.0:1 on --forest -- accent text on the dark caption bar only */
+  --moss: #6497b1;       /*  3.2:1 on surface -- non-text fills only */
+  --sage: #b3cde0;
 
-  --ok: #3d6b1f;        /*  5.1:1 on surface */
+  --ok: #3d6b1f;        /*  5.1:1 on surface -- kept outside the brand ramp: status colour, not chrome */
   --warn: #755509;      /*  5.5:1 -- darkened for the inset card ground */
   --err: #a3301f;       /*  5.6:1 */
   --danger: #a3301f;
@@ -135,10 +141,10 @@
   /* -- Elevation -------------------------------------------------------- */
   /* Layered and tied to interaction: rest -> hover -> overlay -> modal.
      Borders still do the primary separating; shadow is secondary. */
-  --elev-1: 0 1px 2px rgba(20, 18, 12, 0.04), 0 1px 3px rgba(20, 18, 12, 0.06);
-  --elev-2: 0 2px 4px rgba(20, 18, 12, 0.04), 0 4px 8px rgba(20, 18, 12, 0.06);
-  --elev-3: 0 4px 8px rgba(20, 18, 12, 0.05), 0 12px 24px rgba(20, 18, 12, 0.10);
-  --elev-4: 0 8px 16px rgba(20, 18, 12, 0.08), 0 24px 48px rgba(20, 18, 12, 0.16);
+  --elev-1: 0 1px 2px rgba(1, 31, 75, 0.06), 0 1px 3px rgba(1, 31, 75, 0.08);
+  --elev-2: 0 2px 4px rgba(1, 31, 75, 0.06), 0 4px 8px rgba(1, 31, 75, 0.08);
+  --elev-3: 0 4px 8px rgba(1, 31, 75, 0.07), 0 12px 24px rgba(1, 31, 75, 0.12);
+  --elev-4: 0 8px 16px rgba(1, 31, 75, 0.10), 0 24px 48px rgba(1, 31, 75, 0.18);
   --inner-hi: none;
 
   /* -- Motion ----------------------------------------------------------- */
@@ -167,59 +173,13 @@
   --viz-neutral: #898781;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* The source design is light-only, so the dark arm is derived rather than
-       copied: the same forest/moss/chartreuse family, with the neutrals rolled
-       to a green-black instead of the light bone. Ratios measured on
-       --surface; every pair clears AA. */
-    --bg: #0f1310;
-    --surface: #16201a;
-    --surface-2: #1c2a1e;
-    --surface-3: #253524;
-    --border: #2c3a2c;
-    --border-strong: #3b4a3a;
-
-    --text: #eceadd;    /* 13.8:1 on surface */
-    --text-2: #c2cfb4;  /* 10.3:1 */
-    --muted: #8d9a86;   /*  5.7:1 */
-
-    --primary: #a8c33f; /*  8.4:1 -- moss lifts to a leaf green on dark */
-    --primary-hover: #b8d152;
-    --primary-active: #c6dd66;
-    --primary-fg: #16201a;
-    --primary-soft: color-mix(in srgb, #a8c33f 16%, transparent);
-
-    /* Chrome accents. --forest stays the filled block; on a dark ground it
-       reads as a raised panel rather than a dark one. */
-    --forest: #213921;
-    --forest-2: #2c3a2c;
-    --forest-deep: #0f1310; /* on dark the deep block goes below the surface */
-    --chartreuse: #cfd82d; /* 10.8:1 on surface */
-    --moss: #7ea62b;       /*  5.9:1 -- non-text fills */
-    --sage: #8d9a86;
-
-    --ok: #7cc44a;      /*  7.9:1 */
-    --warn: #d9a83c;    /*  7.7:1 */
-    --err: #ff7a6b;     /*  6.6:1 */
-    --danger: #ff7a6b;
-    --danger-hover: #ff958a;
-    --danger-active: #ffaea6;
-
-    /* Higher alpha plus a top inner highlight: shadow alone does not read on
-       a dark surface, so the highlight carries the edge instead. */
-    --elev-1: 0 1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
-    --elev-2: 0 2px 4px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.4);
-    --elev-3: 0 4px 8px rgba(0, 0, 0, 0.55), 0 12px 24px rgba(0, 0, 0, 0.5);
-    --elev-4: 0 8px 16px rgba(0, 0, 0, 0.6), 0 24px 48px rgba(0, 0, 0, 0.55);
-    --inner-hi: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-
-    --viz-blue: #3987e5;
-    --viz-orange: #d95926;
-    --viz-red: #e66767;
-    --viz-neutral: #898781;
-  }
-}
+/* No dark-mode branch: every reference for this design (Coursera, EventAura,
+   the Greenfly-style card layout) is a white, light-only page with blue
+   confined to nav/buttons/accents. Following the OS into a dark theme would
+   reintroduce exactly the wall-to-wall blue this palette pass removed, on a
+   schedule the user doesn't control. --color-scheme: light below stops
+   native form controls (scrollbars, checkboxes) from rendering dark on
+   their own even when the OS prefers it. */
 
 /* ==========================================================================
    3  BASE
@@ -268,22 +228,19 @@ a:hover { color: var(--primary-hover); }
   gap: var(--space-5);
   min-height: var(--header-height);
   padding: var(--space-3) var(--page-gutter);
-  /* The masthead is the one solid block of colour in the layout: deep forest
-     with a chartreuse rule under it, so the page reads as headed rather than
-     as a toolbar floating over content. */
-  background: var(--forest);
-  color: var(--bg);
-  border-bottom: 3px solid var(--chartreuse);
-  box-shadow: var(--elev-2);
-}
-.app-header label,
-.app-header .meta {
-  color: var(--sage);
+  /* White chrome, same as the rest of the page -- the header is set apart by
+     a hairline border and a soft shadow, not by a block of colour. Blue is
+     saved for the logo chip and the controls, the way a marketing nav bar
+     keeps its background neutral and its buttons blue. */
+  background: var(--surface);
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--elev-1);
 }
 .app-header select {
   background: var(--surface);
   color: var(--text);
-  border-color: var(--forest-2);
+  border-color: var(--border-strong);
 }
 
 .brand { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
@@ -293,8 +250,8 @@ a:hover { color: var(--primary-hover); }
   width: 32px;
   height: 32px;
   border-radius: var(--radius-sm);
-  background: var(--chartreuse);
-  color: var(--forest);
+  background: var(--primary);
+  color: var(--primary-fg);
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   font-weight: 600;
@@ -389,14 +346,14 @@ main {
   transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
 }
 #rail a:hover { background: var(--surface-2); color: var(--text); }
-/* The current step is a filled forest block, not a tint -- at a glance the rail
-   should answer "which stage am I in" from across the desk. */
+/* The current step is a soft blue tint with a solid blue number badge, not a
+   dark block -- at a glance the rail should answer "which stage am I in"
+   without turning the whole row into a wall of colour. */
 #rail a[aria-current="page"] {
-  background: var(--forest);
-  color: var(--bg);
-  box-shadow: var(--elev-1);
+  background: var(--primary-soft);
+  color: var(--primary);
 }
-#rail a[aria-current="page"] .rail-label { color: var(--bg); }
+#rail a[aria-current="page"] .rail-label { color: var(--primary); }
 
 .rail-num {
   grid-row: 1 / span 2;
@@ -411,8 +368,8 @@ main {
   color: var(--muted);
 }
 #rail a[aria-current="page"] .rail-num {
-  background: transparent;
-  color: var(--chartreuse);
+  background: var(--primary);
+  color: var(--primary-fg);
 }
 .rail-label { font-weight: 600; font-size: var(--text-body); }
 .rail-chip {
@@ -559,6 +516,45 @@ input[aria-invalid="true"]:focus-visible, select[aria-invalid="true"]:focus-visi
 .check:hover input[type="checkbox"]:not(:disabled) { outline: 2px solid var(--border-strong); outline-offset: 1px; }
 .check-body { display: flex; flex-direction: column; gap: 2px; }
 
+/* Compact checkbox pill for independent view-only toggles that sit inline
+   next to a heading (e.g. the dataset screen comparison's overlay switches).
+   Deliberately not `.segmented`: that component's filled-tab look is for an
+   exclusive single choice, and reusing it here for two independent on/off
+   switches implied they were mutually exclusive when they are not. */
+.chip-check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  padding: 6px 14px 6px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.chip-check:hover { border-color: var(--primary); color: var(--text); }
+.chip-check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+/* Checked state tints the whole pill, not just the box, so "on" reads at a
+   glance without having to look for a tick mark. */
+.chip-check:has(input:checked) {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
 details.advanced {
   margin-top: var(--space-5);
   border-top: 1px solid var(--border);
@@ -698,8 +694,8 @@ button[aria-busy="true"]::before {
   box-shadow: none;
 }
 .segmented button[aria-pressed="true"] {
-  background: var(--forest);
-  color: var(--chartreuse);
+  background: var(--primary);
+  color: var(--primary-fg);
   box-shadow: var(--elev-1);
 }
 
@@ -1041,6 +1037,13 @@ code {
 
 /* -- Screenshots --------------------------------------------------------- */
 
+/* Switching screen or profile dims the current comparison instead of
+   blanking it while the next one loads -- see renderBrowser() in
+   view-dataset.js. The transition is what makes that read as an update
+   rather than a flash-to-empty-then-pop-back. */
+#screen-browser { transition: opacity var(--dur-mid) var(--ease); }
+#screen-browser.is-loading { opacity: 0.45; pointer-events: none; }
+
 canvas { max-width: 100%; display: block; }
 
 .image-frame {
@@ -1070,7 +1073,7 @@ canvas { max-width: 100%; display: block; }
   gap: var(--space-2);
   flex-wrap: wrap;
   background: var(--forest-deep);
-  color: var(--bg);
+  color: #ffffff;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 }

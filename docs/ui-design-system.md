@@ -13,20 +13,21 @@ The UI ships as flat files in `static/`, covered by `pyproject.toml`'s
 
 ## 1. Typography
 
-Self-hosted, three roles. One face for everything was the single biggest reason the
-previous build read as a stock admin template.
+Self-hosted, two roles. Headings and body both run on Inter -- one modern sans instead of
+a serif-for-headings/sans-for-body split, to match the reference sites this pass was built
+against (Coursera, EventAura-style landing pages). Numerals and code stay on a mono face:
+a UI sans doesn't give you tabular figures.
 
 | Role | Token | Family | Used for |
 |---|---|---|---|
-| Display | `--font-display` | Newsreader (variable 400–700) | Headings, lead paragraphs, pane titles |
-| UI | `--font-ui` | system-ui stack | Body, controls, chart row labels |
+| Display / UI | `--font-display`, `--font-ui` | Inter (variable 400–700) | Headings, lead paragraphs, pane titles, body, controls |
 | Mono | `--font-mono` | IBM Plex Mono 400/500 | All numerals, code, table heads, status labels |
 
-Bundled files (~162 KB total), both families SIL OFL 1.1 — the licence ships beside them
+Bundled files (~76 KB total), both families SIL OFL 1.1 — the licence ships beside them
 in `static/FONTS-LICENSE.txt` because the licence requires it:
 
 ```
-newsreader.woff2      132,000 B   variable 400-700, latin
+inter.woff2            48,256 B   variable 400-700, latin
 plexmono-400.woff2     14,708 B
 plexmono-500.woff2     14,888 B
 ```
@@ -35,18 +36,19 @@ plexmono-500.woff2     14,888 B
 
 ### Scale
 
-1.25 ratio on a 16px base. Line-height tightens as size grows; tracking goes negative on
-display sizes and positive on small caps.
+1.25 ratio on a 17px base (up from 16px — sized up a step across every role, not just
+headings). Line-height tightens as size grows; tracking goes negative on display sizes and
+positive on small caps.
 
 | Token | Size | Line-height | Tracking | Use |
 |---|---:|---:|---:|---|
-| `--text-display` | 2rem | 1.15 | −0.02em | View title |
-| `--text-h2` | 1.5rem | 1.25 | −0.015em | Section heading |
-| `--text-h3` | 1.125rem | 1.35 | −0.01em | Card heading |
-| `--text-lead` | 1.0625rem | 1.6 | — | Lead paragraph |
-| `--text-body` | 0.9375rem | 1.6 | — | Body, controls |
-| `--text-sm` | 0.875rem | 1.5 | — | Table cells, hints |
-| `--text-xs` | 0.75rem | 1.4 | +0.04em | Labels, overlines |
+| `--text-display` | 2.25rem | 1.15 | −0.02em | View title |
+| `--text-h2` | 1.625rem | 1.25 | −0.015em | Section heading |
+| `--text-h3` | 1.1875rem | 1.35 | −0.01em | Card heading |
+| `--text-lead` | 1.125rem | 1.6 | — | Lead paragraph |
+| `--text-body` | 1.0625rem | 1.6 | — | Body, controls |
+| `--text-sm` | 0.9375rem | 1.5 | — | Table cells, hints |
+| `--text-xs` | 0.8125rem | 1.4 | +0.04em | Labels, overlines |
 
 **Before:** ad-hoc `em`/`rem` values scattered through the file, no line-height or
 letter-spacing system, `-apple-system` for every role.
@@ -57,58 +59,67 @@ Every numeral carries `font-variant-numeric: tabular-nums` so columns align.
 
 ## 2. Colour
 
-Warm bone neutrals and a deep forest primary — an academic, printed register rather than
-the default product blue. The neutrals are yellow-tinted so they sit *under* the greens
-instead of fighting them.
+A six-stop navy-to-white blue ramp (`#011f4b · #03396c · #005b96 · #6497b1 · #b3cde0 ·
+#ffffff`). Blue is an **accent, not a surface colour** — the page canvas, cards and header
+are white/near-white, and saturated blue is reserved for things that ask to be touched:
+buttons, the active step, a link, the logo chip. A page that tints every surface blue reads
+as heavier and less legible, not more branded — see the reference sites this pass was
+built against.
 
-| Role | Light | Dark |
+Light-only; there is no dark variant (see [§0 below](#0-why-no-dark-mode)).
+
+| Role | Value |
+|---|---|
+| `--bg` | `#ffffff` |
+| `--surface` | `#ffffff` |
+| `--surface-2` | `color-mix(in srgb, #b3cde0 12%, #ffffff)` |
+| `--surface-3` | `color-mix(in srgb, #b3cde0 22%, #ffffff)` |
+| `--border` | `color-mix(in srgb, #6497b1 35%, #ffffff)` |
+| `--border-strong` | `color-mix(in srgb, #6497b1 70%, #ffffff)` |
+| `--text` | `#011f4b` |
+| `--text-2` | `#03396c` |
+| `--muted` | `#005b96` |
+| `--primary` | `#005b96` |
+| `--ok` / `--warn` / `--err` | `#3d6b1f` / `#755509` / `#a3301f` (kept outside the brand ramp — status colour, not chrome) |
+
+**Accents**, used sparingly and only for the few things that stay dark regardless of the
+rest of the page (pane captions over device screenshots):
+
+| Token | Value | Used for |
 |---|---|---|
-| `--bg` | `#e5e1d1` | `#0f1310` |
-| `--surface` | `#fbfaf4` | `#16201a` |
-| `--surface-2` | `#f1eee2` | `#1c2a1e` |
-| `--surface-3` | `#e4e0d0` | `#253524` |
-| `--border` | `#d9d5c3` | `#2c3a2c` |
-| `--border-strong` | `#bfbaa4` | `#3b4a3a` |
-| `--text` | `#16201a` | `#eceadd` |
-| `--text-2` | `#3b4a3a` | `#c2cfb4` |
-| `--muted` | `#576351` | `#8d9a86` |
-| `--primary` | `#213921` | `#a8c33f` |
-| `--ok` / `--warn` / `--err` | `#3d6b1f` / `#755509` / `#a3301f` | `#7cc44a` / `#d9a83c` / `#ff7a6b` |
+| `--forest` / `--forest-deep` | `#011f4b` | pane headers over device captures |
+| `--chartreuse` | `#b3cde0` | accent text on the dark caption bar |
+| `--moss` | `#6497b1` | non-text fills only — data bars, bullets |
+| `--sage` | `#b3cde0` | (unused now that header/rail chrome follows `--surface`/`--primary`) |
 
-**Accents**, used sparingly and only for chrome:
+`--moss` sits at 3.2:1 on `--surface` and is deliberately **never** used for text; it
+clears the 3:1 threshold that applies to UI components and data marks.
 
-| Token | Light | Dark | Used for |
-|---|---|---|---|
-| `--forest` | `#213921` | `#213921` | masthead, active rail step, active segment |
-| `--forest-deep` | `#16201a` | `#0f1310` | pane headers over device captures |
-| `--chartreuse` | `#cfd82d` | `#cfd82d` | brand mark, header rule, active rail numeral, completion badge |
-| `--moss` | `#6d8d24` | `#7ea62b` | non-text fills only — data bars, bullets |
-| `--sage` | `#c2cfb4` | `#8d9a86` | quiet labels on forest |
-
-`--moss` sits at 3.7:1 and is deliberately **never** used for text; it clears the 3:1
-threshold that applies to UI components and data marks.
-
-**Cards sit lighter than the page, not darker.** The source design insets its panels, but
-`input, select, textarea` share `--surface` with cards here — darkening it makes every
-form field stop reading as a field, and collapses page, card, table band and input into
-four near-identical warm greys. Paper on a desk, not panels in a sheet.
+**One rule drives every text pairing:** a light surface always carries dark-navy text, a
+dark surface always carries white or pale-blue text — never the reverse.
 
 ### Measured contrast
 
 Computed, not eyeballed. All pass WCAG AA for their role.
 
-| Pair | Light | Dark |
-|---|---:|---:|
-| text on surface | 15.99:1 | 13.84:1 |
-| text-2 on surface | 9.02:1 | 10.26:1 |
-| muted on surface | 6.07:1 | 5.65:1 |
-| muted on bg | 4.84:1 | 6.33:1 |
-| primary on surface | 12.01:1 | 8.40:1 |
-| ok / warn / err on surface | 6.05 / 6.56 / 6.69 | 7.85 / 7.66 / 6.57 |
+| Pair | Ratio |
+|---|---:|
+| text on surface | 16.5:1 |
+| text-2 on surface | 11.6:1 |
+| muted on surface | 7.1:1 |
+| primary-fg on primary (button) | 7.1:1 |
+| header text on header bg | 16.2:1 |
+| active rail item (tint) | 6.1:1 |
+| brand-mark chip | 7.2:1 |
 
-Surface separation is only ~1.2:1 in both modes — warm neighbours do not separate by
-luminance alone — so the **card border is load-bearing, not decorative**. Removing it
-makes cards disappear into the page.
+### 0. Why no dark mode
+
+Every reference for this design (Coursera, EventAura, the Greenfly-style card layout) is a
+white, light-only page with blue confined to nav/buttons/accents. Following the OS into a
+dark theme would reintroduce exactly the wall-to-wall blue this palette pass removed, on a
+schedule the user doesn't control. `color-scheme: light` in the root token block stops
+native form controls (scrollbars, checkboxes) from rendering dark on their own even when
+the OS prefers it.
 
 ### Chart palette (separate, separately validated)
 
@@ -157,8 +168,8 @@ primary separator; shadow is secondary.
 | `--elev-3` | Run panel |
 | `--elev-4` | Drawer |
 
-Dark mode raises the alpha and adds `--inner-hi`, a 1px top inner highlight — shadow
-alone does not read against a dark surface, so the highlight carries the edge instead.
+`--inner-hi` is reserved for a future dark surface — shadow alone won't read there, so a
+1px top inner highlight would carry the edge instead. Unused while the UI is light-only.
 
 ---
 
