@@ -13,6 +13,31 @@ OPENAI_COMPATIBLE_API_KEY_ENV_VAR = "OPENAI_COMPATIBLE_API_KEY"
 FERRET_MODEL_ID = "local/ferret-ui-llama8b"
 NORMALIZED_COORD_FAMILIES = ("gemini", "qwen", "glm")
 
+# Longest image edge a model accepts, by substring of the model id.
+#
+# A provider that receives a larger image silently downscales it -- and the
+# model then answers in the space it was actually shown, not the space the
+# prompt states. Measured on clock_baseline: Haiku 4.5 and Sonnet 4.6 both
+# return coordinates multiplied by 1568/2219, scoring 17% instead of ~100%.
+# That is the same defect class as the gemini-pro-agent 8.4%-vs-96.8% error
+# (CLAUDE.md 6), and it is invisible in the CSV: the reply parses fine and
+# simply lands in the wrong place.
+#
+# Declaring the cap here lets the pipeline do the resize itself, so the
+# coordinate space is one we chose and recorded rather than one we inferred
+# from provider behaviour that can change without notice. A model absent from
+# this map is sent at native size and its request is untouched.
+MAX_IMAGE_EDGE: dict[str, int] = {
+    "claude-haiku-4-5": 1568,
+    "claude-sonnet-4-6": 1568,
+    "claude-sonnet-4-5": 1568,
+    "claude-opus-4-6": 1568,
+    "claude-opus-4-5": 1568,
+    "claude-opus-4-1": 1568,
+    # Opus 4.7+ and Sonnet 5 raised the cap to 2576, which exceeds the tallest
+    # screenshot this pipeline produces (2219), so they need no entry.
+}
+
 
 def uses_normalized_coords(model: str) -> bool:
     """Return whether a model uses a native 0-1000 coordinate convention."""
@@ -20,6 +45,28 @@ def uses_normalized_coords(model: str) -> bool:
         return False
     name = model[len(NINEROUTER_PREFIX):] if model.startswith(NINEROUTER_PREFIX) else model
     return any(family in name.lower() for family in NORMALIZED_COORD_FAMILIES)
+
+
+def max_image_edge(model: str) -> int | None:
+    """Return the longest image edge *model* accepts, or None when uncapped."""
+    name = model.lower()
+    for pattern, edge in MAX_IMAGE_EDGE.items():
+        if pattern in name:
+            return edge
+    return None
+
+
+def image_send_scale(model: str, width: int, height: int) -> float:
+    """Return the factor an image must be scaled by before sending to *model*.
+
+    Exactly 1.0 when the image already fits, which callers rely on to skip the
+    resize entirely and leave the request byte-identical to what every
+    already-collected model was sent.
+    """
+    edge = max_image_edge(model)
+    if edge is None or max(width, height) <= edge:
+        return 1.0
+    return edge / max(width, height)
 
 def _normalize_compatible_base_url(base_url: str) -> str:
     """Return an OpenAI-compatible base URL ending in exactly one ``/v1``."""

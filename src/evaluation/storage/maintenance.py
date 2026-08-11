@@ -138,8 +138,34 @@ def _baseline_boxes(rows: list[dict]) -> dict[tuple[str, str], list[int]]:
     return boxes
 
 
+def _row_image_scale(row: dict, img_width: int, img_height: int) -> float:
+    """Recover the scale a row's screenshot was sent at, from the row itself.
+
+    Self-describing rather than recomputed from the model id: if a provider
+    later moves its cap and MAX_IMAGE_EDGE is updated, recomputing would
+    rescale an old row by the new factor and silently move every prediction.
+    """
+    sent = (row.get("image_sent_size") or "").strip().lower()
+    if "x" not in sent:
+        return 1.0
+    try:
+        sent_w, sent_h = (int(part) for part in sent.split("x", 1))
+    except ValueError:
+        return 1.0
+    return max(sent_w, sent_h) / max(img_width, img_height)
+
+
 def rescore(rows: list[dict], coord_space: str) -> tuple[list[dict], int, int]:
-    """Re-score every eligible row under a coordinate convention."""
+    """Re-score every eligible row under a coordinate convention.
+
+    Delegates to the runner's score_one_trial rather than reimplementing the
+    parse, conversion, bounds check, and hit test. The duplicate that lived
+    here drifted: it never learned about downscaled screenshots, so rescoring
+    a capped model would have read its sent-space replies as full-size
+    coordinates and moved every prediction.
+    """
+    from ..runner import score_one_trial
+
     baselines = _baseline_boxes(rows)
     scored = hits = 0
     for row in rows:
@@ -152,21 +178,17 @@ def rescore(rows: list[dict], coord_space: str) -> tuple[list[dict], int, int]:
             continue
 
         img_width, img_height = dims
-        x_raw, y_raw = parse_coordinates(row.get("raw_response", ""))
-        x_coord, y_coord = to_pixel_space(
-            x_raw, y_raw, img_width, img_height, coord_space
+        x_pred, y_pred, score, parse_method = score_one_trial(
+            row.get("raw_response", ""),
+            box,
+            baselines.get((row["screen"], row["target_text"])),
+            img_width,
+            img_height,
+            coord_space=coord_space,
+            image_scale=_row_image_scale(row, img_width, img_height),
         )
-        if x_coord < 0 or y_coord < 0 or x_coord > img_width or y_coord > img_height:
-            x_pred, y_pred, score = -1, -1, 0
-        else:
-            x_pred, y_pred = int(x_coord), int(y_coord)
-            score = hit_test(
-                x_pred,
-                y_pred,
-                box,
-                baselines.get((row["screen"], row["target_text"])),
-            )
         row["x_pred"], row["y_pred"], row["score"] = x_pred, y_pred, score
+        row["parse_method"] = parse_method
         scored += 1
         hits += score
     return rows, scored, hits

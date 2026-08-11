@@ -53,13 +53,20 @@ sample_input/capture_*.json
 adb*.txt
 
 # Evaluation-result canonicalization safety copies and single-writer locks.
-# Pre-rescore backups use dataset/*.csv.bak --
-# already covered by the *.bak glob.
-dataset/*.bak
-dataset/*.lock
+# Matched by suffix rather than directory: results moved from dataset/ to
+# outputs/<dataset>/evaluations/, which left the old dataset/*.lock rule
+# matching nothing and a killed run's lock file showing up as a commit
+# candidate. Scoped to .csv.* so it cannot shadow the tracked uv.lock.
+*.csv.bak
+*.csv.lock
 
 # Stale local Ferret-UI input fixture at the repository root only.
 /eval.json
 
 # Analysis output from the web UI (derived, regenerable; never the dataset itself)
 ui_experiments/
+
+# Local scratch notes for in-flight work. Not a project record -- anything worth
+# keeping belongs in CLAUDE.md or docs/.
+NOTES.local.md
+*.local.md

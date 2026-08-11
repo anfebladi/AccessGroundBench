@@ -71,7 +71,8 @@ class VlmEvalResultsTests(unittest.TestCase):
         self.assertEqual(CSV_COLUMNS, rows[0])
         self.assertEqual(
             ["clock", "Timer", "baseline", STATUS_CO_PRESENT, "[1, 2]", "1", "2",
-             "0", "0", "10", "10", "1", "1", "1", "bracket", PROMPT_MODE_VISION, "0", ""],
+             "0", "0", "10", "10", "1", "1", "1", "bracket", PROMPT_MODE_VISION, "0",
+             "", ""],
             rows[1],
         )
 

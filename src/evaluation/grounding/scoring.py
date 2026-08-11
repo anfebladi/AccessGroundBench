@@ -38,14 +38,26 @@ def parse_coordinates_detailed(response_text: str) -> tuple[float, float, str]:
     Extract (x, y) from a model reply, reporting which pattern matched.
 
     Returns (x, y, method). On failure returns (-1.0, -1.0, PARSE_FAILED).
-    """
-    match = BRACKET_REGEX.search(response_text)
-    if match:
-        return float(match.group(1)), float(match.group(2)), PARSE_BRACKET
 
-    match = COORD_REGEX.search(response_text)
-    if match:
-        return float(match.group(1)), float(match.group(2)), PARSE_LOOSE
+    The *last* match wins, not the first. A model that answers in the requested
+    bracket format emits exactly one pair, so this changes nothing for it. A
+    model that reasons in prose first states intermediate values -- edge spans,
+    rejected estimates -- and its answer last: Haiku 4.5 wrote
+    "[228, 1758] ... [228, 1520]", and taking the first turned a hit into an
+    out-of-frame miss. Position is the only safe tiebreak here; choosing
+    whichever pair happens to land inside the target would bias scoring toward
+    hits. Verified against every collected CSV: no already-scored row contains
+    two differing pairs, so no committed result changes.
+    """
+    matches = BRACKET_REGEX.findall(response_text)
+    if matches:
+        x_raw, y_raw = matches[-1]
+        return float(x_raw), float(y_raw), PARSE_BRACKET
+
+    matches = COORD_REGEX.findall(response_text)
+    if matches:
+        x_raw, y_raw = matches[-1]
+        return float(x_raw), float(y_raw), PARSE_LOOSE
 
     return -1.0, -1.0, PARSE_FAILED
 

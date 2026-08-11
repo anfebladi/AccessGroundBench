@@ -5,7 +5,7 @@ import time
 from collections import Counter
 from pathlib import Path
 
-from .providers import call_vlm
+from .providers import call_vlm, image_send_scale, max_image_edge
 
 from .config import ALL_PROFILES, DEFAULT_COORD_SPACE, IMAGES_DIR, LABELS_DIR
 from .storage.results import (
@@ -41,6 +41,7 @@ def score_one_trial(
     img_width: int,
     img_height: int,
     coord_space: str = DEFAULT_COORD_SPACE,
+    image_scale: float = 1.0,
 ) -> tuple[int, int, int, str]:
     """
     Turn one raw model reply into a scored prediction.
@@ -57,9 +58,23 @@ def score_one_trial(
     conversion, so the decision is made per reply rather than per model.
     """
     x_coord, y_coord, parse_method = parse_coordinates_detailed(raw_response)
-    x_coord, y_coord = to_pixel_space(
-        x_coord, y_coord, img_width, img_height, coord_space
-    )
+    if image_scale < 1.0:
+        # The model saw a downscaled image and answered in its space, so both
+        # the 0-1000 conversion and the bounds check below have to happen
+        # against the size actually sent. Untouched when image_scale is 1.0,
+        # which keeps every already-collected model bit-for-bit reproducible.
+        sent_width = round(img_width * image_scale)
+        sent_height = round(img_height * image_scale)
+        x_coord, y_coord = to_pixel_space(
+            x_coord, y_coord, sent_width, sent_height, coord_space
+        )
+        if x_coord >= 0 and y_coord >= 0:
+            x_coord = round(x_coord / image_scale, 1)
+            y_coord = round(y_coord / image_scale, 1)
+    else:
+        x_coord, y_coord = to_pixel_space(
+            x_coord, y_coord, img_width, img_height, coord_space
+        )
 
     if (
         x_coord < 0
@@ -127,6 +142,22 @@ def evaluate_screen(
         except Exception as e:
             print(f"  [SKIP] Failed to read image dimensions for {image_path.name}: {e}")
             continue
+
+        # Models with an image cap are sent a downscaled screenshot and told
+        # its real size, so their replies land in a space we chose (see
+        # MAX_IMAGE_EDGE). 1.0 for every other model, leaving the prompt and
+        # the request exactly as they were.
+        image_scale = image_send_scale(model, img_width, img_height)
+        prompt_width = round(img_width * image_scale)
+        prompt_height = round(img_height * image_scale)
+        if image_scale < 1.0 and use_a11y_tree:
+            raise ValueError(
+                f"{model} caps images at {max_image_edge(model)}px, so the "
+                f"screenshot is downscaled, but tree mode embeds element "
+                f"bounds in full-size pixels. Sending both would give the "
+                f"model two conflicting coordinate systems. Run this model "
+                f"vision-only (USE_A11Y_TREE=false)."
+            )
 
         with open(label_path, "r", encoding="utf-8") as f:
             profile_labels = json.load(f)
@@ -259,8 +290,8 @@ def evaluate_screen(
                 )
             else:
                 prompt = PROMPT_TEMPLATE.format(
-                    img_width=img_width,
-                    img_height=img_height,
+                    img_width=prompt_width,
+                    img_height=prompt_height,
                     target_text=target_text,
                 )
 
@@ -277,8 +308,9 @@ def evaluate_screen(
                         prompt,
                         target_text=target_text,
                         tree_rows=tree_rows,
-                        img_width=img_width,
-                        img_height=img_height,
+                        img_width=prompt_width,
+                        img_height=prompt_height,
+                        image_scale=image_scale,
                         coord_space_out=coord_space_out,
                     )
                 except Exception as exc:
@@ -292,7 +324,7 @@ def evaluate_screen(
                 trial_results.append(
                     (raw_response,) + score_one_trial(
                         raw_response, box, baseline_box, img_width, img_height,
-                        coord_space=reply_space,
+                        coord_space=reply_space, image_scale=image_scale,
                     )
                 )
                 if pace_seconds > 0:
@@ -349,6 +381,13 @@ def evaluate_screen(
                 "prompt_mode": PROMPT_MODE_TREE if use_a11y_tree else PROMPT_MODE_VISION,
                 "tree_rows_sent": len(tree_rows) if tree_rows else 0,
                 "coord_space": reported_coord_space,
+                # Blank when the screenshot went out at native size. Recorded
+                # rather than recomputed so a row stays re-scorable even if a
+                # provider later moves its cap and MAX_IMAGE_EDGE is updated
+                # -- the same lesson as raw_response in CLAUDE.md 4.
+                "image_sent_size": (
+                    f"{prompt_width}x{prompt_height}" if image_scale < 1.0 else ""
+                ),
             })
             count += 1
 

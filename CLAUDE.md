@@ -148,9 +148,40 @@ VLM_PACE_SECONDS=0
 VLM_MAX_RETRIES=3
 VLM_REQUEST_TIMEOUT_SECONDS=120
 VLM_TEMPERATURE=0          # empty string omits the parameter entirely
+VLM_MAX_TOKENS=            # empty -> send no budget (what the current roster ran under)
+VLM_THINKING=              # empty -> provider default; adaptive | disabled (Anthropic only)
+VLM_STRUCTURED_COORDS=     # true -> constrain the reply to [x, y] via JSON schema (Anthropic only)
 VLM_TRIALS=1               # >1 -> repeat each query, majority vote, report flip rate
 VLM_TRIALS_MODELS=         # empty -> VLM_TRIALS applies to all models
 ```
+
+**Anthropic models need no add-ons.** Unlike Ferret-UI, `anthropic/claude-*` runs on the
+standard hosted path: LiteLLM + `ANTHROPIC_API_KEY`, the normal pixel prompt, no
+coordinate conversion (`uses_normalized_coords` matches only gemini/qwen/glm). But three
+provider defaults differ *between* Claude models, and each is a confound in a benchmark
+about visual layout:
+
+| | Opus 5 / Sonnet 5 | Haiku 4.5 |
+|---|---|---|
+| Max image long edge | 2576 px — 1080×2219 passes through untouched | **1568 px — the API downscales to 763×1568** |
+| Thinking | on by default (measured: 0 tokens on this task) | off by default |
+| `temperature=0` | **rejected (400)**; dropped automatically, so these run non-deterministic | honoured |
+
+> **Haiku 4.5 is excluded, and the reason is a scoring trap.** Because the API downscales
+> its input, Haiku answers in the **763×1568 space it actually sees** — not the 1080×2219
+> space the prompt states. Every prediction comes back multiplied by 1568/2219 = 0.7066.
+> Measured on `clock_baseline`: it scores **17%** as-is and **~100%** once rescaled
+> (rescaled predictions land 2–4 px from truth, versus a ±30 px tolerance). This is the
+> same defect class and magnitude as the `gemini-pro-agent` 8.4%-vs-96.8% error in §6 —
+> a coordinate-space mismatch, not a grounding failure. Any model whose long edge exceeds
+> the provider's cap has this problem; check the ratio before believing a low score.
+> Opus 5 and Sonnet 5 are unaffected (2219 < 2576) and verified answering in native
+> pixel space.
+
+Thinking was measured, not assumed: `adaptive` produced **0 thinking tokens** on this
+task for both models — identical cost and identical accuracy to `disabled`. Runs pin
+`VLM_THINKING=disabled` anyway, so a harder profile cannot silently start spending
+reasoning tokens mid-run.
 
 > The local `.env` currently has `USE_A11Y_TREE=true`. Tests pin it explicitly, but any
 > ad-hoc script that reads it will run in tree mode and write `*_tree.csv`.
@@ -381,6 +412,25 @@ automated pass/fail.
   `preserve` raises on failure rather than letting the caller truncate anyway.
   Backups live in a *subdirectory* deliberately: beside the originals they would match
   `discover_result_csvs`'s `*_<mode>.csv` glob and inflate the pooled sample.
+- **A provider that downscales your image changes the answer's coordinate space.**
+  `evaluation.providers.config.MAX_IMAGE_EDGE` declares each model's maximum long edge;
+  above it the pipeline resizes the screenshot **itself**, states the resized dimensions
+  in the prompt, records them in `image_sent_size`, and scales predictions back before
+  scoring. Left to the provider the same downscale happens silently and the model answers
+  in a space nothing recorded — Haiku 4.5 and Sonnet 4.6 both scored **17% instead of
+  ~100%** that way. A model absent from the map is sent at native size and its request is
+  byte-identical to the pre-cap pipeline, which is what keeps the collected roster
+  comparable. Capped models cannot run tree mode: the tree lists bounds in full-size
+  pixels, so the run raises rather than mixing two coordinate systems.
+- **The coordinate parser takes the *last* bracketed pair, not the first.** A compliant
+  reply has exactly one pair, so this is a no-op for it; a model reasoning in prose states
+  intermediate values first and its answer last. Taking the first turned a Haiku hit into
+  an out-of-frame miss. Position is the only safe tiebreak — picking whichever pair lands
+  inside the target would bias scoring toward hits. Verified across every collected CSV:
+  3 rows of 10,848 change, all Haiku.
+- **`rescore` calls the runner's `score_one_trial`.** It used to hold its own copy of the
+  parse/convert/bounds/hit-test chain, and that copy silently missed the downscale
+  handling. Any future scoring change must land in `score_one_trial` alone.
 - **Coordinate space.** Labels are shifted into *cropped-image* space: status-bar
   height subtracted from all y values, nav bar removed from the bottom
   (`collection.artifacts.labels.extract(y_offset=, bottom_crop=)`). Bar heights come from

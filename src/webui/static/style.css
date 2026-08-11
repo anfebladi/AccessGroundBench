@@ -85,32 +85,52 @@
   --radius-full: 999px;
 
   /* -- Colour ----------------------------------------------------------- */
-  /* Warm-tinted neutrals rather than pure grey, and an indigo primary rather
-     than the default blue -- the two cheapest ways to stop looking stock.
-     Every pair is contrast-measured in docs/ui-design-system.md. */
-  --bg: #f7f7f5;
-  --surface: #ffffff;
-  --surface-2: #f2f2ef;
-  --surface-3: #ebebe7;
-  --border: #e4e4df;
-  --border-strong: #cfcfc8;
+  /* Bone paper and deep forest green: an academic, printed register rather
+     than the default product blue. Neutrals are warm (yellow-tinted) so they
+     sit under the greens instead of fighting them.
+     Every text pair below is contrast-measured against --surface and clears
+     WCAG AA; the measured ratio is on each line. --moss is the only value
+     below 4.5:1 and is used exclusively as a non-text fill (bars, dots,
+     rules), where the 3:1 UI-component threshold applies. */
+  /* The desk is warm bone; paper sits on top of it. The source design insets
+     its panels instead, but that only works there because heavy rules carry
+     the structure -- transplanted here it collapsed page, card, table band and
+     input into four near-identical greys, and the form fields stopped reading
+     as fields at all. Cards lift, and the surface token stays light because
+     `input, select, textarea` share it. */
+  --bg: #e5e1d1;        /* the desk -- deep enough that paper reads as paper */
+  --surface: #fbfaf4;   /* paper -- cards, panels, and every input */
+  --surface-2: #f1eee2; /* quiet bands: table heads, hovers */
+  --surface-3: #e4e0d0;
+  --border: #d9d5c3;
+  --border-strong: #bfbaa4;
 
-  --text: #17171a;      /* 17.9:1 on surface */
-  --text-2: #4a4a52;    /*  8.8:1 */
-  --muted: #6e6e78;     /*  5.0:1 */
+  --text: #16201a;      /* 13.4:1 on surface */
+  --text-2: #3b4a3a;    /*  7.5:1 */
+  --muted: #576351;     /*  5.1:1 */
 
-  --primary: #4f39cf;   /*  7.5:1 */
-  --primary-hover: #4530b4;
-  --primary-active: #3b2999;
-  --primary-fg: #ffffff;
-  --primary-soft: color-mix(in srgb, #4f39cf 9%, transparent);
+  --primary: #213921;   /* 10.0:1 -- forest; the design's one interactive fill */
+  --primary-hover: #2c3a2c;
+  --primary-active: #16201a;
+  --primary-fg: #ffffff; /* 12.6:1 on --primary */
+  --primary-soft: color-mix(in srgb, #6d8d24 16%, transparent);
 
-  --ok: #157a41;
-  --warn: #a45c00;
-  --err: #b3221a;
-  --danger: #b3221a;
-  --danger-hover: #971c15;
-  --danger-active: #7d1711;
+  /* Accents. --forest is the filled chrome (header, active rail, active
+     segment); --chartreuse is the high-visibility marker that sits on it;
+     --moss is the mid-tone fill for data bars and bullets. */
+  --forest: #213921;
+  --forest-2: #2c3a2c;
+  --forest-deep: #16201a; /* darkest block -- pane headers over device captures */
+  --chartreuse: #cfd82d; /* 8.1:1 on --forest, 10.8:1 as text-on-chartreuse */
+  --moss: #6d8d24;      /*  3.5:1 -- non-text fills only */
+  --sage: #c2cfb4;
+
+  --ok: #3d6b1f;        /*  5.1:1 on surface */
+  --warn: #755509;      /*  5.5:1 -- darkened for the inset card ground */
+  --err: #a3301f;       /*  5.6:1 */
+  --danger: #a3301f;
+  --danger-hover: #8a2819;
+  --danger-active: #712014;
 
   /* -- Elevation -------------------------------------------------------- */
   /* Layered and tied to interaction: rest -> hover -> overlay -> modal.
@@ -149,29 +169,42 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0e0e10;
-    --surface: #17171a;
-    --surface-2: #1e1e22;
-    --surface-3: #26262b;
-    --border: #2a2a2f;
-    --border-strong: #3a3a41;
+    /* The source design is light-only, so the dark arm is derived rather than
+       copied: the same forest/moss/chartreuse family, with the neutrals rolled
+       to a green-black instead of the light bone. Ratios measured on
+       --surface; every pair clears AA. */
+    --bg: #0f1310;
+    --surface: #16201a;
+    --surface-2: #1c2a1e;
+    --surface-3: #253524;
+    --border: #2c3a2c;
+    --border-strong: #3b4a3a;
 
-    --text: #f0f0ee;    /* 15.7:1 on surface */
-    --text-2: #b4b4bd;  /*  8.7:1 */
-    --muted: #86868f;   /*  5.0:1 */
+    --text: #eceadd;    /* 13.8:1 on surface */
+    --text-2: #c2cfb4;  /* 10.3:1 */
+    --muted: #8d9a86;   /*  5.7:1 */
 
-    --primary: #8b7af0;
-    --primary-hover: #9f91f4;
-    --primary-active: #b3a7f7;
-    --primary-fg: #14121c;
-    --primary-soft: color-mix(in srgb, #8b7af0 14%, transparent);
+    --primary: #a8c33f; /*  8.4:1 -- moss lifts to a leaf green on dark */
+    --primary-hover: #b8d152;
+    --primary-active: #c6dd66;
+    --primary-fg: #16201a;
+    --primary-soft: color-mix(in srgb, #a8c33f 16%, transparent);
 
-    --ok: #46c97a;
-    --warn: #e0a244;
-    --err: #ff6f63;
-    --danger: #ff6f63;
-    --danger-hover: #ff8a80;
-    --danger-active: #ffa49b;
+    /* Chrome accents. --forest stays the filled block; on a dark ground it
+       reads as a raised panel rather than a dark one. */
+    --forest: #213921;
+    --forest-2: #2c3a2c;
+    --forest-deep: #0f1310; /* on dark the deep block goes below the surface */
+    --chartreuse: #cfd82d; /* 10.8:1 on surface */
+    --moss: #7ea62b;       /*  5.9:1 -- non-text fills */
+    --sage: #8d9a86;
+
+    --ok: #7cc44a;      /*  7.9:1 */
+    --warn: #d9a83c;    /*  7.7:1 */
+    --err: #ff7a6b;     /*  6.6:1 */
+    --danger: #ff7a6b;
+    --danger-hover: #ff958a;
+    --danger-active: #ffaea6;
 
     /* Higher alpha plus a top inner highlight: shadow alone does not read on
        a dark surface, so the highlight carries the edge instead. */
@@ -235,9 +268,22 @@ a:hover { color: var(--primary-hover); }
   gap: var(--space-5);
   min-height: var(--header-height);
   padding: var(--space-3) var(--page-gutter);
+  /* The masthead is the one solid block of colour in the layout: deep forest
+     with a chartreuse rule under it, so the page reads as headed rather than
+     as a toolbar floating over content. */
+  background: var(--forest);
+  color: var(--bg);
+  border-bottom: 3px solid var(--chartreuse);
+  box-shadow: var(--elev-2);
+}
+.app-header label,
+.app-header .meta {
+  color: var(--sage);
+}
+.app-header select {
   background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  box-shadow: var(--elev-1);
+  color: var(--text);
+  border-color: var(--forest-2);
 }
 
 .brand { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
@@ -247,8 +293,8 @@ a:hover { color: var(--primary-hover); }
   width: 32px;
   height: 32px;
   border-radius: var(--radius-sm);
-  background: var(--primary);
-  color: var(--primary-fg);
+  background: var(--chartreuse);
+  color: var(--forest);
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   font-weight: 600;
@@ -312,7 +358,10 @@ main {
   overflow-y: auto;
   padding: var(--space-5) var(--space-3);
   border-right: 1px solid var(--border);
-  background: var(--surface);
+  /* Deliberately unfilled. The rail is sticky with a content-height max, so a
+     background colour ends partway down the page and leaves a hard edge
+     floating in the middle of the layout. The border carries the division. */
+  background: transparent;
 }
 
 .rail-group {
@@ -340,7 +389,14 @@ main {
   transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
 }
 #rail a:hover { background: var(--surface-2); color: var(--text); }
-#rail a[aria-current="page"] { background: var(--primary-soft); color: var(--primary); }
+/* The current step is a filled forest block, not a tint -- at a glance the rail
+   should answer "which stage am I in" from across the desk. */
+#rail a[aria-current="page"] {
+  background: var(--forest);
+  color: var(--bg);
+  box-shadow: var(--elev-1);
+}
+#rail a[aria-current="page"] .rail-label { color: var(--bg); }
 
 .rail-num {
   grid-row: 1 / span 2;
@@ -355,8 +411,8 @@ main {
   color: var(--muted);
 }
 #rail a[aria-current="page"] .rail-num {
-  background: var(--primary);
-  color: var(--primary-fg);
+  background: transparent;
+  color: var(--chartreuse);
 }
 .rail-label { font-weight: 600; font-size: var(--text-body); }
 .rail-chip {
@@ -642,8 +698,8 @@ button[aria-busy="true"]::before {
   box-shadow: none;
 }
 .segmented button[aria-pressed="true"] {
-  background: var(--surface);
-  color: var(--text);
+  background: var(--forest);
+  color: var(--chartreuse);
   box-shadow: var(--elev-1);
 }
 
@@ -655,12 +711,16 @@ button[aria-busy="true"]::before {
   border-radius: var(--radius-md);
 }
 table { border-collapse: collapse; width: 100%; }
+th { white-space: nowrap; }
 th, td {
   text-align: left;
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--border);
   font-size: var(--text-sm);
-  white-space: nowrap;
+  /* Headers hold their line; body cells wrap. Blanket nowrap pushed the
+     providers table past its card and clipped the session-key column mid-word,
+     which read as broken rather than as scrollable. */
+  white-space: normal;
   vertical-align: middle;
 }
 thead th {
@@ -699,7 +759,7 @@ th.sortable[aria-sort="descending"]::after { content: " \25BC"; }
   background: var(--surface-3);
   overflow: hidden;
 }
-.bar-fill { display: block; height: 100%; border-radius: var(--radius-full); background: var(--viz-blue); }
+.bar-fill { display: block; height: 100%; border-radius: var(--radius-full); background: var(--moss); }
 .bar-value {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
@@ -792,6 +852,9 @@ code {
   font-size: var(--text-xs);
   font-weight: 600;
   white-space: nowrap;
+  /* A hairline of the badge's own colour. On a warm low-contrast ground the
+     tinted fills alone read as smudges rather than as deliberate pills. */
+  border: 1px solid currentColor;
 }
 /* The dot is not decoration: it keeps status legible without relying on hue. */
 .badge::before {
@@ -801,7 +864,9 @@ code {
   background: currentColor;
   flex-shrink: 0;
 }
-.badge.ok { background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); }
+/* The success badge is the one filled marker in the content area -- a completed
+   capture set or a clean run should be findable without reading. */
+.badge.ok { background: var(--chartreuse); color: var(--forest); }
 .badge.warn { background: color-mix(in srgb, var(--warn) 15%, transparent); color: var(--warn); }
 .badge.err { background: color-mix(in srgb, var(--err) 14%, transparent); color: var(--err); }
 .badge.info { background: var(--primary-soft); color: var(--primary); }
@@ -995,14 +1060,22 @@ canvas { max-width: 100%; display: block; }
   align-items: start;
 }
 .pane { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+/* Captured screens are dark, so the pane header is a dark bar rather than a
+   light caption: the label reads as part of the device frame instead of
+   floating on the page beside it. */
 .pane-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-2);
   flex-wrap: wrap;
+  background: var(--forest-deep);
+  color: var(--bg);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 }
 .pane-title { font-family: var(--font-display); font-weight: 600; font-size: var(--text-h3); }
+.pane-head .pane-dims { color: var(--chartreuse); }
 .pane-dims {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
