@@ -41,22 +41,27 @@ the `package-data` glob in `pyproject.toml` is `static/*` and does not recurse.
 Every colour, size, radius, shadow and duration is a CSS custom property defined
 once at the top of `style.css`, which is organised into layers (`FONTS → TOKENS →
 BASE → LAYOUT → COMPONENTS → UTILITIES → RESPONSIVE`) in place of a preprocessor.
-Light-only by design -- the OS dark-mode setting is not followed, so the page
-never lands on a heavier, bluer theme than the one it was designed against. The
-full token reference, measured contrast ratios, the component state matrix and
-the responsive rules are in [`docs/ui-design-system.md`](ui-design-system.md).
+The page canvas is light-only by design -- the OS dark-mode setting is not
+followed for the *page*, so it never lands on a heavier, bluer theme than the
+one it was designed against. Screenshots, charts and the Compare stage sit on a
+fixed dark panel regardless of OS preference, which is a different thing: an
+intentional design element on specific data surfaces, not a page-wide theme.
+The full token reference, measured contrast ratios, the component state matrix
+and the responsive rules are in
+[`docs/ui-design-system.md`](ui-design-system.md).
 
-Two typefaces are bundled (~76 KB) rather than loaded from a CDN, because the
-server binds localhost and must work offline: **Inter** for everything but
-numerals, code and data labels, which stay on **IBM Plex Mono** for tabular
+One typeface family is bundled rather than loaded from a CDN, because the
+server binds localhost and must work offline: **Geist** for everything but
+numerals, code and data labels, which stay on **Geist Mono** for tabular
 figures. Both are SIL OFL 1.1 and their licence ships beside them in
-`static/FONTS-LICENSE.txt`, which the licence requires.
+`static/FONTS-LICENSE.txt`, which the licence requires. Icons are inline SVG
+(`static/icons.js`) for the same offline-first reason -- no icon font, no CDN.
 
 ## Steps
 
-The six steps are ordered the way the pipeline runs, and the left rail carries
-a live status for each: how many screens the active dataset has, how many
-models are configured, how many queries an evaluation still has to make.
+The seven steps are ordered the way the pipeline runs, and the left rail
+carries a live status for each: how many screens the active dataset has, how
+many models are configured, how many queries an evaluation still has to make.
 
 **Dataset.** Picks the active dataset from a dropdown (see
 [Datasets](#datasets)), shows its screen/target/capture counts, and surfaces
@@ -93,20 +98,50 @@ as soon as you scroll back through it. Results land in
 exactly as `agb evaluate` would leave them, including the append/resume/lock
 semantics documented in the [evaluation runbook](runbooks/evaluation.md).
 
-**Results.** One sortable row per result file: accuracy over co-present
-targets, and the rows excluded from that denominator by status. Column
-headings are the readable names; the underlying CSV status is in each one's
-tooltip. Because vision and tree results are never pooled, a mode filter is
-offered whenever both are present.
+**Compare.** The benchmark's headline question, answered without running a
+full analysis: pick one evaluated model, and see its accuracy on the baseline
+layout against each accessibility profile immediately -- a chart, a delta per
+profile, and a three-state significance readout (Significant / No
+significant change / **Underpowered -- can't tell**). The third state
+exists because a plain yes/no would misrepresent most of this benchmark's own
+data: a model sitting near ceiling baseline accuracy with only a handful of
+discordant pairs is untestable, not resilient, and the UI must not imply
+otherwise (see [`docs/methods.md`](methods.md) and `src/webui/compare.py`'s
+module docstring). The Holm-Bonferroni correction runs across every model
+evaluated on the dataset, not just the one being displayed -- narrowing the
+family to one model's own profiles would let the same p-value read as
+significant here and not-significant in `agb analyze`'s canonical tables,
+which is exactly the defect this endpoint is built to avoid.
+
+**Results.** A chart of overall accuracy across every evaluated model, then
+one sortable row per result file: accuracy over co-present targets, and the
+rows excluded from that denominator by status. A "vs. baseline" column shows
+whether a model's blended accuracy is hiding degradation relative to its own
+clean baseline -- worded ("X pts lower/higher"), not a bare sign, since a
+positive delta means accuracy *dropped* under this codebase's paired-difference
+convention and a "+" prefix would read backwards. Column headings are the
+readable names; the underlying CSV status is in each one's tooltip. Because
+vision and tree results are never pooled, a mode filter is offered whenever
+both are present.
 
 The miss inspector steps through every `co_present` miss for a model -- with
 the screenshot, ground-truth box, predicted point, parse method and raw reply
 shown together -- driven by the arrow keys, `Escape`, or the filmstrip.
 
-**Analyze.** Runs `agb analyze` and charts reachability (with Wilson
+**Analyze.** Shows whatever the current mode/sample combination already has
+on disk **on arrival**, with no run required -- if `agb analyze` (or an
+earlier browser run) already wrote tables to
+`outputs/<dataset>/analysis/<mode>_<sample>/`, they render immediately.
+Changing the Sample or Prompt mode selector reloads whatever exists for that
+combination the same way; the form below is "re-run with new parameters," not
+a gate you have to pass to see anything. Charts reachability (with Wilson
 intervals), pooled permutation (primary), per-model McNemar (secondary), and
 direction consistency. Every chart keeps its table underneath it: the chart is
-the scan layer, the numbers stay the source of truth.
+the scan layer, the numbers stay the source of truth. When "All samples" was
+selected at collection time, a sample picker appears above the charts --
+each of the four tables carries every named sample's rows in one CSV, and a
+chart built from all of them at once would repeat every profile once per
+sample, so exactly one sample is charted at a time.
 
 Ceiling/floor-flagged rows are marked with the same caution as
 [`docs/methods.md`](methods.md) -- an underpowered null is not evidence of
@@ -203,8 +238,12 @@ something the bare CLI cannot currently do in a single invocation.
   UI's Collect tab captures against the existing screen catalog.
 - **Change scoring, statistics, or file formats.** All of that is the same
   code the CLI calls; the UI only supplies a form and a progress view. The
-  charts read the same `*_results.csv` files `agb analyze` writes and compute
-  nothing of their own.
+  Analyze/Results charts read the same `*_results.csv` files `agb analyze`
+  writes and compute nothing of their own. Compare is the one view that runs
+  statistics live rather than reading a finished table, and it does so by
+  calling `analysis.reports.grounding.report_per_model` and
+  `report_reachability` directly -- the same functions `agb analyze` calls --
+  never a JavaScript reimplementation.
 - **Modify a dataset it is reading.** Collect writes only to
   `datasets/<name>/`, analysis writes only to `outputs/<dataset>/analysis/`, and Evaluate
   appends to its own result CSV. Nothing in the UI rewrites a dataset's

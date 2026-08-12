@@ -917,9 +917,11 @@ class ScaledPredictionScoringTests(unittest.TestCase):
 
 
 class CappedModelTreeModeTests(unittest.TestCase):
-    def test_tree_mode_refuses_a_capped_model(self):
-        """The tree lists element bounds in full-size pixels; the image would be
-        downscaled. Sending both hands the model two coordinate systems."""
+    """A capped model (screenshot downscaled) can now run tree mode: the tree
+    bounds are scaled into the same space as the sent image instead of the
+    run being refused."""
+
+    def test_tree_mode_runs_a_capped_model_with_scaled_bounds(self):
         import json as _json
         import struct as _struct
 
@@ -933,17 +935,95 @@ class CappedModelTreeModeTests(unittest.TestCase):
                 b"\x89PNG\r\n\x1a\n" + _struct.pack(">I", 13) + b"IHDR"
                 + _struct.pack(">II", 1080, 2219)
             )
+            # "Alarm" is the harvested target; "Snooze" is a distinct element
+            # far enough from Alarm's hit box that collect_tree_rows keeps it,
+            # so the captured tree carries at least one row to check scaling on.
             (labels / "clock_baseline.json").write_text(
-                _json.dumps([{"text": "Alarm", "box": [10, 10, 100, 60]}]),
+                _json.dumps([
+                    {"text": "Alarm", "box": [10, 10, 100, 60]},
+                    {"text": "Snooze", "box": [200, 200, 300, 260]},
+                ]),
                 encoding="utf-8",
             )
-            with self.assertRaisesRegex(ValueError, "vision-only"):
-                evaluate_screen(
-                    "anthropic/claude-haiku-4-5", "clock",
-                    [{"text": "Alarm", "baseline_box": [10, 10, 100, 60]}],
+
+            # Both baseline texts are unique, so harvest_targets queries both
+            # in file order: "Alarm" first (with "Snooze" as its tree
+            # context), then "Snooze" (with "Alarm" as its tree context).
+            calls = []
+
+            def fake_call_vlm(model, image_path, prompt, target_text=None, **kwargs):
+                calls.append({
+                    "target_text": target_text,
+                    "prompt": prompt,
+                    "tree_rows": kwargs.get("tree_rows"),
+                    "img_width": kwargs.get("img_width"),
+                    "img_height": kwargs.get("img_height"),
+                })
+                return "[100, 100]"
+
+            with mock.patch("evaluation.runner.call_vlm", side_effect=fake_call_vlm):
+                # Previously this raised ValueError; it must now run cleanly.
+                count = evaluate_screen(
+                    "anthropic/claude-haiku-4-5", "clock", 0, root / "r.csv",
                     images_dir=images, labels_dir=labels, use_a11y_tree=True,
-                    results_csv=root / "r.csv", profiles=["baseline"],
+                    profiles=["baseline"],
                 )
+
+            self.assertEqual(2, count)
+            self.assertEqual(2, len(calls))
+            alarm_call = next(c for c in calls if c["target_text"] == "Alarm")
+
+            # 1080x2219 capped to a 1568px long edge -> 763x1568.
+            self.assertEqual(763, alarm_call["img_width"])
+            self.assertEqual(1568, alarm_call["img_height"])
+            self.assertIn("763 x 1568", alarm_call["prompt"])
+
+            tree_rows = alarm_call["tree_rows"]
+            self.assertTrue(tree_rows)
+            labels_seen = {label: box for label, box in tree_rows}
+            self.assertIn("Snooze", labels_seen)
+            snooze_box = labels_seen["Snooze"]
+            # Unscaled box would be [200, 200, 300, 260]; scaled by 1568/2219
+            # it must land well inside the 763x1568 sent image and differ from
+            # the unscaled values.
+            self.assertNotEqual([200, 200, 300, 260], snooze_box)
+            x1, y1, x2, y2 = snooze_box
+            self.assertTrue(0 <= x1 <= x2 <= 763)
+            self.assertTrue(0 <= y1 <= y2 <= 1568)
+            self.assertEqual([141, 141, 212, 184], snooze_box)
+
+
+class ScaleTreeRowsTests(unittest.TestCase):
+    """scale_tree_rows keeps a capped model's tree bounds in the same
+    coordinate space as the downscaled screenshot it accompanies."""
+
+    def test_identity_at_scale_one(self):
+        from evaluation.grounding.task_prompting import scale_tree_rows
+
+        rows = [("Snooze", [200, 200, 300, 260])]
+        result = scale_tree_rows(rows, 1.0)
+        # Same object, not a rebuilt equal copy -- an uncapped model's prompt
+        # must be byte-identical to the pre-cap pipeline.
+        self.assertIs(rows, result)
+
+    def test_scales_and_rounds_at_capped_ratio(self):
+        from evaluation.grounding.task_prompting import scale_tree_rows
+
+        scale = 1568 / 2219
+        rows = [("Snooze", [200, 200, 300, 260])]
+        result = scale_tree_rows(rows, scale)
+        self.assertEqual([("Snooze", [141, 141, 212, 184])], result)
+
+    def test_degenerate_box_does_not_invert(self):
+        from evaluation.grounding.task_prompting import scale_tree_rows
+
+        # A 1px-wide box at a small scale can round both edges to the same
+        # value or, without clamping, x2 < x1.
+        rows = [("dot", [100, 100, 101, 101])]
+        result = scale_tree_rows(rows, 0.01)
+        (_, (x1, y1, x2, y2)) = result[0]
+        self.assertGreaterEqual(x2, x1)
+        self.assertGreaterEqual(y2, y1)
 
 
 class StructuredCoordinateTests(unittest.TestCase):

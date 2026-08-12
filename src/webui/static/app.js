@@ -10,8 +10,9 @@
 
 import { api } from "./api.js";
 import { html } from "./ui.js";
+import { icon } from "./icons.js";
 import {
-  initDatasetView, loadDataset, selectedScreen,
+  initDatasetView, loadDataset, screenList, selectedScreen, selectScreen,
 } from "./view-dataset.js";
 import {
   getModels, initModelsView, loadProviders, renderModelList, setSmokeContext,
@@ -20,10 +21,14 @@ import {
   initEvaluateView, preflightSummary, refreshPreflight, syncModelOptions,
 } from "./view-evaluate.js";
 import { initResultsView, loadResults, resultCount } from "./view-results.js";
-import { initAnalyzeView } from "./view-analyze.js";
+import { initAnalyzeView, loadExisting as loadExistingAnalysis } from "./view-analyze.js";
 import { initCollectView } from "./view-collect.js";
+import { compareModelCount, initCompareView, loadCompareModels } from "./view-compare.js";
+import { initCommandPalette } from "./command-palette.js";
+import { initKeyboard } from "./keyboard.js";
+import { initExportButtons } from "./export.js";
 
-const TABS = ["dataset", "models", "evaluate", "collect", "results", "analyze"];
+const TABS = ["dataset", "models", "evaluate", "collect", "compare", "results", "analyze"];
 
 const state = {
   datasets: [],
@@ -32,6 +37,19 @@ const state = {
 };
 
 const getDataset = () => state.dataset;
+
+// ---------- Rail icons ----------
+
+/**
+ * Fills in every `[data-icon]` placeholder in the rail with its icons.js
+ * glyph. Run once at startup -- index.html only carries the icon key, not
+ * the SVG itself, so icons.js stays the one place a glyph's path data lives.
+ */
+function populateRailIcons() {
+  document.querySelectorAll("[data-icon]").forEach((el) => {
+    el.innerHTML = icon(el.dataset.icon, 17);
+  });
+}
 
 // ---------- Routing ----------
 
@@ -76,6 +94,9 @@ function refreshChips() {
 
   setChip("evaluate", preflightSummary());
 
+  const compareCount = compareModelCount();
+  setChip("compare", compareCount ? `${compareCount} model${compareCount === 1 ? "" : "s"}` : "needs results");
+
   const count = resultCount();
   setChip("results", count ? `${count} result file${count === 1 ? "" : "s"}` : "no runs yet");
   setChip("analyze", count ? "" : "needs results");
@@ -116,19 +137,29 @@ async function onDatasetChanged() {
     : "";
 
   await loadDataset(state.dataset);
-  await Promise.all([loadResults(), refreshPreflight()]);
+  await Promise.all([loadResults(), refreshPreflight(), loadCompareModels(), loadExistingAnalysis()]);
   refreshChips();
 }
 
 // ---------- Init ----------
 
 async function init() {
+  populateRailIcons();
   showTab((location.hash || "#dataset").slice(1));
+
+  initCommandPalette({
+    getDataset,
+    getScreens: screenList,
+    onSelectScreen: (screen) => selectScreen(getDataset(), screen),
+  });
+  initKeyboard();
+  initExportButtons();
 
   initDatasetView(getDataset);
   setSmokeContext(getDataset, selectedScreen);
   initResultsView({ getDataset });
   initAnalyzeView({ getDataset });
+  initCompareView({ getDataset });
   initEvaluateView({
     getDataset,
     getModels,

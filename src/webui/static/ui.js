@@ -3,6 +3,8 @@
 /** Shared rendering helpers. No DOM ownership -- every function returns markup
  *  or a detached node, so views stay responsible for where things land. */
 
+import { icon } from "./icons.js";
+
 export function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => (
     { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
@@ -51,6 +53,25 @@ export function stateLoading(text = "Loading...") {
 
 export function stateError(text) {
   return html`<p class="state-error" role="alert">${text}</p>`;
+}
+
+/**
+ * A signed accuracy-point delta, worded rather than left to a bare sign.
+ * `diff` follows analysis.stats' paired_difference_interval convention
+ * (baseline - comparison, positive means accuracy DROPPED) -- a "+X.X pts"
+ * prefix would read as an improvement to most people, which is backwards
+ * for a positive value under this convention, so the direction is spelled
+ * out in words instead of trusted to +/-.
+ */
+export function deltaCell(diff) {
+  const pts = Math.abs(diff * 100).toFixed(1);
+  if (Math.abs(diff) < 0.0005) {
+    return `<span class="delta-cell is-flat">no change</span>`;
+  }
+  if (diff > 0) {
+    return `<span class="delta-cell is-down">${icon("arrow-down", 11)}${pts} pts lower</span>`;
+  }
+  return `<span class="delta-cell is-up">${icon("arrow-up", 11)}${pts} pts higher</span>`;
 }
 
 /**

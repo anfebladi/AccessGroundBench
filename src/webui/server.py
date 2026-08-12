@@ -67,6 +67,33 @@ def analysis_output_dir(dataset_dir: Path, mode: str, sample: str) -> Path:
     return paths.analysis_output_path(mode, sample, dataset_dir)
 
 
+ANALYSIS_TABLE_FILES = {
+    "reachability": "reachability_results.csv",
+    "pooled_permutation": "pooled_permutation_results.csv",
+    "mcnemar_per_model": "mcnemar_results_per_model.csv",
+    "direction_consistency": "direction_consistency.csv",
+}
+
+
+def read_analysis_tables(output_dir: Path) -> dict[str, list[dict]]:
+    """Read the four analysis-workflow CSVs from one output directory.
+
+    Shared by the GET (read whatever already exists) and POST (read what a
+    fresh run just wrote) analysis endpoints, so both return identically
+    shaped responses and the Analyze view's rendering code never needs to
+    know which one produced its data.
+    """
+    tables: dict[str, list[dict]] = {}
+    for key, filename in ANALYSIS_TABLE_FILES.items():
+        path = output_dir / filename
+        if not path.is_file():
+            tables[key] = []
+            continue
+        with open(path, newline="", encoding="utf-8") as f:
+            tables[key] = list(csv.DictReader(f))
+    return tables
+
+
 def _evaluations_root(info) -> Path:
     """Return the evaluation outputs owned by one dataset record."""
     return paths.evaluations_dir(info.path)
@@ -172,6 +199,14 @@ def create_app():
                 statuses = Counter(r["status"] for r in rows)
                 co_present = [r for r in rows if r["status"] == "co_present"]
                 hits = sum(1 for r in co_present if r.get("score") == "1")
+                # Restricted to the baseline profile only -- a plain
+                # proportion, not an inferential statistic, so computing it
+                # here rather than in analysis.stats carries no drift risk
+                # the way McNemar/Holm would (see webui.compare's docstring).
+                # Lets Results show whether a model's blended accuracy is
+                # hiding degradation under altered profiles at a glance.
+                baseline_rows = [r for r in co_present if r.get("profile") == "baseline"]
+                baseline_hits = sum(1 for r in baseline_rows if r.get("score") == "1")
                 out.append({
                     "filename": csv_path.name,
                     "model": model_name_from_path(csv_path),
@@ -181,6 +216,7 @@ def create_app():
                     "co_present_count": len(co_present),
                     "hits": hits,
                     "accuracy": (hits / len(co_present)) if co_present else None,
+                    "baseline_accuracy": (baseline_hits / len(baseline_rows)) if baseline_rows else None,
                 })
         return out
 
@@ -220,6 +256,32 @@ def create_app():
             }
             for r in rows
         ]
+
+    @app.get("/api/datasets/{name}/results/compare")
+    def dataset_compare(
+        name: str, model: str, mode: str = "vision", sample: str = "primary"
+    ) -> dict:
+        """Baseline-vs-profile comparison for one model -- the Compare view.
+
+        Takes a model id and searches the dataset's own result files for it,
+        rather than a single filename: the Holm-Bonferroni correction has to
+        run across every model discovered for this dataset/mode (see
+        webui.compare's module docstring), which needs all of them loaded
+        regardless of which one is being displayed.
+        """
+        from analysis.data.samples import SAMPLE_NAMES
+
+        from .compare import CompareError, compare_model
+
+        info = _dataset_or_404(name)
+        if mode not in ANALYSIS_MODES:
+            raise HTTPException(status_code=400, detail=f"Unknown mode: {mode!r}")
+        if sample not in SAMPLE_NAMES:
+            raise HTTPException(status_code=400, detail=f"Unknown sample: {sample!r}")
+        try:
+            return compare_model(info.path, model, mode=mode, sample=sample)
+        except CompareError as e:
+            raise HTTPException(status_code=404, detail=str(e)) from e
 
     @app.get("/api/datasets/{name}/preflight")
     def evaluate_preflight(name: str, model: str, use_a11y_tree: bool = False) -> dict:
@@ -402,6 +464,36 @@ def create_app():
             raise HTTPException(status_code=400, detail="Run is not cancellable (unknown or already finished)")
         return {"ok": True}
 
+    @app.get("/api/datasets/{name}/analysis")
+    def dataset_analysis(name: str, mode: str = "vision", sample: str = "all") -> dict:
+        """Read whatever analysis tables already exist for this mode/sample,
+        without running anything.
+
+        This is the direct fix for the Analyze view only ever showing a
+        chart after a multi-minute permutation run: `agb analyze` (or a
+        previous browser run) may have already written these CSVs, and
+        without this endpoint they were unreachable from the UI. Returns
+        the identical shape POST /api/analyze does (via the same
+        read_analysis_tables helper), so the Analyze view's render() needs
+        no branch for "loaded fresh" versus "loaded existing".
+        """
+        info = _dataset_or_404(name)
+        if mode not in ANALYSIS_MODES:
+            raise HTTPException(status_code=400, detail=f"Unknown mode: {mode!r}")
+        if sample not in ANALYSIS_SAMPLES:
+            raise HTTPException(status_code=400, detail=f"Unknown sample: {sample!r}")
+
+        output_dir = analysis_output_dir(info.path, mode, sample)
+        tables = read_analysis_tables(output_dir)
+        available = any(tables.values())
+
+        try:
+            shown_dir = output_dir.relative_to(paths.PROJECT_ROOT).as_posix()
+        except ValueError:
+            shown_dir = str(output_dir)
+
+        return {"available": available, "output_dir": shown_dir if available else None, **tables}
+
     @app.post("/api/analyze")
     def analyze(payload: dict) -> dict:
         from analysis.reports.reachability import DEFAULT_LABEL_CHANGED_MODE
@@ -436,13 +528,6 @@ def create_app():
                     detail=f"Analysis failed: {buf.getvalue().strip().splitlines()[-1] if buf.getvalue().strip() else 'see server log'}",
                 )
 
-        def _read_csv(filename: str) -> list[dict]:
-            path = output_dir / filename
-            if not path.is_file():
-                return []
-            with open(path, newline="", encoding="utf-8") as f:
-                return list(csv.DictReader(f))
-
         try:
             shown_dir = output_dir.relative_to(paths.PROJECT_ROOT).as_posix()
         except ValueError:
@@ -451,10 +536,7 @@ def create_app():
         return {
             "log": buf.getvalue(),
             "output_dir": shown_dir,
-            "reachability": _read_csv("reachability_results.csv"),
-            "pooled_permutation": _read_csv("pooled_permutation_results.csv"),
-            "mcnemar_per_model": _read_csv("mcnemar_results_per_model.csv"),
-            "direction_consistency": _read_csv("direction_consistency.csv"),
+            **read_analysis_tables(output_dir),
         }
 
     @app.get("/api/collect/screens")

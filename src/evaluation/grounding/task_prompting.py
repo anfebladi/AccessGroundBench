@@ -93,6 +93,43 @@ def collect_tree_rows(
     return rows
 
 
+def scale_tree_rows(
+    rows: list[tuple[str, list[int]]], scale: float
+) -> list[tuple[str, list[int]]]:
+    """Rescale tree-row boxes into the coordinate space of a downscaled screenshot.
+
+    A capped model (see providers.config.MAX_IMAGE_EDGE) is sent a screenshot
+    smaller than the label boxes were measured in. Without this, its prompt
+    would state tree bounds in one coordinate system while describing an
+    image in another. scale is the same uniform factor
+    providers.image_send_scale applied to the screenshot, so multiplying
+    every coordinate by it keeps the tree and the image in agreement.
+
+    Returns `rows` unchanged (same object) when scale >= 1.0 -- the common
+    case, since only capped models scale below 1.0 -- so an uncapped model's
+    prompt stays byte-identical to the pre-cap pipeline rather than being
+    rebuilt through a no-op multiply/round.
+
+    Rounding is per-coordinate, then clamped so x2 >= x1 and y2 >= y1: a
+    1-2px source box can otherwise round to an inverted box. Sub-pixel
+    rounding error is harmless here -- the tree is spatial context, not a
+    scored coordinate, and collect_tree_rows already withholds any row
+    whose centre would score a hit.
+    """
+    if scale >= 1.0:
+        return rows
+    scaled = []
+    for label, (x1, y1, x2, y2) in rows:
+        sx1, sy1 = round(x1 * scale), round(y1 * scale)
+        sx2, sy2 = round(x2 * scale), round(y2 * scale)
+        if sx2 < sx1:
+            sx2 = sx1
+        if sy2 < sy1:
+            sy2 = sy1
+        scaled.append((label, [sx1, sy1, sx2, sy2]))
+    return scaled
+
+
 def build_tree_text(
     profile_labels: list[dict],
     exclude_text: str | None = None,
@@ -111,4 +148,10 @@ def build_tree_text(
     ]
     return "\n".join(lines)
 
-__all__ = ["PROMPT_TEMPLATE", "PROMPT_TEMPLATE_WITH_TREE", "build_tree_text", "collect_tree_rows"]
+__all__ = [
+    "PROMPT_TEMPLATE",
+    "PROMPT_TEMPLATE_WITH_TREE",
+    "build_tree_text",
+    "collect_tree_rows",
+    "scale_tree_rows",
+]
