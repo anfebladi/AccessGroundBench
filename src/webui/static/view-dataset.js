@@ -9,34 +9,18 @@
  * targets are gone, side by side, at the same display height.
  */
 
-import { api, enc, imageUrl } from "./api.js";
-import {
-  badge, cssVar, drawScreenshot, emptyState, html, imageIsDrawable,
-  pct, raw, stateError, stateLoading, strokeWidthFor,
-} from "./ui.js";
+import { api, enc } from "./api.js";
+import { badge, emptyState, html, raw, stateError, stateLoading } from "./ui.js";
+import { PROFILES, renderComparisonStage, renderEmptyStage } from "./compare-stage.js";
 
-export const PROFILES = [
-  ["baseline", "Baseline"],
-  ["elder_text_heavy", "Text heavy"],
-  ["elder_zoom_heavy", "Zoom heavy"],
-  ["elder_combo_mid", "Combo mid"],
-  ["elder_combo_max", "Combo max"],
-  ["colorblind_deuteranomaly", "Deuteranomaly"],
-];
+export { PROFILES };
 
 const state = {
   screens: [],
   filter: "",
   selected: null,
   profile: "elder_combo_max",
-  showBoxes: true,
-  showMissing: true,
 };
-
-// Last-loaded comparison data, kept so the overlay toggles can redraw the
-// two canvases in place -- no re-fetch, no rebuilding the panes -- instead
-// of running the full fetch-and-rebuild path a screen/profile change needs.
-let lastComparison = null;
 
 // Bumped on every renderBrowser() call so a slower, older fetch can tell it
 // has been superseded by a newer screen/profile pick and bail out instead of
@@ -47,10 +31,23 @@ export function selectedScreen() {
   return state.selected;
 }
 
+/** Every screen name in the currently loaded dataset, for the command palette. */
+export function screenList() {
+  return state.screens;
+}
+
 export async function loadDataset(dataset) {
   state.selected = null;
   await Promise.all([loadScreens(dataset), loadWarnings(dataset)]);
   renderBrowser(dataset);
+}
+
+/** Jump straight to a screen -- the command palette's route into this view. */
+export async function selectScreen(dataset, screen) {
+  if (!state.screens.includes(screen) || state.selected === screen) return;
+  state.selected = screen;
+  renderScreenList(dataset);
+  await renderBrowser(dataset);
 }
 
 // ---------- Capture warnings ----------
@@ -148,55 +145,32 @@ export function initDatasetView(getDataset) {
 }
 
 // ---------- Comparison ----------
-
-// Real checkboxes, not segmented-tab buttons: unlike the profile picker
-// below (a single-select group -- exactly one profile is ever active),
-// these two are independent on/off overlays that can be any combination of
-// checked. Styling them like the exclusive-choice segmented control implied
-// "pick one of these," which is the wrong affordance for what they do.
-function renderOverlayToggles(dataset) {
-  const host = document.getElementById("compare-overlay-toggles");
-  host.innerHTML = html`
-    <label class="chip-check">
-      <input type="checkbox" data-toggle="showBoxes" ${raw(state.showBoxes ? "checked" : "")} />
-      Target boxes
-    </label>
-    <label class="chip-check">
-      <input type="checkbox" data-toggle="showMissing" ${raw(state.showMissing ? "checked" : "")} />
-      Missing targets
-    </label>
-  `;
-  host.querySelectorAll("input[data-toggle]").forEach((box) => {
-    box.addEventListener("change", () => {
-      state[box.dataset.toggle] = box.checked;
-      redrawOverlays();
-    });
-  });
-}
+//
+// All rendering and interaction for the comparison itself -- panes, zoom/pan,
+// onion-skin, the target list, keyboard stepping -- lives in compare-stage.js.
+// This view's job stops at resolving a screen/profile pick into targets and
+// profile labels and handing them over.
 
 async function renderBrowser(dataset) {
-  const container = document.getElementById("screen-browser");
-  renderOverlayToggles(dataset);
   const token = ++renderToken;
 
   if (!dataset || !state.selected) {
-    lastComparison = null;
-    container.classList.remove("is-loading");
-    container.innerHTML = emptyState({
+    renderEmptyStage(emptyState({
       title: "No screen selected",
       body: "Pick a screen from the list to compare its baseline capture against an accessibility profile.",
-    });
+    }));
     return;
   }
 
   const screen = state.selected;
+  const container = document.getElementById("screen-browser");
 
   // Switching screen or profile keeps the current screenshots on screen,
   // just dimmed, while the next ones load -- blanking the whole panel to a
   // bare "Loading..." line on every click is what read as a glitch. The
   // first-ever load has nothing to keep visible, so it still shows the
   // loading state outright.
-  if (container.querySelector(".compare")) {
+  if (container.querySelector(".stage-body")) {
     container.classList.add("is-loading");
   } else {
     container.innerHTML = stateLoading("Loading captures...");
@@ -214,9 +188,8 @@ async function renderBrowser(dataset) {
     profileLabels = labelsRes || [];
   } catch (e) {
     if (token !== renderToken) return;
-    lastComparison = null;
     container.classList.remove("is-loading");
-    container.innerHTML = stateError(e.message);
+    renderEmptyStage(stateError(e.message));
     return;
   }
 
@@ -227,180 +200,15 @@ async function renderBrowser(dataset) {
   );
   const present = targets.filter((t) => profileTexts.has(t.text));
   const missing = targets.filter((t) => !profileTexts.has(t.text));
-  const reachability = targets.length ? present.length / targets.length : null;
-
   const profileLabel = PROFILES.find(([id]) => id === state.profile)?.[1] || state.profile;
   const isBaselineBoth = state.profile === "baseline";
-  const profileCaption = isBaselineBoth
-    ? "Same capture as the left pane."
-    : `${present.length} of ${targets.length} baseline targets still present`
-      + (reachability === null ? "" : ` (${pct(reachability)} reachable)`);
 
   container.classList.remove("is-loading");
-  container.innerHTML = html`
-    <div class="segmented" id="profile-picker" role="group" aria-label="Accessibility profile">
-      ${PROFILES.map(([id, label]) => raw(html`
-        <button type="button" data-profile="${id}" aria-pressed="${String(id === state.profile)}">${label}</button>
-      `))}
-    </div>
-
-    <div class="compare" style="margin-top: var(--space-4);">
-      <div class="pane">
-        <div class="pane-head">
-          <span class="pane-title">Baseline</span>
-          <span class="pane-dims" id="dims-baseline"></span>
-        </div>
-        <div class="pane-canvas">
-          <div class="skeleton skeleton-block" id="skel-baseline" aria-hidden="true"></div>
-          <canvas id="canvas-baseline" hidden></canvas>
-        </div>
-        <p class="image-caption">${targets.length} groundable target${targets.length === 1 ? "" : "s"}</p>
-      </div>
-      <div class="pane">
-        <div class="pane-head">
-          <span class="pane-title">${profileLabel}</span>
-          <span class="pane-dims" id="dims-profile"></span>
-        </div>
-        <div class="pane-canvas">
-          <div class="skeleton skeleton-block" id="skel-profile" aria-hidden="true"></div>
-          <canvas id="canvas-profile" hidden></canvas>
-        </div>
-        <p class="image-caption">${profileCaption}</p>
-      </div>
-    </div>
-
-    ${!isBaselineBoth && missing.length ? raw(html`
-      <div class="note note-info" style="margin-top: var(--space-4);">
-        <span class="note-label">Note</span>
-        <b>${missing.length} target${missing.length === 1 ? "" : "s"} evicted by this profile.</b>
-        They are outlined on the baseline pane. A target that no longer renders
-        cannot be grounded by any model, so it is scored as
-        <code>off_screen</code> rather than as a miss.
-        <div class="small muted" style="margin-top: var(--space-2);">
-          ${missing.slice(0, 8).map((t) => raw(html`<code>${t.text}</code> `))}
-          ${missing.length > 8 ? raw(html`<span>and ${missing.length - 8} more</span>`) : ""}
-        </div>
-      </div>`) : ""}
-
-    <div class="overlay-legend" style="margin-top: var(--space-4);">
-      <span class="legend-item" style="color: var(--viz-blue)"><span class="legend-swatch"></span>Groundable target</span>
-      <span class="legend-item" style="color: var(--err)"><span class="legend-swatch"></span>Missing from this profile</span>
-    </div>
-  `;
-
-  container.querySelectorAll("button[data-profile]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      state.profile = btn.dataset.profile;
-      renderBrowser(dataset);
-    });
+  renderComparisonStage(dataset, screen, {
+    profile: state.profile, profileLabel, isBaselineBoth,
+    targets, present, missing, profileLabels,
+  }, (profile) => {
+    state.profile = profile;
+    renderBrowser(dataset);
   });
-
-  lastComparison = {
-    dataset, screen, profile: state.profile,
-    present, missing, profileLabels, isBaselineBoth,
-  };
-  redrawOverlays();
-}
-
-/**
- * Redraw the two canvases from the last-fetched comparison data, honouring
- * the current showBoxes/showMissing toggle state. No network call and no
- * touching the surrounding panes -- this is what the overlay toggle buttons
- * call, so ticking "Target boxes" on or off is an instant local redraw, not
- * a full reload of the comparison panel.
- *
- * The screenshot images are cached on `lastComparison` once their load
- * settles and redrawn from that cache here. `imageUrl()` appends a
- * cache-busting timestamp (so a re-collected capture is never served stale),
- * which also means a naive re-fetch would hit the network for the same
- * pixels on every toggle click -- a visible flash for zero new information.
- *
- * A cached image can be in three states, not two: `img.complete` alone
- * conflates "loaded" with "failed" (both leave it `true`), so `show()` below
- * checks `imageIsDrawable()` instead and treats "still in flight" as its own
- * case rather than folding it into "not loaded yet, start a load".
- */
-function redrawOverlays() {
-  if (!lastComparison) return;
-  const c = lastComparison;
-  const canvasBaseline = document.getElementById("canvas-baseline");
-  const canvasProfile = document.getElementById("canvas-profile");
-  const skelBaseline = document.getElementById("skel-baseline");
-  const skelProfile = document.getElementById("skel-profile");
-  if (!canvasBaseline || !canvasProfile || !skelBaseline || !skelProfile) return;
-
-  const accent = cssVar("--viz-blue", "#2a78d6");
-  const err = cssVar("--err", "#b3221a");
-
-  const decorateBaseline = (ctx, img) => {
-    document.getElementById("dims-baseline").textContent = `${img.width} x ${img.height}`;
-    ctx.lineWidth = strokeWidthFor(img);
-    if (state.showBoxes) {
-      ctx.strokeStyle = accent;
-      for (const t of c.present) strokeBox(ctx, t.baseline_box);
-    }
-    if (state.showMissing && !c.isBaselineBoth) {
-      ctx.strokeStyle = err;
-      for (const t of c.missing) strokeBox(ctx, t.baseline_box);
-    }
-  };
-
-  const decorateProfile = (ctx, img) => {
-    // Dimensions differ from baseline whenever density changes -- surfacing
-    // that is the point, since label coordinates are not comparable across
-    // profiles without accounting for it.
-    document.getElementById("dims-profile").textContent = `${img.width} x ${img.height}`;
-    if (!state.showBoxes) return;
-    ctx.lineWidth = strokeWidthFor(img);
-    ctx.strokeStyle = accent;
-    const wanted = new Set(c.present.map((t) => t.text));
-    for (const rec of c.profileLabels) {
-      if (rec.box && wanted.has((rec.text || "").trim())) strokeBox(ctx, rec.box);
-    }
-  };
-
-  // Starts a load only when none is in flight yet; redraws from cache once
-  // one has decoded; otherwise leaves the pane exactly as it is -- a load
-  // still in flight will paint with whatever toggle state is current once
-  // its onload fires, and a load that already failed is not worth
-  // re-requesting on every click, so its "Screenshot not available" message
-  // (and the skeleton/canvas visibility from when it settled) just stays put.
-  const show = (canvas, skel, dimsId, key, url, decorate) => {
-    if (imageIsDrawable(c[key])) {
-      redrawCached(canvas, c[key], decorate);
-      return;
-    }
-    if (c[key]) return; // in flight or already failed: nothing changes
-    skel.hidden = false;
-    canvas.hidden = true;
-    c[key] = drawScreenshot(canvas, url, decorate, (img) => {
-      skel.hidden = true;
-      canvas.hidden = false;
-      // A failed load never runs `decorate`, so nothing else writes this --
-      // left alone it would keep showing whatever the previous pane's
-      // dimensions were.
-      if (img.naturalWidth === 0) {
-        document.getElementById(dimsId).textContent = "—";
-      }
-    });
-  };
-
-  show(canvasBaseline, skelBaseline, "dims-baseline", "imgBaseline",
-    imageUrl(c.dataset, c.screen, "baseline"), decorateBaseline);
-  show(canvasProfile, skelProfile, "dims-profile", "imgProfile",
-    imageUrl(c.dataset, c.screen, c.profile), decorateProfile);
-}
-
-function redrawCached(canvas, img, decorate) {
-  const ctx = canvas.getContext("2d");
-  canvas.width = img.width;
-  canvas.height = img.height;
-  ctx.drawImage(img, 0, 0);
-  decorate(ctx, img);
-}
-
-function strokeBox(ctx, box) {
-  if (!box) return;
-  const [x1, y1, x2, y2] = box;
-  ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
 }

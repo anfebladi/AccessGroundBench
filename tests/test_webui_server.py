@@ -164,6 +164,46 @@ class WebuiServerTests(unittest.TestCase):
         self.assertAlmostEqual(0.5, rows[0]["accuracy"])
         self.assertEqual("test-model_vision.csv", rows[0]["filename"])
 
+    def test_analysis_endpoint_reports_unavailable_when_nothing_has_been_run(self):
+        resp = self.client.get("/api/datasets/dataset/analysis?mode=vision&sample=all")
+        self.assertEqual(200, resp.status_code)
+        body = resp.json()
+        self.assertFalse(body["available"])
+        self.assertIsNone(body["output_dir"])
+        self.assertEqual([], body["reachability"])
+
+    def test_analysis_endpoint_reads_existing_tables_without_recomputing(self):
+        # This is the direct regression test for "I see no graphs": tables
+        # already on disk from a prior `agb analyze` (or a previous browser
+        # run) must be readable without POSTing a fresh, multi-minute run.
+        output_dir = paths.analysis_output_path("vision", "all", self.dataset_dir)
+        output_dir.mkdir(parents=True)
+        (output_dir / "reachability_results.csv").write_text(
+            "Sample,Profile,Targets_Present,Targets_Total,Reachability,CI_Low,CI_High\n"
+            "all,elder_text_heavy,9,10,0.9000,0.6000,0.9800\n",
+            encoding="utf-8",
+        )
+
+        resp = self.client.get("/api/datasets/dataset/analysis?mode=vision&sample=all")
+        self.assertEqual(200, resp.status_code)
+        body = resp.json()
+        self.assertTrue(body["available"])
+        self.assertEqual("outputs/dataset/analysis/vision_all", body["output_dir"])
+        self.assertEqual(1, len(body["reachability"]))
+        self.assertEqual("elder_text_heavy", body["reachability"][0]["Profile"])
+        # The other three tables have no file on disk yet -- empty, not an error.
+        self.assertEqual([], body["pooled_permutation"])
+        self.assertEqual([], body["mcnemar_per_model"])
+        self.assertEqual([], body["direction_consistency"])
+
+    def test_analysis_endpoint_rejects_unknown_mode_or_sample(self):
+        self.assertEqual(400, self.client.get(
+            "/api/datasets/dataset/analysis?mode=bogus"
+        ).status_code)
+        self.assertEqual(400, self.client.get(
+            "/api/datasets/dataset/analysis?sample=bogus"
+        ).status_code)
+
     def test_result_rows_endpoint_returns_scoreable_fields(self):
         self.write_results_csv("test-model", [
             {"screen": "clock", "target_text": "8:30 AM", "profile": "baseline",

@@ -10,9 +10,11 @@
 
 import { api, enc, imageUrl } from "./api.js";
 import {
-  badge, cssVar, drawScreenshot, emptyState, html, pct, raw,
+  badge, cssVar, deltaCell, drawScreenshot, emptyState, html, pct, raw,
   skeleton, stateError, stateLoading, strokeWidthFor,
 } from "./ui.js";
+import { accuracyChart } from "./charts.js";
+import { icon } from "./icons.js";
 
 const STATUS_COLUMNS = [
   ["off_screen", "Off-screen", "Target absent from this profile; never queried."],
@@ -25,6 +27,14 @@ let getDataset = () => null;
 let rows = [];
 let modeFilter = "all";
 let sort = { key: "accuracy", dir: "desc" };
+// Set true right before the render() that follows a fresh fetch; consumed
+// once inside render() so sort/filter clicks (same rows, no new fetch)
+// never replay the chart's draw-in animation.
+let shouldAnimate = false;
+// Keyed by filename (unique per result file, unlike model -- the same model
+// can appear once per prompt mode), so a selection made under one mode
+// filter survives switching to "All" and back.
+let selected = new Set();
 
 export function initResultsView(deps) {
   getDataset = deps.getDataset;
@@ -47,12 +57,16 @@ export async function loadResults() {
     host.innerHTML = stateError(e.message);
     return;
   }
+  selected = new Set(rows.map((r) => r.filename).filter((f) => selected.has(f)));
+  shouldAnimate = true;
   render();
 }
 
 function render() {
   const host = document.getElementById("results-body");
   const filterHost = document.getElementById("results-mode-filter");
+  const animate = shouldAnimate;
+  shouldAnimate = false;
 
   if (!rows.length) {
     filterHost.innerHTML = "";
@@ -79,6 +93,13 @@ function render() {
     .filter((r) => modeFilter === "all" || r.prompt_mode === modeFilter)
     .sort(compare);
 
+  const chartRows = visible
+    .filter((r) => r.accuracy !== null)
+    .sort((a, b) => b.accuracy - a.accuracy)
+    .map((r) => ({ label: r.model, value: r.accuracy }));
+
+  const selectedRows = visible.filter((r) => selected.has(r.filename));
+
   host.innerHTML = html`
     ${modes.length > 1 ? raw(html`
       <div class="note">
@@ -86,15 +107,32 @@ function render() {
         Vision and tree results answer different research questions and are
         never pooled. Analyze runs one arm at a time.
       </div>`) : ""}
+    ${chartRows.length ? raw(html`
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h3>Overall accuracy</h3>
+            <p class="card-sub">Blended across every profile, co-present targets only. The exact figures and the baseline-only breakdown are in the table below.</p>
+          </div>
+          <div class="card-head-actions">
+            <button type="button" class="secondary small icon-btn" data-export-chart="results-overall-accuracy"
+                    title="Export chart as PNG" aria-label="Export chart as PNG">${raw(icon("download", 14))}</button>
+          </div>
+        </div>
+        <div class="${animate ? "chart-draw-in" : ""}">${raw(accuracyChart(chartRows))}</div>
+      </div>`) : ""}
+    ${raw(compareSelectedSection(selectedRows))}
     <div class="table-stack">
     <div class="table-wrap">
       <table id="results-table">
         <thead>
           <tr>
+            <th class="num" title="Check models to compare them side by side">Compare</th>
             ${raw(th("model", "Model"))}
             ${raw(th("prompt_mode", "Mode"))}
             ${raw(th("row_count", "Rows", "num"))}
             ${raw(th("accuracy", "Accuracy"))}
+            <th title="Blended accuracy compared with baseline-only accuracy">vs. baseline</th>
             <th title="Rows excluded from the accuracy denominator, by CSV status">Not scored</th>
             <th></th>
           </tr>
@@ -113,6 +151,17 @@ function render() {
       sort = { key, dir: sort.key === key && sort.dir === "desc" ? "asc" : "desc" };
       render();
     });
+  });
+  host.querySelectorAll("input[data-compare-select]").forEach((box) => {
+    box.addEventListener("change", () => {
+      if (box.checked) selected.add(box.dataset.compareSelect);
+      else selected.delete(box.dataset.compareSelect);
+      render();
+    });
+  });
+  host.querySelector("#results-compare-clear")?.addEventListener("click", () => {
+    selected.clear();
+    render();
   });
   host.querySelectorAll("button[data-inspect]").forEach((btn) => {
     btn.addEventListener("click", () => openMissInspector(btn.dataset.inspect, btn.dataset.model));
@@ -171,20 +220,63 @@ function renderRow(r) {
         <span class="bar-fraction">${r.hits} / ${r.co_present_count}</span>
       </div>`;
 
+  // baseline_accuracy is null when the CSV has no baseline-profile rows at
+  // all (e.g. a still-running evaluation); the delta is meaningless without
+  // both sides, so it reads as "--" rather than a false zero.
+  const baselineAcc = r.baseline_accuracy === null ? null : Number(r.baseline_accuracy);
+  const vsBaselineCell = (accuracy === null || baselineAcc === null)
+    ? '<span class="muted">--</span>'
+    : deltaCell(baselineAcc - accuracy);
+
   // data-label feeds the stacked-card layout below `md`, where the header row
   // is hidden and each cell has to name itself.
   return html`
     <tr>
+      <td class="num" data-label="Compare">
+        <input type="checkbox" data-compare-select="${r.filename}" ${raw(selected.has(r.filename) ? "checked" : "")}
+               aria-label="Compare ${r.model} (${r.prompt_mode})" />
+      </td>
       <td data-label="Model"><b>${r.model}</b></td>
       <td data-label="Mode">${r.prompt_mode || raw('<span class="muted">--</span>')}</td>
       <td class="num" data-label="Rows">${r.row_count}</td>
       <td data-label="Accuracy">${raw(accuracyCell)}</td>
+      <td data-label="vs. baseline">${raw(vsBaselineCell)}</td>
       <td data-label="Not scored">${raw(notScoredCell(r.statuses))}</td>
       <td data-label="" style="text-align:right">
         <button type="button" class="secondary small"
                 data-inspect="${r.filename}" data-model="${r.model}">Misses</button>
       </td>
     </tr>`;
+}
+
+/**
+ * A focused view of just the checked models -- reuses accuracyChart (plain
+ * accuracy, no inferential statistic computed here) so picking a handful out
+ * of a 26-model table doesn't mean scanning the full sorted list for them.
+ * Two rows minimum: one checked model has nothing to compare against.
+ */
+function compareSelectedSection(selectedRows) {
+  if (selectedRows.length < 2) return "";
+  const chartRows = selectedRows
+    .filter((r) => r.accuracy !== null)
+    .sort((a, b) => b.accuracy - a.accuracy)
+    .map((r) => ({ label: `${r.model}${r.prompt_mode ? ` (${r.prompt_mode})` : ""}`, value: r.accuracy }));
+
+  return html`
+    <div class="card card-dark">
+      <div class="card-head">
+        <div>
+          <h3>Comparing ${selectedRows.length} selected models</h3>
+          <p class="card-sub">Same accuracy figures as the table below, isolated for a direct look.</p>
+        </div>
+        <div class="card-head-actions">
+          <button type="button" class="secondary small icon-btn" data-export-chart="results-selected-comparison"
+                  title="Export chart as PNG" aria-label="Export chart as PNG">${raw(icon("download", 14))}</button>
+          <button type="button" class="secondary small" id="results-compare-clear">Clear selection</button>
+        </div>
+      </div>
+      <div class="chart-dark">${raw(accuracyChart(chartRows))}</div>
+    </div>`;
 }
 
 // ---------- Miss inspector ----------

@@ -14,6 +14,13 @@
  * Identity is never carried by hue alone: the diverging chart marks
  * significance with a filled vs hollow square, and underpowered rows carry a
  * dagger, so the charts survive greyscale print and colour-vision deficiency.
+ *
+ * Every mark carries `.chart-mark` (bars) or `.chart-row` (dumbbell's
+ * line-and-dots) so a caller can opt into the first-render draw-in animation
+ * by wrapping its output in `<div class="chart-draw-in">` -- see
+ * style.css's `--dur-chart` block. Do this only on the actual first render
+ * of a given chart; a re-render triggered by toggling a filter must not
+ * replay the animation.
  */
 
 import { escapeHtml } from "./ui.js";
@@ -85,7 +92,7 @@ export function reachabilityChart(rows, { gutter = 168 } = {}) {
     const labelX = Math.max(end, hi) + 8;
     return `
       <text class="chart-name" x="${gutter - 10}" y="${i * band + band / 2 + 4}" text-anchor="end">${escapeHtml(r.label)}</text>
-      <path d="${barPath(x0, y, end - x0, BAR)}" fill="var(--viz-blue)" />
+      <path class="chart-mark" d="${barPath(x0, y, end - x0, BAR)}" fill="var(--viz-blue)" />
       <g stroke="var(--text-2)" stroke-width="1.5">
         <line x1="${lo}" y1="${i * band + band / 2}" x2="${hi}" y2="${i * band + band / 2}" />
         <line x1="${lo}" y1="${y + 3}" x2="${lo}" y2="${y + BAR - 3}" />
@@ -95,6 +102,41 @@ export function reachabilityChart(rows, { gutter = 168 } = {}) {
   }).join("");
 
   return svg(height, "Target reachability by profile, with 95% confidence intervals",
+    `${grid}<line class="chart-rule" x1="${x0}" y1="0" x2="${x0}" y2="${rows.length * band}" />${bars}`);
+}
+
+/**
+ * Plain accuracy per model, one bar each -- no confidence interval, unlike
+ * reachabilityChart: an interval here would be a fresh statistic computed
+ * in JS rather than read from analysis.stats, which is exactly the
+ * duplication this codebase avoids (see webui/compare.py's docstring). The
+ * exact figures sit in the table this chart sits above; this is the scan
+ * layer, not the source of truth.
+ */
+export function accuracyChart(rows, { gutter = 168 } = {}) {
+  if (!rows.length) return "";
+  const band = 30;
+  const height = rows.length * band + AXIS_H + 10;
+  const valueGutter = 54;
+  const x0 = gutter;
+  const x1 = W - PAD_R - valueGutter;
+  const scale = (v) => x0 + Math.max(0, Math.min(1, v)) * (x1 - x0);
+
+  const grid = tickValues(1).map((t) => `
+    <line class="chart-grid" x1="${scale(t)}" y1="0" x2="${scale(t)}" y2="${rows.length * band}" />
+    <text class="chart-axis-label" x="${scale(t)}" y="${rows.length * band + 15}"
+          text-anchor="middle">${Math.round(t * 100)}%</text>`).join("");
+
+  const bars = rows.map((r, i) => {
+    const y = i * band + (band - BAR) / 2;
+    const end = scale(r.value);
+    return `
+      <text class="chart-name" x="${gutter - 10}" y="${i * band + band / 2 + 4}" text-anchor="end">${escapeHtml(r.label)}</text>
+      <path class="chart-mark" d="${barPath(x0, y, end - x0, BAR)}" fill="var(--viz-blue)" />
+      <text class="chart-value" x="${end + 8}" y="${i * band + band / 2 + 4}">${(r.value * 100).toFixed(1)}%</text>`;
+  }).join("");
+
+  return svg(height, "Overall accuracy by model",
     `${grid}<line class="chart-rule" x1="${x0}" y1="0" x2="${x0}" y2="${rows.length * band}" />${bars}`);
 }
 
@@ -129,8 +171,8 @@ export function discordantChart(rows, { gutter = 168 } = {}) {
       : `<rect x="${x1 + 8.5}" y="${mid - 7.5}" width="8" height="8" fill="none" stroke="var(--text-2)" stroke-width="1.5" />`;
     return `
       <text class="chart-name" x="${gutter - 10}" y="${mid}" text-anchor="end">${escapeHtml(r.label)}</text>
-      <path d="${barPathLeft(centre - 1, y, scale(r.left), BAR)}" fill="var(--viz-red)" />
-      <path d="${barPath(centre + 1, y, scale(r.right), BAR)}" fill="var(--viz-blue)" />
+      <path class="chart-mark" d="${barPathLeft(centre - 1, y, scale(r.left), BAR)}" fill="var(--viz-red)" />
+      <path class="chart-mark" d="${barPath(centre + 1, y, scale(r.right), BAR)}" fill="var(--viz-blue)" />
       <text class="chart-value" x="${centre - scale(r.left) - 6}" y="${mid}" text-anchor="end">${r.left}</text>
       <text class="chart-value" x="${centre + scale(r.right) + 6}" y="${mid}">${r.right}</text>
       ${marker}
@@ -175,7 +217,7 @@ export function dumbbellChart(rows, { gutter = 190 } = {}) {
     const delta = r.to - r.from;
     const deltaText = `${delta >= 0 ? "+" : ""}${(delta * 100).toFixed(1)}`;
     return `
-      <g${dim}>
+      <g class="chart-row"${dim}>
         <text class="chart-name" x="${gutter - 10}" y="${y + 4}" text-anchor="end">${escapeHtml(r.label)}${flag}</text>
         <line x1="${a}" y1="${y}" x2="${b}" y2="${y}" stroke="var(--text-2)" stroke-width="2" stroke-linecap="round" />
         <circle cx="${a}" cy="${y}" r="5" fill="var(--viz-blue)" stroke="var(--surface)" stroke-width="2" />
@@ -234,7 +276,7 @@ export function directionChart(rows, { gutter = 168 } = {}) {
         ? `<text x="${start + w / 2}" y="${mid - 1}" text-anchor="middle"
                  fill="${ink}" font-weight="500">${label}</text>`
         : "";
-      return `<path d="${d}" fill="${fill}" />${text}`;
+      return `<path class="chart-mark" d="${d}" fill="${fill}" />${text}`;
     }).join("");
 
     return `

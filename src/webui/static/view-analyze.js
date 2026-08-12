@@ -11,19 +11,86 @@
  * table.
  */
 
-import { api } from "./api.js";
+import { api, enc } from "./api.js";
 import { badge, escapeHtml, html, raw, setLoading, stateError } from "./ui.js";
 import {
   directionChart, discordantChart, dumbbellChart, legend, reachabilityChart,
 } from "./charts.js";
+import { icon } from "./icons.js";
 
 let getDataset = () => null;
 let lastResult = null;
 let dumbbellProfile = null;
+// Set true right before the FIRST render() of a freshly loaded result set;
+// render() consumes it once, so the profile-picker click handler's own
+// render() call (same lastResult, no new fetch) never replays the animation.
+let shouldAnimate = false;
+// Every one of the four tables carries a Sample column (full/primary/
+// precautionary/uniform), and "all samples" -- the analyze form's own
+// default -- pools every named sample into one CSV. None of the four chart
+// builders below filtered by it, so picking "all" quadrupled every chart's
+// rows with the same profile repeated once per sample: a 15-model dumbbell
+// chart rendered 60 bars. render() now picks one sample to chart (with a
+// picker when more than one is present) and filters before the section
+// functions ever see the rows, so the underlying bug -- passing every
+// sample's rows into a chart built for one -- can't recur in a new section.
+let activeSample = null;
 
 export function initAnalyzeView(deps) {
   getDataset = deps.getDataset;
   document.getElementById("analyze-form").addEventListener("submit", runAnalysis);
+  document.getElementById("analyze-mode").addEventListener("change", loadExisting);
+  document.getElementById("analyze-sample").addEventListener("change", loadExisting);
+}
+
+/**
+ * Read whatever this mode/sample combination already has on disk and show
+ * it immediately -- no permutation run required. This is the direct fix
+ * for "I see no graphs": the tables exist in outputs/<dataset>/analysis/
+ * from a prior `agb analyze` (or an earlier browser run), and previously
+ * there was no way to reach them short of re-running. The form below stays
+ * available as "re-run with new parameters," not as a gate to seeing
+ * anything at all.
+ */
+export async function loadExisting() {
+  const out = document.getElementById("analyze-results");
+  const dataset = getDataset();
+  if (!dataset) {
+    lastResult = null;
+    out.innerHTML = "";
+    return;
+  }
+
+  const mode = document.getElementById("analyze-mode").value;
+  const sample = document.getElementById("analyze-sample").value;
+  let body;
+  try {
+    body = await api(
+      `/api/datasets/${enc(dataset)}/analysis?mode=${enc(mode)}&sample=${enc(sample)}`
+    );
+  } catch (e) {
+    lastResult = null;
+    out.innerHTML = raw(stateError(e.message));
+    return;
+  }
+
+  if (!body.available) {
+    lastResult = null;
+    out.innerHTML = html`
+      <div class="note">
+        <span class="note-label">Note</span>
+        No analysis has been run yet for <code>${mode}</code> / <code>${sample}</code> on this
+        dataset. Run one below -- results appear here immediately for any mode/sample
+        combination that already has tables, without waiting on a new run.
+      </div>`;
+    return;
+  }
+
+  dumbbellProfile = null;
+  activeSample = null;
+  lastResult = body;
+  shouldAnimate = true;
+  render();
 }
 
 async function runAnalysis(e) {
@@ -60,6 +127,8 @@ async function runAnalysis(e) {
   }
 
   dumbbellProfile = null;
+  activeSample = null;
+  shouldAnimate = true;
   render();
 }
 
@@ -68,15 +137,33 @@ function render() {
   const r = lastResult;
   if (!r) return;
 
+  const animate = shouldAnimate;
+  shouldAnimate = false;
+
+  const allRows = [
+    ...(r.reachability || []), ...(r.pooled_permutation || []),
+    ...(r.mcnemar_per_model || []), ...(r.direction_consistency || []),
+  ];
+  const samples = [...new Set(allRows.map((row) => row.Sample).filter(Boolean))];
+  const sample = activeSample && samples.includes(activeSample) ? activeSample : samples[0];
+  const byActiveSample = (rows) => rows.filter((row) => row.Sample === sample);
+
   out.innerHTML = `
     ${caveats()}
     ${writtenTo(r.output_dir)}
-    ${reachabilitySection(r.reachability || [])}
-    ${pooledSection(r.pooled_permutation || [])}
-    ${perModelSection(r.mcnemar_per_model || [])}
-    ${directionSection(r.direction_consistency || [])}
+    ${samplePicker(samples, sample)}
+    ${reachabilitySection(byActiveSample(r.reachability || []), animate)}
+    ${pooledSection(byActiveSample(r.pooled_permutation || []), animate)}
+    ${perModelSection(byActiveSample(r.mcnemar_per_model || []), animate)}
+    ${directionSection(byActiveSample(r.direction_consistency || []), animate)}
   `;
 
+  out.querySelectorAll("button[data-sample]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      activeSample = btn.dataset.sample;
+      render();
+    });
+  });
   out.querySelectorAll("button[data-dumbbell-profile]").forEach((btn) => {
     btn.addEventListener("click", () => {
       dumbbellProfile = btn.dataset.dumbbellProfile;
@@ -84,6 +171,22 @@ function render() {
       document.getElementById("per-model-card").scrollIntoView({ block: "nearest" });
     });
   });
+}
+
+/**
+ * Only shown when "All samples" produced more than one named sample in the
+ * tables (full/primary/precautionary/uniform) -- a single-sample run has
+ * nothing to pick between. Every chart below is built from exactly one
+ * sample's rows; see the `activeSample` comment at the top of this file for
+ * why that filtering exists at all.
+ */
+function samplePicker(samples, active) {
+  if (samples.length < 2) return "";
+  return html`
+    <div class="segmented" role="group" aria-label="Sample" style="margin-bottom: var(--space-4);">
+      ${samples.map((s) => raw(html`
+        <button type="button" data-sample="${s}" aria-pressed="${String(s === active)}">${s}</button>`))}
+    </div>`;
 }
 
 /**
@@ -115,7 +218,7 @@ function caveats() {
 
 // ---------- Reachability ----------
 
-function reachabilitySection(rows) {
+function reachabilitySection(rows, animate) {
   if (!rows.length) return emptyCard("Reachability", "No reachability rows were produced.");
   const chartRows = rows.map((r) => ({
     label: r.Profile,
@@ -134,12 +237,12 @@ function reachabilitySection(rows) {
 
   return card("Reachability",
     "Share of baseline targets that still render under each profile. A target that is gone cannot be grounded by any model.",
-    reachabilityChart(chartRows) + table);
+    drawIn(reachabilityChart(chartRows), animate) + table, "reachability");
 }
 
 // ---------- Pooled permutation ----------
 
-function pooledSection(rows) {
+function pooledSection(rows, animate) {
   if (!rows.length) return emptyCard("Pooled permutation", "No pooled rows were produced.");
 
   const chartRows = rows.map((r) => ({
@@ -168,12 +271,12 @@ function pooledSection(rows) {
 
   return card("Pooled permutation (primary)",
     "Cluster permutation across models, clustered on target. Discordant pairs only.",
-    key + discordantChart(chartRows) + table);
+    key + drawIn(discordantChart(chartRows), animate) + table, "pooled-permutation");
 }
 
 // ---------- Per-model McNemar ----------
 
-function perModelSection(rows) {
+function perModelSection(rows, animate) {
   if (!rows.length) return emptyCard("Per-model McNemar", "No per-model rows were produced.");
 
   const profiles = [...new Set(rows.map((r) => r.Profile))];
@@ -218,10 +321,14 @@ function perModelSection(rows) {
           <h3>Per-model McNemar (secondary)</h3>
           <p class="card-sub">Co-present targets only, Holm-corrected across the family.</p>
         </div>
-        <div class="card-head-actions">${picker}</div>
+        <div class="card-head-actions">
+          ${picker}
+          <button type="button" class="secondary small icon-btn" data-export-chart="per-model-mcnemar-${escapeHtml(active)}"
+                  title="Export chart as PNG" aria-label="Export chart as PNG">${icon("download", 14)}</button>
+        </div>
       </div>
       ${key}
-      ${dumbbellChart(chartRows)}
+      ${drawIn(dumbbellChart(chartRows), animate)}
       ${table}
     </div>`;
 }
@@ -232,7 +339,7 @@ function isUnderpowered(flag) {
 
 // ---------- Direction consistency ----------
 
-function directionSection(rows) {
+function directionSection(rows, animate) {
   if (!rows.length) return emptyCard("Direction consistency", "No sign-test rows were produced.");
 
   const chartRows = rows.map((r) => ({
@@ -257,12 +364,17 @@ function directionSection(rows) {
 
   return card("Direction consistency (descriptive)",
     "Counts models by direction of change. Result CSVs are not independent models -- configuration variants of one base model share a row here.",
-    key + directionChart(chartRows) + table);
+    key + drawIn(directionChart(chartRows), animate) + table, "direction-consistency");
 }
 
 // ---------- Shared shells ----------
 
-function card(title, subtitle, body) {
+/** Wrap chart markup so it plays its draw-in animation, but only when `animate`. */
+function drawIn(chartMarkup, animate) {
+  return `<div class="${animate ? "chart-draw-in" : ""}">${chartMarkup}</div>`;
+}
+
+function card(title, subtitle, body, exportName) {
   return `
     <div class="card">
       <div class="card-head">
@@ -270,6 +382,11 @@ function card(title, subtitle, body) {
           <h3>${title}</h3>
           <p class="card-sub">${subtitle}</p>
         </div>
+        ${exportName ? `
+          <div class="card-head-actions">
+            <button type="button" class="secondary small icon-btn" data-export-chart="${escapeHtml(exportName)}"
+                    title="Export chart as PNG" aria-label="Export chart as PNG">${icon("download", 14)}</button>
+          </div>` : ""}
       </div>
       ${body}
     </div>`;

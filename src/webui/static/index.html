@@ -16,6 +16,8 @@
       <label for="dataset-select">Dataset</label>
       <select id="dataset-select"></select>
       <span id="dataset-meta" class="meta"></span>
+      <button type="button" class="secondary small icon-btn" id="palette-trigger" data-icon="command"
+              title="Command palette (Ctrl/Cmd+K)" aria-label="Open command palette"></button>
     </div>
   </header>
 
@@ -23,36 +25,43 @@
     <nav id="rail" aria-label="Workflow">
       <p class="rail-group" id="rail-group-setup">Set up</p>
       <a href="#dataset" data-tab="dataset">
-        <span class="rail-num" aria-hidden="true">1</span>
+        <span class="rail-icon" aria-hidden="true" data-icon="dataset"></span>
         <span class="rail-label">Dataset</span>
         <span class="rail-chip" data-chip="dataset"></span>
       </a>
       <a href="#models" data-tab="models">
-        <span class="rail-num" aria-hidden="true">2</span>
+        <span class="rail-icon" aria-hidden="true" data-icon="models"></span>
         <span class="rail-label">Models</span>
         <span class="rail-chip" data-chip="models"></span>
       </a>
 
       <p class="rail-group">Run</p>
       <a href="#evaluate" data-tab="evaluate">
-        <span class="rail-num" aria-hidden="true">3</span>
+        <span class="rail-icon" aria-hidden="true" data-icon="evaluate"></span>
         <span class="rail-label">Evaluate</span>
         <span class="rail-chip" data-chip="evaluate"></span>
       </a>
       <a href="#collect" data-tab="collect">
-        <span class="rail-num" aria-hidden="true">4</span>
+        <span class="rail-icon" aria-hidden="true" data-icon="collect"></span>
         <span class="rail-label">Collect</span>
         <span class="rail-chip" data-chip="collect"></span>
       </a>
 
+      <p class="rail-group">Compare</p>
+      <a href="#compare" data-tab="compare">
+        <span class="rail-icon" aria-hidden="true" data-icon="compare"></span>
+        <span class="rail-label">Compare</span>
+        <span class="rail-chip" data-chip="compare"></span>
+      </a>
+
       <p class="rail-group">Read</p>
       <a href="#results" data-tab="results">
-        <span class="rail-num" aria-hidden="true">5</span>
+        <span class="rail-icon" aria-hidden="true" data-icon="results"></span>
         <span class="rail-label">Results</span>
         <span class="rail-chip" data-chip="results"></span>
       </a>
       <a href="#analyze" data-tab="analyze">
-        <span class="rail-num" aria-hidden="true">6</span>
+        <span class="rail-icon" aria-hidden="true" data-icon="analyze"></span>
         <span class="rail-label">Analyze</span>
         <span class="rail-chip" data-chip="analyze"></span>
       </a>
@@ -294,6 +303,36 @@
         <div id="collect-run"></div>
       </section>
 
+      <!-- ============================ Compare ============================ -->
+      <section id="tab-compare" class="tab" hidden aria-labelledby="head-compare">
+        <div class="view-head">
+          <h2 id="head-compare">Compare</h2>
+          <p class="lead">
+            Pick a model you've evaluated and see how it performs on the baseline
+            layout versus each accessibility profile -- the benchmark's headline
+            question, answered without running a full analysis.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="field-row">
+            <div class="field">
+              <label for="compare-mode-select">Prompt mode</label>
+              <select id="compare-mode-select">
+                <option value="vision">Vision</option>
+                <option value="tree">Tree</option>
+              </select>
+            </div>
+            <div class="field field-wide">
+              <label for="compare-model-select">Model</label>
+              <select id="compare-model-select"></select>
+            </div>
+          </div>
+        </div>
+
+        <div id="compare-body"></div>
+      </section>
+
       <!-- ============================ Results ============================ -->
       <section id="tab-results" class="tab" hidden aria-labelledby="head-results">
         <div class="view-head">
@@ -385,6 +424,23 @@
   </div>
 
   <div id="drawer-root"></div>
+
+  <div class="palette-backdrop" id="palette-backdrop" hidden>
+    <div class="palette" role="dialog" aria-modal="true" aria-label="Command palette">
+      <div class="palette-input-row">
+        <input type="text" id="palette-input" role="combobox" aria-expanded="true"
+               aria-controls="palette-list" aria-autocomplete="list"
+               placeholder="Jump to a view, screen, or model&hellip;" autocomplete="off" />
+      </div>
+      <ul id="palette-list" role="listbox" aria-label="Results"></ul>
+      <div class="palette-foot">
+        <span><kbd>&uarr;</kbd><kbd>&darr;</kbd> navigate</span>
+        <span><kbd>Enter</kbd> select</span>
+        <span><kbd>Esc</kbd> close</span>
+        <span><kbd>1</kbd>&ndash;<kbd>7</kbd> jump to a view</span>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="/app.js"></script>
 </body>

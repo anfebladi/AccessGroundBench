@@ -235,9 +235,11 @@ def call_vlm(
     target_text and tree_rows are structured context for models whose wire
     format is rewritten from `prompt` rather than sent verbatim (currently
     Ferret-UI and Gemini). Other hosted models ignore them and send `prompt`
-    unchanged. tree_rows is the collect_tree_rows() output in cropped-image
-    pixel space; each model-specific rewrite is responsible for converting to
-    its own coordinate convention.
+    unchanged. tree_rows is the collect_tree_rows() output, scaled (see
+    scale_tree_rows) into the coordinate space of the image actually sent --
+    matching the img_width/img_height args it is rendered alongside, not
+    always full-size cropped-image pixels. Each model-specific rewrite is
+    responsible for converting to its own coordinate convention.
 
     coord_space_out, when given a dict, receives {"value": GEMINI_SPACE_*}
     for Gemini models once the reply is resolved, so a caller can log

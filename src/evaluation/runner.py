@@ -5,7 +5,7 @@ import time
 from collections import Counter
 from pathlib import Path
 
-from .providers import call_vlm, image_send_scale, max_image_edge
+from .providers import call_vlm, image_send_scale
 
 from .config import ALL_PROFILES, DEFAULT_COORD_SPACE, IMAGES_DIR, LABELS_DIR
 from .storage.results import (
@@ -32,6 +32,7 @@ from .grounding.task_prompting import (
     PROMPT_TEMPLATE_WITH_TREE,
     build_tree_text,
     collect_tree_rows,
+    scale_tree_rows,
 )
 
 def score_one_trial(
@@ -150,14 +151,6 @@ def evaluate_screen(
         image_scale = image_send_scale(model, img_width, img_height)
         prompt_width = round(img_width * image_scale)
         prompt_height = round(img_height * image_scale)
-        if image_scale < 1.0 and use_a11y_tree:
-            raise ValueError(
-                f"{model} caps images at {max_image_edge(model)}px, so the "
-                f"screenshot is downscaled, but tree mode embeds element "
-                f"bounds in full-size pixels. Sending both would give the "
-                f"model two conflicting coordinate systems. Run this model "
-                f"vision-only (USE_A11Y_TREE=false)."
-            )
 
         with open(label_path, "r", encoding="utf-8") as f:
             profile_labels = json.load(f)
@@ -267,11 +260,14 @@ def evaluate_screen(
             # can be passed to call_vlm as structured context even when the
             # shared hosted-model prompt below doesn't need it rendered.
             tree_rows = (
-                collect_tree_rows(
-                    profile_labels,
-                    exclude_text=target_text,
-                    target_box=box,
-                    baseline_box=baseline_box,
+                scale_tree_rows(
+                    collect_tree_rows(
+                        profile_labels,
+                        exclude_text=target_text,
+                        target_box=box,
+                        baseline_box=baseline_box,
+                    ),
+                    image_scale,
                 )
                 if use_a11y_tree
                 else None
@@ -283,8 +279,8 @@ def evaluate_screen(
                     for label, (x1, y1, x2, y2) in tree_rows
                 )
                 prompt = PROMPT_TEMPLATE_WITH_TREE.format(
-                    img_width=img_width,
-                    img_height=img_height,
+                    img_width=prompt_width,
+                    img_height=prompt_height,
                     tree_text=tree_text,
                     target_text=target_text,
                 )
