@@ -1,0 +1,321 @@
+Sample,Model,Profile,Total_Pairs,Both_Pass_a,Broke_It_b,Fluke_Recovery_c,Both_Fail_d,Discordant_Pairs,Baseline_Acc,Exp_Acc,Risk_Diff,Risk_Diff_CI_Low,Risk_Diff_CI_High,Odds_Ratio,OR_CI_Low,OR_CI_High,Test_Used,Statistic,P_Value,Holm_Threshold,Significant,Power_Limit
+full,9router_ag_gemini-3-flash-agent,elder_text_heavy,139,138,1,0,0,1,100.0%,99.3%,0.0072,-0.0203,0.0396,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001471,No,ceiling
+full,9router_ag_gemini-3-flash-agent,elder_zoom_heavy,144,142,2,0,0,2,100.0%,98.6%,0.0139,-0.0140,0.0492,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000926,No,ceiling
+full,9router_ag_gemini-3-flash-agent,elder_combo_max,111,110,1,0,0,1,100.0%,99.1%,0.0090,-0.0253,0.0493,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001515,No,ceiling
+full,9router_ag_gemini-3-flash-agent,elder_combo_mid,123,122,1,0,0,1,100.0%,99.2%,0.0081,-0.0229,0.0446,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001563,No,ceiling
+full,9router_ag_gemini-3-flash-agent,colorblind_deuteranomaly,153,153,0,0,0,0,100.0%,100.0%,0.0000,-0.0245,0.0245,,,,N/A (no discordant pairs),,1.000000,0.001613,No,ceiling
+full,9router_ag_gemini-3-flash,elder_text_heavy,139,138,1,0,0,1,100.0%,99.3%,0.0072,-0.0203,0.0396,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001667,No,ceiling
+full,9router_ag_gemini-3-flash,elder_zoom_heavy,144,143,1,0,0,1,100.0%,99.3%,0.0069,-0.0197,0.0383,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001724,No,ceiling
+full,9router_ag_gemini-3-flash,elder_combo_max,111,111,0,0,0,0,100.0%,100.0%,0.0000,-0.0335,0.0335,,,,N/A (no discordant pairs),,1.000000,0.001786,No,ceiling
+full,9router_ag_gemini-3-flash,elder_combo_mid,123,121,2,0,0,2,100.0%,98.4%,0.0163,-0.0162,0.0574,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000943,No,ceiling
+full,9router_ag_gemini-3-flash,colorblind_deuteranomaly,153,152,1,0,0,1,100.0%,99.3%,0.0065,-0.0185,0.0361,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001852,No,ceiling
+full,9router_ag_gemini-3.5-flash-low,elder_text_heavy,139,138,0,0,1,0,99.3%,99.3%,0.0000,-0.0265,0.0265,,,,N/A (no discordant pairs),,1.000000,0.001923,No,ceiling
+full,9router_ag_gemini-3.5-flash-low,elder_zoom_heavy,144,143,0,1,0,1,99.3%,100.0%,-0.0069,-0.0383,0.0197,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.002000,No,ceiling
+full,9router_ag_gemini-3.5-flash-low,elder_combo_max,111,110,0,1,0,1,99.1%,100.0%,-0.0090,-0.0493,0.0253,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.002083,No,ceiling
+full,9router_ag_gemini-3.5-flash-low,elder_combo_mid,123,120,2,1,0,3,99.2%,98.4%,0.0081,-0.0303,0.0498,2.000,0.104,117.994,Exact Binomial (n=3),,1.000000,0.002174,No,ceiling
+full,9router_ag_gemini-3.5-flash-low,colorblind_deuteranomaly,153,151,1,1,0,2,99.3%,99.3%,0.0000,-0.0301,0.0301,1.000,0.013,78.497,Exact Binomial (n=2),,1.000000,0.002273,No,ceiling
+full,9router_ag_gemini-pro-agent,elder_text_heavy,139,136,3,0,0,3,100.0%,97.8%,0.0216,-0.0088,0.0615,inf,0.413,inf,Exact Binomial (n=3),,0.250000,0.000781,No,ceiling
+full,9router_ag_gemini-pro-agent,elder_zoom_heavy,144,141,3,0,0,3,100.0%,97.9%,0.0208,-0.0086,0.0595,inf,0.413,inf,Exact Binomial (n=3),,0.250000,0.000794,No,ceiling
+full,9router_ag_gemini-pro-agent,elder_combo_max,111,107,4,0,0,4,100.0%,96.4%,0.0360,-0.0040,0.0890,inf,0.660,inf,Exact Binomial (n=4),,0.125000,0.000676,No,ceiling
+full,9router_ag_gemini-pro-agent,elder_combo_mid,123,121,2,0,0,2,100.0%,98.4%,0.0163,-0.0162,0.0574,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000962,No,ceiling
+full,9router_ag_gemini-pro-agent,colorblind_deuteranomaly,153,148,4,1,0,5,99.3%,97.4%,0.0196,-0.0142,0.0592,4.000,0.396,196.990,Exact Binomial (n=5),,0.375000,0.000862,No,ceiling
+full,9router_cx_gpt-5.4-mini,elder_text_heavy,139,47,20,5,67,25,48.2%,37.4%,0.1079,0.0394,0.1742,4.000,1.457,13.639,"Asymptotic (Edwards' correction, n=25)",7.8400,0.005110,0.000625,No,floor
+full,9router_cx_gpt-5.4-mini,elder_zoom_heavy,144,58,9,13,64,22,46.5%,49.3%,-0.0278,-0.0904,0.0354,0.692,0.261,1.751,Exact Binomial (n=22),,0.523467,0.001220,No,floor
+full,9router_cx_gpt-5.4-mini,elder_combo_max,111,54,10,13,34,23,57.7%,60.4%,-0.0270,-0.1100,0.0567,0.769,0.302,1.899,Exact Binomial (n=23),,0.677639,0.001351,No,none
+full,9router_cx_gpt-5.4-mini,elder_combo_mid,123,49,16,8,50,24,52.8%,46.3%,0.0650,-0.0119,0.1402,2.000,0.808,5.398,Exact Binomial (n=24),,0.151590,0.000714,No,none
+full,9router_cx_gpt-5.4-mini,colorblind_deuteranomaly,153,55,15,4,79,19,45.8%,38.6%,0.0719,0.0173,0.1255,3.750,1.195,15.522,Exact Binomial (n=19),,0.019211,0.000649,No,floor
+full,9router_cx_gpt-5.4,elder_text_heavy,139,99,14,8,18,22,81.3%,77.0%,0.0432,-0.0232,0.1102,1.750,0.685,4.815,Exact Binomial (n=22),,0.286279,0.000833,No,none
+full,9router_cx_gpt-5.4,elder_zoom_heavy,144,105,10,18,11,28,79.9%,85.4%,-0.0556,-0.1284,0.0166,0.556,0.229,1.269,"Asymptotic (Edwards' correction, n=28)",1.7500,0.185877,0.000725,No,none
+full,9router_cx_gpt-5.4,elder_combo_max,111,86,10,7,8,17,86.5%,83.8%,0.0270,-0.0476,0.1027,1.429,0.491,4.422,Exact Binomial (n=17),,0.629059,0.001316,No,none
+full,9router_cx_gpt-5.4,elder_combo_mid,123,89,14,11,9,25,83.7%,81.3%,0.0244,-0.0563,0.1053,1.273,0.537,3.098,"Asymptotic (Edwards' correction, n=25)",0.1600,0.689157,0.001389,No,none
+full,9router_cx_gpt-5.4,colorblind_deuteranomaly,153,110,12,8,23,20,79.7%,77.1%,0.0261,-0.0317,0.0845,1.500,0.564,4.230,Exact Binomial (n=20),,0.503445,0.001190,No,none
+full,9router_cx_gpt-5.5,elder_text_heavy,139,139,0,0,0,0,100.0%,100.0%,0.0000,-0.0269,0.0269,,,,N/A (no discordant pairs),,1.000000,0.002381,No,ceiling
+full,9router_cx_gpt-5.5,elder_zoom_heavy,144,143,1,0,0,1,100.0%,99.3%,0.0069,-0.0197,0.0383,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.002500,No,ceiling
+full,9router_cx_gpt-5.5,elder_combo_max,111,110,1,0,0,1,100.0%,99.1%,0.0090,-0.0253,0.0493,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.002632,No,ceiling
+full,9router_cx_gpt-5.5,elder_combo_mid,123,121,2,0,0,2,100.0%,98.4%,0.0163,-0.0162,0.0574,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000980,No,ceiling
+full,9router_cx_gpt-5.5,colorblind_deuteranomaly,153,150,2,0,1,2,99.3%,98.0%,0.0131,-0.0115,0.0467,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001000,No,ceiling
+full,9router_cx_gpt-5.6-luna,elder_text_heavy,139,134,3,1,1,4,98.6%,97.1%,0.0144,-0.0204,0.0549,3.000,0.241,157.492,Exact Binomial (n=4),,0.625000,0.001250,No,ceiling
+full,9router_cx_gpt-5.6-luna,elder_zoom_heavy,144,137,5,1,1,6,98.6%,95.8%,0.0278,-0.0086,0.0724,5.000,0.559,236.488,Exact Binomial (n=6),,0.218750,0.000746,No,ceiling
+full,9router_cx_gpt-5.6-luna,elder_combo_max,111,105,4,1,1,5,98.2%,95.5%,0.0270,-0.0179,0.0807,4.000,0.396,196.990,Exact Binomial (n=5),,0.375000,0.000877,No,ceiling
+full,9router_cx_gpt-5.6-luna,elder_combo_mid,123,118,3,1,1,4,98.4%,96.7%,0.0163,-0.0228,0.0618,3.000,0.241,157.492,Exact Binomial (n=4),,0.625000,0.001282,No,ceiling
+full,9router_cx_gpt-5.6-luna,colorblind_deuteranomaly,153,149,1,1,2,2,98.0%,98.0%,0.0000,-0.0296,0.0296,1.000,0.013,78.497,Exact Binomial (n=2),,1.000000,0.002778,No,ceiling
+full,9router_cx_gpt-5.6-sol,elder_text_heavy,139,138,0,1,0,1,99.3%,100.0%,-0.0072,-0.0396,0.0203,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.002941,No,ceiling
+full,9router_cx_gpt-5.6-sol,elder_zoom_heavy,144,143,0,0,1,0,99.3%,99.3%,0.0000,-0.0256,0.0256,,,,N/A (no discordant pairs),,1.000000,0.003125,No,ceiling
+full,9router_cx_gpt-5.6-sol,elder_combo_max,111,109,1,0,1,1,99.1%,98.2%,0.0090,-0.0234,0.0494,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.003333,No,ceiling
+full,9router_cx_gpt-5.6-sol,elder_combo_mid,123,122,0,0,1,0,99.2%,99.2%,0.0000,-0.0298,0.0298,,,,N/A (no discordant pairs),,1.000000,0.003571,No,ceiling
+full,9router_cx_gpt-5.6-sol,colorblind_deuteranomaly,153,151,0,1,1,1,98.7%,99.3%,-0.0065,-0.0363,0.0173,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.003846,No,ceiling
+full,9router_cx_gpt-5.6-terra,elder_text_heavy,139,136,2,0,1,2,99.3%,97.8%,0.0144,-0.0125,0.0513,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001020,No,ceiling
+full,9router_cx_gpt-5.6-terra,elder_zoom_heavy,144,142,1,1,0,2,99.3%,99.3%,0.0000,-0.0319,0.0319,1.000,0.013,78.497,Exact Binomial (n=2),,1.000000,0.004167,No,ceiling
+full,9router_cx_gpt-5.6-terra,elder_combo_max,111,107,3,0,1,3,99.1%,96.4%,0.0270,-0.0081,0.0768,inf,0.413,inf,Exact Binomial (n=3),,0.250000,0.000806,No,ceiling
+full,9router_cx_gpt-5.6-terra,elder_combo_mid,123,120,2,0,1,2,99.2%,97.6%,0.0163,-0.0140,0.0577,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001042,No,ceiling
+full,9router_cx_gpt-5.6-terra,colorblind_deuteranomaly,153,149,1,0,3,1,98.0%,97.4%,0.0065,-0.0175,0.0353,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.004545,No,ceiling
+full,anthropic_claude-haiku-4-5,elder_text_heavy,139,113,12,6,8,18,89.9%,85.6%,0.0432,-0.0176,0.1064,2.000,0.695,6.495,Exact Binomial (n=18),,0.237885,0.000769,No,none
+full,anthropic_claude-haiku-4-5,elder_zoom_heavy,144,116,14,6,8,20,90.3%,84.7%,0.0556,-0.0056,0.1194,2.333,0.842,7.408,Exact Binomial (n=20),,0.115318,0.000667,No,none
+full,anthropic_claude-haiku-4-5,elder_combo_max,111,90,8,4,9,12,88.3%,84.7%,0.0360,-0.0271,0.1020,2.000,0.536,9.076,Exact Binomial (n=12),,0.387695,0.000893,No,none
+full,anthropic_claude-haiku-4-5,elder_combo_mid,123,97,13,5,8,18,89.4%,82.9%,0.0650,-0.0026,0.1357,2.600,0.870,9.315,Exact Binomial (n=18),,0.096252,0.000658,No,none
+full,anthropic_claude-haiku-4-5,colorblind_deuteranomaly,153,133,5,5,10,10,90.2%,90.2%,0.0000,-0.0446,0.0446,1.000,0.230,4.345,Exact Binomial (n=10),,1.000000,0.005000,No,none
+full,anthropic_claude-opus-5,elder_text_heavy,139,138,1,0,0,1,100.0%,99.3%,0.0072,-0.0203,0.0396,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.005556,No,ceiling
+full,anthropic_claude-opus-5,elder_zoom_heavy,144,144,0,0,0,0,100.0%,100.0%,0.0000,-0.0260,0.0260,,,,N/A (no discordant pairs),,1.000000,0.006250,No,ceiling
+full,anthropic_claude-opus-5,elder_combo_max,111,109,2,0,0,2,100.0%,98.2%,0.0180,-0.0179,0.0633,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001064,No,ceiling
+full,anthropic_claude-opus-5,elder_combo_mid,123,123,0,0,0,0,100.0%,100.0%,0.0000,-0.0303,0.0303,,,,N/A (no discordant pairs),,1.000000,0.007143,No,ceiling
+full,anthropic_claude-opus-5,colorblind_deuteranomaly,153,152,0,1,0,1,99.3%,100.0%,-0.0065,-0.0361,0.0185,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.008333,No,ceiling
+full,anthropic_claude-sonnet-4-6,elder_text_heavy,139,137,0,2,0,2,98.6%,100.0%,-0.0144,-0.0509,0.0145,0.000,0.000,5.325,Exact Binomial (n=2),,0.500000,0.001087,No,ceiling
+full,anthropic_claude-sonnet-4-6,elder_zoom_heavy,144,140,2,0,2,2,98.6%,97.2%,0.0139,-0.0125,0.0490,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001111,No,ceiling
+full,anthropic_claude-sonnet-4-6,elder_combo_max,111,99,10,1,1,11,98.2%,90.1%,0.0811,0.0247,0.1496,10.000,1.423,433.977,Exact Binomial (n=11),,0.011719,0.000633,No,ceiling
+full,anthropic_claude-sonnet-4-6,elder_combo_mid,123,117,4,0,2,4,98.4%,95.1%,0.0325,-0.0014,0.0804,inf,0.660,inf,Exact Binomial (n=4),,0.125000,0.000685,No,ceiling
+full,anthropic_claude-sonnet-4-6,colorblind_deuteranomaly,153,150,1,1,1,2,98.7%,98.7%,0.0000,-0.0298,0.0298,1.000,0.013,78.497,Exact Binomial (n=2),,1.000000,0.010000,No,ceiling
+full,anthropic_claude-sonnet-5,elder_text_heavy,139,136,2,0,1,2,99.3%,97.8%,0.0144,-0.0125,0.0513,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001136,No,ceiling
+full,anthropic_claude-sonnet-5,elder_zoom_heavy,144,141,2,0,1,2,99.3%,97.9%,0.0139,-0.0121,0.0495,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001163,No,ceiling
+full,anthropic_claude-sonnet-5,elder_combo_max,111,103,7,0,1,7,99.1%,92.8%,0.0631,0.0196,0.1247,inf,1.441,inf,Exact Binomial (n=7),,0.015625,0.000641,No,ceiling
+full,anthropic_claude-sonnet-5,elder_combo_mid,123,118,4,0,1,4,99.2%,95.9%,0.0325,-0.0010,0.0809,inf,0.660,inf,Exact Binomial (n=4),,0.125000,0.000694,No,ceiling
+full,anthropic_claude-sonnet-5,colorblind_deuteranomaly,153,149,3,0,1,3,99.3%,97.4%,0.0196,-0.0061,0.0564,inf,0.413,inf,Exact Binomial (n=3),,0.250000,0.000820,No,ceiling
+full,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,elder_text_heavy,139,131,2,3,3,5,95.7%,96.4%,-0.0072,-0.0480,0.0314,0.667,0.056,5.820,Exact Binomial (n=5),,1.000000,0.012500,No,ceiling
+full,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,elder_zoom_heavy,144,134,4,6,0,10,95.8%,97.2%,-0.0139,-0.0637,0.0339,0.667,0.138,2.811,Exact Binomial (n=10),,0.753906,0.001429,No,ceiling
+full,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,elder_combo_max,111,102,4,4,1,8,95.5%,95.5%,0.0000,-0.0578,0.0578,1.000,0.186,5.369,Exact Binomial (n=8),,1.000000,0.016667,No,ceiling
+full,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,elder_combo_mid,123,116,1,5,1,6,95.1%,98.4%,-0.0325,-0.0842,0.0099,0.200,0.004,1.787,Exact Binomial (n=6),,0.218750,0.000758,No,ceiling
+full,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,colorblind_deuteranomaly,153,143,2,1,7,3,94.8%,94.1%,0.0065,-0.0232,0.0385,2.000,0.104,117.994,Exact Binomial (n=3),,1.000000,0.025000,No,none
+full,openai_compatible_z-ai_glm-5v-turbo,elder_text_heavy,139,126,6,6,1,12,95.0%,95.0%,0.0000,-0.0539,0.0539,1.000,0.267,3.741,Exact Binomial (n=12),,1.000000,0.050000,No,none
+full,openai_compatible_z-ai_glm-5v-turbo,elder_zoom_heavy,144,125,11,6,2,17,94.4%,91.0%,0.0347,-0.0234,0.0954,1.833,0.621,6.037,Exact Binomial (n=17),,0.332306,0.000847,No,none
+full,openai_compatible_z-ai_glm-5v-turbo,elder_combo_max,111,92,12,5,2,17,93.7%,87.4%,0.0631,-0.0108,0.1404,2.400,0.787,8.696,Exact Binomial (n=17),,0.143463,0.000704,No,none
+full,openai_compatible_z-ai_glm-5v-turbo,elder_combo_mid,123,107,9,5,2,14,94.3%,91.1%,0.0325,-0.0299,0.0979,1.800,0.542,6.837,Exact Binomial (n=14),,0.423950,0.000909,No,none
+full,openai_compatible_z-ai_glm-5v-turbo,colorblind_deuteranomaly,153,133,11,5,4,16,94.1%,90.2%,0.0392,-0.0133,0.0952,2.200,0.705,8.077,Exact Binomial (n=16),,0.210114,0.000735,No,none
+primary,9router_ag_gemini-3-flash-agent,elder_text_heavy,139,138,1,0,0,1,100.0%,99.3%,0.0072,-0.0203,0.0396,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001471,No,ceiling
+primary,9router_ag_gemini-3-flash-agent,elder_zoom_heavy,144,142,2,0,0,2,100.0%,98.6%,0.0139,-0.0140,0.0492,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000926,No,ceiling
+primary,9router_ag_gemini-3-flash-agent,elder_combo_max,111,110,1,0,0,1,100.0%,99.1%,0.0090,-0.0253,0.0493,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001515,No,ceiling
+primary,9router_ag_gemini-3-flash-agent,elder_combo_mid,123,122,1,0,0,1,100.0%,99.2%,0.0081,-0.0229,0.0446,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001563,No,ceiling
+primary,9router_ag_gemini-3-flash-agent,colorblind_deuteranomaly,136,136,0,0,0,0,100.0%,100.0%,0.0000,-0.0275,0.0275,,,,N/A (no discordant pairs),,1.000000,0.001613,No,ceiling
+primary,9router_ag_gemini-3-flash,elder_text_heavy,139,138,1,0,0,1,100.0%,99.3%,0.0072,-0.0203,0.0396,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001667,No,ceiling
+primary,9router_ag_gemini-3-flash,elder_zoom_heavy,144,143,1,0,0,1,100.0%,99.3%,0.0069,-0.0197,0.0383,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001724,No,ceiling
+primary,9router_ag_gemini-3-flash,elder_combo_max,111,111,0,0,0,0,100.0%,100.0%,0.0000,-0.0335,0.0335,,,,N/A (no discordant pairs),,1.000000,0.001786,No,ceiling
+primary,9router_ag_gemini-3-flash,elder_combo_mid,123,121,2,0,0,2,100.0%,98.4%,0.0163,-0.0162,0.0574,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000943,No,ceiling
+primary,9router_ag_gemini-3-flash,colorblind_deuteranomaly,136,135,1,0,0,1,100.0%,99.3%,0.0074,-0.0208,0.0405,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001852,No,ceiling
+primary,9router_ag_gemini-3.5-flash-low,elder_text_heavy,139,138,0,0,1,0,99.3%,99.3%,0.0000,-0.0265,0.0265,,,,N/A (no discordant pairs),,1.000000,0.001923,No,ceiling
+primary,9router_ag_gemini-3.5-flash-low,elder_zoom_heavy,144,143,0,1,0,1,99.3%,100.0%,-0.0069,-0.0383,0.0197,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.002000,No,ceiling
+primary,9router_ag_gemini-3.5-flash-low,elder_combo_max,111,110,0,1,0,1,99.1%,100.0%,-0.0090,-0.0493,0.0253,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.002083,No,ceiling
+primary,9router_ag_gemini-3.5-flash-low,elder_combo_mid,123,120,2,1,0,3,99.2%,98.4%,0.0081,-0.0303,0.0498,2.000,0.104,117.994,Exact Binomial (n=3),,1.000000,0.002174,No,ceiling
+primary,9router_ag_gemini-3.5-flash-low,colorblind_deuteranomaly,136,135,0,1,0,1,99.3%,100.0%,-0.0074,-0.0405,0.0208,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.002273,No,ceiling
+primary,9router_ag_gemini-pro-agent,elder_text_heavy,139,136,3,0,0,3,100.0%,97.8%,0.0216,-0.0088,0.0615,inf,0.413,inf,Exact Binomial (n=3),,0.250000,0.000769,No,ceiling
+primary,9router_ag_gemini-pro-agent,elder_zoom_heavy,144,141,3,0,0,3,100.0%,97.9%,0.0208,-0.0086,0.0595,inf,0.413,inf,Exact Binomial (n=3),,0.250000,0.000781,No,ceiling
+primary,9router_ag_gemini-pro-agent,elder_combo_max,111,107,4,0,0,4,100.0%,96.4%,0.0360,-0.0040,0.0890,inf,0.660,inf,Exact Binomial (n=4),,0.125000,0.000676,No,ceiling
+primary,9router_ag_gemini-pro-agent,elder_combo_mid,123,121,2,0,0,2,100.0%,98.4%,0.0163,-0.0162,0.0574,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000962,No,ceiling
+primary,9router_ag_gemini-pro-agent,colorblind_deuteranomaly,136,131,4,1,0,5,99.3%,97.1%,0.0221,-0.0158,0.0663,4.000,0.396,196.990,Exact Binomial (n=5),,0.375000,0.000847,No,ceiling
+primary,9router_cx_gpt-5.4-mini,elder_text_heavy,139,47,20,5,67,25,48.2%,37.4%,0.1079,0.0394,0.1742,4.000,1.457,13.639,"Asymptotic (Edwards' correction, n=25)",7.8400,0.005110,0.000625,No,floor
+primary,9router_cx_gpt-5.4-mini,elder_zoom_heavy,144,58,9,13,64,22,46.5%,49.3%,-0.0278,-0.0904,0.0354,0.692,0.261,1.751,Exact Binomial (n=22),,0.523467,0.001190,No,floor
+primary,9router_cx_gpt-5.4-mini,elder_combo_max,111,54,10,13,34,23,57.7%,60.4%,-0.0270,-0.1100,0.0567,0.769,0.302,1.899,Exact Binomial (n=23),,0.677639,0.001316,No,none
+primary,9router_cx_gpt-5.4-mini,elder_combo_mid,123,49,16,8,50,24,52.8%,46.3%,0.0650,-0.0119,0.1402,2.000,0.808,5.398,Exact Binomial (n=24),,0.151590,0.000714,No,none
+primary,9router_cx_gpt-5.4-mini,colorblind_deuteranomaly,136,52,13,3,68,16,47.8%,40.4%,0.0735,0.0173,0.1285,4.333,1.191,23.707,Exact Binomial (n=16),,0.021271,0.000649,No,floor
+primary,9router_cx_gpt-5.4,elder_text_heavy,139,99,14,8,18,22,81.3%,77.0%,0.0432,-0.0232,0.1102,1.750,0.685,4.815,Exact Binomial (n=22),,0.286279,0.000820,No,none
+primary,9router_cx_gpt-5.4,elder_zoom_heavy,144,105,10,18,11,28,79.9%,85.4%,-0.0556,-0.1284,0.0166,0.556,0.229,1.269,"Asymptotic (Edwards' correction, n=28)",1.7500,0.185877,0.000725,No,none
+primary,9router_cx_gpt-5.4,elder_combo_max,111,86,10,7,8,17,86.5%,83.8%,0.0270,-0.0476,0.1027,1.429,0.491,4.422,Exact Binomial (n=17),,0.629059,0.001282,No,none
+primary,9router_cx_gpt-5.4,elder_combo_mid,123,89,14,11,9,25,83.7%,81.3%,0.0244,-0.0563,0.1053,1.273,0.537,3.098,"Asymptotic (Edwards' correction, n=25)",0.1600,0.689157,0.001351,No,none
+primary,9router_cx_gpt-5.4,colorblind_deuteranomaly,136,106,9,5,16,14,84.6%,81.6%,0.0294,-0.0258,0.0862,1.800,0.542,6.837,Exact Binomial (n=14),,0.423950,0.000893,No,none
+primary,9router_cx_gpt-5.5,elder_text_heavy,139,139,0,0,0,0,100.0%,100.0%,0.0000,-0.0269,0.0269,,,,N/A (no discordant pairs),,1.000000,0.002381,No,ceiling
+primary,9router_cx_gpt-5.5,elder_zoom_heavy,144,143,1,0,0,1,100.0%,99.3%,0.0069,-0.0197,0.0383,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.002500,No,ceiling
+primary,9router_cx_gpt-5.5,elder_combo_max,111,110,1,0,0,1,100.0%,99.1%,0.0090,-0.0253,0.0493,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.002632,No,ceiling
+primary,9router_cx_gpt-5.5,elder_combo_mid,123,121,2,0,0,2,100.0%,98.4%,0.0163,-0.0162,0.0574,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000980,No,ceiling
+primary,9router_cx_gpt-5.5,colorblind_deuteranomaly,136,133,2,0,1,2,99.3%,97.8%,0.0147,-0.0128,0.0524,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001000,No,ceiling
+primary,9router_cx_gpt-5.6-luna,elder_text_heavy,139,134,3,1,1,4,98.6%,97.1%,0.0144,-0.0204,0.0549,3.000,0.241,157.492,Exact Binomial (n=4),,0.625000,0.001220,No,ceiling
+primary,9router_cx_gpt-5.6-luna,elder_zoom_heavy,144,137,5,1,1,6,98.6%,95.8%,0.0278,-0.0086,0.0724,5.000,0.559,236.488,Exact Binomial (n=6),,0.218750,0.000735,No,ceiling
+primary,9router_cx_gpt-5.6-luna,elder_combo_max,111,105,4,1,1,5,98.2%,95.5%,0.0270,-0.0179,0.0807,4.000,0.396,196.990,Exact Binomial (n=5),,0.375000,0.000862,No,ceiling
+primary,9router_cx_gpt-5.6-luna,elder_combo_mid,123,118,3,1,1,4,98.4%,96.7%,0.0163,-0.0228,0.0618,3.000,0.241,157.492,Exact Binomial (n=4),,0.625000,0.001250,No,ceiling
+primary,9router_cx_gpt-5.6-luna,colorblind_deuteranomaly,136,132,1,1,2,2,97.8%,97.8%,0.0000,-0.0331,0.0331,1.000,0.013,78.497,Exact Binomial (n=2),,1.000000,0.002778,No,ceiling
+primary,9router_cx_gpt-5.6-sol,elder_text_heavy,139,138,0,1,0,1,99.3%,100.0%,-0.0072,-0.0396,0.0203,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.002941,No,ceiling
+primary,9router_cx_gpt-5.6-sol,elder_zoom_heavy,144,143,0,0,1,0,99.3%,99.3%,0.0000,-0.0256,0.0256,,,,N/A (no discordant pairs),,1.000000,0.003125,No,ceiling
+primary,9router_cx_gpt-5.6-sol,elder_combo_max,111,109,1,0,1,1,99.1%,98.2%,0.0090,-0.0234,0.0494,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.003333,No,ceiling
+primary,9router_cx_gpt-5.6-sol,elder_combo_mid,123,122,0,0,1,0,99.2%,99.2%,0.0000,-0.0298,0.0298,,,,N/A (no discordant pairs),,1.000000,0.003571,No,ceiling
+primary,9router_cx_gpt-5.6-sol,colorblind_deuteranomaly,136,134,0,1,1,1,98.5%,99.3%,-0.0074,-0.0407,0.0193,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.003846,No,ceiling
+primary,9router_cx_gpt-5.6-terra,elder_text_heavy,139,136,2,0,1,2,99.3%,97.8%,0.0144,-0.0125,0.0513,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001020,No,ceiling
+primary,9router_cx_gpt-5.6-terra,elder_zoom_heavy,144,142,1,1,0,2,99.3%,99.3%,0.0000,-0.0319,0.0319,1.000,0.013,78.497,Exact Binomial (n=2),,1.000000,0.004167,No,ceiling
+primary,9router_cx_gpt-5.6-terra,elder_combo_max,111,107,3,0,1,3,99.1%,96.4%,0.0270,-0.0081,0.0768,inf,0.413,inf,Exact Binomial (n=3),,0.250000,0.000794,No,ceiling
+primary,9router_cx_gpt-5.6-terra,elder_combo_mid,123,120,2,0,1,2,99.2%,97.6%,0.0163,-0.0140,0.0577,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001042,No,ceiling
+primary,9router_cx_gpt-5.6-terra,colorblind_deuteranomaly,136,133,0,0,3,0,97.8%,97.8%,0.0000,-0.0263,0.0263,,,,N/A (no discordant pairs),,1.000000,0.004545,No,ceiling
+primary,anthropic_claude-haiku-4-5,elder_text_heavy,139,113,12,6,8,18,89.9%,85.6%,0.0432,-0.0176,0.1064,2.000,0.695,6.495,Exact Binomial (n=18),,0.237885,0.000758,No,none
+primary,anthropic_claude-haiku-4-5,elder_zoom_heavy,144,116,14,6,8,20,90.3%,84.7%,0.0556,-0.0056,0.1194,2.333,0.842,7.408,Exact Binomial (n=20),,0.115318,0.000667,No,none
+primary,anthropic_claude-haiku-4-5,elder_combo_max,111,90,8,4,9,12,88.3%,84.7%,0.0360,-0.0271,0.1020,2.000,0.536,9.076,Exact Binomial (n=12),,0.387695,0.000877,No,none
+primary,anthropic_claude-haiku-4-5,elder_combo_mid,123,97,13,5,8,18,89.4%,82.9%,0.0650,-0.0026,0.1357,2.600,0.870,9.315,Exact Binomial (n=18),,0.096252,0.000658,No,none
+primary,anthropic_claude-haiku-4-5,colorblind_deuteranomaly,136,117,4,5,10,9,89.0%,89.7%,-0.0074,-0.0556,0.0400,0.800,0.159,3.717,Exact Binomial (n=9),,1.000000,0.005000,No,none
+primary,anthropic_claude-opus-5,elder_text_heavy,139,138,1,0,0,1,100.0%,99.3%,0.0072,-0.0203,0.0396,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.005556,No,ceiling
+primary,anthropic_claude-opus-5,elder_zoom_heavy,144,144,0,0,0,0,100.0%,100.0%,0.0000,-0.0260,0.0260,,,,N/A (no discordant pairs),,1.000000,0.006250,No,ceiling
+primary,anthropic_claude-opus-5,elder_combo_max,111,109,2,0,0,2,100.0%,98.2%,0.0180,-0.0179,0.0633,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001064,No,ceiling
+primary,anthropic_claude-opus-5,elder_combo_mid,123,123,0,0,0,0,100.0%,100.0%,0.0000,-0.0303,0.0303,,,,N/A (no discordant pairs),,1.000000,0.007143,No,ceiling
+primary,anthropic_claude-opus-5,colorblind_deuteranomaly,136,135,0,1,0,1,99.3%,100.0%,-0.0074,-0.0405,0.0208,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.008333,No,ceiling
+primary,anthropic_claude-sonnet-4-6,elder_text_heavy,139,137,0,2,0,2,98.6%,100.0%,-0.0144,-0.0509,0.0145,0.000,0.000,5.325,Exact Binomial (n=2),,0.500000,0.001087,No,ceiling
+primary,anthropic_claude-sonnet-4-6,elder_zoom_heavy,144,140,2,0,2,2,98.6%,97.2%,0.0139,-0.0125,0.0490,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001111,No,ceiling
+primary,anthropic_claude-sonnet-4-6,elder_combo_max,111,99,10,1,1,11,98.2%,90.1%,0.0811,0.0247,0.1496,10.000,1.423,433.977,Exact Binomial (n=11),,0.011719,0.000633,No,ceiling
+primary,anthropic_claude-sonnet-4-6,elder_combo_mid,123,117,4,0,2,4,98.4%,95.1%,0.0325,-0.0014,0.0804,inf,0.660,inf,Exact Binomial (n=4),,0.125000,0.000685,No,ceiling
+primary,anthropic_claude-sonnet-4-6,colorblind_deuteranomaly,136,133,1,1,1,2,98.5%,98.5%,0.0000,-0.0334,0.0334,1.000,0.013,78.497,Exact Binomial (n=2),,1.000000,0.010000,No,ceiling
+primary,anthropic_claude-sonnet-5,elder_text_heavy,139,136,2,0,1,2,99.3%,97.8%,0.0144,-0.0125,0.0513,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001136,No,ceiling
+primary,anthropic_claude-sonnet-5,elder_zoom_heavy,144,141,2,0,1,2,99.3%,97.9%,0.0139,-0.0121,0.0495,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001163,No,ceiling
+primary,anthropic_claude-sonnet-5,elder_combo_max,111,103,7,0,1,7,99.1%,92.8%,0.0631,0.0196,0.1247,inf,1.441,inf,Exact Binomial (n=7),,0.015625,0.000641,No,ceiling
+primary,anthropic_claude-sonnet-5,elder_combo_mid,123,118,4,0,1,4,99.2%,95.9%,0.0325,-0.0010,0.0809,inf,0.660,inf,Exact Binomial (n=4),,0.125000,0.000694,No,ceiling
+primary,anthropic_claude-sonnet-5,colorblind_deuteranomaly,136,132,3,0,1,3,99.3%,97.1%,0.0221,-0.0068,0.0632,inf,0.413,inf,Exact Binomial (n=3),,0.250000,0.000806,No,ceiling
+primary,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,elder_text_heavy,139,131,2,3,3,5,95.7%,96.4%,-0.0072,-0.0480,0.0314,0.667,0.056,5.820,Exact Binomial (n=5),,1.000000,0.012500,No,ceiling
+primary,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,elder_zoom_heavy,144,134,4,6,0,10,95.8%,97.2%,-0.0139,-0.0637,0.0339,0.667,0.138,2.811,Exact Binomial (n=10),,0.753906,0.001389,No,ceiling
+primary,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,elder_combo_max,111,102,4,4,1,8,95.5%,95.5%,0.0000,-0.0578,0.0578,1.000,0.186,5.369,Exact Binomial (n=8),,1.000000,0.016667,No,ceiling
+primary,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,elder_combo_mid,123,116,1,5,1,6,95.1%,98.4%,-0.0325,-0.0842,0.0099,0.200,0.004,1.787,Exact Binomial (n=6),,0.218750,0.000746,No,ceiling
+primary,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,colorblind_deuteranomaly,136,127,2,1,6,3,94.9%,94.1%,0.0074,-0.0259,0.0433,2.000,0.104,117.994,Exact Binomial (n=3),,1.000000,0.025000,No,none
+primary,openai_compatible_z-ai_glm-5v-turbo,elder_text_heavy,139,126,6,6,1,12,95.0%,95.0%,0.0000,-0.0539,0.0539,1.000,0.267,3.741,Exact Binomial (n=12),,1.000000,0.050000,No,none
+primary,openai_compatible_z-ai_glm-5v-turbo,elder_zoom_heavy,144,125,11,6,2,17,94.4%,91.0%,0.0347,-0.0234,0.0954,1.833,0.621,6.037,Exact Binomial (n=17),,0.332306,0.000833,No,none
+primary,openai_compatible_z-ai_glm-5v-turbo,elder_combo_max,111,92,12,5,2,17,93.7%,87.4%,0.0631,-0.0108,0.1404,2.400,0.787,8.696,Exact Binomial (n=17),,0.143463,0.000704,No,none
+primary,openai_compatible_z-ai_glm-5v-turbo,elder_combo_mid,123,107,9,5,2,14,94.3%,91.1%,0.0325,-0.0299,0.0979,1.800,0.542,6.837,Exact Binomial (n=14),,0.423950,0.000909,No,none
+primary,openai_compatible_z-ai_glm-5v-turbo,colorblind_deuteranomaly,136,120,7,5,4,12,93.4%,91.9%,0.0147,-0.0389,0.0700,1.400,0.382,5.594,Exact Binomial (n=12),,0.774414,0.001429,No,none
+precautionary,9router_ag_gemini-3-flash-agent,elder_text_heavy,109,108,1,0,0,1,100.0%,99.1%,0.0092,-0.0257,0.0501,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001220,No,ceiling
+precautionary,9router_ag_gemini-3-flash-agent,elder_zoom_heavy,112,110,2,0,0,2,100.0%,98.2%,0.0179,-0.0177,0.0628,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000893,No,ceiling
+precautionary,9router_ag_gemini-3-flash-agent,elder_combo_max,91,90,1,0,0,1,100.0%,98.9%,0.0110,-0.0305,0.0596,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001250,No,ceiling
+precautionary,9router_ag_gemini-3-flash-agent,elder_combo_mid,100,99,1,0,0,1,100.0%,99.0%,0.0100,-0.0279,0.0545,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001282,No,ceiling
+precautionary,9router_ag_gemini-3-flash-agent,colorblind_deuteranomaly,136,136,0,0,0,0,100.0%,100.0%,0.0000,-0.0275,0.0275,,,,N/A (no discordant pairs),,1.000000,0.001316,No,ceiling
+precautionary,9router_ag_gemini-3-flash,elder_text_heavy,109,108,1,0,0,1,100.0%,99.1%,0.0092,-0.0257,0.0501,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001351,No,ceiling
+precautionary,9router_ag_gemini-3-flash,elder_zoom_heavy,112,111,1,0,0,1,100.0%,99.1%,0.0089,-0.0250,0.0488,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001389,No,ceiling
+precautionary,9router_ag_gemini-3-flash,elder_combo_max,91,91,0,0,0,0,100.0%,100.0%,0.0000,-0.0405,0.0405,,,,N/A (no discordant pairs),,1.000000,0.001429,No,ceiling
+precautionary,9router_ag_gemini-3-flash,elder_combo_mid,100,98,2,0,0,2,100.0%,98.0%,0.0200,-0.0197,0.0700,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000909,No,ceiling
+precautionary,9router_ag_gemini-3-flash,colorblind_deuteranomaly,136,135,1,0,0,1,100.0%,99.3%,0.0074,-0.0208,0.0405,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001471,No,ceiling
+precautionary,9router_ag_gemini-3.5-flash-low,elder_text_heavy,109,108,0,0,1,0,99.1%,99.1%,0.0000,-0.0334,0.0334,,,,N/A (no discordant pairs),,1.000000,0.001515,No,ceiling
+precautionary,9router_ag_gemini-3.5-flash-low,elder_zoom_heavy,112,111,0,1,0,1,99.1%,100.0%,-0.0089,-0.0488,0.0250,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.001563,No,ceiling
+precautionary,9router_ag_gemini-3.5-flash-low,elder_combo_max,91,90,0,1,0,1,98.9%,100.0%,-0.0110,-0.0596,0.0305,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.001613,No,ceiling
+precautionary,9router_ag_gemini-3.5-flash-low,elder_combo_mid,100,97,2,1,0,3,99.0%,98.0%,0.0100,-0.0370,0.0608,2.000,0.104,117.994,Exact Binomial (n=3),,1.000000,0.001667,No,ceiling
+precautionary,9router_ag_gemini-3.5-flash-low,colorblind_deuteranomaly,136,135,0,1,0,1,99.3%,100.0%,-0.0074,-0.0405,0.0208,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.001724,No,ceiling
+precautionary,9router_ag_gemini-pro-agent,elder_text_heavy,109,106,3,0,0,3,100.0%,97.2%,0.0275,-0.0110,0.0778,inf,0.413,inf,Exact Binomial (n=3),,0.250000,0.000714,No,ceiling
+precautionary,9router_ag_gemini-pro-agent,elder_zoom_heavy,112,110,2,0,0,2,100.0%,98.2%,0.0179,-0.0177,0.0628,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000926,No,ceiling
+precautionary,9router_ag_gemini-pro-agent,elder_combo_max,91,87,4,0,0,4,100.0%,95.6%,0.0440,-0.0046,0.1076,inf,0.660,inf,Exact Binomial (n=4),,0.125000,0.000658,No,ceiling
+precautionary,9router_ag_gemini-pro-agent,elder_combo_mid,100,99,1,0,0,1,100.0%,99.0%,0.0100,-0.0279,0.0545,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001786,No,ceiling
+precautionary,9router_ag_gemini-pro-agent,colorblind_deuteranomaly,136,131,4,1,0,5,99.3%,97.1%,0.0221,-0.0158,0.0663,4.000,0.396,196.990,Exact Binomial (n=5),,0.375000,0.000820,No,ceiling
+precautionary,9router_cx_gpt-5.4-mini,elder_text_heavy,109,40,16,5,48,21,51.4%,41.3%,0.1009,0.0206,0.1783,3.200,1.120,11.169,Exact Binomial (n=21),,0.026604,0.000641,No,none
+precautionary,9router_cx_gpt-5.4-mini,elder_zoom_heavy,112,48,8,8,48,16,50.0%,50.0%,0.0000,-0.0688,0.0688,1.000,0.327,3.057,Exact Binomial (n=16),,1.000000,0.001852,No,none
+precautionary,9router_cx_gpt-5.4-mini,elder_combo_max,91,46,7,11,27,18,58.2%,62.6%,-0.0440,-0.1328,0.0462,0.636,0.209,1.798,Exact Binomial (n=18),,0.480682,0.000877,No,none
+precautionary,9router_cx_gpt-5.4-mini,elder_combo_mid,100,42,12,7,39,19,54.0%,49.0%,0.0500,-0.0341,0.1325,1.714,0.622,5.139,Exact Binomial (n=19),,0.359283,0.000806,No,none
+precautionary,9router_cx_gpt-5.4-mini,colorblind_deuteranomaly,136,52,13,3,68,16,47.8%,40.4%,0.0735,0.0173,0.1285,4.333,1.191,23.707,Exact Binomial (n=16),,0.021271,0.000633,No,floor
+precautionary,9router_cx_gpt-5.4,elder_text_heavy,109,83,11,5,10,16,86.2%,80.7%,0.0550,-0.0174,0.1297,2.200,0.705,8.077,Exact Binomial (n=16),,0.210114,0.000694,No,none
+precautionary,9router_cx_gpt-5.4,elder_zoom_heavy,112,88,7,13,4,20,84.8%,90.2%,-0.0536,-0.1347,0.0258,0.538,0.182,1.452,Exact Binomial (n=20),,0.263176,0.000746,No,none
+precautionary,9router_cx_gpt-5.4,elder_combo_max,91,73,8,5,5,13,89.0%,85.7%,0.0330,-0.0476,0.1156,1.600,0.462,6.216,Exact Binomial (n=13),,0.581055,0.001087,No,none
+precautionary,9router_cx_gpt-5.4,elder_combo_mid,100,77,10,7,6,17,87.0%,84.0%,0.0300,-0.0528,0.1139,1.429,0.491,4.422,Exact Binomial (n=17),,0.629059,0.001136,No,none
+precautionary,9router_cx_gpt-5.4,colorblind_deuteranomaly,136,106,9,5,16,14,84.6%,81.6%,0.0294,-0.0258,0.0862,1.800,0.542,6.837,Exact Binomial (n=14),,0.423950,0.000862,No,none
+precautionary,9router_cx_gpt-5.5,elder_text_heavy,109,109,0,0,0,0,100.0%,100.0%,0.0000,-0.0340,0.0340,,,,N/A (no discordant pairs),,1.000000,0.001923,No,ceiling
+precautionary,9router_cx_gpt-5.5,elder_zoom_heavy,112,111,1,0,0,1,100.0%,99.1%,0.0089,-0.0250,0.0488,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.002000,No,ceiling
+precautionary,9router_cx_gpt-5.5,elder_combo_max,91,90,1,0,0,1,100.0%,98.9%,0.0110,-0.0305,0.0596,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.002083,No,ceiling
+precautionary,9router_cx_gpt-5.5,elder_combo_mid,100,98,2,0,0,2,100.0%,98.0%,0.0200,-0.0197,0.0700,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000943,No,ceiling
+precautionary,9router_cx_gpt-5.5,colorblind_deuteranomaly,136,133,2,0,1,2,99.3%,97.8%,0.0147,-0.0128,0.0524,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000962,No,ceiling
+precautionary,9router_cx_gpt-5.6-luna,elder_text_heavy,109,105,2,1,1,3,98.2%,97.2%,0.0092,-0.0332,0.0558,2.000,0.104,117.994,Exact Binomial (n=3),,1.000000,0.002174,No,ceiling
+precautionary,9router_cx_gpt-5.6-luna,elder_zoom_heavy,112,105,5,1,1,6,98.2%,94.6%,0.0357,-0.0107,0.0921,5.000,0.559,236.488,Exact Binomial (n=6),,0.218750,0.000704,No,ceiling
+precautionary,9router_cx_gpt-5.6-luna,elder_combo_max,91,85,4,1,1,5,97.8%,94.5%,0.0330,-0.0215,0.0974,4.000,0.396,196.990,Exact Binomial (n=5),,0.375000,0.000833,No,ceiling
+precautionary,9router_cx_gpt-5.6-luna,elder_combo_mid,100,95,3,1,1,4,98.0%,96.0%,0.0200,-0.0277,0.0752,3.000,0.241,157.492,Exact Binomial (n=4),,0.625000,0.001111,No,ceiling
+precautionary,9router_cx_gpt-5.6-luna,colorblind_deuteranomaly,136,132,1,1,2,2,97.8%,97.8%,0.0000,-0.0331,0.0331,1.000,0.013,78.497,Exact Binomial (n=2),,1.000000,0.002273,No,ceiling
+precautionary,9router_cx_gpt-5.6-sol,elder_text_heavy,109,108,0,1,0,1,99.1%,100.0%,-0.0092,-0.0501,0.0257,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.002381,No,ceiling
+precautionary,9router_cx_gpt-5.6-sol,elder_zoom_heavy,112,111,0,0,1,0,99.1%,99.1%,0.0000,-0.0326,0.0326,,,,N/A (no discordant pairs),,1.000000,0.002500,No,ceiling
+precautionary,9router_cx_gpt-5.6-sol,elder_combo_max,91,89,1,0,1,1,98.9%,97.8%,0.0110,-0.0281,0.0597,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.002632,No,ceiling
+precautionary,9router_cx_gpt-5.6-sol,elder_combo_mid,100,99,0,0,1,0,99.0%,99.0%,0.0000,-0.0363,0.0363,,,,N/A (no discordant pairs),,1.000000,0.002778,No,ceiling
+precautionary,9router_cx_gpt-5.6-sol,colorblind_deuteranomaly,136,134,0,1,1,1,98.5%,99.3%,-0.0074,-0.0407,0.0193,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.002941,No,ceiling
+precautionary,9router_cx_gpt-5.6-terra,elder_text_heavy,109,107,1,0,1,1,99.1%,98.2%,0.0092,-0.0238,0.0503,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.003125,No,ceiling
+precautionary,9router_cx_gpt-5.6-terra,elder_zoom_heavy,112,110,1,1,0,2,99.1%,99.1%,0.0000,-0.0407,0.0407,1.000,0.013,78.497,Exact Binomial (n=2),,1.000000,0.003333,No,ceiling
+precautionary,9router_cx_gpt-5.6-terra,elder_combo_max,91,87,3,0,1,3,98.9%,95.6%,0.0330,-0.0095,0.0927,inf,0.413,inf,Exact Binomial (n=3),,0.250000,0.000725,No,ceiling
+precautionary,9router_cx_gpt-5.6-terra,elder_combo_mid,100,98,1,0,1,1,99.0%,98.0%,0.0100,-0.0258,0.0546,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.003571,No,ceiling
+precautionary,9router_cx_gpt-5.6-terra,colorblind_deuteranomaly,136,133,0,0,3,0,97.8%,97.8%,0.0000,-0.0263,0.0263,,,,N/A (no discordant pairs),,1.000000,0.003846,No,ceiling
+precautionary,anthropic_claude-haiku-4-5,elder_text_heavy,109,86,10,5,8,15,88.1%,83.5%,0.0459,-0.0250,0.1192,2.000,0.623,7.457,Exact Binomial (n=15),,0.301758,0.000769,No,none
+precautionary,anthropic_claude-haiku-4-5,elder_zoom_heavy,112,89,10,5,8,15,88.4%,83.9%,0.0446,-0.0244,0.1162,2.000,0.623,7.457,Exact Binomial (n=15),,0.301758,0.000781,No,none
+precautionary,anthropic_claude-haiku-4-5,elder_combo_max,91,72,7,3,9,10,86.8%,82.4%,0.0440,-0.0261,0.1175,2.333,0.533,13.984,Exact Binomial (n=10),,0.343750,0.000794,No,none
+precautionary,anthropic_claude-haiku-4-5,elder_combo_mid,100,76,12,4,8,16,88.0%,80.0%,0.0800,0.0022,0.1610,3.000,0.909,12.762,Exact Binomial (n=16),,0.076813,0.000649,No,none
+precautionary,anthropic_claude-haiku-4-5,colorblind_deuteranomaly,136,117,4,5,10,9,89.0%,89.7%,-0.0074,-0.0556,0.0400,0.800,0.159,3.717,Exact Binomial (n=9),,1.000000,0.004167,No,none
+precautionary,anthropic_claude-opus-5,elder_text_heavy,109,109,0,0,0,0,100.0%,100.0%,0.0000,-0.0340,0.0340,,,,N/A (no discordant pairs),,1.000000,0.004545,No,ceiling
+precautionary,anthropic_claude-opus-5,elder_zoom_heavy,112,112,0,0,0,0,100.0%,100.0%,0.0000,-0.0332,0.0332,,,,N/A (no discordant pairs),,1.000000,0.005000,No,ceiling
+precautionary,anthropic_claude-opus-5,elder_combo_max,91,89,2,0,0,2,100.0%,97.8%,0.0220,-0.0215,0.0766,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000980,No,ceiling
+precautionary,anthropic_claude-opus-5,elder_combo_mid,100,100,0,0,0,0,100.0%,100.0%,0.0000,-0.0370,0.0370,,,,N/A (no discordant pairs),,1.000000,0.005556,No,ceiling
+precautionary,anthropic_claude-opus-5,colorblind_deuteranomaly,136,135,0,1,0,1,99.3%,100.0%,-0.0074,-0.0405,0.0208,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.006250,No,ceiling
+precautionary,anthropic_claude-sonnet-4-6,elder_text_heavy,109,107,0,2,0,2,98.2%,100.0%,-0.0183,-0.0644,0.0182,0.000,0.000,5.325,Exact Binomial (n=2),,0.500000,0.001000,No,ceiling
+precautionary,anthropic_claude-sonnet-4-6,elder_zoom_heavy,112,108,2,0,2,2,98.2%,96.4%,0.0179,-0.0156,0.0623,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001020,No,ceiling
+precautionary,anthropic_claude-sonnet-4-6,elder_combo_max,91,83,6,1,1,7,97.8%,92.3%,0.0549,-0.0042,0.1263,6.000,0.728,275.986,Exact Binomial (n=7),,0.125000,0.000667,No,ceiling
+precautionary,anthropic_claude-sonnet-4-6,elder_combo_mid,100,94,4,0,2,4,98.0%,94.0%,0.0400,-0.0014,0.0978,inf,0.660,inf,Exact Binomial (n=4),,0.125000,0.000676,No,ceiling
+precautionary,anthropic_claude-sonnet-4-6,colorblind_deuteranomaly,136,133,1,1,1,2,98.5%,98.5%,0.0000,-0.0334,0.0334,1.000,0.013,78.497,Exact Binomial (n=2),,1.000000,0.007143,No,ceiling
+precautionary,anthropic_claude-sonnet-5,elder_text_heavy,109,106,2,0,1,2,99.1%,97.2%,0.0183,-0.0157,0.0647,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001042,No,ceiling
+precautionary,anthropic_claude-sonnet-5,elder_zoom_heavy,112,109,2,0,1,2,99.1%,97.3%,0.0179,-0.0153,0.0631,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001064,No,ceiling
+precautionary,anthropic_claude-sonnet-5,elder_combo_max,91,83,7,0,1,7,98.9%,91.2%,0.0769,0.0242,0.1504,inf,1.441,inf,Exact Binomial (n=7),,0.015625,0.000625,No,ceiling
+precautionary,anthropic_claude-sonnet-5,elder_combo_mid,100,95,4,0,1,4,99.0%,95.0%,0.0400,-0.0010,0.0986,inf,0.660,inf,Exact Binomial (n=4),,0.125000,0.000685,No,ceiling
+precautionary,anthropic_claude-sonnet-5,colorblind_deuteranomaly,136,132,3,0,1,3,99.3%,97.1%,0.0221,-0.0068,0.0632,inf,0.413,inf,Exact Binomial (n=3),,0.250000,0.000735,No,ceiling
+precautionary,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,elder_text_heavy,109,102,2,2,3,4,95.4%,95.4%,0.0000,-0.0470,0.0470,1.000,0.072,13.796,Exact Binomial (n=4),,1.000000,0.008333,No,ceiling
+precautionary,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,elder_zoom_heavy,112,103,4,5,0,9,95.5%,96.4%,-0.0089,-0.0695,0.0504,0.800,0.159,3.717,Exact Binomial (n=9),,1.000000,0.010000,No,ceiling
+precautionary,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,elder_combo_max,91,82,4,4,1,8,94.5%,94.5%,0.0000,-0.0697,0.0697,1.000,0.186,5.369,Exact Binomial (n=8),,1.000000,0.012500,No,none
+precautionary,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,elder_combo_mid,100,94,1,4,1,5,95.0%,98.0%,-0.0300,-0.0891,0.0197,0.250,0.005,2.526,Exact Binomial (n=5),,0.375000,0.000847,No,none
+precautionary,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,colorblind_deuteranomaly,136,127,2,1,6,3,94.9%,94.1%,0.0074,-0.0259,0.0433,2.000,0.104,117.994,Exact Binomial (n=3),,1.000000,0.016667,No,none
+precautionary,openai_compatible_z-ai_glm-5v-turbo,elder_text_heavy,109,99,5,4,1,9,95.4%,94.5%,0.0092,-0.0513,0.0711,1.250,0.269,6.300,Exact Binomial (n=9),,1.000000,0.025000,No,ceiling
+precautionary,openai_compatible_z-ai_glm-5v-turbo,elder_zoom_heavy,112,97,9,4,2,13,94.6%,90.2%,0.0446,-0.0208,0.1144,2.250,0.628,9.999,Exact Binomial (n=13),,0.266846,0.000758,No,none
+precautionary,openai_compatible_z-ai_glm-5v-turbo,elder_combo_max,91,80,6,4,1,10,94.5%,92.3%,0.0220,-0.0520,0.0985,1.500,0.356,7.227,Exact Binomial (n=10),,0.753906,0.001163,No,none
+precautionary,openai_compatible_z-ai_glm-5v-turbo,elder_combo_mid,100,90,5,5,0,10,95.0%,95.0%,0.0000,-0.0693,0.0693,1.000,0.230,4.345,Exact Binomial (n=10),,1.000000,0.050000,No,none
+precautionary,openai_compatible_z-ai_glm-5v-turbo,colorblind_deuteranomaly,136,120,7,5,4,12,93.4%,91.9%,0.0147,-0.0389,0.0700,1.400,0.382,5.594,Exact Binomial (n=12),,0.774414,0.001190,No,none
+uniform,9router_ag_gemini-3-flash-agent,elder_text_heavy,109,108,1,0,0,1,100.0%,99.1%,0.0092,-0.0257,0.0501,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001163,No,ceiling
+uniform,9router_ag_gemini-3-flash-agent,elder_zoom_heavy,112,110,2,0,0,2,100.0%,98.2%,0.0179,-0.0177,0.0628,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000877,No,ceiling
+uniform,9router_ag_gemini-3-flash-agent,elder_combo_max,91,90,1,0,0,1,100.0%,98.9%,0.0110,-0.0305,0.0596,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001190,No,ceiling
+uniform,9router_ag_gemini-3-flash-agent,elder_combo_mid,100,99,1,0,0,1,100.0%,99.0%,0.0100,-0.0279,0.0545,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001220,No,ceiling
+uniform,9router_ag_gemini-3-flash-agent,colorblind_deuteranomaly,117,117,0,0,0,0,100.0%,100.0%,0.0000,-0.0318,0.0318,,,,N/A (no discordant pairs),,1.000000,0.001250,No,ceiling
+uniform,9router_ag_gemini-3-flash,elder_text_heavy,109,108,1,0,0,1,100.0%,99.1%,0.0092,-0.0257,0.0501,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001282,No,ceiling
+uniform,9router_ag_gemini-3-flash,elder_zoom_heavy,112,111,1,0,0,1,100.0%,99.1%,0.0089,-0.0250,0.0488,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001316,No,ceiling
+uniform,9router_ag_gemini-3-flash,elder_combo_max,91,91,0,0,0,0,100.0%,100.0%,0.0000,-0.0405,0.0405,,,,N/A (no discordant pairs),,1.000000,0.001351,No,ceiling
+uniform,9router_ag_gemini-3-flash,elder_combo_mid,100,98,2,0,0,2,100.0%,98.0%,0.0200,-0.0197,0.0700,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000893,No,ceiling
+uniform,9router_ag_gemini-3-flash,colorblind_deuteranomaly,117,117,0,0,0,0,100.0%,100.0%,0.0000,-0.0318,0.0318,,,,N/A (no discordant pairs),,1.000000,0.001389,No,ceiling
+uniform,9router_ag_gemini-3.5-flash-low,elder_text_heavy,109,108,0,0,1,0,99.1%,99.1%,0.0000,-0.0334,0.0334,,,,N/A (no discordant pairs),,1.000000,0.001429,No,ceiling
+uniform,9router_ag_gemini-3.5-flash-low,elder_zoom_heavy,112,111,0,1,0,1,99.1%,100.0%,-0.0089,-0.0488,0.0250,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.001471,No,ceiling
+uniform,9router_ag_gemini-3.5-flash-low,elder_combo_max,91,90,0,1,0,1,98.9%,100.0%,-0.0110,-0.0596,0.0305,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.001515,No,ceiling
+uniform,9router_ag_gemini-3.5-flash-low,elder_combo_mid,100,97,2,1,0,3,99.0%,98.0%,0.0100,-0.0370,0.0608,2.000,0.104,117.994,Exact Binomial (n=3),,1.000000,0.001563,No,ceiling
+uniform,9router_ag_gemini-3.5-flash-low,colorblind_deuteranomaly,117,116,0,1,0,1,99.1%,100.0%,-0.0085,-0.0468,0.0240,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.001613,No,ceiling
+uniform,9router_ag_gemini-pro-agent,elder_text_heavy,109,106,3,0,0,3,100.0%,97.2%,0.0275,-0.0110,0.0778,inf,0.413,inf,Exact Binomial (n=3),,0.250000,0.000725,No,ceiling
+uniform,9router_ag_gemini-pro-agent,elder_zoom_heavy,112,110,2,0,0,2,100.0%,98.2%,0.0179,-0.0177,0.0628,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000909,No,ceiling
+uniform,9router_ag_gemini-pro-agent,elder_combo_max,91,87,4,0,0,4,100.0%,95.6%,0.0440,-0.0046,0.1076,inf,0.660,inf,Exact Binomial (n=4),,0.125000,0.000658,No,ceiling
+uniform,9router_ag_gemini-pro-agent,elder_combo_mid,100,99,1,0,0,1,100.0%,99.0%,0.0100,-0.0279,0.0545,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001667,No,ceiling
+uniform,9router_ag_gemini-pro-agent,colorblind_deuteranomaly,117,113,4,0,0,4,100.0%,96.6%,0.0342,-0.0038,0.0846,inf,0.660,inf,Exact Binomial (n=4),,0.125000,0.000667,No,ceiling
+uniform,9router_cx_gpt-5.4-mini,elder_text_heavy,109,40,16,5,48,21,51.4%,41.3%,0.1009,0.0206,0.1783,3.200,1.120,11.169,Exact Binomial (n=21),,0.026604,0.000633,No,none
+uniform,9router_cx_gpt-5.4-mini,elder_zoom_heavy,112,48,8,8,48,16,50.0%,50.0%,0.0000,-0.0688,0.0688,1.000,0.327,3.057,Exact Binomial (n=16),,1.000000,0.001724,No,none
+uniform,9router_cx_gpt-5.4-mini,elder_combo_max,91,46,7,11,27,18,58.2%,62.6%,-0.0440,-0.1328,0.0462,0.636,0.209,1.798,Exact Binomial (n=18),,0.480682,0.000862,No,none
+uniform,9router_cx_gpt-5.4-mini,elder_combo_mid,100,42,12,7,39,19,54.0%,49.0%,0.0500,-0.0341,0.1325,1.714,0.622,5.139,Exact Binomial (n=19),,0.359283,0.000820,No,none
+uniform,9router_cx_gpt-5.4-mini,colorblind_deuteranomaly,117,46,11,3,57,14,48.7%,41.9%,0.0684,0.0071,0.1282,3.667,0.969,20.469,Exact Binomial (n=14),,0.057373,0.000641,No,floor
+uniform,9router_cx_gpt-5.4,elder_text_heavy,109,83,11,5,10,16,86.2%,80.7%,0.0550,-0.0174,0.1297,2.200,0.705,8.077,Exact Binomial (n=16),,0.210114,0.000704,No,none
+uniform,9router_cx_gpt-5.4,elder_zoom_heavy,112,88,7,13,4,20,84.8%,90.2%,-0.0536,-0.1347,0.0258,0.538,0.182,1.452,Exact Binomial (n=20),,0.263176,0.000758,No,none
+uniform,9router_cx_gpt-5.4,elder_combo_max,91,73,8,5,5,13,89.0%,85.7%,0.0330,-0.0476,0.1156,1.600,0.462,6.216,Exact Binomial (n=13),,0.581055,0.001042,No,none
+uniform,9router_cx_gpt-5.4,elder_combo_mid,100,77,10,7,6,17,87.0%,84.0%,0.0300,-0.0528,0.1139,1.429,0.491,4.422,Exact Binomial (n=17),,0.629059,0.001087,No,none
+uniform,9router_cx_gpt-5.4,colorblind_deuteranomaly,117,92,6,5,14,11,83.8%,82.9%,0.0085,-0.0498,0.0674,1.200,0.305,4.971,Exact Binomial (n=11),,1.000000,0.001786,No,none
+uniform,9router_cx_gpt-5.5,elder_text_heavy,109,109,0,0,0,0,100.0%,100.0%,0.0000,-0.0340,0.0340,,,,N/A (no discordant pairs),,1.000000,0.001852,No,ceiling
+uniform,9router_cx_gpt-5.5,elder_zoom_heavy,112,111,1,0,0,1,100.0%,99.1%,0.0089,-0.0250,0.0488,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.001923,No,ceiling
+uniform,9router_cx_gpt-5.5,elder_combo_max,91,90,1,0,0,1,100.0%,98.9%,0.0110,-0.0305,0.0596,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.002000,No,ceiling
+uniform,9router_cx_gpt-5.5,elder_combo_mid,100,98,2,0,0,2,100.0%,98.0%,0.0200,-0.0197,0.0700,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000926,No,ceiling
+uniform,9router_cx_gpt-5.5,colorblind_deuteranomaly,117,116,1,0,0,1,100.0%,99.1%,0.0085,-0.0240,0.0468,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.002083,No,ceiling
+uniform,9router_cx_gpt-5.6-luna,elder_text_heavy,109,105,2,1,1,3,98.2%,97.2%,0.0092,-0.0332,0.0558,2.000,0.104,117.994,Exact Binomial (n=3),,1.000000,0.002174,No,ceiling
+uniform,9router_cx_gpt-5.6-luna,elder_zoom_heavy,112,105,5,1,1,6,98.2%,94.6%,0.0357,-0.0107,0.0921,5.000,0.559,236.488,Exact Binomial (n=6),,0.218750,0.000714,No,ceiling
+uniform,9router_cx_gpt-5.6-luna,elder_combo_max,91,85,4,1,1,5,97.8%,94.5%,0.0330,-0.0215,0.0974,4.000,0.396,196.990,Exact Binomial (n=5),,0.375000,0.000833,No,ceiling
+uniform,9router_cx_gpt-5.6-luna,elder_combo_mid,100,95,3,1,1,4,98.0%,96.0%,0.0200,-0.0277,0.0752,3.000,0.241,157.492,Exact Binomial (n=4),,0.625000,0.001064,No,ceiling
+uniform,9router_cx_gpt-5.6-luna,colorblind_deuteranomaly,117,113,1,1,2,2,97.4%,97.4%,0.0000,-0.0381,0.0381,1.000,0.013,78.497,Exact Binomial (n=2),,1.000000,0.002273,No,ceiling
+uniform,9router_cx_gpt-5.6-sol,elder_text_heavy,109,108,0,1,0,1,99.1%,100.0%,-0.0092,-0.0501,0.0257,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.002381,No,ceiling
+uniform,9router_cx_gpt-5.6-sol,elder_zoom_heavy,112,111,0,0,1,0,99.1%,99.1%,0.0000,-0.0326,0.0326,,,,N/A (no discordant pairs),,1.000000,0.002500,No,ceiling
+uniform,9router_cx_gpt-5.6-sol,elder_combo_max,91,89,1,0,1,1,98.9%,97.8%,0.0110,-0.0281,0.0597,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.002632,No,ceiling
+uniform,9router_cx_gpt-5.6-sol,elder_combo_mid,100,99,0,0,1,0,99.0%,99.0%,0.0000,-0.0363,0.0363,,,,N/A (no discordant pairs),,1.000000,0.002778,No,ceiling
+uniform,9router_cx_gpt-5.6-sol,colorblind_deuteranomaly,117,116,0,1,0,1,99.1%,100.0%,-0.0085,-0.0468,0.0240,0.000,0.000,39.000,Exact Binomial (n=1),,1.000000,0.002941,No,ceiling
+uniform,9router_cx_gpt-5.6-terra,elder_text_heavy,109,107,1,0,1,1,99.1%,98.2%,0.0092,-0.0238,0.0503,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.003125,No,ceiling
+uniform,9router_cx_gpt-5.6-terra,elder_zoom_heavy,112,110,1,1,0,2,99.1%,99.1%,0.0000,-0.0407,0.0407,1.000,0.013,78.497,Exact Binomial (n=2),,1.000000,0.003333,No,ceiling
+uniform,9router_cx_gpt-5.6-terra,elder_combo_max,91,87,3,0,1,3,98.9%,95.6%,0.0330,-0.0095,0.0927,inf,0.413,inf,Exact Binomial (n=3),,0.250000,0.000735,No,ceiling
+uniform,9router_cx_gpt-5.6-terra,elder_combo_mid,100,98,1,0,1,1,99.0%,98.0%,0.0100,-0.0258,0.0546,inf,0.026,inf,Exact Binomial (n=1),,1.000000,0.003571,No,ceiling
+uniform,9router_cx_gpt-5.6-terra,colorblind_deuteranomaly,117,115,0,0,2,0,98.3%,98.3%,0.0000,-0.0307,0.0307,,,,N/A (no discordant pairs),,1.000000,0.003846,No,ceiling
+uniform,anthropic_claude-haiku-4-5,elder_text_heavy,109,86,10,5,8,15,88.1%,83.5%,0.0459,-0.0250,0.1192,2.000,0.623,7.457,Exact Binomial (n=15),,0.301758,0.000781,No,none
+uniform,anthropic_claude-haiku-4-5,elder_zoom_heavy,112,89,10,5,8,15,88.4%,83.9%,0.0446,-0.0244,0.1162,2.000,0.623,7.457,Exact Binomial (n=15),,0.301758,0.000794,No,none
+uniform,anthropic_claude-haiku-4-5,elder_combo_max,91,72,7,3,9,10,86.8%,82.4%,0.0440,-0.0261,0.1175,2.333,0.533,13.984,Exact Binomial (n=10),,0.343750,0.000806,No,none
+uniform,anthropic_claude-haiku-4-5,elder_combo_mid,100,76,12,4,8,16,88.0%,80.0%,0.0800,0.0022,0.1610,3.000,0.909,12.762,Exact Binomial (n=16),,0.076813,0.000649,No,none
+uniform,anthropic_claude-haiku-4-5,colorblind_deuteranomaly,117,101,3,3,10,6,88.9%,88.9%,0.0000,-0.0473,0.0473,1.000,0.134,7.466,Exact Binomial (n=6),,1.000000,0.004167,No,none
+uniform,anthropic_claude-opus-5,elder_text_heavy,109,109,0,0,0,0,100.0%,100.0%,0.0000,-0.0340,0.0340,,,,N/A (no discordant pairs),,1.000000,0.004545,No,ceiling
+uniform,anthropic_claude-opus-5,elder_zoom_heavy,112,112,0,0,0,0,100.0%,100.0%,0.0000,-0.0332,0.0332,,,,N/A (no discordant pairs),,1.000000,0.005000,No,ceiling
+uniform,anthropic_claude-opus-5,elder_combo_max,91,89,2,0,0,2,100.0%,97.8%,0.0220,-0.0215,0.0766,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000943,No,ceiling
+uniform,anthropic_claude-opus-5,elder_combo_mid,100,100,0,0,0,0,100.0%,100.0%,0.0000,-0.0370,0.0370,,,,N/A (no discordant pairs),,1.000000,0.005556,No,ceiling
+uniform,anthropic_claude-opus-5,colorblind_deuteranomaly,117,117,0,0,0,0,100.0%,100.0%,0.0000,-0.0318,0.0318,,,,N/A (no discordant pairs),,1.000000,0.006250,No,ceiling
+uniform,anthropic_claude-sonnet-4-6,elder_text_heavy,109,107,0,2,0,2,98.2%,100.0%,-0.0183,-0.0644,0.0182,0.000,0.000,5.325,Exact Binomial (n=2),,0.500000,0.000962,No,ceiling
+uniform,anthropic_claude-sonnet-4-6,elder_zoom_heavy,112,108,2,0,2,2,98.2%,96.4%,0.0179,-0.0156,0.0623,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.000980,No,ceiling
+uniform,anthropic_claude-sonnet-4-6,elder_combo_max,91,83,6,1,1,7,97.8%,92.3%,0.0549,-0.0042,0.1263,6.000,0.728,275.986,Exact Binomial (n=7),,0.125000,0.000676,No,ceiling
+uniform,anthropic_claude-sonnet-4-6,elder_combo_mid,100,94,4,0,2,4,98.0%,94.0%,0.0400,-0.0014,0.0978,inf,0.660,inf,Exact Binomial (n=4),,0.125000,0.000685,No,ceiling
+uniform,anthropic_claude-sonnet-4-6,colorblind_deuteranomaly,117,114,1,1,1,2,98.3%,98.3%,0.0000,-0.0385,0.0385,1.000,0.013,78.497,Exact Binomial (n=2),,1.000000,0.007143,No,ceiling
+uniform,anthropic_claude-sonnet-5,elder_text_heavy,109,106,2,0,1,2,99.1%,97.2%,0.0183,-0.0157,0.0647,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001000,No,ceiling
+uniform,anthropic_claude-sonnet-5,elder_zoom_heavy,112,109,2,0,1,2,99.1%,97.3%,0.0179,-0.0153,0.0631,inf,0.188,inf,Exact Binomial (n=2),,0.500000,0.001020,No,ceiling
+uniform,anthropic_claude-sonnet-5,elder_combo_max,91,83,7,0,1,7,98.9%,91.2%,0.0769,0.0242,0.1504,inf,1.441,inf,Exact Binomial (n=7),,0.015625,0.000625,No,ceiling
+uniform,anthropic_claude-sonnet-5,elder_combo_mid,100,95,4,0,1,4,99.0%,95.0%,0.0400,-0.0010,0.0986,inf,0.660,inf,Exact Binomial (n=4),,0.125000,0.000694,No,ceiling
+uniform,anthropic_claude-sonnet-5,colorblind_deuteranomaly,117,113,3,0,1,3,99.1%,96.6%,0.0256,-0.0077,0.0730,inf,0.413,inf,Exact Binomial (n=3),,0.250000,0.000746,No,ceiling
+uniform,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,elder_text_heavy,109,102,2,2,3,4,95.4%,95.4%,0.0000,-0.0470,0.0470,1.000,0.072,13.796,Exact Binomial (n=4),,1.000000,0.008333,No,ceiling
+uniform,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,elder_zoom_heavy,112,103,4,5,0,9,95.5%,96.4%,-0.0089,-0.0695,0.0504,0.800,0.159,3.717,Exact Binomial (n=9),,1.000000,0.010000,No,ceiling
+uniform,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,elder_combo_max,91,82,4,4,1,8,94.5%,94.5%,0.0000,-0.0697,0.0697,1.000,0.186,5.369,Exact Binomial (n=8),,1.000000,0.012500,No,none
+uniform,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,elder_combo_mid,100,94,1,4,1,5,95.0%,98.0%,-0.0300,-0.0891,0.0197,0.250,0.005,2.526,Exact Binomial (n=5),,0.375000,0.000847,No,none
+uniform,openai_compatible_qwen_qwen3-vl-235b-a22b-instruct,colorblind_deuteranomaly,117,109,2,1,5,3,94.9%,94.0%,0.0085,-0.0299,0.0502,2.000,0.104,117.994,Exact Binomial (n=3),,1.000000,0.016667,No,none
+uniform,openai_compatible_z-ai_glm-5v-turbo,elder_text_heavy,109,99,5,4,1,9,95.4%,94.5%,0.0092,-0.0513,0.0711,1.250,0.269,6.300,Exact Binomial (n=9),,1.000000,0.025000,No,ceiling
+uniform,openai_compatible_z-ai_glm-5v-turbo,elder_zoom_heavy,112,97,9,4,2,13,94.6%,90.2%,0.0446,-0.0208,0.1144,2.250,0.628,9.999,Exact Binomial (n=13),,0.266846,0.000769,No,none
+uniform,openai_compatible_z-ai_glm-5v-turbo,elder_combo_max,91,80,6,4,1,10,94.5%,92.3%,0.0220,-0.0520,0.0985,1.500,0.356,7.227,Exact Binomial (n=10),,0.753906,0.001111,No,none
+uniform,openai_compatible_z-ai_glm-5v-turbo,elder_combo_mid,100,90,5,5,0,10,95.0%,95.0%,0.0000,-0.0693,0.0693,1.000,0.230,4.345,Exact Binomial (n=10),,1.000000,0.050000,No,none
+uniform,openai_compatible_z-ai_glm-5v-turbo,colorblind_deuteranomaly,117,103,7,5,2,12,94.0%,92.3%,0.0171,-0.0452,0.0813,1.400,0.382,5.594,Exact Binomial (n=12),,0.774414,0.001136,No,none

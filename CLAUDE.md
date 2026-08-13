@@ -25,14 +25,21 @@ screen. Differences are tested with **McNemar's paired test**.
 as publication-grade: multiple-comparison correction, honest confound reporting, and
 stated limitations are required, not optional.
 
-> **Status (2026-08-03).** Experiment 3 is collected and the vision arm is analysed —
-> see §5. 13 screens, 155 targets, 11 models, 930 rows per model. Two defects were found
-> and fixed during this round: Gemini answered in its native 0–1000 normalized coordinate
-> space while the pipeline scored pixels (`gemini-pro-agent` read 8.4%, actually 96.8%),
-> and result CSVs accumulated duplicate/stale rows from concurrent writers and unremoved
-> `api_error` retries. Both are fixed in code and the data is repaired — see §6.
-> **Remaining: analyse the tree arm** (10 `*_tree.csv` files, collected and clean but
-> deliberately not pooled with vision), and resolve the repo privacy items in §10.
+> **Status (2026-08-13).** Experiment 3 is collected and **both arms are analysed** —
+> see §5. 13 screens, 155 targets, **17 models on vision / 16 on tree**, 930 rows per
+> model per arm. Qwen-VL and GLM-V are now both collected (OpenRouter serves them; the
+> local 9router shim was never the blocker). Two defects were found and fixed earlier in
+> this round: Gemini answered in its native 0–1000 normalized coordinate space while the
+> pipeline scored pixels (`gemini-pro-agent` read 8.4%, actually 96.8%), and result CSVs
+> accumulated duplicate/stale rows from concurrent writers and unremoved `api_error`
+> retries. Both are fixed in code and the data is repaired — see §6.
+> **Remaining:** `local/ferret-ui-llama8b` has **no tree arm and will not get one** —
+> decided 2026-08-13, not merely unrun. A 288-row attempt with 12 `api_error` rows was
+> found reset mid-run that same day; `backups.preserve()` caught the partial file
+> (§6 "Still open"), but it is abandoned, not resumable. §5's tables report **17 models
+> on vision, 16 on tree** — Ferret-UI is vision-only and permanently out of the tree
+> comparison. Also resolve the repo privacy items in §10. The roster is not yet declared
+> final otherwise; §5's pooled p-values will move again if it changes.
 
 > **For the full mathematics** — every formula, its rationale, and a worked example for
 > all three evaluation modes (vision-only, tree-injected, cross-file) — see
@@ -167,16 +174,19 @@ about visual layout:
 | Thinking | on by default (measured: 0 tokens on this task) | off by default |
 | `temperature=0` | **rejected (400)**; dropped automatically, so these run non-deterministic | honoured |
 
-> **Haiku 4.5 is excluded, and the reason is a scoring trap.** Because the API downscales
-> its input, Haiku answers in the **763×1568 space it actually sees** — not the 1080×2219
-> space the prompt states. Every prediction comes back multiplied by 1568/2219 = 0.7066.
-> Measured on `clock_baseline`: it scores **17%** as-is and **~100%** once rescaled
-> (rescaled predictions land 2–4 px from truth, versus a ±30 px tolerance). This is the
-> same defect class and magnitude as the `gemini-pro-agent` 8.4%-vs-96.8% error in §6 —
-> a coordinate-space mismatch, not a grounding failure. Any model whose long edge exceeds
-> the provider's cap has this problem; check the ratio before believing a low score.
-> Opus 5 and Sonnet 5 are unaffected (2219 < 2576) and verified answering in native
-> pixel space.
+> **Haiku 4.5 was excluded for a scoring trap; it is now included, because the pipeline
+> handles the trap itself.** Because the API downscales its input, Haiku answers in the
+> **763×1568 space it actually sees** — not the 1080×2219 space the prompt states. Every
+> prediction came back multiplied by 1568/2219 = 0.7066. Measured on `clock_baseline`: it
+> scored **17%** as-is and **~100%** once rescaled (rescaled predictions land 2–4 px from
+> truth, versus a ±30 px tolerance) — the same defect class and magnitude as the
+> `gemini-pro-agent` 8.4%-vs-96.8% error in §6, a coordinate-space mismatch and not a
+> grounding failure. `MAX_IMAGE_EDGE` (§8) now declares the cap so the pipeline does the
+> resize itself, states the resized dimensions in the prompt, records them in
+> `image_sent_size`, and scales predictions back before scoring. Haiku 4.5 and Sonnet 4.6
+> are collected on that path and read 86.9% / 87.7% on the vision arm. Opus 5 and Sonnet 5
+> are unaffected (2219 < 2576) and verified answering in native pixel space.
+> The rule still stands for any *new* model: check the ratio before believing a low score.
 
 Thinking was measured, not assumed: `adaptive` produced **0 thinking tokens** on this
 task for both models — identical cost and identical accuracy to `disabled`. Runs pin
@@ -232,14 +242,17 @@ value for any model that self-describes, rather than converting twice.
 
 ## 5. Current state of results
 
-**Experiment 3 (current, 2026-08-03).** 13 screens, 155 targets, 11 models, 930 rows
-each. Vision-only arm analysed; the 10 tree-mode result files are collected and clean but
-**not yet analysed** — that is a separate research question and must not be pooled with
-the vision arm (`discover_result_csvs` enforces this). Tree results are the
-`*_tree.csv` files in `outputs/dataset/evaluations/`.
+**Experiment 3 (current, re-analysed 2026-08-13).** 13 screens, 155 targets, 930 rows per
+model per arm, 827 of which are actually queried (103 targets are `off_screen` in a given
+layout and are never sent). **17 models on the vision arm, 16 on the tree arm** — every
+model but `local/ferret-ui-llama8b`, which is not run on the tree arm and is not
+going to be (§6 "Still open"). Both
+arms are now analysed, including the newly-collected `openai_compatible/qwen/qwen3-vl-235b-a22b-instruct`
+and `openai_compatible/z-ai/glm-5v-turbo`. They answer different research questions and
+must never be pooled (`discover_result_csvs` enforces this).
 
 - `dataset/` — the current run's input captures, labels, and manifest.
-- `outputs/dataset/` — its generated results: 21 result CSVs (11 vision, 10 tree), all
+- `outputs/dataset/` — its generated results: 33 result CSVs (17 vision, 16 tree), all
   exactly 930 rows, one row per `(screen, target_text, profile)`, zero `api_error`.
 - `dataset/experiment_2/` + `outputs/experiment_2/` — the July run: 168 targets, 1005
   rows. **Superseded, do not cite.** Full defect list in its README.
@@ -253,49 +266,108 @@ resumable result file.
 
 ### Headline results (sample=primary)
 
-| Profile | reachability | b | c | pooled p | |
-|---|---:|---:|---:|---:|---|
-| `elder_text_heavy` | 90.3% | 64 | 32 | **0.0054** | significant after Holm |
-| `elder_combo_mid` | 79.4% | 69 | 39 | 0.062 | ns |
-| `elder_combo_max` | **72.3%** | 64 | 44 | 0.186 | ns |
-| `elder_zoom_heavy` | 92.9% | 45 | 51 | 0.656 | ns (trends *up*) |
-| `colorblind_deuteranomaly` | 98.7% | 37 | 33 | 0.746 | ns |
+Pooled cluster permutation, both arms. b = the profile broke a target the baseline got;
+c = the reverse.
 
-Per-model McNemar with Holm across 54 tests leaves **nothing** significant: 39 tests
-flagged `ceiling`, 5 `floor`, 10 plain ns. This is expected — 6 of 11 models sit at
-98–99% baseline with only 2–4 discordant pairs per profile, so the per-model arm is
-structurally underpowered and its nulls are **not** evidence of resilience.
+| Profile | reachability | vision b/c | vision p | tree b/c | tree p |
+|---|---:|---:|---:|---:|---:|
+| `elder_text_heavy` | 90.3% | 97 / 39 | **0.00005** | 67 / 32 | **0.00080** |
+| `elder_combo_mid` | 79.4% | 135 / 49 | **0.00005** | 75 / 36 | **0.00060** |
+| `elder_combo_max` | **72.3%** | 138 / 52 | **0.00005** | 77 / 36 | **0.00190** |
+| `elder_zoom_heavy` | 92.9% | 96 / 66 | 0.075 ns | 65 / 52 | 0.335 ns |
+| `colorblind_deuteranomaly` | 100%\* | 50 / 47 | 0.845 ns | 47 / 25 | **0.01235** |
 
-Direction for font scaling: **10/11 models down, 1 tied**, sign test p = 0.00195.
+Bold survives Holm within its arm. \*The colorblind arm's target set excludes the screens
+whose labels change under the filter, so its denominator is 136, not 155.
+
+> **Adding Qwen-VL and GLM-V did not flip any verdict.** Every one of the ten
+> profile×arm cells above has the same significant/ns call as the 15-vision/14-tree
+> roster that preceded it. Where p moved, both new models mostly pushed it *down*
+> (e.g. vision `elder_text_heavy` 0.00015→0.00005): both are near-ceiling on the profile
+> contrast (baseline 95.0% and 97.8%) and contribute only a handful of discordant pairs
+> each, so they add data without changing power. This was checked explicitly — with vs.
+> without GLM, all ten cells — before keeping GLM in the roster; see the git history
+> around 2026-08-13 if the reasoning needs to be reproduced.
+
+Per-model McNemar with Holm across **85** tests (17 models × 5 profiles) leaves **2**
+significant, both `claude-sonnet-4-6` (`elder_combo_max` b/c = 34/1, `elder_combo_mid`
+26/0) — unchanged from the smaller roster. Of the rest, **61** are flagged `ceiling` and
+**5** `floor`. This is expected — most models sit above 95% baseline with only a handful
+of discordant pairs per profile, so the per-model arm is structurally underpowered and
+its nulls are **not** evidence of resilience.
+
+Direction for font scaling: **15/17 models down, 0 up, 2 tied**, sign test p = 0.000061.
 
 **The defensible claims are therefore:**
 1. `elder_combo_max` removes **27.7%** of interactive text from the reachable screen —
    large, clean, model-independent, and the strongest result in the study.
-2. Font scaling degrades grounding (pooled p = 0.0054) while density and colour do not.
-   Text *reflow* is the failure mode, not visual distortion in general — density
-   inflation actually trends helpful, since targets get bigger. `elder_combo_max` is
-   **not** claimable either way: it drops 43 of 155 targets, so its null is measured on
-   the easiest 112 and is a selection artefact as much as a result (§6 "Still open",
-   `docs/methods.md` §1.2.1).
+2. Font scaling degrades grounding, and so do both compound profiles, while density
+   inflation alone does not (it trends *up* — targets get bigger). Text *reflow* is the
+   failure mode, not visual distortion in general.
+3. The combo profiles' significance must be reported **with** the survivorship caveat, not
+   instead of it: `elder_combo_max` drops 43 of 155 targets, so its effect is measured on
+   the easiest 112 (§6 "Still open", `docs/methods.md` §1.2.1). The effect is real; its
+   magnitude is measured on a favourable subset.
 
-**Robustness split that must be reported.** `gpt-5.4` (54.8% baseline) and `gpt-5.4-mini`
-(34.2%) are the only two models with real headroom and supply **289 of 501** discordant
-pairs. Splitting the pooled counts by weak-two vs other-nine:
+**Robustness split that must be reported.** `gpt-5.4` (59.0% baseline) and `gpt-5.4-mini`
+(37.4%) are the only two models with large headroom and supply **280 of 769** discordant
+pairs. Splitting the pooled counts by weak-two vs other-fifteen:
 
-- `elder_text_heavy` — weak two 36/21 (63% b), other nine 32/11 (**74% b**) → both agree;
-  the font-scaling effect is robust across the roster, not an artefact of weak models.
-- `colorblind_deuteranomaly` — weak two 33/20 (62% b), other nine 16/16 (**exactly 50%**)
-  → the apparent colour effect is carried entirely by the two least accurate models.
+- `elder_text_heavy` — weak two 36/21 (63% b), other fifteen 61/18 (**77% b**) → both
+  agree; the font-scaling effect is robust across the roster, not an artefact of weak
+  models.
+- `colorblind_deuteranomaly` — weak two 25/19 (57% b), other fifteen 25/28 (**47% b**,
+  i.e. roughly flat) → there is no clean colour effect on the vision arm. The tree arm's
+  p = 0.0123 for this profile rests on 72 discordant pairs (up from 57) and should still
+  be treated as fragile rather than a finding.
 
-Not supported: "frontier VLMs degrade under accessibility settings." Every frontier model
-is at ceiling with a handful of changed answers; `gpt-5.6-sol` has b+c = 9 across all
-five profiles combined.
+Not supported: "frontier VLMs degrade under accessibility settings." Most frontier models
+are at ceiling with a handful of changed answers; `gpt-5.6-sol` and `claude-opus-5` each
+have b+c = 7 across all five profiles combined. `claude-sonnet-4-6` is the one genuine
+exception and is worth naming individually.
 
-**The 11 CSVs are not 11 independent models.** `gpt-5.6-luna`/`-sol`/`-terra` are configs
+**The 17 CSVs are not 17 independent models.** `gpt-5.6-luna`/`-sol`/`-terra` are configs
 of one base model; `gemini-3-flash` and `gemini-3-flash-agent` are one model on two
-routes; `gemini-3.5-flash-low` is a reasoning-effort variant. The sign test in particular
-treats them as independent draws and therefore overstates its own evidence — report it
-over model *families* (GPT / Gemini / Ferret) or state the dependence explicitly.
+routes; `gemini-3.5-flash-low` is a reasoning-effort variant. That is roughly 11
+independent systems, not 17. The sign test in particular treats them as independent draws
+and therefore overstates its own evidence — report it over model *families* (GPT / Gemini
+/ Claude / Qwen / GLM / Ferret) or state the dependence explicitly.
+
+### Does the accessibility tree help? (vision vs tree, same 16 common models)
+
+Mostly, but **not uniformly** — GLM-V is a genuine, statistically significant
+counterexample, and this replaces the earlier "the direction is uniform" claim. Pooled
+permutation on the vision→tree contrast is significant for **every** profile including
+`baseline` (38 hurt / 109 helped, p ≈ 5e-5), across the 16 models present in both arms
+(`local/ferret-ui-llama8b` excluded — no tree arm by decision, §6 "Still open"). Overall accuracy
+89.3% → 92.7% across 13,200 paired observations.
+
+The gain is concentrated in models with headroom — `gpt-5.4` +21.3 pts, `gpt-5.4-mini`
++11.0, `claude-sonnet-4-6` +9.1, `qwen3-vl-235b` +6.5, most others between −0.5 and +2.7.
+Per-model McNemar reaches significance (tree helps) for those four plus `claude-sonnet-5`
+(zoom only). **`glm-5v-turbo` is the outlier: −5.2 pts overall, and significant in the
+*hurt* direction** for `elder_zoom_heavy`, `elder_combo_max`, and `elder_combo_mid` (its
+own per-model tests, Holm-corrected within that comparison). `claude-haiku-4-5` is flat
+(−0.5, ns). Investigated as a possible tree-leak or coordinate-space defect and ruled out
+— every GLM tree miss lands inside a different genuine labeled element, closer to truth
+than its vision misses, and 0 of its 825 scored rows show the pixel-mistaken-for-normalized
+signature. Reads as GLM over-anchoring on the listed tree elements and snapping to a
+neighbor instead of locating an unlisted target — a real model behavior, not a pipeline
+artifact.
+
+**Two things the uniform-profile gain does not show.** The tree helps just as much on
+`baseline` as on any accessibility profile (for the 15 models it does help), so for those
+models it is compensating for weak visual grounding in general, not for the accessibility
+condition specifically. And even where it helps, it does not close the gap:
+`elder_text_heavy`, `elder_combo_mid` and `elder_combo_max` remain significant *within*
+the tree arm, with the accuracy drop only shrinking from ~5 pts to ~2. The tree raises the
+floor for most models; it does not remove the effect, and for GLM it makes the floor lower.
+
+Per-model tables are in `outputs/dataset/analysis/comparisons/` (16 files — one per model
+present in both arms; `local/ferret-ui-llama8b` has none, correctly, since it has no valid
+tree CSV to compare against). The pooled version of this contrast is **not** in the CLI —
+`agb analyze --compare-a/--compare-b` is per-model only; the pooled figures above were
+computed ad hoc from the per-model comparison inputs.
 
 ---
 
@@ -375,6 +447,13 @@ landed and covered by tests.
   fixable by reordering or re-verifying the setting.
 - **Ferret-UI parse robustness.** 15 unparsed replies in the archive, versus 0–1 for
   hosted models. Its `[[x1,y1,x2,y2]]` regex may not cover every reply shape.
+- **Ferret-UI will not get a tree arm.** Decided 2026-08-13. The only attempt made had
+  288 of 930 rows with 12 `api_error`s when something reset it mid-run;
+  `backups.preserve()` caught the partial file at
+  `outputs/dataset/evaluations/.backups/local_ferret-ui-llama8b_tree_2026-08-13T16-15-25-528Z.csv`,
+  kept for the record only — not usable and not being resumed. §5's tree tables run on
+  16 models and treat this as a permanent, not pending, gap; `local/ferret-ui-llama8b`
+  stays vision-only.
 
 ---
 
@@ -420,8 +499,13 @@ automated pass/fail.
   in a space nothing recorded — Haiku 4.5 and Sonnet 4.6 both scored **17% instead of
   ~100%** that way. A model absent from the map is sent at native size and its request is
   byte-identical to the pre-cap pipeline, which is what keeps the collected roster
-  comparable. Capped models cannot run tree mode: the tree lists bounds in full-size
-  pixels, so the run raises rather than mixing two coordinate systems.
+  comparable. Capped models **can** run tree mode: the tree lists bounds in full-size
+  pixels, so `evaluation.grounding.task_prompting.scale_tree_rows` multiplies every box by
+  the same factor the screenshot was scaled by, keeping the tree and the image in one
+  coordinate system. (It returns the rows object unchanged when the scale is 1.0, so an
+  uncapped model's prompt stays byte-identical.) An earlier revision of this pipeline
+  raised instead; that is no longer true, and `anthropic_claude-haiku-4-5_tree.csv` and
+  `anthropic_claude-sonnet-4-6_tree.csv` are collected on this path.
 - **The coordinate parser takes the *last* bracketed pair, not the first.** A compliant
   reply has exactly one pair, so this is a no-op for it; a model reasoning in prose states
   intermediate values first and its answer last. Taking the first turned a Haiku hit into
