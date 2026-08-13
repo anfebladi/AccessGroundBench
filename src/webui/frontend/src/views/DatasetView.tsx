@@ -19,79 +19,23 @@ import type { TabViewProps } from "../lib/types";
 import { CaptureHealth } from "./dataset/CaptureHealth";
 import { ScreenshotCanvas } from "./dataset/ScreenshotCanvas";
 import { ComparisonStage } from "./dataset/ComparisonStage";
+import { ScreenPicker } from "../features/dataset/ScreenPicker";
+import {
+  PROFILES,
+  asBox,
+  asText,
+  ordered,
+  type Profile,
+  type Box,
+  type Target,
+  type Label,
+  type Manifest,
+  type Mode,
+  type ViewConfig,
+} from "./dataset/types";
+export { PROFILES } from "./dataset/types";
+import styles from "./dataset/DatasetView.module.css";
 
-export const PROFILES = [
-  ["baseline", "Baseline"],
-  ["elder_text_heavy", "Text heavy"],
-  ["elder_zoom_heavy", "Zoom heavy"],
-  ["elder_combo_mid", "Combo mid"],
-  ["elder_combo_max", "Combo max"],
-  ["colorblind_deuteranomaly", "Deuteranomaly"],
-] as const;
-type Profile = (typeof PROFILES)[number][0];
-type Mode = "side-by-side" | "onion";
-type Box = [number, number, number, number];
-type Target = { text: string; baseline_box?: Box };
-type Label = { text?: string | null; box?: Box };
-type Manifest = {
-  expected_captures: number;
-  successful_captures: number;
-  problems?: string[];
-};
-type ViewConfig = {
-  profile: Profile;
-  mode: Mode;
-  zoom: "fit" | number;
-  evictedOnly: boolean;
-  onionPct: number;
-};
-
-const asBox = (v: unknown): Box | undefined =>
-  Array.isArray(v) &&
-  v.length >= 4 &&
-  v.slice(0, 4).every((n) => typeof n === "number" && Number.isFinite(n))
-    ? (v.slice(0, 4) as Box)
-    : undefined;
-const asText = (v: unknown) =>
-  typeof v === "string" && v.trim() ? v.trim() : undefined;
-const ordered = (xs: Target[]) =>
-  [...xs].sort(
-    (a, b) =>
-      (a.baseline_box?.[1] ?? 0) - (b.baseline_box?.[1] ?? 0) ||
-      (a.baseline_box?.[0] ?? 0) - (b.baseline_box?.[0] ?? 0),
-  );
-
-function Icon({ name }: { name: "download" | "trash" | "bookmark" }) {
-  const paths = {
-    download: (
-      <>
-        <path d="M12 3v13M6 11l6 6 6-6" />
-        <path d="M4 20h16" />
-      </>
-    ),
-    trash: (
-      <>
-        <path d="M4 7h16M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13" />
-      </>
-    ),
-    bookmark: <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" />,
-  };
-  return (
-    <svg
-      width="13"
-      height="13"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {paths[name]}
-    </svg>
-  );
-}
 
 export function DatasetView({
   dataset,
@@ -203,7 +147,7 @@ export function DatasetView({
     s.toLowerCase().includes(filter.trim().toLowerCase()),
   );
   return (
-    <section id="tab-dataset" className="tab" aria-labelledby="head-dataset" hidden={hidden}>
+    <section id="tab-dataset" className={`tab ${styles.root}`} aria-labelledby="head-dataset" hidden={hidden}>
       <div className="view-head">
         <h2 id="head-dataset">Dataset</h2>
         <p className="lead">
@@ -246,40 +190,7 @@ export function DatasetView({
           </div>
         </div>
         <div className="row">
-          <div className="picker" style={{ flex: "0 0 15rem" }}>
-            <input
-              id="screen-filter"
-              type="search"
-              placeholder="Filter screens"
-              aria-label="Filter screens"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-            />
-            <ul id="screen-list" className="list picker-list">
-              {visible.length ? (
-                visible.map((s) => (
-                  <li
-                    data-screen={s}
-                    className={s === selected ? "selected" : ""}
-                    key={s}
-                  >
-                    <button
-                      type="button"
-                      className="screen-picker-button"
-                      aria-label={s}
-                      onClick={() => setSelected(s)}
-                    >
-                      {s}
-                    </button>
-                  </li>
-                ))
-              ) : (
-                <li className="muted" style={{ cursor: "default" }}>
-                  No matching screens
-                </li>
-              )}
-            </ul>
-          </div>
+          <ScreenPicker screens={screens} selected={selected} filter={filter} onFilter={setFilter} onSelect={setSelected} />
           <div
             className={`grow ${loading ? "is-loading" : ""}`}
             id="screen-browser"

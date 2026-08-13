@@ -313,7 +313,11 @@ export function ComparisonStage({
             list.map((t) => (
               <button
                 type="button"
-                className={`stage-target-item${missing.some((m) => m.text === t.text) ? " is-missing" : ""}${selected === t.text ? " is-selected" : ""}`}
+                className={`stage-target-item${
+                  missing.some((item) => item.text === t.text)
+                    ? " is-missing"
+                    : ""
+                }${selected === t.text ? " is-selected" : ""}`}
                 aria-selected={selected === t.text}
                 key={t.text}
                 onClick={() => setSelection(t.text)}

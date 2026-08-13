@@ -106,4 +106,63 @@ describe('App section navigation', () => {
       await waitFor(() => assertVisibleRoute(tab));
     }
   });
+
+  it('propagates provider credential changes to the sidebar chip', async () => {
+    localStorage.setItem('agb_models', JSON.stringify([{id: 'openai/test', coord_space: 'pixel'}]));
+    let configured = false;
+    vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const path = String(input);
+      if (path === '/api/datasets') return json([{name: 'demo', screen_count: 1, image_count: 1, is_archived: false}]);
+      if (path === '/api/providers') return json([{provider: 'openai', env_vars: ['OPENAI_API_KEY'], configured, session_configured: configured}]);
+      if (path === '/api/keys' && init?.method === 'POST') {
+        configured = true;
+        return json({ok: true});
+      }
+      if (path.endsWith('/screens')) return json({screens: ['home']});
+      if (path.includes('/results')) return json([]);
+      return json([]);
+    }));
+    window.location.hash = '#models';
+    installCanvasAndImageStubs();
+    const {App} = await import('../../src/main');
+    render(<App />);
+    await waitFor(() => expect(screen.getByPlaceholderText('Paste key for this session')).toBeTruthy());
+    expect(screen.getByRole('link', {name: /Models/}).textContent).toContain('0 providers');
+
+    fireEvent.change(screen.getByPlaceholderText('Paste key for this session'), {target: {value: 'secret'}});
+    fireEvent.click(screen.getByRole('button', {name: 'Set'}));
+    await waitFor(() => expect(screen.getByRole('link', {name: /Models/}).textContent).toContain('1 provider'));
+  });
+
+  it('projects the evaluate preflight summary into the mounted sidebar chip', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
+      const path = String(input);
+      if (path === '/api/datasets') {
+        return json([{name: 'demo', screen_count: 1, image_count: 1, is_archived: false}]);
+      }
+      if (path === '/api/providers') return json([]);
+      if (path.endsWith('/screens')) return json({screens: ['home']});
+      if (path.includes('/preflight')) {
+        return json({
+          expected_total: 4,
+          already_done: 1,
+          results_csv: 'results.csv',
+          lock_present: false,
+        });
+      }
+      return json([]);
+    }));
+    localStorage.setItem('agb_models', JSON.stringify([{id: 'openai/test', coord_space: 'pixel'}]));
+    window.location.hash = '#evaluate';
+    installCanvasAndImageStubs();
+    const {App} = await import('../../src/main');
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('link', {name: /Evaluate/}).textContent).toContain('3 queries left');
+    });
+    expect(document.getElementById('tab-evaluate')?.hidden).toBe(false);
+    expect(document.getElementById('tab-models')?.hidden).toBe(true);
+  });
 });

@@ -27,10 +27,29 @@ type Analysis = {
   direction_consistency: CsvRow[];
 };
 const text = (value: unknown) => String(value ?? "");
-const number = (value: unknown) => { const n = Number(String(value ?? "").replace("%", "")); return Number.isFinite(n) ? n : NaN; };
-function Badge({ className, children }: { className: string; children: React.ReactNode }) { return <span className={`badge ${className}`}>{children}</span>; }
-function ErrorState({ message }: { message: string }) { return <p className="state-error" role="alert">{message}</p>; }
-function LoadingState({ message }: { message: string }) { return <p className="state-loading">{message}</p>; }
+const number = (value: unknown) => {
+  const n = Number(String(value ?? "").replace("%", ""));
+  return Number.isFinite(n) ? n : NaN;
+};
+function Badge({
+  className,
+  children,
+}: {
+  className: string;
+  children: React.ReactNode;
+}) {
+  return <span className={`badge ${className}`}>{children}</span>;
+}
+function ErrorState({ message }: { message: string }) {
+  return (
+    <p className="state-error" role="alert">
+      {message}
+    </p>
+  );
+}
+function LoadingState({ message }: { message: string }) {
+  return <p className="state-loading">{message}</p>;
+}
 
 const STATUS_COLUMNS: [string, string, string][] = [
   [
@@ -153,7 +172,12 @@ export function ResultsView({
       dir: current.key === key && current.dir === "desc" ? "asc" : "desc",
     }));
   return (
-    <section id="tab-results" className="tab" aria-labelledby="head-results" hidden={hidden}>
+    <section
+      id="tab-results"
+      className="tab"
+      aria-labelledby="head-results"
+      hidden={hidden}
+    >
       <div className="view-head">
         <h2 id="head-results">Results</h2>
         <p className="lead">
@@ -407,6 +431,10 @@ function MissInspector({
     [index, setIndex] = useState(0),
     [loading, setLoading] = useState(true),
     [error, setError] = useState("");
+  const rowsLengthRef = useRef(0);
+  rowsLengthRef.current = rows.length;
+  const closeRef = useRef(close);
+  closeRef.current = close;
   useEffect(() => {
     let active = true;
     setLoading(true);
@@ -432,26 +460,27 @@ function MissInspector({
     };
   }, [dataset, info]);
   useEffect(() => {
+    setIndex(0);
+  }, [dataset, info]);
+  useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      if (event.key === "Escape") close();
-      if (event.key === "ArrowRight" || event.key === "ArrowLeft")
+      if (event.key === "Escape") closeRef.current();
+      if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+        event.preventDefault();
         setIndex((current) => {
-          const next = rows.length
+          const length = rowsLengthRef.current;
+          const next = length
             ? event.key === "ArrowRight"
-              ? (current + 1) % rows.length
-              : (current - 1 + rows.length) % rows.length
+              ? (current + 1) % length
+              : (current - 1 + length) % length
             : 0;
-          document
-            .querySelectorAll("#drawer-root .filmstrip button")
-            .forEach((button, i) =>
-              button.classList.toggle("selected", i === next),
-            );
           return next;
         });
+      }
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, [close, rows.length]);
+  }, []);
   const current = rows[index];
   const content = (
     <div
@@ -625,4 +654,3 @@ function MissCanvas({ dataset, row }: { dataset: string; row: CsvRow }) {
     />
   );
 }
-

@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { api, CollectPreflight, StartedRun } from "../lib/api";
 import { RunMonitor } from "./RunMonitor";
 import type { TabViewProps } from "../lib/types";
+import styles from "./collect.module.css";
 export function CollectView({
   onRunFinished,
   hidden,
@@ -72,7 +73,7 @@ export function CollectView({
   const devices = preflight?.devices || [];
   const authorized = devices.filter((d) => d.status === "device");
   return (
-    <section id="tab-collect" className="tab" aria-labelledby="head-collect" hidden={hidden}>
+    <section id="tab-collect" className={`tab ${styles.root}`} aria-labelledby="head-collect" hidden={hidden}>
       <div className="view-head">
         <h2 id="head-collect">Collect</h2>
         <p className="lead">

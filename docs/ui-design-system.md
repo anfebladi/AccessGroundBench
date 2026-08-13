@@ -1,9 +1,10 @@
 # Web UI design system
 
-The token reference for `src/webui/frontend/src/style.css`, served by the
-local Vite frontend. Every value here is a CSS custom
-property defined once in the `TOKENS` layer at the top of the source file;
-nothing in the UI should hard-code a colour, size or duration.
+The token reference for the local Vite frontend. Global tokens and base rules
+are loaded by `src/webui/frontend/src/style.css`, with shared entry points in
+`src/webui/frontend/src/styles/tokens.css` and `styles/globals.css`. Feature and
+shell selectors live in colocated CSS Modules (`*.module.css`); nothing in the
+UI should hard-code a colour, size or duration.
 
 **Constraint that shapes all of it:** React + Vite for the local UI, no CDN, no
 CSS framework. Node is required at runtime because `agb ui` starts Vite beside
@@ -12,6 +13,22 @@ the FastAPI API. Run `npm ci` once (when dependencies are missing) and use
 in `src/webui/frontend/dist/` is ignored and disposable; no static bundle is
 committed. Layers inside `style.css` do the job a preprocessor would:
 `FONTS → TOKENS → BASE → LAYOUT → COMPONENTS → UTILITIES → RESPONSIVE`.
+
+## 0. Source organization
+
+`src/webui/frontend/src/app/` contains application composition and shell
+components (`AppShell`, `TopBar`, `Sidebar`, `CommandPalette`, `PageOutlet`, and
+`ErrorBoundary`). Route order, hashes, groups, and palette metadata are defined
+in `app/routes.ts`; `main.tsx` only bootstraps React and re-exports compatibility
+symbols. Thin workflow adapters live in `src/pages/`, with feature-owned pieces
+under `src/features/` and view/reporting directories.
+
+Keep resets, focus-visible behavior, design tokens, and CSS variables consumed
+by charts, canvas drawing, or SVG export global. Put markup-specific selectors,
+responsive rules, and component states in the owning CSS Module. CSS Module
+class names must not be queried imperatively; use React state, refs, ARIA state,
+or stable `data-*` hooks for behavior. Pages remain mounted and switch through
+the `hidden` attribute, so route hashes and accessibility hooks remain stable.
 
 **Register:** modern product craft (Linear / Raycast / Vercel), not a marketing page or a
 SaaS form. Density and restraint carry the distinctiveness — a 14px UI base, a hairline

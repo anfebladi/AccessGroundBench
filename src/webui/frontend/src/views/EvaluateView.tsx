@@ -1,12 +1,9 @@
 import { FormEvent, useEffect, useState } from "react";
 import { api, enc, Model, Preflight, StartedRun } from "../lib/api";
 import { RunMonitor } from "./RunMonitor";
-import type { TabViewProps } from "../lib/types";
+import type { PreflightSummary, TabViewProps } from "../lib/types";
 import { EvaluatePreflight } from "./evaluate/EvaluatePreflight";
-export interface PreflightSummary {
-  text: string;
-  tone: "info" | "muted" | "error";
-}
+import styles from "./evaluate.module.css";
 
 interface EvaluateViewProps extends TabViewProps {
   dataset: string;
@@ -130,7 +127,7 @@ export function EvaluateView({
     ? preflight.expected_total - preflight.already_done
     : 0;
   return (
-    <section id="tab-evaluate" className="tab" aria-labelledby="head-evaluate" hidden={hidden}>
+    <section id="tab-evaluate" className={`tab ${styles.root}`} aria-labelledby="head-evaluate" hidden={hidden}>
       <div className="view-head">
         <h2 id="head-evaluate">Evaluate</h2>
         <p className="lead">

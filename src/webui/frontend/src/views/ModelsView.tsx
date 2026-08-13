@@ -10,6 +10,11 @@ import {
 } from "../lib/api";
 import { drawScreenshot, strokeWidthFor } from "../lib/canvas";
 import type { TabViewProps } from "../lib/types";
+import styles from "./models.module.css";
+import { SmokeTestResult } from "../features/models/SmokeTestResult";
+import { ProviderCredentialsCard } from "../features/models/ProviderCredentialsCard";
+import { AddModelForm } from "../features/models/AddModelForm";
+import { ConfiguredModelsCard } from "../features/models/ConfiguredModelsCard";
 
 const EXAMPLES: Array<[string, Model["coord_space"]]> = [
   ["openai/gpt-4o-mini", "pixel"],
@@ -19,11 +24,13 @@ const EXAMPLES: Array<[string, Model["coord_space"]]> = [
 
 export function ModelsView({
   onChange,
+  onProvidersChange,
   dataset,
   screen,
   hidden,
 }: TabViewProps & {
   onChange?: (models: Model[]) => void;
+  onProvidersChange?: (providers: Provider[]) => void;
   dataset?: string;
   screen?: string;
 }) {
@@ -42,7 +49,9 @@ export function ModelsView({
   } | null>(null);
   const loadProviders = async () => {
     try {
-      setProviders(await api<Provider[]>("/api/providers"));
+      const next = await api<Provider[]>("/api/providers");
+      setProviders(next);
+      onProvidersChange?.(next);
       setProviderError("");
     } catch (e) {
       setProviders([]);
@@ -51,7 +60,7 @@ export function ModelsView({
   };
   useEffect(() => {
     void loadProviders();
-  }, []);
+  }, [onProvidersChange]);
   const save = (next: Model[]) => {
     setModels(next);
     writeModels(next);
@@ -118,7 +127,12 @@ export function ModelsView({
     setSmoke({ model, result });
   };
   return (
-    <section id="tab-models" className="tab" aria-labelledby="head-models" hidden={hidden}>
+    <section
+      id="tab-models"
+      className={`tab ${styles.root}`}
+      aria-labelledby="head-models"
+      hidden={hidden}
+    >
       <div className="view-head">
         <h2 id="head-models">Models</h2>
         <p className="lead">
@@ -127,256 +141,50 @@ export function ModelsView({
           coordinate convention, or a malformed model id early.
         </p>
       </div>
-      <div className="card">
-        <div className="card-head">
-          <div>
-            <h3>Providers</h3>
-            <p className="card-sub">
-              Session keys stay in this server's memory and are never written to
-              disk.
-            </p>
-          </div>
-        </div>
-        <div className="table-wrap">
-          <table id="provider-table">
-            <thead>
-              <tr>
-                <th>Provider</th>
-                <th>Environment variable</th>
-                <th>Status</th>
-                <th>Session key</th>
-              </tr>
-            </thead>
-            <tbody>
-              {providerError ? (
-                <tr>
-                  <td colSpan={4}>
-                    <p className="state-error" role="alert">
-                      {providerError}
-                    </p>
-                  </td>
-                </tr>
-              ) : (
-                providers.map((p) => {
-                  const name = p.provider || p.name || "";
-                  const configured =
-                    p.configured || p.env_configured || p.session_configured;
-                  const status = p.env_configured
-                    ? "From .env"
-                    : p.session_configured
-                      ? "Session key"
-                      : "Not configured";
-                  return (
-                    <tr key={name}>
-                      <td>
-                        <b>{name}</b>
-                      </td>
-                      <td>
-                        <code>{p.env_vars?.join(", ") || p.env_var}</code>
-                      </td>
-                      <td>
-                        <span
-                          className={`badge ${configured ? "ok" : "muted"}`}
-                        >
-                          {status}
-                        </span>
-                      </td>
-                      <td>
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "var(--space-2)",
-                            alignItems: "center",
-                          }}
-                        >
-                          <input
-                            type="password"
-                            placeholder="Paste key for this session"
-                            aria-label={`Session key for ${name}`}
-                            value={keys[name] || ""}
-                            onChange={(e) =>
-                              setKeys({ ...keys, [name]: e.target.value })
-                            }
-                          />
-                          <button
-                            type="button"
-                            className="secondary small"
-                            data-set={name}
-                            onClick={() => void setKey(name)}
-                          >
-                            Set
-                          </button>
-                          {p.session_configured && (
-                            <button
-                              type="button"
-                              className="secondary small"
-                              data-clear={name}
-                              onClick={() => void clearKey(name)}
-                            >
-                              Clear
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div className="card card-primary">
-        <div className="card-head">
-          <h3>Add a model</h3>
-        </div>
-        <form id="add-model-form" onSubmit={submit}>
-          <div className="field-row">
-            <div className="field field-wide">
-              <label htmlFor="model-id-input">Model id</label>
-              <input
-                id="model-id-input"
-                ref={modelInput}
-                value={id}
-                onChange={(e) => setId(e.target.value)}
-                placeholder="openai/gpt-4o-mini"
-                required
-              />
-              <p className="field-hint">
-                Any LiteLLM model string, or a <code>9router/</code> /{" "}
-                <code>openai_compatible/</code> route.
-              </p>
-            </div>
-            <div className="field">
-              <label htmlFor="model-coord-space">Coordinate space</label>
-              <select
-                id="model-coord-space"
-                value={space}
-                onChange={(e) =>
-                  setSpace(e.target.value as Model["coord_space"])
-                }
-              >
-                <option value="pixel">Pixel</option>
-                <option value="norm1000">Normalized (0-1000 grid)</option>
-              </select>
-              <p className="field-hint">
-                Gemini, Qwen and GLM answer normalized.
-              </p>
-            </div>
-            <button type="submit">Add model</button>
-          </div>
-        </form>
-        <div id="add-model-error">
-          {error && (
-            <p className="state-error" role="alert">
-              {error}
-            </p>
-          )}
-        </div>
-      </div>
-      <div className="card">
-        <div className="card-head">
-          <h3>Configured models</h3>
-        </div>
-        <div id="model-list">
-          {models.length ? (
-            <>
-              <div className="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Model</th>
-                      <th>Coordinate space</th>
-                      <th />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {models.map((m) => (
-                      <tr key={m.id}>
-                        <td>
-                          <code>{m.id}</code>
-                        </td>
-                        <td>
-                          {m.coord_space === "norm1000"
-                            ? "Normalized (0-1000)"
-                            : "Pixel"}
-                        </td>
-                        <td style={{ textAlign: "right" }}>
-                          <button
-                            type="button"
-                            className="secondary small"
-                            data-test={m.id}
-                            onClick={() => void runSmoke(m)}
-                          >
-                            Test model
-                          </button>
-                          <button
-                            type="button"
-                            className="ghost small"
-                            data-remove={m.id}
-                            onClick={() =>
-                              save(models.filter((x) => x.id !== m.id))
-                            }
-                          >
-                            Remove
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <p className="field-hint" style={{ marginTop: "var(--space-3)" }}>
-                Test model sends one real query against one target and draws the
-                answer over the ground-truth box.
-              </p>
-            </>
-          ) : (
-            <div className="empty-state">
-              <p className="empty-state-title">No models configured yet</p>
-              <p className="empty-state-body">
-                A model id is a LiteLLM model string. Add one above, or start
-                from an example:
-              </p>
-              <div className="empty-state-action">
-                {EXAMPLES.map(([example, exampleSpace]) => (
-                  <button
-                    type="button"
-                    className="secondary small"
-                    key={example}
-                    onClick={() => {
-                      setId(example);
-                      setSpace(exampleSpace);
-                      modelInput.current?.focus();
-                    }}
-                  >
-                    {example}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+      <ProviderCredentialsCard
+        providers={providers}
+        providerError={providerError}
+        keys={keys}
+        setKeys={setKeys}
+        setKey={(provider) => void setKey(provider)}
+        clearKey={(provider) => void clearKey(provider)}
+      />
+      <AddModelForm
+        id={id}
+        space={space}
+        error={error}
+        modelInput={modelInput}
+        setId={setId}
+        setSpace={setSpace}
+        submit={submit}
+      />
+      <ConfiguredModelsCard
+        models={models}
+        modelInput={modelInput}
+        setId={setId}
+        setSpace={setSpace}
+        runSmoke={(model) => void runSmoke(model)}
+        removeModel={(model) =>
+          save(models.filter((candidate) => candidate.id !== model.id))
+        }
+        examples={EXAMPLES}
+      />
       <div id="smoke-test-result">
         {smoke && (
           <div className="card">
-            {smoke.loading ? (
-              <p className="state-loading">
-                Querying {smoke.model.id} on {screen}...
-              </p>
-            ) : smoke.result?.ok ? (
-              <SmokeSuccess
-                dataset={dataset}
-                screen={screen}
-                result={smoke.result}
-                model={smoke.model}
-              />
-            ) : (
-              <p className="state-error" role="alert">
-                {smoke.result?.error || "The model call failed."}
-              </p>
-            )}
+            <SmokeTestResult
+              smoke={smoke}
+              dataset={dataset}
+              screen={screen}
+              success={
+                <SmokeSuccess
+                  dataset={dataset}
+                  screen={screen}
+                  result={smoke.result!}
+                  model={smoke.model}
+                />
+              }
+            />
           </div>
         )}
       </div>

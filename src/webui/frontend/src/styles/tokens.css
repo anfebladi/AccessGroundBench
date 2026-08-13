@@ -1,0 +1,216 @@
+/* ==========================================================================
+   1  FONTS
+   Self-hosted, no CDN: the server binds localhost and must work offline.
+   Both families are SIL OFL 1.1 -- see static/FONTS-LICENSE.txt, which ships
+   alongside them because the licence requires it.
+   ========================================================================== */
+
+@font-face {
+  font-family: "Geist";
+  src: url("/geist.woff2") format("woff2-variations");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/geistmono.woff2") format("woff2-variations");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   2  TOKENS
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* -- Type ------------------------------------------------------------- */
+  /* One family for both roles now -- Geist is a general-purpose product
+     sans, not a condensed display face, so it doesn't need the
+     heading/body split Oswald forced. Weight carries the distinction
+     instead: 600 for headings, 500 for UI labels, 400 for body/prose.
+     --font-mono is for numerals, code, IDs and paths ONLY -- it no longer
+     appears on rail groups, rail chips, header labels, .kv terms or
+     .note-label, which all read as UI text now, not data. */
+  --font-display: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-ui: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* 14px UI base (down from 17px), 15px prose. This is the single biggest
+     lever on "looks like a product, not a marketing page" -- Linear/Vercel/
+     Raycast all sit near 13-14px for interface text. Line-heights tighten
+     for UI, stay relaxed for prose. Small negative tracking on display
+     sizes is back (Geist isn't condensed, so it doesn't double up the way
+     it did on Oswald); small caps keep positive tracking. */
+  --text-display: 1.625rem;  --lh-display: 1.2;   --ls-display: -0.02em;
+  --text-h2: 1.25rem;        --lh-h2: 1.3;        --ls-h2: -0.015em;
+  --text-h3: 1rem;           --lh-h3: 1.4;        --ls-h3: -0.005em;
+  --text-lead: 0.9375rem;    --lh-lead: 1.55;
+  --text-body: 0.875rem;     --lh-body: 1.5;
+  --text-sm: 0.8125rem;      --lh-sm: 1.45;
+  --text-xs: 0.75rem;        --lh-xs: 1.35;       --ls-xs: 0.03em;
+
+  /* -- Space ------------------------------------------------------------ */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --card-pad: var(--space-4);
+  --page-gutter: var(--space-5);
+
+  /* -- Radii -------------------------------------------------------------
+     Three tiers, not two: --radius-lg for surfaces (cards, panels, drawer,
+     image frames), --radius-md for controls (buttons, inputs, rail rows),
+     --radius-sm for small marks (inline code, small chips). --radius-full
+     unchanged (pills, progress). */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-full: 999px;
+
+  /* -- Density -----------------------------------------------------------
+     32px default control height (down from a uniform 44px) -- product
+     density, not touch density. --tap is the WCAG touch-target minimum and
+     stays 44px; the responsive block further down enforces it whenever the
+     pointer is coarse, not just under a width breakpoint, so a touch
+     laptop gets proper targets regardless of window size. */
+  --control-h: 32px;
+  --control-h-sm: 28px;
+  --tap: 44px;
+
+  /* -- Colour --------------------------------------------------------------
+     Six-stop navy-to-white blue ramp is UNCHANGED -- it was never the
+     problem. What changes here is the neutral ramp underneath it: the old
+     --border/--surface-2/--surface-3 were blue-tinted color-mix()es, which
+     read as dated on their own regardless of the accent. They're true
+     greys now. One rule still drives every text pairing: a light surface
+     always carries dark-navy text, a dark surface always carries white or
+     pale-blue text -- never the reverse. Every pair is contrast-checked
+     (WCAG AA, 4.5:1 body text, 3:1 large text/non-text UI). */
+  --bg: #ffffff;
+  --surface: #ffffff;
+
+  /* True neutral ramp. Not all twelve stops are consumed by name below --
+     the rest exist for chart neutrals, hover states and future components,
+     which is normal design-system practice rather than dead weight. */
+  --gray-50:  #fafafa;
+  --gray-100: #f4f4f5;
+  --gray-150: #ececee;
+  --gray-200: #e4e4e7;
+  --gray-300: #d4d4d8;
+  --gray-400: #a1a1aa;
+  --gray-500: #71717a;
+  --gray-600: #52525b;
+  --gray-700: #3f3f46;
+  --gray-800: #27272a;
+  --gray-900: #18181b;
+  --gray-950: #09090b;
+
+  --surface-2: var(--gray-50);   /* quiet bands: table heads, hovers -- a hint, not a wash */
+  --surface-3: var(--gray-100);
+  --border: var(--gray-200);     /* hairline -- true grey now, not a blue tint */
+  --border-strong: var(--gray-300);
+
+  --text: #011f4b;      /* 16.5:1 on surface */
+  --text-2: #03396c;    /* 11.6:1 */
+  --muted: #005b96;     /*  7.1:1 */
+
+  --primary: #005b96;   /*  7.1:1 -- the one saturated fill: buttons, links, active state */
+  --primary-hover: #03396c;
+  --primary-active: #011f4b;
+  --primary-fg: #ffffff;
+  --primary-soft: color-mix(in srgb, #005b96 10%, transparent);
+
+  /* -- Dark data surfaces --------------------------------------------------
+     A deep, near-black neutral -- not the brand navy (--forest is still
+     that, kept for the few small accents that want brand colour regardless
+     of context) -- for screenshots, charts and the comparison stage.
+     Captured phone screens are already dark, so this stops them looking
+     pasted onto a white card. Every pair below is measured, not eyeballed:
+     on-dark/panel-dark 18.0:1, on-dark-muted/panel-dark 7.7:1,
+     on-dark/panel-dark-2 16.6:1, on-dark-muted/panel-dark-2 7.1:1 -- all
+     clear 4.5:1 body text. The three chart marks (viz-blue 4.5:1, viz-red
+     5.0:1, viz-neutral 5.5:1 on panel-dark) clear the 3:1 non-text/large-UI
+     floor that applies to marks and lines, not the 4.5:1 body-text floor --
+     any text label drawn on a dark panel uses on-dark/on-dark-muted, never
+     a raw viz-* colour. */
+  --panel-dark: #0a0a0c;
+  --panel-dark-2: #151517;
+  --on-dark: #f4f4f5;
+  --on-dark-muted: #a1a1aa;
+  --on-dark-border: rgba(255, 255, 255, 0.08);
+
+  /* --forest/--forest-deep stay a fixed dark navy for the few small brand
+     accents that want it regardless of context (nothing left uses it for
+     large surfaces -- see the dark data-surface tokens above for those). */
+  --forest: #011f4b;
+  --forest-2: #03396c;
+  --forest-deep: #011f4b;
+  --chartreuse: #b3cde0;
+  --moss: #6497b1;
+  --sage: #b3cde0;
+
+  --ok: #3d6b1f;        /*  6.3:1 on surface */
+  --warn: #755509;      /*  6.9:1 on surface */
+  --err: #a3301f;       /*  7.0:1 */
+  --danger: #a3301f;
+  --danger-hover: #8a2819;
+  --danger-active: #712014;
+
+  /* -- Elevation -----------------------------------------------------------
+     Border-first, shadow-minimal -- the reverse of the previous pass's
+     shadow-only cards, which was wrong for this register: Linear/Vercel/
+     Raycast all separate surfaces with a hairline border and use shadow
+     only as a faint lift, not as the primary separator. --elev-card is
+     that faint lift; --elev-overlay is for anything that floats over
+     scrolling content (sticky headers, the drawer) and needs a stronger
+     cue regardless of what's behind it. */
+  --elev-card: 0 1px 2px rgba(9, 9, 11, 0.04);
+  --elev-overlay: 0 8px 16px rgba(9, 9, 11, 0.10), 0 24px 48px rgba(9, 9, 11, 0.14);
+
+  /* -- Motion --------------------------------------------------------------
+     Four durations, each tied to a specific use, not to taste. Nothing
+     loops except the skeleton shimmer, which stops the moment content
+     lands; nothing bounces, springs or parallaxes. --dur-chart fires once,
+     on a chart's first render only -- see charts.js. */
+  --dur-fast: 120ms;   /* colour, border, focus */
+  --dur-mid: 180ms;    /* elevation, small transforms */
+  --dur-slow: 240ms;   /* panels, drawer, view changes */
+  --dur-chart: 400ms;  /* chart draw-in, first render only */
+  --ease: cubic-bezier(0.2, 0, 0.2, 1);
+
+  /* -- Chrome ----------------------------------------------------------- */
+  --rail-width: 232px;
+  --header-height: 52px;
+  --content-max: 1360px;
+  --prose-max: 68ch;
+
+  /* -- Charts ----------------------------------------------------------- */
+  /* Validated with the data-viz palette validator against both the light
+     card surface and the new dark panel surface: every adjacent pair
+     clears the CVD, normal-vision and contrast gates. --viz-neutral is the
+     diverging midpoint and is deliberately achromatic, so it is exempt
+     from the categorical chroma floor; because it sits below the CVD gate
+     against --viz-red on the dark panel, the stacked chart direct-labels
+     its segments (see charts.js). */
+  --viz-blue: #2a78d6;
+  --viz-orange: #eb6834;
+  --viz-red: #e34948;
+  --viz-neutral: #898781;
+}
+
+/* No dark-mode branch for the page as a whole -- following the OS into a
+   full dark theme on a schedule the user doesn't control was the original
+   objection (see docs/ui-design-system.md §0), not darkness itself. The
+   dark data-surface tokens above are a fixed, intentional design element --
+   screenshots and charts are always on --panel-dark, regardless of OS
+   preference -- which is a different thing entirely. --color-scheme: light
+   stops native form controls from rendering dark on their own. */

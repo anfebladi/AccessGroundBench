@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { api, isTerminalRunStatus } from "../lib/api";
 import { RunTally } from "./run-monitor/RunTally";
+import styles from "./run-monitor.module.css";
 const POLL_MS = 1200;
 const RESULT =
   /^ {4}\[(HIT|MISS|OFF-SCREEN|OFF-FRAME|LABEL-CHANGED|API-ERROR)\]/;
@@ -100,11 +101,18 @@ export function RunMonitor({
   }, [lines, stick]);
   const done = alreadyDone + Object.values(counts).reduce((a, b) => a + b, 0);
   const ratio = expectedTotal ? Math.min(1, done / expectedTotal) : 0;
-  const timing = `${duration(elapsed)} elapsed${status === "running" && expectedTotal && done > alreadyDone ? ` -- about ${duration((elapsed / (done - alreadyDone)) * Math.max(0, expectedTotal - done))} left` : ""}`;
+  const remaining =
+    status === "running" && expectedTotal && done > alreadyDone
+      ? ` -- about ${duration(
+          (elapsed / (done - alreadyDone)) *
+            Math.max(0, expectedTotal - done),
+        )} left`
+      : "";
+  const timing = `${duration(elapsed)} elapsed${remaining}`;
   const kind =
     status === "running" ? "warn" : status === "completed" ? "ok" : "err";
   return (
-    <div className="card run-panel">
+    <div className={`card run-panel ${styles.root}`}>
       <div className="run-header">
         <div className="run-header-top">
           <div className="run-title">
@@ -140,7 +148,15 @@ export function RunMonitor({
           </div>
         </div>
         <div
-          className={`progress ${expectedTotal && status === "running" ? "" : expectedTotal ? "" : status === "running" ? "is-indeterminate" : ""}`}
+          className={`progress ${
+            expectedTotal && status === "running"
+              ? ""
+              : expectedTotal
+                ? ""
+                : status === "running"
+                  ? "is-indeterminate"
+                  : ""
+          }`}
           id="run-progress"
           role="progressbar"
           aria-label="Run progress"

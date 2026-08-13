@@ -1,4 +1,5 @@
 import React from "react";
+import "./reporting.module.css";
 
 export type ChartRow = {
   label: string;

@@ -52,6 +52,24 @@ legacy imperative runtime is no longer loaded, and the application does not
 inject legacy HTML at runtime; existing routes, DOM hooks, API payloads,
 local-storage formats, and visual tokens remain compatible.
 
+### Front-end architecture
+
+`src/webui/frontend/src/main.tsx` is the bootstrap and compatibility-export
+entry point. Composition lives in `app/App.tsx`, which connects shared data
+hooks to the keep-mounted page outlet. The shell is split into `AppShell`,
+`TopBar`, `Sidebar`, `CommandPalette`, `PageOutlet`, and `ErrorBoundary`;
+`app/routes.ts` defines tab order, route hashes, route groups, and palette item
+types. Thin adapters in `src/pages/` represent the seven workflow tabs, while
+feature pieces live under `src/features/` and the corresponding view/reporting
+directories.
+
+Pages remain mounted while inactive and are toggled with `hidden`. This keeps
+in-progress view state and preserves the existing hash and DOM contracts:
+`dataset`, `models`, `evaluate`, `collect`, `compare`, `results`, and `analyze`,
+including numeric shortcuts, `data-tab`, IDs, and ARIA hooks. Shared provider
+refreshes are owned by the app data hook, so Models changes update the sidebar
+and other views without a reload.
+
 If `src/webui/frontend/node_modules/` is absent, install the frontend
 dependencies once with:
 
@@ -72,7 +90,11 @@ uv run python -m unittest discover -s tests -p "test_*.py"
 ```
 
 Every colour, size, radius, shadow and duration is a CSS custom property defined
-once at the top of `style.css`, which is organised into layers (`FONTS → TOKENS →
+in the global token/base layer loaded by `style.css`; `styles/tokens.css` and
+`styles/globals.css` provide shared entry points. Shell, feature, and reporting
+selectors are colocated CSS Modules (`*.module.css`) so they are scoped to their
+components. Resets, focus behavior, design tokens, and chart/export variables
+remain global. The global stylesheet is organised into layers (`FONTS → TOKENS →
 BASE → LAYOUT → COMPONENTS → UTILITIES → RESPONSIVE`) in place of a preprocessor.
 The page canvas is light-only by design -- the OS dark-mode setting is not
 followed for the *page*, so it never lands on a heavier, bluer theme than the
@@ -89,8 +111,9 @@ numerals, code and data labels, which stay on **Geist Mono** for tabular
 figures. The source font files live in `src/webui/frontend/public/` and are
 served by the local Vite frontend; both families remain SIL OFL 1.1. Icons are inline SVG for the same
 offline-first reason -- no icon font, no CDN. Preserve the CSS custom-property
-design tokens in `src/webui/frontend/src/style.css` when changing the visual
-system; `src/webui/frontend/dist/` is disposable local build output.
+design tokens in `src/webui/frontend/src/style.css` and the shared files under
+`src/webui/frontend/src/styles/` when changing the visual system;
+`src/webui/frontend/dist/` is disposable local build output.
 
 ## Steps
 

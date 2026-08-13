@@ -214,7 +214,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
 
-    contract_test = "src/rendered_contract.test.tsx"
+    contract_test = "tests/unit/rendered_contract.test.tsx"
     print(f"ui_contract: running rendered contract ({contract_test})")
     try:
         result = subprocess.run(

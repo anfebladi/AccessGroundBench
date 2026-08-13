@@ -1,0 +1,8 @@
+.root { min-width: 0; }
+.preflight {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}

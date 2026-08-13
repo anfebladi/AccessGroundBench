@@ -2,7 +2,14 @@ import React, { useEffect, useState } from "react";
 import { api, enc } from "../../lib/api";
 import { ExportButton } from "../components/ExportButton";
 import type { TabViewProps } from "../../lib/types";
-import { DiscordantChart, DirectionChart, DumbbellChart, Legend, ReachabilityChart } from "../charts";
+import {
+  DiscordantChart,
+  DirectionChart,
+  DumbbellChart,
+  Legend,
+  ReachabilityChart,
+} from "../charts";
+import "../reporting.module.css";
 
 type CsvRow = Record<string, string | number | null | undefined>;
 type Analysis = {
@@ -14,15 +21,75 @@ type Analysis = {
   direction_consistency: CsvRow[];
 };
 const text = (value: unknown) => String(value ?? "");
-const number = (value: unknown) => { const n = Number(String(value ?? "").replace("%", "")); return Number.isFinite(n) ? n : NaN; };
-const fraction = (value: unknown) => { const n = number(value); return typeof value === "string" && value.trim().endsWith("%") ? n / 100 : n; };
-const pct = (value: unknown) => { const n = fraction(value); return Number.isFinite(n) ? `${(n * 100).toFixed(1)}%` : "--"; };
-function Badge({ className, children }: { className: string; children: React.ReactNode }) { return <span className={`badge ${className}`}>{children}</span>; }
-function ErrorState({ message }: { message: string }) { return <p className="state-error" role="alert">{message}</p>; }
-function LoadingState({ message }: { message: string }) { return <p className="state-loading">{message}</p>; }
-function Table({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) { return <details className="data-table"><summary>Show table</summary><div className="table-wrap"><table><thead><tr>{headers.map((h,i)=><th key={`${h}-${i}`}>{h}</th>)}</tr></thead><tbody>{rows.map((row,i)=><tr key={i}>{row.map((cell,j)=><td key={j}>{cell}</td>)}</tr>)}</tbody></table></div></details>; }
+const number = (value: unknown) => {
+  const n = Number(String(value ?? "").replace("%", ""));
+  return Number.isFinite(n) ? n : NaN;
+};
+const fraction = (value: unknown) => {
+  const n = number(value);
+  return typeof value === "string" && value.trim().endsWith("%") ? n / 100 : n;
+};
+const pct = (value: unknown) => {
+  const n = fraction(value);
+  return Number.isFinite(n) ? `${(n * 100).toFixed(1)}%` : "--";
+};
+function Badge({
+  className,
+  children,
+}: {
+  className: string;
+  children: React.ReactNode;
+}) {
+  return <span className={`badge ${className}`}>{children}</span>;
+}
+function ErrorState({ message }: { message: string }) {
+  return (
+    <p className="state-error" role="alert">
+      {message}
+    </p>
+  );
+}
+function LoadingState({ message }: { message: string }) {
+  return <p className="state-loading">{message}</p>;
+}
+function Table({
+  headers,
+  rows,
+}: {
+  headers: string[];
+  rows: React.ReactNode[][];
+}) {
+  return (
+    <details className="data-table">
+      <summary>Show table</summary>
+      <div className="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              {headers.map((h, i) => (
+                <th key={`${h}-${i}`}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => (
+              <tr key={i}>
+                {row.map((cell, j) => (
+                  <td key={j}>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
+  );
+}
 
-export function AnalyzeView({ dataset, hidden }: TabViewProps & { dataset: string }) {
+export function AnalyzeView({
+  dataset,
+  hidden,
+}: TabViewProps & { dataset: string }) {
   const [mode, setMode] = useState("vision"),
     [sample, setSample] = useState("all"),
     [permutations, setPermutations] = useState(20000),
@@ -76,7 +143,12 @@ export function AnalyzeView({ dataset, hidden }: TabViewProps & { dataset: strin
     }
   };
   return (
-    <section id="tab-analyze" className="tab" aria-labelledby="head-analyze" hidden={hidden}>
+    <section
+      id="tab-analyze"
+      className="tab"
+      aria-labelledby="head-analyze"
+      hidden={hidden}
+    >
       <div className="view-head">
         <h2 id="head-analyze">Analyze</h2>
         <p className="lead">
@@ -410,7 +482,10 @@ function AnalysisResult({
       </AnalysisCard>
       <AnalysisCard
         title="Direction consistency (descriptive)"
-        subtitle="Counts models by direction of change. Result CSVs are not independent models -- configuration variants of one base model share a row here."
+        subtitle={
+          "Counts models by direction of change. Result CSVs are not independent " +
+          "models -- configuration variants of one base model share a row here."
+        }
         exportName="direction-consistency"
         empty="No sign-test rows were produced."
       >

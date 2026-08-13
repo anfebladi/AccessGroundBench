@@ -102,12 +102,14 @@ describe('compare and results interaction parity', () => {
     await waitFor(() => expect(screen.getByRole('dialog', {name: 'Miss inspector'})).toBeTruthy());
     const dialog = screen.getByRole('dialog', {name: 'Miss inspector'});
     const filmstrip = within(dialog).getByLabelText('Miss filmstrip');
-    expect(within(filmstrip).getByRole('button', {name: 'First'}).classList.contains('selected')).toBe(true);
+    expect(within(filmstrip).getByRole('button', {name: 'First'}).getAttribute('aria-current')).toBe('true');
     fireEvent.keyDown(document, {key: 'ArrowRight'});
     await waitFor(() => {
       const currentDialog = screen.getByRole('dialog', {name: 'Miss inspector'});
       const currentFilmstrip = within(currentDialog).getByLabelText('Miss filmstrip');
-      expect(within(currentFilmstrip).getByRole('button', {name: 'Second'}).classList.contains('selected')).toBe(true);
+      expect(within(currentFilmstrip).getByRole('button', {name: 'Second'})).toBeTruthy();
+      expect(within(currentDialog).getByText('Second', {selector: 'b'})).toBeTruthy();
+      expect(within(currentDialog).getByText('2 of 2')).toBeTruthy();
     });
     fireEvent.keyDown(document, {key: 'Escape'});
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());

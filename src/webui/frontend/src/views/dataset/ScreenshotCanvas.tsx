@@ -32,31 +32,75 @@ export function ScreenshotCanvas({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     if (!imageIsDrawable(img)) {
-      canvas.width = 400; canvas.height = 80; ctx.clearRect(0, 0, 400, 80);
-      ctx.fillStyle = "#b3221a"; ctx.font = "14px sans-serif"; ctx.fillText("Screenshot not available", 12, 44);
+      canvas.width = 400;
+      canvas.height = 80;
+      ctx.clearRect(0, 0, 400, 80);
+      ctx.fillStyle = "#b3221a";
+      ctx.font = "14px sans-serif";
+      ctx.fillText("Screenshot not available", 12, 44);
       onDimensions?.("—"); return;
     }
-    canvas.width = img.width; canvas.height = img.height; ctx.drawImage(img, 0, 0);
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
     onDimensions?.(`${img.width} x ${img.height}`);
     if (!showBoxes) return;
-    const sw = strokeWidthFor(img), accent = "#2a78d6", err = "#b3221a", warn = "#a15c00";
+    const sw = strokeWidthFor(img);
+    const accent = "#2a78d6";
+    const err = "#b3221a";
+    const warn = "#a15c00";
     const draw = (text: string | undefined, b: Box | undefined, color: string) => {
-      if (!b) return; ctx.strokeStyle = text === selected ? warn : color; ctx.lineWidth = text === selected ? sw * 1.6 : sw; ctx.strokeRect(b[0], b[1], b[2] - b[0], b[3] - b[1]);
+      if (!b) return;
+      ctx.strokeStyle = text === selected ? warn : color;
+      ctx.lineWidth = text === selected ? sw * 1.6 : sw;
+      ctx.strokeRect(b[0], b[1], b[2] - b[0], b[3] - b[1]);
     };
     if (profile === "baseline") {
-      if (!evictedOnly) targets.filter((t) => present.has(t.text)).forEach((t) => draw(t.text, t.baseline_box, accent));
-      if (showMissing || evictedOnly) missing.forEach((t) => draw(t.text, t.baseline_box, err));
-    } else if (!evictedOnly) labels.forEach((l) => { const text = asText(l.text); if (text && present.has(text)) draw(text, l.box, accent); });
+      if (!evictedOnly) {
+        targets
+          .filter((target) => present.has(target.text))
+          .forEach((target) => draw(target.text, target.baseline_box, accent));
+      }
+      if (showMissing || evictedOnly) {
+        missing.forEach((target) => draw(target.text, target.baseline_box, err));
+      }
+    } else if (!evictedOnly) {
+      labels.forEach((label) => {
+        const text = asText(label.text);
+        if (text && present.has(text)) draw(text, label.box, accent);
+      });
+    }
   }, [img, targets, present, missing, labels, selected, showBoxes, showMissing, evictedOnly, zoom, wrapperRef, profile, onDimensions]);
   useEffect(() => { if (canvasRef.current) onCanvasReady?.(canvasRef.current); }, [onCanvasReady]);
   const style: React.CSSProperties = {};
-  if (zoom !== "fit" && img && imageIsDrawable(img)) { style.width = `${Math.round(img.width * zoom)}px`; style.height = `${Math.round(img.height * zoom)}px`; }
-  return <canvas id={`canvas-${id}`} ref={canvasRef} hidden={hidden} className={className} style={style} onClick={(e) => {
-    if (!img || !imageIsDrawable(img)) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * img.width;
-    const y = ((e.clientY - rect.top) / rect.height) * img.height;
-    const hit = (evictedOnly ? missing : targets).find((t) => { const b = t.baseline_box; return b && x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3]; });
-    if (hit) onSelect(hit.text);
-  }} />;
+  if (zoom !== "fit" && img && imageIsDrawable(img)) {
+    style.width = `${Math.round(img.width * zoom)}px`;
+    style.height = `${Math.round(img.height * zoom)}px`;
+  }
+  return (
+    <canvas
+      id={`canvas-${id}`}
+      ref={canvasRef}
+      hidden={hidden}
+      className={className}
+      style={style}
+      onClick={(event) => {
+        if (!img || !imageIsDrawable(img)) return;
+        const rect = event.currentTarget.getBoundingClientRect();
+        const x = ((event.clientX - rect.left) / rect.width) * img.width;
+        const y = ((event.clientY - rect.top) / rect.height) * img.height;
+        const hit = (evictedOnly ? missing : targets).find((target) => {
+          const box = target.baseline_box;
+          return (
+            box &&
+            x >= box[0] &&
+            x <= box[2] &&
+            y >= box[1] &&
+            y <= box[3]
+          );
+        });
+        if (hit) onSelect(hit.text);
+      }}
+    />
+  );
 }

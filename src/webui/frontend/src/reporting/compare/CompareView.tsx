@@ -3,6 +3,7 @@ import { api, enc } from "../../lib/api";
 import { ExportButton } from "../components/ExportButton";
 import type { TabViewProps } from "../../lib/types";
 import { DumbbellChart, Legend } from "../charts";
+import "../reporting.module.css";
 
 type Result = {
   filename: string;

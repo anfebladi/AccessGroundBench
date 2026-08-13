@@ -102,12 +102,12 @@ describe('compare and results interactions', () => {
     await waitFor(() => expect(screen.getByRole('dialog', {name: 'Miss inspector'})).toBeTruthy());
     const dialog = screen.getByRole('dialog', {name: 'Miss inspector'});
     const filmstrip = within(dialog).getByLabelText('Miss filmstrip');
-    expect(within(filmstrip).getByRole('button', {name: 'First'}).classList.contains('selected')).toBe(true);
+    expect(within(filmstrip).getByRole('button', {name: 'First'}).getAttribute('aria-current')).toBe('true');
     fireEvent.keyDown(document, {key: 'ArrowRight'});
     await waitFor(() => {
       const currentDialog = screen.getByRole('dialog', {name: 'Miss inspector'});
       const currentFilmstrip = within(currentDialog).getByLabelText('Miss filmstrip');
-      expect(within(currentFilmstrip).getByRole('button', {name: 'Second'}).classList.contains('selected')).toBe(true);
+      expect(within(currentFilmstrip).getByRole('button', {name: 'Second'}).getAttribute('aria-current')).toBe('true');
     });
     fireEvent.keyDown(document, {key: 'Escape'});
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
