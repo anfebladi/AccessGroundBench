@@ -48,20 +48,32 @@ application shell owns routing, shared dataset/provider/model state, and
 cross-view refreshes; each of the seven workflow views owns its forms and
 loading/error states. Run polling, comparison canvases, charts, keyboard
 navigation, drawers, and exports are React-managed effects and refs. The
-legacy imperative runtime is no longer loaded, and the application does not
-inject legacy HTML at runtime; existing routes, DOM hooks, API payloads,
-local-storage formats, and visual tokens remain compatible.
+frontend now uses a feature-based layout; the former `src/views/` and
+`src/reporting/` trees are removed. Keep the current route hashes, DOM hooks,
+API payloads, local-storage formats, and visual tokens stable when changing a
+feature.
+
+On desktop, the shell's workflow rail may be collapsed to an icon-only column and
+the preference persists in browser storage (`agb.sidebar.collapsed`). Collapsed
+links retain their route names through accessible labels and tooltips; the mobile
+Sheet menu remains independent and always shows the expanded labels. Shared data
+requests use shape-matched skeletons for predictable content (metadata, cards,
+tables, charts, and image frames), while long-running jobs keep their live status
+and progress indicators. Loading placeholders resolve to the normal empty or error
+state rather than masking a completed request.
 
 ### Front-end architecture
 
-`src/webui/frontend/src/main.tsx` is the bootstrap and compatibility-export
-entry point. Composition lives in `app/App.tsx`, which connects shared data
+`src/webui/frontend/src/main.tsx` is the bootstrap and public export entry
+point. Composition lives in `app/App.tsx`, which connects shared data
 hooks to the keep-mounted page outlet. The shell is split into `AppShell`,
 `TopBar`, `Sidebar`, `CommandPalette`, `PageOutlet`, and `ErrorBoundary`;
-`app/routes.ts` defines tab order, route hashes, route groups, and palette item
-types. Thin adapters in `src/pages/` represent the seven workflow tabs, while
-feature pieces live under `src/features/` and the corresponding view/reporting
-directories.
+`app/navigation.ts` defines tab order, route hashes, route groups, and palette
+item types. The seven workflow areas live in
+`src/features/{dataset,models,evaluate,collect,compare,results,analyze}/`.
+Cross-feature workflow support is shared under `src/features/shared/`, while
+shell components, UI primitives, hooks, utilities, and global styles remain in
+their respective shared `components/`, `app/`, `lib/`, and `styles/` areas.
 
 Pages remain mounted while inactive and are toggled with `hidden`. This keeps
 in-progress view state and preserves the existing hash and DOM contracts:
@@ -82,8 +94,17 @@ The normal workflow is then `agb ui`. The optional `npm run build` command runs
 the TypeScript check and Vite production build for a local compile check. Its
 output is written to the ignored `src/webui/frontend/dist/` directory; no
 static bundle is committed or served by the Python package. Use `npm run dev`
-only when working on the frontend outside the combined launcher. The
-repository's Python test suite remains the UI regression check:
+only when working on the frontend outside the combined launcher. For frontend
+changes, run the unit baseline and production build from
+`src/webui/frontend/`:
+
+```bash
+npm run test       # Vitest: 9 files, 71 tests in the current baseline
+npm run build      # TypeScript + Vite build
+npm run test:e2e   # Playwright UI and responsive snapshot baseline
+```
+
+The repository's Python test suite remains the backend/integration regression check:
 
 ```bash
 uv run python -m unittest discover -s tests -p "test_*.py"

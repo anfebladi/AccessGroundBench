@@ -1,17 +1,22 @@
 import type { Dataset } from "../../lib/api";
 import { Icon } from "./icons";
 import styles from "./Shell.module.css";
+import { Button } from "../ui/button";
+import { NativeSelect } from "../ui/native-select";
+import { Skeleton } from "../ui/skeleton";
 
 export function TopBar({
   datasets,
   dataset,
   onDatasetChange,
   onPalette,
+  loading = false,
 }: {
   datasets: Dataset[];
   dataset: string;
   onDatasetChange: (v: string) => void;
   onPalette: () => void;
+  loading?: boolean;
 }) {
   const selected = datasets.find((x) => x.name === dataset);
 
@@ -25,7 +30,7 @@ export function TopBar({
       </div>
       <div className="header-controls">
         <label htmlFor="dataset-select">DATASET</label>
-        <select
+        <NativeSelect
           id="dataset-select"
           value={dataset}
           onChange={(e) => onDatasetChange(e.target.value)}
@@ -36,13 +41,13 @@ export function TopBar({
               {x.is_archived ? `${x.name} (archived)` : x.name}
             </option>
           ))}
-        </select>
+        </NativeSelect>
         <span id="dataset-meta" className="meta">
-          {selected
+          {loading ? <Skeleton className="skeleton-row" aria-label="Loading dataset" /> : selected
             ? `${selected.screen_count} screens, ${selected.image_count} images${selected.is_archived ? " -- archived, read-only" : ""}`
             : ""}
         </span>
-        <button
+        <Button
           type="button"
           className="secondary small icon-btn"
           id="palette-trigger"
@@ -52,7 +57,7 @@ export function TopBar({
           onClick={onPalette}
         >
           <Icon name="command" />
-        </button>
+        </Button>
       </div>
     </header>
   );

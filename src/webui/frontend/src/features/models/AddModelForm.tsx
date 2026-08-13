@@ -1,5 +1,10 @@
 import type { FormEvent, RefObject } from "react";
 import type { Model } from "../../lib/api";
+import { Input } from "../../components/ui/input";
+import { NativeSelect } from "../../components/ui/native-select";
+import { Button } from "../../components/ui/button";
+import { Card } from "../../components/ui/card";
+import { Alert } from "../../components/ui/alert";
 
 export function AddModelForm({
   id,
@@ -19,13 +24,13 @@ export function AddModelForm({
   submit: (event: FormEvent) => void;
 }) {
   return (
-    <div className="card card-primary">
+    <Card className="card card-primary">
       <div className="card-head"><h3>Add a model</h3></div>
       <form id="add-model-form" onSubmit={submit}>
         <div className="field-row">
           <div className="field field-wide">
             <label htmlFor="model-id-input">Model id</label>
-            <input
+            <Input
               id="model-id-input"
               ref={modelInput}
               value={id}
@@ -37,16 +42,16 @@ export function AddModelForm({
           </div>
           <div className="field">
             <label htmlFor="model-coord-space">Coordinate space</label>
-            <select id="model-coord-space" value={space} onChange={(e) => setSpace(e.target.value as Model["coord_space"])}>
+            <NativeSelect id="model-coord-space" value={space} onChange={(e) => setSpace(e.target.value as Model["coord_space"]) }>
               <option value="pixel">Pixel</option>
               <option value="norm1000">Normalized (0-1000 grid)</option>
-            </select>
+            </NativeSelect>
             <p className="field-hint">Gemini, Qwen and GLM answer normalized.</p>
           </div>
-          <button type="submit">Add model</button>
+          <Button type="submit">Add model</Button>
         </div>
       </form>
-      <div id="add-model-error">{error && <p className="state-error" role="alert">{error}</p>}</div>
-    </div>
+      <div id="add-model-error">{error && <Alert className="state-error">{error}</Alert>}</div>
+    </Card>
   );
 }

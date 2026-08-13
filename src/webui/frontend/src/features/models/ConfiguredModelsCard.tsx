@@ -1,6 +1,9 @@
 import type { RefObject } from "react";
 import type { Model } from "../../lib/api";
 import styles from "./models.module.css";
+import { Button } from "../../components/ui/button";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "../../components/ui/table";
+import { Card } from "../../components/ui/card";
 
 interface ConfiguredModelsCardProps {
   models: Model[];
@@ -22,7 +25,7 @@ export function ConfiguredModelsCard({
   examples,
 }: ConfiguredModelsCardProps) {
   return (
-    <div className="card">
+    <Card className="card">
       <div className="card-head">
         <h3>Configured models</h3>
       </div>
@@ -30,47 +33,38 @@ export function ConfiguredModelsCard({
         {models.length ? (
           <>
             <div className="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Model</th>
-                    <th>Coordinate space</th>
-                    <th />
-                  </tr>
-                </thead>
-                <tbody>
+              <Table>
+                <TableHeader><TableRow><TableHead>Model</TableHead><TableHead>Coordinate space</TableHead><TableHead /></TableRow></TableHeader>
+                <TableBody>
                   {models.map((model) => (
                     <tr key={model.id}>
-                      <td>
+                      <TableCell>
                         <code>{model.id}</code>
-                      </td>
-                      <td>
+                      </TableCell><TableCell>
                         {model.coord_space === "norm1000"
                           ? "Normalized (0-1000)"
                           : "Pixel"}
-                      </td>
-                      <td className={styles.modelActions}>
-                        <button
+                      </TableCell><TableCell className={styles.modelActions}>
+                        <Button
                           type="button"
                           className="secondary small"
                           data-test={model.id}
                           onClick={() => runSmoke(model)}
                         >
                           Test model
-                        </button>
-                        <button
+                        </Button><Button
                           type="button"
                           className="ghost small"
                           data-remove={model.id}
                           onClick={() => removeModel(model)}
                         >
                           Remove
-                        </button>
-                      </td>
+                        </Button>
+                      </TableCell>
                     </tr>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
             <p className={`field-hint ${styles.hint}`}>
               Test model sends one real query against one target and draws the
@@ -86,7 +80,7 @@ export function ConfiguredModelsCard({
             </p>
             <div className="empty-state-action">
               {examples.map(([example, exampleSpace]) => (
-                <button
+                <Button
                   type="button"
                   className="secondary small"
                   key={example}
@@ -97,12 +91,12 @@ export function ConfiguredModelsCard({
                   }}
                 >
                   {example}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
         )}
       </div>
-    </div>
+    </Card>
   );
 }

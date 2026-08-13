@@ -1,12 +1,14 @@
 import {cleanup, fireEvent, render, screen, waitFor} from '@testing-library/react';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
-import {DatasetView} from '../../src/views/DatasetView';
-import {ModelsView} from '../../src/views/ModelsView';
-import {EvaluateView} from '../../src/views/EvaluateView';
-import {CollectView} from '../../src/views/CollectView';
-import {RunMonitor} from '../../src/views/RunMonitor';
-import {AnalyzeView, ResultsView} from '../../src/reporting/views';
-import {CaptureHealth} from '../../src/views/dataset/CaptureHealth';
+import './match_media';
+import {DatasetView} from '../../src/features/dataset/DatasetView';
+import {ModelsView} from '../../src/features/models/ModelsView';
+import {EvaluateView} from '../../src/features/evaluate/EvaluateView';
+import {CollectView} from '../../src/features/collect/CollectView';
+import {RunMonitor} from '../../src/features/shared/run-monitor/RunMonitor';
+import {AnalyzeView} from '../../src/features/analyze/AnalyzeView';
+import {ResultsView} from '../../src/features/results/ResultsView';
+import {CaptureHealth} from '../../src/features/dataset/CaptureHealth';
 
 const json = (value: unknown, status = 200) => new Response(JSON.stringify(value), {
   status,

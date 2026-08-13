@@ -1,5 +1,7 @@
 import type { Model, SmokeResult } from "../../lib/api";
 import type React from "react";
+import { Alert } from "../../components/ui/alert";
+import { Skeleton } from "../../components/ui/skeleton";
 export function SmokeTestResult({
   smoke,
   dataset,
@@ -12,15 +14,14 @@ export function SmokeTestResult({
   success: React.ReactNode;
 }) {
   if (smoke.loading)
-    return (
-      <p className="state-loading">
-        Querying {smoke.model.id} on {screen}...
-      </p>
-    );
+    return <div aria-label={`Querying ${smoke.model.id} on ${screen}`}>
+      <p className="state-loading">Querying {smoke.model.id} on {screen}...</p>
+      <div className="row"><Skeleton className="skeleton-block grow" /><Skeleton className="skeleton-block" style={{width: 220}} /></div>
+    </div>;
   if (smoke.result?.ok) return success;
   return (
-    <p className="state-error" role="alert">
+    <Alert className="state-error">
       {smoke.result?.error || "The model call failed."}
-    </p>
+    </Alert>
   );
 }

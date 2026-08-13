@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import { Button } from "../ui/button";
 
 export class ErrorBoundary extends Component<
   { children: ReactNode },
@@ -31,13 +32,13 @@ export class ErrorBoundary extends Component<
         {this.state.message && (
           <p className="note note-warn">{this.state.message}</p>
         )}
-        <button
+        <Button
           type="button"
           className="secondary"
           onClick={() => window.location.reload()}
         >
           Reload interface
-        </button>
+        </Button>
       </main>
     ) : (
       this.props.children

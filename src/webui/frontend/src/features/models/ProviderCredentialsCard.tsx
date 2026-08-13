@@ -1,6 +1,12 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { Provider } from "../../lib/api";
 import styles from "./models.module.css";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
+import { Badge } from "../../components/ui/badge";
+import { Card } from "../../components/ui/card";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "../../components/ui/table";
+import { Alert } from "../../components/ui/alert";
 
 export function ProviderCredentialsCard({
   providers,
@@ -18,7 +24,7 @@ export function ProviderCredentialsCard({
   clearKey: (provider: string) => void;
 }) {
   return (
-    <div className="card">
+    <Card className="card">
       <div className="card-head">
         <div>
           <h3>Providers</h3>
@@ -29,24 +35,17 @@ export function ProviderCredentialsCard({
         </div>
       </div>
       <div className="table-wrap">
-        <table id="provider-table">
-          <thead>
-            <tr>
-              <th>Provider</th>
-              <th>Environment variable</th>
-              <th>Status</th>
-              <th>Session key</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table id="provider-table">
+          <TableHeader><TableRow><TableHead>Provider</TableHead><TableHead>Environment variable</TableHead><TableHead>Status</TableHead><TableHead>Session key</TableHead></TableRow></TableHeader>
+          <TableBody>
             {providerError ? (
-              <tr>
-                <td colSpan={4}>
-                  <p className="state-error" role="alert">
+              <TableRow>
+                <TableCell colSpan={4}>
+                  <Alert className="state-error">
                     {providerError}
-                  </p>
-                </td>
-              </tr>
+                  </Alert>
+                </TableCell>
+              </TableRow>
             ) : (
               providers.map((p) => {
                 const name = p.provider || p.name || "";
@@ -58,17 +57,17 @@ export function ProviderCredentialsCard({
                     ? "Session key"
                     : "Not configured";
                 return (
-                  <tr key={name}>
-                    <td><b>{name}</b></td>
-                    <td><code>{p.env_vars?.join(", ") || p.env_var}</code></td>
-                    <td>
-                      <span className={`badge ${configured ? "ok" : "muted"}`}>
+                  <TableRow key={name}>
+                    <TableCell><b>{name}</b></TableCell>
+                    <TableCell><code>{p.env_vars?.join(", ") || p.env_var}</code></TableCell>
+                    <TableCell>
+                        <Badge className={configured ? "text-green-700" : "text-gray-500"}>
                         {status}
-                      </span>
-                    </td>
-                    <td>
+                        </Badge>
+                    </TableCell>
+                    <TableCell>
                       <div className={styles.providerActions}>
-                        <input
+                        <Input
                           type="password"
                           placeholder="Paste key for this session"
                           aria-label={`Session key for ${name}`}
@@ -77,19 +76,19 @@ export function ProviderCredentialsCard({
                             setKeys((current) => ({ ...current, [name]: e.target.value }))
                           }
                         />
-                        <button type="button" className="secondary small" data-set={name} onClick={() => setKey(name)}>Set</button>
+                        <Button type="button" variant="secondary" size="sm" data-set={name} onClick={() => setKey(name)}>Set</Button>
                         {p.session_configured && (
-                          <button type="button" className="secondary small" data-clear={name} onClick={() => clearKey(name)}>Clear</button>
+                          <Button type="button" variant="secondary" size="sm" data-clear={name} onClick={() => clearKey(name)}>Clear</Button>
                         )}
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 );
               })
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
-    </div>
+    </Card>
   );
 }

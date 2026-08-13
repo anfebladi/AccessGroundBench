@@ -1,4 +1,10 @@
+@import "tailwindcss";
 @import "./styles/globals.css";
+
+@theme {
+  --font-sans: var(--font-ui);
+  --color-primary: var(--primary);
+}
 
 /* Layout, shared component primitives, utilities and responsive rules. */
 /* ==========================================================================

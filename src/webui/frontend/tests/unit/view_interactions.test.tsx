@@ -1,12 +1,15 @@
 import {cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
-import {CompareView, ResultsView} from '../../src/reporting/views';
-import {DatasetView} from '../../src/views/DatasetView';
-import {ModelsView} from '../../src/views/ModelsView';
-import {EvaluateView} from '../../src/views/EvaluateView';
-import {CollectView} from '../../src/views/CollectView';
-import {AnalyzeView} from '../../src/reporting/views';
-import {RunMonitor} from '../../src/views/RunMonitor';
+import './match_media';
+import {CompareView} from '../../src/features/compare/CompareView';
+import {ResultsView} from '../../src/features/results/ResultsView';
+import {DatasetView} from '../../src/features/dataset/DatasetView';
+import {ModelsView} from '../../src/features/models/ModelsView';
+import {EvaluateView} from '../../src/features/evaluate/EvaluateView';
+import {CollectView} from '../../src/features/collect/CollectView';
+import {AnalyzeView} from '../../src/features/analyze/AnalyzeView';
+import {RunMonitor} from '../../src/features/shared/run-monitor/RunMonitor';
 
 const json = (value: unknown, status = 200) => new Response(JSON.stringify(value), {
   status,
@@ -72,6 +75,33 @@ describe('dataset comparison stage', () => {
 });
 
 describe('compare and results interactions', () => {
+  it('tracks checkbox selection by stable result filename and clears all selections', async () => {
+    vi.mocked(fetch).mockImplementation(async (input) => {
+      if (String(input).endsWith('/results')) return json([
+        {filename: 'vision-a.csv', model: 'same-model', prompt_mode: 'vision', row_count: 2, statuses: {HIT: 1}, hits: 1, co_present_count: 2, accuracy: .5, baseline_accuracy: .5},
+        {filename: 'tree-b.csv', model: 'same-model', prompt_mode: 'tree', row_count: 2, statuses: {HIT: 2}, hits: 2, co_present_count: 2, accuracy: 1, baseline_accuracy: .5},
+      ]);
+      return json([]);
+    });
+    render(<ResultsView dataset="demo" />);
+    await waitFor(() => expect(screen.getAllByRole('checkbox')).toHaveLength(2));
+    const [first, second] = screen.getAllByRole('checkbox') as HTMLButtonElement[];
+    expect(first.getAttribute('aria-checked')).toBe('false');
+    expect(second.getAttribute('aria-checked')).toBe('false');
+
+    fireEvent.click(first);
+    expect(first.getAttribute('aria-checked')).toBe('true');
+    expect(second.getAttribute('aria-checked')).toBe('false');
+    second.focus();
+    await userEvent.keyboard('[Space]');
+    expect(second.getAttribute('aria-checked')).toBe('true');
+    expect(screen.getByRole('button', {name: 'Clear selection'})).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', {name: 'Clear selection'}));
+    expect(first.getAttribute('aria-checked')).toBe('false');
+    expect(second.getAttribute('aria-checked')).toBe('false');
+  });
+
   it('uses the compare query and renders significance data', async () => {
     const calls: string[] = [];
     vi.mocked(fetch).mockImplementation(async (input) => {

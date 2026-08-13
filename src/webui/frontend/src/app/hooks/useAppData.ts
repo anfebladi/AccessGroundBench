@@ -35,8 +35,11 @@ export function useAppData() {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [resultCount, setResultCount] = useState(0);
   const [compareCount, setCompareCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [datasetLoading, setDatasetLoading] = useState(false);
 
   const refresh = useCallback(async () => {
+    setLoading(true);
     const [datasetList, providerList] = await Promise.allSettled([
       api<Dataset[]>("/api/datasets"),
       api<Provider[]>("/api/providers"),
@@ -54,10 +57,12 @@ export function useAppData() {
     if (providerList.status === "fulfilled") {
       setProviders(providerList.value);
     }
+    setLoading(false);
   }, []);
 
   const refreshDatasetData = useCallback(async (name: string) => {
     const controller = new AbortController();
+    setDatasetLoading(true);
 
     try {
       const next = await fetchDatasetData(name, controller.signal);
@@ -65,6 +70,7 @@ export function useAppData() {
       setResultCount(next.resultCount);
     } finally {
       controller.abort();
+      setDatasetLoading(false);
     }
   }, []);
 
@@ -96,5 +102,7 @@ export function useAppData() {
     setCompareCount,
     refresh,
     refreshDatasetData,
+    loading,
+    datasetLoading,
   };
 }

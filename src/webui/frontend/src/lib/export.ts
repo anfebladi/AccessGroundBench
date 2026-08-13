@@ -41,13 +41,34 @@ export function exportCanvasPairAsPng(
   exportCanvasAsPng(canvas, filename);
 }
 
-export function exportSvgAsPng(svg: SVGSVGElement, filename: string) {
+export function exportSvgAsPng(
+  svg: SVGSVGElement,
+  filename: string,
+  options: { background?: string; title?: string } = {},
+) {
   const box = svg.viewBox.baseVal;
   const width = box.width || svg.clientWidth || 760;
   const height = box.height || svg.clientHeight || 400;
   const clone = svg.cloneNode(true) as SVGSVGElement;
   clone.setAttribute("width", String(width));
   clone.setAttribute("height", String(height));
+  clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
+  style.textContent = Array.from(document.styleSheets)
+    .flatMap((sheet) => {
+      try {
+        return Array.from(sheet.cssRules).map((rule) => rule.cssText);
+      } catch {
+        return [];
+      }
+    })
+    .join("\n");
+  clone.insertBefore(style, clone.firstChild);
+  if (options.title) {
+    const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+    title.textContent = options.title;
+    clone.insertBefore(title, clone.firstChild);
+  }
   const xml = new XMLSerializer().serializeToString(clone);
   const url = URL.createObjectURL(
     new Blob([xml], { type: "image/svg+xml" }),
@@ -61,6 +82,10 @@ export function exportSvgAsPng(svg: SVGSVGElement, filename: string) {
     const ctx = canvas.getContext("2d");
     if (ctx) {
       ctx.scale(2, 2);
+      if (options.background) {
+        ctx.fillStyle = options.background;
+        ctx.fillRect(0, 0, width, height);
+      }
       ctx.drawImage(img, 0, 0, width, height);
       exportCanvasAsPng(canvas, filename);
     }

@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import type { PaletteItem } from "../../app/navigation";
 import styles from "./Shell.module.css";
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../ui/command";
 
 export function CommandPalette({
   items,
@@ -53,14 +60,13 @@ export function CommandPalette({
       hidden={!open}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div
+      <Command
         className={styles.palette}
-        role="dialog"
         aria-modal="true"
         aria-label="Command palette"
       >
         <div className="palette-input-row">
-          <input
+          <CommandInput
             autoComplete="off"
             type="text"
             id="palette-input"
@@ -77,11 +83,10 @@ export function CommandPalette({
             placeholder="Jump to a view, screen, or model…"
           />
         </div>
-        <ul id="palette-list" role="listbox" aria-label="Results">
+        <CommandList id="palette-list" role="listbox" aria-label="Results">
           {filtered.length ? (
             filtered.map((item, i) => (
-              <li
-                role="option"
+              <CommandItem
                 id={`palette-opt-${i}`}
                 className={i === active ? "is-active" : ""}
                 aria-selected={i === active}
@@ -90,12 +95,12 @@ export function CommandPalette({
               >
                 <span className="palette-item-label">{item.label}</span>
                 <span className="palette-item-hint">{item.hint}</span>
-              </li>
+              </CommandItem>
             ))
           ) : (
-            <li className="palette-empty muted small">No matches</li>
+            <CommandEmpty className="palette-empty muted small">No matches</CommandEmpty>
           )}
-        </ul>
+        </CommandList>
         <div className="palette-foot">
           <span>
             <kbd>↑</kbd>
@@ -111,7 +116,7 @@ export function CommandPalette({
             <kbd>1</kbd>–<kbd>7</kbd> jump to a view
           </span>
         </div>
-      </div>
+      </Command>
     </div>
   );
 }

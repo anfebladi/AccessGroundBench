@@ -1,12 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
 import { api, isTerminalRunStatus, readModels, type Model } from "../lib/api";
-import { AnalyzeView } from "../reporting/analyze/AnalyzeView";
-import { CompareView } from "../reporting/compare/CompareView";
-import { ResultsView } from "../reporting/results/ResultsView";
-import { CollectView } from "../views/CollectView";
-import { DatasetView } from "../views/DatasetView";
-import { EvaluateView } from "../views/EvaluateView";
-import { ModelsView } from "../views/ModelsView";
+import { AnalyzeView } from "../features/analyze/AnalyzeView";
+import { CompareView } from "../features/compare/CompareView";
+import { ResultsView } from "../features/results/ResultsView";
+import { CollectView } from "../features/collect/CollectView";
+import { DatasetView } from "../features/dataset/DatasetView";
+import { EvaluateView } from "../features/evaluate/EvaluateView";
+import { ModelsView } from "../features/models/ModelsView";
 import { AppShell } from "../components/shell/AppShell";
 import { CommandPalette } from "../components/shell/CommandPalette";
 import { PageOutlet } from "../components/shell/PageOutlet";
@@ -79,6 +79,7 @@ export function App() {
         resultsCount={data.resultCount}
         onDatasetChange={data.setDataset}
         onPalette={() => setPaletteOpen(true)}
+        dataLoading={data.loading || data.datasetLoading}
       >
         <PageOutlet active={route === "dataset"}>
           <DatasetView
