@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
 import subprocess
 import sys
 from html.parser import HTMLParser
@@ -216,9 +217,16 @@ def main(argv: list[str] | None = None) -> int:
 
     contract_test = "tests/unit/rendered_contract.test.tsx"
     print(f"ui_contract: running rendered contract ({contract_test})")
+    # Resolved rather than spelled "npm": on Windows the executable is npm.cmd,
+    # and a bare "npm" fails CreateProcess with WinError 2 -- which would take
+    # the whole check offline on the only platform this project runs on.
+    npm = shutil.which("npm")
+    if npm is None:
+        print("ui_contract: npm is not on PATH; install Node to run the contract check")
+        return 1
     try:
         result = subprocess.run(
-            ["npm", "exec", "vitest", "run", contract_test],
+            [npm, "exec", "vitest", "run", contract_test],
             cwd=FRONTEND_DIR,
             check=False,
         )

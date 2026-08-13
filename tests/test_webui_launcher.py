@@ -1,4 +1,5 @@
 import io
+import os
 import sys
 import tempfile
 import types
@@ -45,10 +46,17 @@ class WebuiLauncherTests(unittest.TestCase):
     def _uvicorn(self, server_obj):
         return types.SimpleNamespace(Config=_FakeConfig, Server=lambda config: server_obj)
 
+    # The name must match what ui_main actually looks for -- npm installs
+    # vite.cmd on Windows, not vite. Spelling it "vite" here made the launcher
+    # bail at its missing-dependency guard before reaching any of the behaviour
+    # below, so three of these tests failed on the only platform this project
+    # runs on while passing everywhere else.
+    VITE_BIN = "vite.cmd" if os.name == "nt" else "vite"
+
     def _frontend(self):
         td = tempfile.TemporaryDirectory()
         root = Path(td.name)
-        vite = root / "node_modules" / ".bin" / "vite"
+        vite = root / "node_modules" / ".bin" / self.VITE_BIN
         vite.parent.mkdir(parents=True)
         vite.touch()
         return td, root
@@ -88,7 +96,8 @@ class WebuiLauncherTests(unittest.TestCase):
 
         self.assertEqual("http://127.0.0.1:5173", seen["url"])
         cmd = popen.call_args.args[0]
-        self.assertEqual([str(frontend / "node_modules/.bin/vite"), "--host", "127.0.0.1", "--port", "5173"], cmd)
+        expected_vite = str(frontend / "node_modules" / ".bin" / self.VITE_BIN)
+        self.assertEqual([expected_vite, "--host", "127.0.0.1", "--port", "5173"], cmd)
         self.assertTrue(fake_server.should_exit)
         process.terminate.assert_called_once_with()
 
