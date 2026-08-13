@@ -1,7 +1,7 @@
 # Android collection guide
 
 This guide covers the reproducible live-capture workflow behind
-`dataset/collection_manifest.json`. Install the project and prepare the
+`experiment/dataset/collection_manifest.json`. Install the project and prepare the
 emulator as described in [`setup.md`](setup.md) before starting. For command
 syntax, see the [`agb collect` reference](cli-reference.md#agb-collect).
 For an operator-facing checklist, see the [live collection runbook](runbooks/collection.md).
@@ -14,12 +14,25 @@ For an operator-facing checklist, see the [live collection runbook](runbooks/col
 - Open Messages, Gmail, and Google Maps once to clear first-run dialogs, then
   return to the home screen.
 
-The built-in collection has 13 screens, in this order:
+The built-in collection has 12 screens, in this order:
 
 ```text
 settings_main settings_display settings_network settings_accessibility
-contacts dialer messages clock maps play_store gmail youtube photos
+contacts dialer messages clock maps play_store youtube photos
 ```
+
+A thirteenth screen, `gmail`, is supported but **opt-in**. It renders the
+signed-in account's real inbox — sender names, subject lines, body previews and
+receipt times — so capturing it captures whoever the emulator is signed in as.
+The published dataset omits it for that reason, not because it is unsupported.
+Collect it with:
+
+```bash
+agb collect --screens gmail
+```
+
+Anything collected this way is tied to that run's inbox state and will not
+reproduce across collections the way static app UI does.
 
 Six profiles are collected: `baseline`, `elder_text_heavy`,
 `elder_zoom_heavy`, `elder_combo_max`, `elder_combo_mid`, and
@@ -60,9 +73,9 @@ Each successful capture writes one image, raw UI hierarchy, and extracted-label
 file:
 
 ```text
-dataset/images/{screen}_{profile}.png
-dataset/raw_xml/{screen}_{profile}.xml
-dataset/labels/{screen}_{profile}.json
+experiment/dataset/images/{screen}_{profile}.png
+experiment/dataset/raw_xml/{screen}_{profile}.xml
+experiment/dataset/labels/{screen}_{profile}.json
 ```
 
 The pipeline dumps XML with retries (up to three attempts, waiting up to
@@ -71,7 +84,7 @@ crops status/navigation bars. The colorblind profile also receives the
 software deuteranomaly transform in the saved image; Android's on-device
 daltonizer is not relied on for pixels.
 
-`dataset/collection_manifest.json` records captures, label counts, drift, and
+`experiment/dataset/collection_manifest.json` records captures, label counts, drift, and
 problems. A run fails validation for missing captures, empty labels, content
 drift above 5%, or color-only contamination (a geometry-preserving profile
 whose text set differs from baseline). Scattered geometric loss is recorded as

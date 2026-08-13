@@ -36,8 +36,8 @@ def evaluate_main(argv: list[str] | None = None) -> None:
         "--data-dir",
         type=Path,
         default=None,
-        help="Directory holding images/labels/evaluation_results_*.csv "
-        "(default: ./dataset, or $AGB_DATASET_DIR if set)",
+        help="Directory holding images/ and labels/ "
+        "(default: ./experiment/dataset, or $AGB_DATASET_DIR if set)",
     )
     args = parser.parse_args(argv)
     if args.data_dir is not None:

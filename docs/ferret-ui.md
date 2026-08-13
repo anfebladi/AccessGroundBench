@@ -10,7 +10,15 @@ cd ferret_ui
 python -m venv venv
 venv\Scripts\activate          # Windows
 pip install -r requirements.txt
+python download_scripts.py     # fetches the upstream model code -- required
 ```
+
+`download_scripts.py` downloads seven modules (`builder.py`, `conversation.py`,
+`inference.py`, `model_UI.py`, `mm_utils.py`, `clip_encoder.py`, `constants.py`)
+from the `jadechoghari/Ferret-UI-Llama8b` repository on Hugging Face into
+`ferret_ui/`. They are third-party code and are deliberately **not** committed
+here — see [Licensing](#licensing) — so this step is not optional. Without it
+`ferret_server.py` fails at import.
 
 Start the HTTP server from the same `ferret_ui` directory:
 
@@ -34,6 +42,25 @@ In the main project `.env`, select the local provider:
 ```dotenv
 VLM_MODEL=local/ferret-ui-llama8b
 ```
+
+## Licensing
+
+Ferret-UI is optional and is governed by terms that are **not** this project's MIT
+licence. You accept them directly with the upstream providers when you download.
+
+- **Model code** (the seven modules above) is third-party — Apple Ferret-UI, built on
+  LLaVA — and is fetched from Hugging Face rather than redistributed here.
+- **Weights** derive from **Meta Llama 3** and are governed by the **Meta Llama 3
+  Community License**, which is not a standard open-source licence. It carries an
+  acceptable-use policy, an attribution requirement ("Built with Meta Llama 3"), and a
+  700-million-monthly-active-user threshold above which a separate licence must be
+  obtained from Meta.
+- **Before publishing results obtained with Ferret-UI**, read the licence stated on the
+  `jadechoghari/Ferret-UI-Llama8b` Hugging Face repository. Parts of this provenance
+  chain are research/non-commercial-only, and that determines whether such results may
+  be published without further condition.
+
+See [`THIRD-PARTY-NOTICES.md`](../THIRD-PARTY-NOTICES.md) §4.
 
 ## Hardware
 

@@ -15,10 +15,11 @@ from pathlib import Path
 
 import paths
 
-# dataset/experiment_1 and dataset/experiment_2 are archived research runs
-# (see CLAUDE.md and repo memory: "never write to dataset/experiment_N/").
-# They are valid datasets structurally, but must never be offered as a
-# target for a new evaluation or collection run.
+# Superseded research runs under experiment/archive/. They are valid datasets
+# structurally, but are a fixed record of a past experiment and must never be
+# offered as the target of a new evaluation or collection run. Discovery flags
+# anything under archive/ as archived; this list additionally reserves the
+# names so a *new* dataset cannot be created that shadows one.
 ARCHIVED_NAMES = {"experiment_1", "experiment_2"}
 
 
@@ -65,13 +66,19 @@ def discover_datasets() -> list[DatasetInfo]:
     reflects everything on disk regardless of what a prior request selected.
     """
     root = paths.PROJECT_ROOT
+    experiment_dir = root / paths.EXPERIMENT_DIR_NAME
     found: list[DatasetInfo] = []
 
-    default_dir = root / "dataset"
+    default_dir = experiment_dir / "dataset"
     if _is_dataset_dir(default_dir):
         found.append(_describe(default_dir, "dataset", is_default=True, is_archived=False))
-        for child in sorted(default_dir.iterdir()):
-            if child.is_dir() and child.name in ARCHIVED_NAMES and _is_dataset_dir(child):
+
+    # Superseded runs live beside the current one rather than nested inside it,
+    # so an archive can never be mistaken for part of the active dataset.
+    archive_dir = experiment_dir / "archive"
+    if archive_dir.is_dir():
+        for child in sorted(archive_dir.iterdir()):
+            if child.is_dir() and _is_dataset_dir(child):
                 found.append(_describe(child, child.name, is_default=False, is_archived=True))
 
     datasets_dir = root / "datasets"

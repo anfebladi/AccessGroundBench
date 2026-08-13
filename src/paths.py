@@ -57,6 +57,15 @@ def find_project_root(start: str | Path | None = None) -> Path:
     return Path(start).expanduser().resolve() if start is not None else Path.cwd().resolve()
 
 
+# One experiment is a dataset plus everything derived from it, so both live
+# under a single root rather than as unrelated top-level directories:
+#
+#   experiment/dataset/  captures, labels, raw XML, manifest
+#   experiment/outputs/  evaluation results and analysis tables
+#   experiment/archive/  superseded runs (local only; gitignored)
+EXPERIMENT_DIR_NAME = "experiment"
+
+
 def _resolve_dataset_dir(project_root: Path) -> Path:
     """Return the active dataset directory.
 
@@ -72,7 +81,7 @@ def _resolve_dataset_dir(project_root: Path) -> Path:
     override = os.environ.get(DATASET_DIR_ENV_VAR, "").strip()
     if override:
         return Path(override).expanduser().resolve()
-    return project_root / "dataset"
+    return project_root / EXPERIMENT_DIR_NAME / "dataset"
 
 
 PROJECT_ROOT = find_project_root()
@@ -86,7 +95,7 @@ PROMPT_MODES = ("vision", "tree")
 
 def outputs_dir() -> Path:
     """Return the repository's generated-output root."""
-    return PROJECT_ROOT / "outputs"
+    return PROJECT_ROOT / EXPERIMENT_DIR_NAME / "outputs"
 
 
 def captures_dir() -> Path:
@@ -100,10 +109,15 @@ def dataset_name(dataset_dir: str | Path | None = None) -> str:
     Matches the names webui.backend.datasets.discover_datasets assigns, so the UI's
     dataset dropdown and the CLI's --data-dir agree on where a run's outputs
     belong: `dataset` for the default, otherwise the directory's own name
-    (`experiment_2`, or whatever `datasets/<name>` was collected as).
+    (`experiment_2`, or whatever archived run was pointed at).
+
+    Names are basenames, so two datasets sharing one directory name would share
+    an output root. That is why archives keep distinct names
+    (`experiment/archive/experiment_2`, not `.../archive/dataset`).
     """
     resolved = Path(dataset_dir or DATASET_DIR).expanduser().resolve()
-    return "dataset" if resolved == (PROJECT_ROOT / "dataset").resolve() else resolved.name
+    default = (PROJECT_ROOT / EXPERIMENT_DIR_NAME / "dataset").resolve()
+    return "dataset" if resolved == default else resolved.name
 
 
 def outputs_root_for(dataset_dir: str | Path | None = None) -> Path:
@@ -141,8 +155,8 @@ def evaluation_results_path(
     """Return the evaluation result file for one model and prompt mode.
 
     The prompt mode is part of the filename because vision and tree results
-    answer different research questions and must never be pooled (CLAUDE.md
-    §5); naming them apart is what lets discover_result_csvs separate the arms.
+    answer different research questions and must never be pooled; naming them
+    apart is what lets discover_result_csvs separate the arms.
     """
     from evaluation.config import sanitize_model_filename
 

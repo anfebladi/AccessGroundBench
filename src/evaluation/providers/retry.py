@@ -53,8 +53,8 @@ def resolve_temperature(temperature: float | None = None) -> float | None:
     """
     Resolve the sampling temperature, defaulting to 0 for reproducibility.
 
-    Scores were previously single draws at the provider's default temperature,
-    so a marginal result could not be distinguished from a coin flip. Set
+    At the provider's default temperature a score is a single stochastic
+    draw, so a marginal result cannot be distinguished from a coin flip. Set
     VLM_TEMPERATURE to an empty string to omit the parameter entirely.
     """
     if temperature is not None:

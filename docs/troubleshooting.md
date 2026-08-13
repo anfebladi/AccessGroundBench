@@ -18,7 +18,7 @@ means the app has not finished rendering; the workflow retries automatically.
 
 ## Evaluator reports no screens
 
-No baseline labels exist under `dataset/labels/`. Run `agb collect` first.
+No baseline labels exist under `experiment/dataset/labels/`. Run `agb collect` first.
 
 ## A provider key is missing
 

@@ -4,6 +4,24 @@ version = "0.1.0"
 description = "A benchmark for accessibility-aware visual grounding"
 readme = "README.md"
 requires-python = ">=3.11"
+# Table form rather than the PEP 639 SPDX string: the test suite builds a wheel
+# with --no-build-isolation, so it uses whatever setuptools the venv has (65.x),
+# which predates PEP 639. The string form fails there.
+license = { text = "MIT" }
+authors = [{ name = "Andres Blanco" }]
+keywords = [
+    "accessibility",
+    "benchmark",
+    "vision-language-model",
+    "visual-grounding",
+    "android",
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
     "litellm>=1.91.3",
     "numpy>=2.4.6",
@@ -17,6 +35,12 @@ ui = [
     "fastapi>=0.115",
     "uvicorn>=0.32",
 ]
+
+[project.urls]
+Homepage = "https://github.com/anfebladi/AccessGroundBench"
+Repository = "https://github.com/anfebladi/AccessGroundBench"
+Documentation = "https://github.com/anfebladi/AccessGroundBench/blob/main/docs/methods.md"
+Issues = "https://github.com/anfebladi/AccessGroundBench/issues"
 
 [project.scripts]
 agb = "cli:main"

@@ -3,7 +3,7 @@
 Not a smoke test: every assertion here is checked against a hand-derived
 expected value (exact binomial p-values computed independently via
 math.comb, Holm thresholds computed from the documented alpha/(m-i)
-formula), the same standard CLAUDE.md holds the rest of the pipeline to.
+formula), the same standard the rest of the pipeline's statistics are held to.
 
 The star test (`test_holm_correction_scopes_to_full_family`) is the direct
 regression check for the family-scoping defect the Compare endpoint's design

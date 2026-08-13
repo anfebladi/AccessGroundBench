@@ -39,7 +39,7 @@ is the reference for workflow details, artifacts, validation, and recovery; the
    agb collect
    ```
 
-The configured run has 13 screens and six profiles: `baseline` plus five
+The configured run has 12 screens and six profiles: `baseline` plus five
 experimental profiles (`elder_text_heavy`, `elder_zoom_heavy`, `elder_combo_max`,
 `elder_combo_mid`, and `colorblind_deuteranomaly`). There is no RTL arm. Each
 screen receives seven captures (the six profiles plus `baseline_close`), and the
@@ -47,8 +47,8 @@ device is reset to baseline after each screen.
 
 ## Validate and stop
 
-Inspect `dataset/images/`, `dataset/raw_xml/`, `dataset/labels/`, and
-`dataset/collection_manifest.json`. Stop the run and investigate if any command
+Inspect `experiment/dataset/images/`, `experiment/dataset/raw_xml/`, `experiment/dataset/labels/`, and
+`experiment/dataset/collection_manifest.json`. Stop the run and investigate if any command
 returns nonzero or reports problems; do not proceed to evaluation with an
 unresolved manifest problem. See the [collection guide](../collection.md) for
 artifact and validation details.

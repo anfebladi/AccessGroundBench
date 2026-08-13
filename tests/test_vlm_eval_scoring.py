@@ -94,11 +94,10 @@ class ToPixelSpaceTests(unittest.TestCase):
         self.assertEqual((540.0, 1109.5), to_pixel_space(500, 500, 1080, 2219, "norm1000"))
 
     def test_reproduces_legacy_provider_side_conversion_exactly(self):
-        """The conversion used to happen in vlm_provider, which emitted
-        f"[{cx:.1f}, {cy:.1f}]" before the runner truncated with int().
+        """The 1-decimal quantization is load-bearing, not cosmetic.
 
-        Moving it here must not change a single already-collected x_pred or
-        y_pred. Dropping the 1-decimal quantization would shift ~4% of replies
+        Every already-collected x_pred/y_pred must reproduce exactly.
+        Dropping the quantization would shift ~4% of replies
         by one pixel (267 of 3003 inputs across these dimensions), and since
         score = hit_test(x_pred, ...) that can flip a score at a box edge.
         """

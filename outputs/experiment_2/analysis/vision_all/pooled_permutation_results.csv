@@ -1,5 +1,0 @@
-Profile,Target_Clusters,Observations,Statistic,Broke_It_b,Fluke_Recovery_c,Permutations,P_Value,Holm_Threshold,Significant
-elder_text_heavy,146,1022,48.0,61,13,20000,0.000050,0.012500,Yes
-elder_zoom_heavy,151,1057,-17.0,37,54,20000,0.171541,0.016667,No
-elder_combo_max,112,784,11.0,44,33,20000,0.313184,0.025000,No
-colorblind_deuteranomaly,162,1134,-7.0,22,29,20000,0.395030,0.050000,No

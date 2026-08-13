@@ -82,8 +82,8 @@ def index_rows(rows: list[dict]) -> dict[tuple[str, str, str], dict]:
     out of every downstream table, since they all gate on
     status == STATUS_CO_PRESENT. This prefers any real (non-api_error) row
     over an api_error row regardless of position, and warns rather than
-    silently resolving the rest, so a corrupted file can never be consumed
-    quietly again the way gpt-5.4_with_tree.csv was.
+    silently resolving the rest, so a corrupted file cannot be consumed
+    quietly.
     """
     index: dict[tuple[str, str, str], dict] = {}
     key_counts: Counter = Counter()

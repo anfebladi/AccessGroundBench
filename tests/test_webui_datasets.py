@@ -8,7 +8,7 @@ from webui.backend import datasets as datasets_mod
 
 
 def make_dataset_dir(root: Path, name: str, screens: list[str]) -> Path:
-    ds = root / name if name == "dataset" else root / "datasets" / name
+    ds = root / "experiment" / "dataset" if name == "dataset" else root / "datasets" / name
     (ds / "images").mkdir(parents=True, exist_ok=True)
     (ds / "labels").mkdir(parents=True, exist_ok=True)
     for screen in screens:
@@ -45,7 +45,7 @@ class DiscoverDatasetsTests(unittest.TestCase):
 
     def test_archived_experiments_are_flagged_read_only(self):
         make_dataset_dir(self.root, "dataset", ["clock"])
-        exp1 = self.root / "dataset" / "experiment_1"
+        exp1 = self.root / "experiment" / "archive" / "experiment_1"
         (exp1 / "images").mkdir(parents=True)
         (exp1 / "labels").mkdir(parents=True)
         (exp1 / "labels" / "clock_baseline.json").write_text("[]", encoding="utf-8")
@@ -83,7 +83,8 @@ class DiscoverDatasetsTests(unittest.TestCase):
         with self.patch_root():
             self.assertIsNone(datasets_mod.resolve_dataset_path("nonexistent"))
             self.assertEqual(
-                self.root / "dataset", datasets_mod.resolve_dataset_path("dataset")
+                self.root / "experiment" / "dataset",
+                datasets_mod.resolve_dataset_path("dataset"),
             )
 
 

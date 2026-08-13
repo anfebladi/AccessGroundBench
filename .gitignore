@@ -39,8 +39,15 @@ src/webui/frontend/*.tsbuildinfo
 ._*
 
 # Scratch output from the standalone `agb capture` command. Everything else
-# under outputs/ is per-dataset results and is committed.
-outputs/captures/
+# under experiment/outputs/ is per-dataset results and is committed.
+experiment/outputs/captures/
+
+# Superseded collection runs. Kept locally as a record, never published: they
+# predate several scoring fixes (so they must not be cited) and their captures
+# contain personal data that the current dataset has had removed.
+experiment/archive/
+experiment/outputs/experiment_1/
+experiment/outputs/experiment_2/
 
 # Copies kept aside before a command replaces a result file (src/backups.py).
 # Local safety net, not a record: committing them would put stale evaluation
@@ -72,6 +79,26 @@ adb*.txt
 ui_experiments/
 
 # Local scratch notes for in-flight work. Not a project record -- anything worth
-# keeping belongs in CLAUDE.md or docs/.
+# keeping belongs in docs/.
 NOTES.local.md
 *.local.md
+
+# Agent context and configuration. Useful locally, but they document how the
+# work was done rather than what the benchmark is, and reference internal
+# history that means nothing to an outside reader.
+CLAUDE.md
+AGENTS.md
+.codex/
+
+# Ferret-UI model code fetched from Hugging Face by ferret_ui/download_scripts.py.
+# Third-party (Apple Ferret-UI / Meta Llama 3 / LLaVA lineage) and NOT covered by
+# this repository's licence, so it is downloaded from upstream rather than
+# redistributed here. See docs/ferret-ui.md.
+ferret_ui/builder.py
+ferret_ui/clip_encoder.py
+ferret_ui/constants.py
+ferret_ui/conversation.py
+ferret_ui/inference.py
+ferret_ui/mm_utils.py
+ferret_ui/model_UI.py
+ferret_ui/eval.json

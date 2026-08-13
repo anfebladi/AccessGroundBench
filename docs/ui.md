@@ -173,7 +173,7 @@ the fact. Progress is counted on the client from the run's own stdout, which
 prints one line per query; there is no second source of truth about how far
 along a run is. The raw log is one disclosure away, and stops auto-scrolling
 as soon as you scroll back through it. Results land in
-`outputs/<dataset>/evaluations/<model>_<vision|tree>.csv`
+`experiment/outputs/<dataset>/evaluations/<model>_<vision|tree>.csv`
 exactly as `agb evaluate` would leave them, including the append/resume/lock
 semantics documented in the [evaluation runbook](runbooks/evaluation.md).
 
@@ -210,7 +210,7 @@ shown together -- driven by the arrow keys, `Escape`, or the filmstrip.
 **Analyze.** Shows whatever the current mode/sample combination already has
 on disk **on arrival**, with no run required -- if `agb analyze` (or an
 earlier browser run) already wrote tables to
-`outputs/<dataset>/analysis/<mode>_<sample>/`, they render immediately.
+`experiment/outputs/<dataset>/analysis/<mode>_<sample>/`, they render immediately.
 Changing the Sample or Prompt mode selector reloads whatever exists for that
 combination the same way; the form below is "re-run with new parameters," not
 a gate you have to pass to see anything. Charts reachability (with Wilson
@@ -231,7 +231,7 @@ depends on colour alone. Vision and tree arms are analysed one at a time and
 are never pooled.
 
 **Analysis from the UI never writes into a dataset.** Results go to
-`outputs/<dataset>/analysis/<mode>_<sample>/`, and the path is shown above the
+`experiment/outputs/<dataset>/analysis/<mode>_<sample>/`, and the path is shown above the
 charts. This is not cosmetic: `agb analyze` names its outputs after the
 analysis rather than the run, so running it twice with different `--sample`
 values overwrites the earlier tables in place. From a terminal that is a
@@ -241,9 +241,9 @@ sample was selected. Mode and sample are part of the directory name so a
 vision run and a tree run cannot overwrite each other either. Archived
 datasets can be analysed freely, because nothing is written inside them.
 
-Analysis output is written under `outputs/<dataset>/analysis/<mode>_<sample>/`; prompt-arm
-comparisons use `outputs/<dataset>/analysis/comparisons/`. Historical generated outputs
-are kept under `outputs/<dataset>/`, one root per dataset; archived source captures remain in
+Analysis output is written under `experiment/outputs/<dataset>/analysis/<mode>_<sample>/`; prompt-arm
+comparisons use `experiment/outputs/<dataset>/analysis/comparisons/`. Historical generated outputs
+are kept under `experiment/outputs/<dataset>/`, one root per dataset; archived source captures remain in
 `dataset/experiment_N/`.
 
 Analysis runs in the server process and blocks until it finishes; the form is
@@ -265,10 +265,10 @@ same portable unit `agb analyze --data-dir` already accepts. The dropdown
 shows:
 
 - `dataset` -- the shipped benchmark, writable.
-- `dataset/experiment_1`, `dataset/experiment_2` -- archived prior runs,
+- `experiment/archive/experiment_1`, `experiment/archive/experiment_2` -- archived prior runs,
   shown **read-only**: Evaluate and Collect refuse to target them (see the
   archive warning in [`README.md`](../README.md) and
-  `dataset/experiment_2/README.md`).
+  `experiment/archive/experiment_2/README.md`).
 - `datasets/<name>/` -- anything you collect from the UI, or copy in
   yourself, lives here rather than inside the shipped `dataset/`.
 
@@ -324,7 +324,7 @@ something the bare CLI cannot currently do in a single invocation.
   `report_reachability` directly -- the same functions `agb analyze` calls --
   never a JavaScript reimplementation.
 - **Modify a dataset it is reading.** Collect writes only to
-  `datasets/<name>/`, analysis writes only to `outputs/<dataset>/analysis/`, and Evaluate
+  `datasets/<name>/`, analysis writes only to `experiment/outputs/<dataset>/analysis/`, and Evaluate
   appends to its own result CSV. Nothing in the UI rewrites a dataset's
   captures, labels, or committed analysis tables.
 - **Run over a network.** Local-only, by design (see [Launch](#install-and-launch)).

@@ -36,6 +36,35 @@ ALL_PROFILES = [
 ]
 
 
+def reject_colliding_models(models: list[str]) -> None:
+    """Fail when two routed ids in one run reduce to the same result filename.
+
+    Stripping the routing prefix means ``9router/cx/gpt-5.5`` and
+    ``openai_compatible/vendor/gpt-5.5`` both want ``gpt-5.5_vision.csv``. Left
+    alone the second model would *resume* against the first one's rows, silently
+    blending two models' answers into one file that still looks well-formed.
+    Refusing up front costs a rename; not refusing costs the run.
+    """
+    from collections import defaultdict
+
+    by_filename: dict[str, list[str]] = defaultdict(list)
+    for model in models:
+        by_filename[sanitize_model_filename(model)].append(model)
+
+    collisions = {name: ids for name, ids in by_filename.items() if len(ids) > 1}
+    if not collisions:
+        return
+
+    print("[ERROR] Two models in this run resolve to the same result filename:")
+    for name, ids in sorted(collisions.items()):
+        print(f"  {name}_<mode>.csv  <-  {', '.join(ids)}")
+    print("")
+    print("  Result files are named after the model, not the route it was")
+    print("  reached through, so these would share one resumable CSV.")
+    print(f"  Run them separately, or drop one from {MODEL_ENV_VAR}.")
+    raise SystemExit(1)
+
+
 def resolve_models(cli_model: str | None) -> list[str]:
     """Resolve model precedence: CLI override, then VLM_MODEL env."""
     raw = ""
@@ -45,7 +74,9 @@ def resolve_models(cli_model: str | None) -> list[str]:
         raw = os.environ.get(MODEL_ENV_VAR, "").strip()
 
     if raw:
-        return [m.strip() for m in raw.split(",") if m.strip()]
+        models = [m.strip() for m in raw.split(",") if m.strip()]
+        reject_colliding_models(models)
+        return models
 
     print(f"[ERROR] {MODEL_ENV_VAR} is not set.")
     print("")
@@ -179,16 +210,52 @@ _WINDOWS_ILLEGAL_CHARS = '<>:"\\|?*'
 _MAX_CLEAN_MODEL_LENGTH = 150
 
 
+# Prefixes that name *how a request was routed*, not what model answered it.
+# 9router and OpenAI-compatible endpoints are shims: the same GPT or Gemini
+# model reachable through a different gateway is still that model, and the
+# gateway is a local deployment detail nobody else shares.
+_ROUTING_PREFIXES = ("9router/", "openai_compatible/")
+
+
+def canonical_model_id(model: str) -> str:
+    """Reduce a routed model id to the model it actually identifies.
+
+    ``9router/cx/gpt-5.6-sol`` -> ``gpt-5.6-sol``;
+    ``openai_compatible/z-ai/glm-5v-turbo`` -> ``glm-5v-turbo``.
+
+    Provider-prefixed ids (``anthropic/``, ``openai/``, ``gemini/``,
+    ``local/``) are returned unchanged -- those name who serves the model,
+    which is a real property of the result, not a routing accident.
+
+    Only the published identity changes. VLM_MODEL still takes the full routed
+    id, and the routing layer
+    (``evaluation.providers.config``) never sees this function's output --
+    ``resolve_completion_config`` and ``uses_normalized_coords`` must keep
+    reading the raw id or requests would go to the wrong endpoint.
+    """
+    for prefix in _ROUTING_PREFIXES:
+        if model.startswith(prefix):
+            remainder = model[len(prefix):].strip("/")
+            # A prefix with nothing after it is malformed; leave it intact so
+            # model_configuration_error reports it rather than silently
+            # collapsing every broken id to the same empty name.
+            return remainder.rsplit("/", 1)[-1] if remainder else model
+    return model
+
+
 def sanitize_model_filename(model: str) -> str:
     """Turn a model id into a safe Windows filename component.
 
-    A bare '/' -> '_' substitution (the original behaviour, kept as-is so
-    every previously collected CSV keeps its name) is not enough for
-    bring-your-own model ids: Ollama and Bedrock ids commonly contain ':'
-    (e.g. "ollama/llama3.2-vision:11b"), which is illegal in a Windows
-    filename and crashes at file-open time with no indication of why.
+    A bare '/' -> '_' substitution is not enough for bring-your-own model ids:
+    Ollama and Bedrock ids commonly contain ':' (e.g.
+    "ollama/llama3.2-vision:11b"), which is illegal in a Windows filename and
+    crashes at file-open time with no indication of why.
+
+    Routing prefixes are stripped first (see canonical_model_id), so a result
+    file is named after the model rather than the gateway it was reached
+    through.
     """
-    cleaned = model.replace("/", "_")
+    cleaned = canonical_model_id(model).replace("/", "_")
     cleaned = "".join(
         "_" if ch in _WINDOWS_ILLEGAL_CHARS or ord(ch) < 32 else ch
         for ch in cleaned

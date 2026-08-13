@@ -94,7 +94,7 @@ records which happened in the `coord_space` column:
 | `unverified` | no coordinate pair could be parsed | no |
 | *(blank)* | model was never on the normalized path | no |
 
-> **Non-comparability note (`CLAUDE.md` §9).** `raw_response` holds the model's **verbatim**
+> **Non-comparability note.** `raw_response` holds the model's **verbatim**
 > reply only for rows collected **after** the coordinate-mechanism unification (merged
 > 2026-08-08). Gemini rows collected before it store the *already-converted pixel value*,
 > so the original 0–1000 answer is unrecoverable for those rows and `agb rescore`
@@ -128,7 +128,7 @@ looked in the wrong place" — a confound that inflated significant results from
 
 **Across models the sample is identical.** `off_screen` is decided by
 `evaluation.grounding.targets.find_element_in_profile`, which reads only the captured
-label JSON — no model is involved. In `dataset/experiment_2/` all 7 models carry
+label JSON — no model is involved. In `experiment/archive/experiment_2/` all 7 models carry
 exactly 865 `co_present` and 140 `off_screen` rows with the same per-profile split, so
 the pooled and per-model tests share one sample. Per-model `n` can only diverge through
 `api_error`, of which the archive has none.
@@ -164,10 +164,10 @@ profile it is being compared against.
 **Consequence for interpretation.** A profile's grounding result estimates the effect
 *on the targets that survive that profile*, not on the original 168. Pooled p-values
 and effect sizes are therefore comparable **across models but not across profiles**.
-`elder_combo_max` is the case that matters: it discards 56 of 168 targets, its null
-grounding result (pooled p = 0.313) is measured on the 112 easiest, and the `ceiling`
+`elder_combo_max` is the case that matters: on the current dataset it discards 34 of 138
+targets, so its grounding result is measured on the 104 easiest, and the `ceiling`
 flags it earns are partly produced by the exclusion rather than observed. Its real
-finding lives in reachability (§2), which is computed over all 168 baseline targets and
+finding lives in reachability (§2), which is computed over all baseline targets and
 is unaffected by this bias.
 
 This is a known, accepted limitation rather than a defect: correcting it would require
@@ -200,16 +200,25 @@ grounding task, the same category of decision as requiring baseline-unique text.
 `analysis.data.samples.compute_b2_targets` recomputes the identical rule
 from a completed
 CSV's `co_present` rows. It exists for datasets collected before the harvest-time filter
-did (`dataset/experiment_2`, and any hosted-model CSV collected before this change),
+did (`experiment/archive/experiment_2`, and any hosted-model CSV collected before this change),
 where the invalid rows are already on disk and must be filtered out after the fact
 rather than never generated. On a fresh collection the two should agree exactly; where
 they diverge, it means the CSV predates this filter.
 
-Effect on the current (non-archived) dataset: 7 of gmail's 23 harvested candidates are
-excluded (162 → 155 targets across all 13 screens), all by the length rule; none of
-gmail's other targets enclose one another, so the containment rule contributes nothing
-on this dataset (it exists for a shape the length rule alone would not catch — a short
-container label enclosing a target with equally short text, e.g. two overlapping icons).
+Effect on the current (non-archived) dataset: the rule now excludes nothing, because
+`gmail` — the only screen whose list rows produced container nodes — was removed from the
+dataset for privacy on 2026-08-13 (its labels were real inbox content; see
+`collection.screens.OPT_IN_SCREENS`). The current dataset is **138 targets across 12
+screens**. The rule is retained because any list-heavy screen can reproduce the same
+shape, and because an opt-in `--screens gmail` collection will hit it immediately.
+
+A second, separate filter withholds targets that name a real person
+(`PRIVACY_WITHHELD_TARGETS`; currently `contacts`' `Andres`). It is kept apart from the
+container rule on purpose: those targets are perfectly groundable, so excluding them is a
+disclosure decision rather than a statement about label quality. The underlying label node
+stays in the JSON, because tree mode builds the accessibility tree for every *other*
+target on that screen from the same records — deleting the node would silently change
+those prompts.
 
 ### 1.3 The 2×2 contingency table
 
@@ -371,7 +380,7 @@ evidence of anything.
 `agb evaluate` → `evaluation.runner.evaluate_screen` with
 `use_a11y_tree=False`,
 prompting with `PROMPT_TEMPLATE` (image only). Results land in
-`outputs/<dataset>/evaluations/<model>_vision.csv`. Analysed with `agb analyze`.
+`experiment/outputs/<dataset>/evaluations/<model>_vision.csv`. Analysed with `agb analyze`.
 
 **Estimand:** does an accessibility profile change a vision-only VLM's grounding
 accuracy, relative to that same model's baseline?
@@ -382,7 +391,7 @@ pixel** coordinates" against `PROMPT_TEMPLATE`'s "central **pixel (x, y)** coord
 a word-order difference that meant a vision-vs-tree comparison varied two things (tree
 presence *and* wording) instead of one. Both templates now share the identical sentence
 (`evaluation.grounding.task_prompting`). This is **mode 1's** `PROMPT_TEMPLATE`, unchanged by the
-fix — the vision-only wording used for `dataset/experiment_2/` is byte-identical to what
+fix — the vision-only wording used for `experiment/archive/experiment_2/` is byte-identical to what
 mode 1 sends today, so that archive stays comparable. It matters only for mode 2, noted
 in §3.
 
@@ -407,7 +416,7 @@ inferential**: the 7 evaluated models are not a random sample of "all VLMs," so 
 cannot license a population-level claim. Its purpose is narrower — showing that a pooled
 effect is not one model dragging the average.
 
-### Worked example (regenerated from `dataset/experiment_2/`)
+### Worked example (regenerated from `experiment/archive/experiment_2/`)
 
 **Reachability**, `elder_text_heavy`: 146/165 targets present, 88.5% [82.7%, 92.5%].
 
@@ -424,7 +433,7 @@ The other three profiles are not significant after correction — `elder_zoom_he
 (b=37, c=54, p=0.172, trending *toward improvement*), `elder_combo_max` (b=44, c=33,
 p=0.313), `colorblind_deuteranomaly` (b=22, c=29, p=0.395).
 
-**Per-model McNemar (secondary)**, `9router_cx_gpt-5.4-mini` / `elder_text_heavy` —
+**Per-model McNemar (secondary)**, `gpt-5.4-mini` / `elder_text_heavy` —
 the only per-model cell that survives Holm correction across the 28-test family:
 
 ```
@@ -440,7 +449,7 @@ Power flag: floor (baseline 35.6% < 50%)
 Read together: `gpt-5.4-mini` is the only model whose *individual* result clears
 correction — but it is also flagged `floor`, so its baseline was already failing most
 targets before any distortion. Every strong model in this dataset is flagged `ceiling`
-instead: `gpt-5.5` and `9router/cx/gpt-5.6-sol` sit at 97–99% baseline on co-present
+instead: `gpt-5.5` and `gpt-5.6-sol` sit at 97–99% baseline on co-present
 targets, where per-model McNemar has almost nothing left to detect. The pooled test in
 §1.8 exists precisely because those per-model cells cannot answer the question alone.
 
@@ -468,7 +477,7 @@ targets, where per-model McNemar has almost nothing left to detect. The pooled t
 accessibility tree (`evaluation.grounding.task_prompting.build_tree_text`) to the
 prompt: each visible element's best label
 and pixel bounds, `[x1,y1][x2,y2]`, absolute screenshot pixels. Results land in
-`outputs/<dataset>/evaluations/<model>_tree.csv`
+`experiment/outputs/<dataset>/evaluations/<model>_tree.csv`
 (`evaluation.config.get_results_csv`). Analysed by pointing
 `agb analyze` at the tree result path via `--csv`, or via `--mode tree` when
 discovering from the evaluation output directory (see "Analysis file
@@ -506,8 +515,7 @@ and the per-model Holm family would grow from 28 tests to 56, both without a sin
 observation. Every CSV row now also carries its own `prompt_mode` column
 (`vision`/`tree`; `evaluation.storage.results`) as a second line of defence, and
 `analysis.data.results.load_results` defaults it to `vision` for archived CSVs that
-predate the column, so `dataset/experiment_2/`'s regression reproduction (CLAUDE.md §9)
-is unaffected.
+predate the column, so that archive's regression reproduction is unaffected.
 
 This does not remove the ability to compare arms — `run_cross_comparison` (mode 3, §4
 below) takes explicit file paths and is unaffected by the default glob; it remains the
@@ -526,7 +534,7 @@ label via a fallback chain (`text` → `content_desc` → `resource_id` → `cla
 exclusion previously checked only `text`. A node with empty `text` and
 `content_desc == target_text` still rendered the target's name — with its bounding box —
 because the fallback wasn't consulted for the exclusion check, only for the label itself.
-Measured on `dataset/experiment_2/labels`: **22 of 168 targets (13.1%)** leaked this way,
+Measured on `experiment/archive/experiment_2/labels`: **22 of 168 targets (13.1%)** leaked this way,
 typically a parent tab container whose bounds enclose the ground-truth box closely enough
 to score a hit under the ±30 px tolerance:
 
@@ -597,8 +605,8 @@ ratio selects the same pinpoint, so this is constant across profiles). Measured 
 the real Llama-3 tokenizer over all 77 archived label files, the worst-case tree
 (gmail, 100 rows) is 2,299 tokens; worst-case total is 5,744 of 8,192 — 30% headroom.
 `ferret_server.py`'s `check_token_budget` enforces this server-side (where the tokenizer
-already lives; `transformers` is intentionally not installed in the main `.venv` per §
-"Ferret-UI needs a different prompt" in `CLAUDE.md`) and **raises rather than truncates**
+already lives; `transformers` is intentionally kept out of the main `.venv` because its
+dependencies conflict with the rest of the project) and **raises rather than truncates**
 if a future capture would overflow it — truncating the tree would change the
 experimental condition being measured, which is worse than failing loudly. Accessibility
 profiles generally *shrink* trees (fewer elements fit at larger font/density — gmail's
@@ -618,9 +626,7 @@ discard bug go unnoticed for as long as it did.
 
 ### Illustrative worked example
 
-The tree arm is collected (6 `*_tree.csv` files under `outputs/dataset/evaluations/`)
-but deliberately not yet analysed — see CLAUDE.md §5. The numbers below are therefore
-still a small **synthetic illustration** of the pooled-permutation mechanics (§1.8),
+The numbers below are a small **synthetic illustration** of the pooled-permutation mechanics (§1.8),
 clearly not benchmark data, showing the shape of a mode-2 report:
 
 ```
@@ -747,7 +753,7 @@ data.
 | Effect sizes (risk diff, OR) | yes | yes (unrun) | **no** |
 | Reachability | computed | identical to mode 1 — do not double-count | not applicable |
 | Tests "does context help"? | no | no | **no — see §4's missing interaction test** |
-| Data currently on disk | `dataset/experiment_2/` (archived) | none | none |
+| Data currently on disk | `experiment/archive/experiment_2/` (archived) | none | none |
 
 ---
 
@@ -755,10 +761,10 @@ data.
 
 | File | Written by | Contents |
 |---|---|---|
-| `outputs/<dataset>/evaluations/<model>_vision.csv` | mode 1 | raw per-query rows, `status` column |
-| `outputs/<dataset>/evaluations/<model>_tree.csv` | mode 2 | same schema, tree-injected |
-| `outputs/<dataset>/analysis/<mode>_<sample>/reachability_results.csv` | §1 (either mode) | Profile, Present, Total, Reachability, CI |
-| `outputs/<dataset>/analysis/<mode>_<sample>/pooled_permutation_results.csv` | §1.8 (either mode) | Profile, clusters, b, c, p, Holm threshold |
-| `outputs/<dataset>/analysis/<mode>_<sample>/mcnemar_results_per_model.csv` | §1.4+§1.5+§1.6+§1.7+§1.9 | one row per model × profile |
-| `outputs/<dataset>/analysis/<mode>_<sample>/direction_consistency.csv` | sign test | Profile, down, up, tied, p |
-| `outputs/<dataset>/analysis/comparisons/mcnemar_compare_{model}.csv` | mode 3 | one row per profile compared |
+| `experiment/outputs/<dataset>/evaluations/<model>_vision.csv` | mode 1 | raw per-query rows, `status` column |
+| `experiment/outputs/<dataset>/evaluations/<model>_tree.csv` | mode 2 | same schema, tree-injected |
+| `experiment/outputs/<dataset>/analysis/<mode>_<sample>/reachability_results.csv` | §1 (either mode) | Profile, Present, Total, Reachability, CI |
+| `experiment/outputs/<dataset>/analysis/<mode>_<sample>/pooled_permutation_results.csv` | §1.8 (either mode) | Profile, clusters, b, c, p, Holm threshold |
+| `experiment/outputs/<dataset>/analysis/<mode>_<sample>/mcnemar_results_per_model.csv` | §1.4+§1.5+§1.6+§1.7+§1.9 | one row per model × profile |
+| `experiment/outputs/<dataset>/analysis/<mode>_<sample>/direction_consistency.csv` | sign test | Profile, down, up, tied, p |
+| `experiment/outputs/<dataset>/analysis/comparisons/mcnemar_compare_{model}.csv` | mode 3 | one row per profile compared |

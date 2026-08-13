@@ -1,0 +1,6 @@
+Sample,Profile,Total_Pairs,Both_Pass_a,Tree_Hurt_b,Tree_Helped_c,Both_Fail_d,Discordant_Pairs,VisionOnly_Acc,WithTree_Acc,Test_Used,Statistic,P_Value,Significant
+primary,elder_text_heavy,125,116,3,5,1,8,95.2%,96.8%,Exact Binomial (n=8),,0.726562,No
+primary,elder_zoom_heavy,128,120,5,3,0,8,97.7%,96.1%,Exact Binomial (n=8),,0.726562,No
+primary,elder_combo_max,104,95,3,4,2,7,94.2%,95.2%,Exact Binomial (n=7),,1.000000,No
+primary,elder_combo_mid,111,103,2,4,2,6,94.6%,96.4%,Exact Binomial (n=6),,0.687500,No
+primary,colorblind_deuteranomaly,119,117,2,0,0,2,100.0%,98.3%,Exact Binomial (n=2),,0.500000,No

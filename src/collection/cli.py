@@ -48,7 +48,7 @@ def collect_main(argv: list[str] | None = None) -> None:
         "--data-dir",
         type=Path,
         default=None,
-        help="Directory to capture into (default: ./dataset, or "
+        help="Directory to capture into (default: ./experiment/dataset, or "
              "$AGB_DATASET_DIR if set)",
     )
     args = parser.parse_args(argv)

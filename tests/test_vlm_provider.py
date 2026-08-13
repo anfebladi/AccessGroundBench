@@ -793,9 +793,9 @@ if __name__ == "__main__":
 class ReplyBudgetAndThinkingTests(SamplingEnvIsolation, unittest.TestCase):
     """max_tokens / thinking plumbing, and the truncation guard.
 
-    A truncated reply used to reach the coordinate parser, fail to parse, and
-    score as a grounding miss. On a model that thinks, truncation gets likelier
-    the longer the model reasons, so those misses would concentrate on the hard
+    A truncated reply reaches the coordinate parser, fails to parse, and
+    scores as a grounding miss. On a model that thinks, truncation gets likelier
+    the longer the model reasons, so those misses concentrate on the hard
     targets and overstate the accessibility profiles' effect.
     """
 
@@ -857,11 +857,10 @@ class ReplyBudgetAndThinkingTests(SamplingEnvIsolation, unittest.TestCase):
 class ImageCapTests(unittest.TestCase):
     """Per-model image caps, and the coordinate space they silently create.
 
-    A provider given an oversized image downscales it and the model answers in
-    the space it was actually shown -- measured at 17% instead of ~100% for
-    Haiku 4.5 and Sonnet 4.6, the same defect class as the gemini-pro-agent
-    8.4%-vs-96.8% error. The pipeline does the resize itself so the space is
-    known and recorded.
+    A provider given an oversized image downscales it, and the model then
+    answers in the space it was actually shown rather than the one the prompt
+    states -- which reads as catastrophically bad grounding. The pipeline does
+    the resize itself so the coordinate space is known and recorded.
     """
 
     def test_uncapped_models_are_untouched(self):

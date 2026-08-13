@@ -1,0 +1,1067 @@
+{
+  "generated_at": "2026-08-13T21:13:11+00:00",
+  "profiles": [
+    "baseline",
+    "elder_text_heavy",
+    "elder_zoom_heavy",
+    "elder_combo_max",
+    "elder_combo_mid",
+    "colorblind_deuteranomaly"
+  ],
+  "drift_probe": "baseline_close",
+  "expected_captures": 84,
+  "successful_captures": 84,
+  "screens": {
+    "settings_main": {
+      "collected_at": "2026-08-13T21:13:11+00:00",
+      "reconstructed": true,
+      "captures": [
+        {
+          "screen": "settings_main",
+          "profile": "baseline",
+          "stem": "settings_main_baseline",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_main_baseline.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_main_baseline.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_main_baseline.json",
+          "label_count": 72
+        },
+        {
+          "screen": "settings_main",
+          "profile": "elder_text_heavy",
+          "stem": "settings_main_elder_text_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_main_elder_text_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_main_elder_text_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_main_elder_text_heavy.json",
+          "label_count": 60
+        },
+        {
+          "screen": "settings_main",
+          "profile": "elder_zoom_heavy",
+          "stem": "settings_main_elder_zoom_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_main_elder_zoom_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_main_elder_zoom_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_main_elder_zoom_heavy.json",
+          "label_count": 63
+        },
+        {
+          "screen": "settings_main",
+          "profile": "elder_combo_max",
+          "stem": "settings_main_elder_combo_max",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_main_elder_combo_max.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_main_elder_combo_max.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_main_elder_combo_max.json",
+          "label_count": 43
+        },
+        {
+          "screen": "settings_main",
+          "profile": "elder_combo_mid",
+          "stem": "settings_main_elder_combo_mid",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_main_elder_combo_mid.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_main_elder_combo_mid.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_main_elder_combo_mid.json",
+          "label_count": 49
+        },
+        {
+          "screen": "settings_main",
+          "profile": "colorblind_deuteranomaly",
+          "stem": "settings_main_colorblind_deuteranomaly",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_main_colorblind_deuteranomaly.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_main_colorblind_deuteranomaly.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_main_colorblind_deuteranomaly.json",
+          "label_count": 72
+        },
+        {
+          "screen": "settings_main",
+          "profile": "baseline_close",
+          "stem": "settings_main_baseline_close",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_main_baseline_close.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_main_baseline_close.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_main_baseline_close.json",
+          "label_count": 72
+        }
+      ],
+      "drift": {
+        "screen": "settings_main",
+        "drift_rate": 0.0,
+        "vanished": [],
+        "appeared": [],
+        "flagged": false
+      },
+      "problems": [],
+      "diagnostics": []
+    },
+    "settings_display": {
+      "collected_at": "2026-08-13T21:13:11+00:00",
+      "reconstructed": true,
+      "captures": [
+        {
+          "screen": "settings_display",
+          "profile": "baseline",
+          "stem": "settings_display_baseline",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_display_baseline.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_display_baseline.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_display_baseline.json",
+          "label_count": 68
+        },
+        {
+          "screen": "settings_display",
+          "profile": "elder_text_heavy",
+          "stem": "settings_display_elder_text_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_display_elder_text_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_display_elder_text_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_display_elder_text_heavy.json",
+          "label_count": 59
+        },
+        {
+          "screen": "settings_display",
+          "profile": "elder_zoom_heavy",
+          "stem": "settings_display_elder_zoom_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_display_elder_zoom_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_display_elder_zoom_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_display_elder_zoom_heavy.json",
+          "label_count": 61
+        },
+        {
+          "screen": "settings_display",
+          "profile": "elder_combo_max",
+          "stem": "settings_display_elder_combo_max",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_display_elder_combo_max.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_display_elder_combo_max.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_display_elder_combo_max.json",
+          "label_count": 46
+        },
+        {
+          "screen": "settings_display",
+          "profile": "elder_combo_mid",
+          "stem": "settings_display_elder_combo_mid",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_display_elder_combo_mid.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_display_elder_combo_mid.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_display_elder_combo_mid.json",
+          "label_count": 51
+        },
+        {
+          "screen": "settings_display",
+          "profile": "colorblind_deuteranomaly",
+          "stem": "settings_display_colorblind_deuteranomaly",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_display_colorblind_deuteranomaly.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_display_colorblind_deuteranomaly.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_display_colorblind_deuteranomaly.json",
+          "label_count": 61
+        },
+        {
+          "screen": "settings_display",
+          "profile": "baseline_close",
+          "stem": "settings_display_baseline_close",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_display_baseline_close.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_display_baseline_close.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_display_baseline_close.json",
+          "label_count": 61
+        }
+      ],
+      "drift": {
+        "screen": "settings_display",
+        "drift_rate": 0.10526315789473684,
+        "vanished": [
+          "Color",
+          "Colors"
+        ],
+        "appeared": [],
+        "flagged": true
+      },
+      "problems": [
+        "high content drift: settings_display at 10.5%",
+        "colour-only contamination: settings_display/colorblind_deuteranomaly changed 2 vanished / 0 appeared text(s) despite no geometry vector differing from baseline (vanished=['Color', 'Colors'], appeared=[])"
+      ],
+      "diagnostics": []
+    },
+    "settings_network": {
+      "collected_at": "2026-08-13T21:13:11+00:00",
+      "reconstructed": true,
+      "captures": [
+        {
+          "screen": "settings_network",
+          "profile": "baseline",
+          "stem": "settings_network_baseline",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_network_baseline.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_network_baseline.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_network_baseline.json",
+          "label_count": 71
+        },
+        {
+          "screen": "settings_network",
+          "profile": "elder_text_heavy",
+          "stem": "settings_network_elder_text_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_network_elder_text_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_network_elder_text_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_network_elder_text_heavy.json",
+          "label_count": 71
+        },
+        {
+          "screen": "settings_network",
+          "profile": "elder_zoom_heavy",
+          "stem": "settings_network_elder_zoom_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_network_elder_zoom_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_network_elder_zoom_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_network_elder_zoom_heavy.json",
+          "label_count": 71
+        },
+        {
+          "screen": "settings_network",
+          "profile": "elder_combo_max",
+          "stem": "settings_network_elder_combo_max",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_network_elder_combo_max.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_network_elder_combo_max.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_network_elder_combo_max.json",
+          "label_count": 59
+        },
+        {
+          "screen": "settings_network",
+          "profile": "elder_combo_mid",
+          "stem": "settings_network_elder_combo_mid",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_network_elder_combo_mid.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_network_elder_combo_mid.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_network_elder_combo_mid.json",
+          "label_count": 65
+        },
+        {
+          "screen": "settings_network",
+          "profile": "colorblind_deuteranomaly",
+          "stem": "settings_network_colorblind_deuteranomaly",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_network_colorblind_deuteranomaly.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_network_colorblind_deuteranomaly.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_network_colorblind_deuteranomaly.json",
+          "label_count": 71
+        },
+        {
+          "screen": "settings_network",
+          "profile": "baseline_close",
+          "stem": "settings_network_baseline_close",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_network_baseline_close.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_network_baseline_close.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_network_baseline_close.json",
+          "label_count": 71
+        }
+      ],
+      "drift": {
+        "screen": "settings_network",
+        "drift_rate": 0.0,
+        "vanished": [],
+        "appeared": [],
+        "flagged": false
+      },
+      "problems": [],
+      "diagnostics": [
+        "settings_network/elder_combo_mid: 4 of 16 texts lost, scattered rather than a contiguous tail -- may be content change, may be a container node whose box spans its children (see diagnostics.loss_shape)"
+      ]
+    },
+    "settings_accessibility": {
+      "collected_at": "2026-08-13T21:13:11+00:00",
+      "reconstructed": true,
+      "captures": [
+        {
+          "screen": "settings_accessibility",
+          "profile": "baseline",
+          "stem": "settings_accessibility_baseline",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_accessibility_baseline.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_accessibility_baseline.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_accessibility_baseline.json",
+          "label_count": 77
+        },
+        {
+          "screen": "settings_accessibility",
+          "profile": "elder_text_heavy",
+          "stem": "settings_accessibility_elder_text_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_accessibility_elder_text_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_accessibility_elder_text_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_accessibility_elder_text_heavy.json",
+          "label_count": 63
+        },
+        {
+          "screen": "settings_accessibility",
+          "profile": "elder_zoom_heavy",
+          "stem": "settings_accessibility_elder_zoom_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_accessibility_elder_zoom_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_accessibility_elder_zoom_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_accessibility_elder_zoom_heavy.json",
+          "label_count": 63
+        },
+        {
+          "screen": "settings_accessibility",
+          "profile": "elder_combo_max",
+          "stem": "settings_accessibility_elder_combo_max",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_accessibility_elder_combo_max.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_accessibility_elder_combo_max.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_accessibility_elder_combo_max.json",
+          "label_count": 43
+        },
+        {
+          "screen": "settings_accessibility",
+          "profile": "elder_combo_mid",
+          "stem": "settings_accessibility_elder_combo_mid",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_accessibility_elder_combo_mid.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_accessibility_elder_combo_mid.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_accessibility_elder_combo_mid.json",
+          "label_count": 46
+        },
+        {
+          "screen": "settings_accessibility",
+          "profile": "colorblind_deuteranomaly",
+          "stem": "settings_accessibility_colorblind_deuteranomaly",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_accessibility_colorblind_deuteranomaly.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_accessibility_colorblind_deuteranomaly.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_accessibility_colorblind_deuteranomaly.json",
+          "label_count": 77
+        },
+        {
+          "screen": "settings_accessibility",
+          "profile": "baseline_close",
+          "stem": "settings_accessibility_baseline_close",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\settings_accessibility_baseline_close.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\settings_accessibility_baseline_close.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\settings_accessibility_baseline_close.json",
+          "label_count": 77
+        }
+      ],
+      "drift": {
+        "screen": "settings_accessibility",
+        "drift_rate": 0.0,
+        "vanished": [],
+        "appeared": [],
+        "flagged": false
+      },
+      "problems": [],
+      "diagnostics": []
+    },
+    "contacts": {
+      "collected_at": "2026-08-13T21:13:11+00:00",
+      "reconstructed": true,
+      "captures": [
+        {
+          "screen": "contacts",
+          "profile": "baseline",
+          "stem": "contacts_baseline",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\contacts_baseline.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\contacts_baseline.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\contacts_baseline.json",
+          "label_count": 69
+        },
+        {
+          "screen": "contacts",
+          "profile": "elder_text_heavy",
+          "stem": "contacts_elder_text_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\contacts_elder_text_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\contacts_elder_text_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\contacts_elder_text_heavy.json",
+          "label_count": 69
+        },
+        {
+          "screen": "contacts",
+          "profile": "elder_zoom_heavy",
+          "stem": "contacts_elder_zoom_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\contacts_elder_zoom_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\contacts_elder_zoom_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\contacts_elder_zoom_heavy.json",
+          "label_count": 69
+        },
+        {
+          "screen": "contacts",
+          "profile": "elder_combo_max",
+          "stem": "contacts_elder_combo_max",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\contacts_elder_combo_max.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\contacts_elder_combo_max.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\contacts_elder_combo_max.json",
+          "label_count": 69
+        },
+        {
+          "screen": "contacts",
+          "profile": "elder_combo_mid",
+          "stem": "contacts_elder_combo_mid",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\contacts_elder_combo_mid.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\contacts_elder_combo_mid.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\contacts_elder_combo_mid.json",
+          "label_count": 69
+        },
+        {
+          "screen": "contacts",
+          "profile": "colorblind_deuteranomaly",
+          "stem": "contacts_colorblind_deuteranomaly",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\contacts_colorblind_deuteranomaly.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\contacts_colorblind_deuteranomaly.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\contacts_colorblind_deuteranomaly.json",
+          "label_count": 69
+        },
+        {
+          "screen": "contacts",
+          "profile": "baseline_close",
+          "stem": "contacts_baseline_close",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\contacts_baseline_close.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\contacts_baseline_close.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\contacts_baseline_close.json",
+          "label_count": 69
+        }
+      ],
+      "drift": {
+        "screen": "contacts",
+        "drift_rate": 0.0,
+        "vanished": [],
+        "appeared": [],
+        "flagged": false
+      },
+      "problems": [],
+      "diagnostics": []
+    },
+    "dialer": {
+      "collected_at": "2026-08-13T21:13:11+00:00",
+      "reconstructed": true,
+      "captures": [
+        {
+          "screen": "dialer",
+          "profile": "baseline",
+          "stem": "dialer_baseline",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\dialer_baseline.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\dialer_baseline.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\dialer_baseline.json",
+          "label_count": 96
+        },
+        {
+          "screen": "dialer",
+          "profile": "elder_text_heavy",
+          "stem": "dialer_elder_text_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\dialer_elder_text_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\dialer_elder_text_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\dialer_elder_text_heavy.json",
+          "label_count": 96
+        },
+        {
+          "screen": "dialer",
+          "profile": "elder_zoom_heavy",
+          "stem": "dialer_elder_zoom_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\dialer_elder_zoom_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\dialer_elder_zoom_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\dialer_elder_zoom_heavy.json",
+          "label_count": 96
+        },
+        {
+          "screen": "dialer",
+          "profile": "elder_combo_max",
+          "stem": "dialer_elder_combo_max",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\dialer_elder_combo_max.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\dialer_elder_combo_max.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\dialer_elder_combo_max.json",
+          "label_count": 96
+        },
+        {
+          "screen": "dialer",
+          "profile": "elder_combo_mid",
+          "stem": "dialer_elder_combo_mid",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\dialer_elder_combo_mid.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\dialer_elder_combo_mid.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\dialer_elder_combo_mid.json",
+          "label_count": 96
+        },
+        {
+          "screen": "dialer",
+          "profile": "colorblind_deuteranomaly",
+          "stem": "dialer_colorblind_deuteranomaly",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\dialer_colorblind_deuteranomaly.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\dialer_colorblind_deuteranomaly.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\dialer_colorblind_deuteranomaly.json",
+          "label_count": 96
+        },
+        {
+          "screen": "dialer",
+          "profile": "baseline_close",
+          "stem": "dialer_baseline_close",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\dialer_baseline_close.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\dialer_baseline_close.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\dialer_baseline_close.json",
+          "label_count": 96
+        }
+      ],
+      "drift": {
+        "screen": "dialer",
+        "drift_rate": 0.0,
+        "vanished": [],
+        "appeared": [],
+        "flagged": false
+      },
+      "problems": [],
+      "diagnostics": []
+    },
+    "messages": {
+      "collected_at": "2026-08-13T21:13:11+00:00",
+      "reconstructed": true,
+      "captures": [
+        {
+          "screen": "messages",
+          "profile": "baseline",
+          "stem": "messages_baseline",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\messages_baseline.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\messages_baseline.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\messages_baseline.json",
+          "label_count": 18
+        },
+        {
+          "screen": "messages",
+          "profile": "elder_text_heavy",
+          "stem": "messages_elder_text_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\messages_elder_text_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\messages_elder_text_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\messages_elder_text_heavy.json",
+          "label_count": 18
+        },
+        {
+          "screen": "messages",
+          "profile": "elder_zoom_heavy",
+          "stem": "messages_elder_zoom_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\messages_elder_zoom_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\messages_elder_zoom_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\messages_elder_zoom_heavy.json",
+          "label_count": 18
+        },
+        {
+          "screen": "messages",
+          "profile": "elder_combo_max",
+          "stem": "messages_elder_combo_max",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\messages_elder_combo_max.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\messages_elder_combo_max.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\messages_elder_combo_max.json",
+          "label_count": 18
+        },
+        {
+          "screen": "messages",
+          "profile": "elder_combo_mid",
+          "stem": "messages_elder_combo_mid",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\messages_elder_combo_mid.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\messages_elder_combo_mid.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\messages_elder_combo_mid.json",
+          "label_count": 18
+        },
+        {
+          "screen": "messages",
+          "profile": "colorblind_deuteranomaly",
+          "stem": "messages_colorblind_deuteranomaly",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\messages_colorblind_deuteranomaly.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\messages_colorblind_deuteranomaly.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\messages_colorblind_deuteranomaly.json",
+          "label_count": 18
+        },
+        {
+          "screen": "messages",
+          "profile": "baseline_close",
+          "stem": "messages_baseline_close",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\messages_baseline_close.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\messages_baseline_close.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\messages_baseline_close.json",
+          "label_count": 18
+        }
+      ],
+      "drift": {
+        "screen": "messages",
+        "drift_rate": 0.0,
+        "vanished": [],
+        "appeared": [],
+        "flagged": false
+      },
+      "problems": [],
+      "diagnostics": []
+    },
+    "clock": {
+      "collected_at": "2026-08-13T21:13:11+00:00",
+      "reconstructed": true,
+      "captures": [
+        {
+          "screen": "clock",
+          "profile": "baseline",
+          "stem": "clock_baseline",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\clock_baseline.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\clock_baseline.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\clock_baseline.json",
+          "label_count": 63
+        },
+        {
+          "screen": "clock",
+          "profile": "elder_text_heavy",
+          "stem": "clock_elder_text_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\clock_elder_text_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\clock_elder_text_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\clock_elder_text_heavy.json",
+          "label_count": 63
+        },
+        {
+          "screen": "clock",
+          "profile": "elder_zoom_heavy",
+          "stem": "clock_elder_zoom_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\clock_elder_zoom_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\clock_elder_zoom_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\clock_elder_zoom_heavy.json",
+          "label_count": 63
+        },
+        {
+          "screen": "clock",
+          "profile": "elder_combo_max",
+          "stem": "clock_elder_combo_max",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\clock_elder_combo_max.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\clock_elder_combo_max.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\clock_elder_combo_max.json",
+          "label_count": 63
+        },
+        {
+          "screen": "clock",
+          "profile": "elder_combo_mid",
+          "stem": "clock_elder_combo_mid",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\clock_elder_combo_mid.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\clock_elder_combo_mid.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\clock_elder_combo_mid.json",
+          "label_count": 63
+        },
+        {
+          "screen": "clock",
+          "profile": "colorblind_deuteranomaly",
+          "stem": "clock_colorblind_deuteranomaly",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\clock_colorblind_deuteranomaly.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\clock_colorblind_deuteranomaly.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\clock_colorblind_deuteranomaly.json",
+          "label_count": 63
+        },
+        {
+          "screen": "clock",
+          "profile": "baseline_close",
+          "stem": "clock_baseline_close",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\clock_baseline_close.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\clock_baseline_close.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\clock_baseline_close.json",
+          "label_count": 63
+        }
+      ],
+      "drift": {
+        "screen": "clock",
+        "drift_rate": 0.0,
+        "vanished": [],
+        "appeared": [],
+        "flagged": false
+      },
+      "problems": [],
+      "diagnostics": []
+    },
+    "maps": {
+      "collected_at": "2026-08-13T21:13:11+00:00",
+      "reconstructed": true,
+      "captures": [
+        {
+          "screen": "maps",
+          "profile": "baseline",
+          "stem": "maps_baseline",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\maps_baseline.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\maps_baseline.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\maps_baseline.json",
+          "label_count": 116
+        },
+        {
+          "screen": "maps",
+          "profile": "elder_text_heavy",
+          "stem": "maps_elder_text_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\maps_elder_text_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\maps_elder_text_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\maps_elder_text_heavy.json",
+          "label_count": 116
+        },
+        {
+          "screen": "maps",
+          "profile": "elder_zoom_heavy",
+          "stem": "maps_elder_zoom_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\maps_elder_zoom_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\maps_elder_zoom_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\maps_elder_zoom_heavy.json",
+          "label_count": 116
+        },
+        {
+          "screen": "maps",
+          "profile": "elder_combo_max",
+          "stem": "maps_elder_combo_max",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\maps_elder_combo_max.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\maps_elder_combo_max.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\maps_elder_combo_max.json",
+          "label_count": 116
+        },
+        {
+          "screen": "maps",
+          "profile": "elder_combo_mid",
+          "stem": "maps_elder_combo_mid",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\maps_elder_combo_mid.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\maps_elder_combo_mid.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\maps_elder_combo_mid.json",
+          "label_count": 116
+        },
+        {
+          "screen": "maps",
+          "profile": "colorblind_deuteranomaly",
+          "stem": "maps_colorblind_deuteranomaly",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\maps_colorblind_deuteranomaly.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\maps_colorblind_deuteranomaly.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\maps_colorblind_deuteranomaly.json",
+          "label_count": 116
+        },
+        {
+          "screen": "maps",
+          "profile": "baseline_close",
+          "stem": "maps_baseline_close",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\maps_baseline_close.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\maps_baseline_close.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\maps_baseline_close.json",
+          "label_count": 116
+        }
+      ],
+      "drift": {
+        "screen": "maps",
+        "drift_rate": 0.4,
+        "vanished": [
+          "Hello"
+        ],
+        "appeared": [
+          "Local vibe"
+        ],
+        "flagged": true
+      },
+      "problems": [
+        "high content drift: maps at 40.0%",
+        "colour-only contamination: maps/colorblind_deuteranomaly changed 1 vanished / 1 appeared text(s) despite no geometry vector differing from baseline (vanished=['Hello'], appeared=['Local vibe'])"
+      ],
+      "diagnostics": [
+        "maps/elder_text_heavy: 1 of 5 texts lost, scattered rather than a contiguous tail -- may be content change, may be a container node whose box spans its children (see diagnostics.loss_shape)",
+        "maps/elder_zoom_heavy: 1 of 5 texts lost, scattered rather than a contiguous tail -- may be content change, may be a container node whose box spans its children (see diagnostics.loss_shape)",
+        "maps/elder_combo_max: 1 of 5 texts lost, scattered rather than a contiguous tail -- may be content change, may be a container node whose box spans its children (see diagnostics.loss_shape)",
+        "maps/elder_combo_mid: 1 of 5 texts lost, scattered rather than a contiguous tail -- may be content change, may be a container node whose box spans its children (see diagnostics.loss_shape)"
+      ]
+    },
+    "play_store": {
+      "collected_at": "2026-08-13T21:13:11+00:00",
+      "reconstructed": true,
+      "captures": [
+        {
+          "screen": "play_store",
+          "profile": "baseline",
+          "stem": "play_store_baseline",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\play_store_baseline.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\play_store_baseline.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\play_store_baseline.json",
+          "label_count": 96
+        },
+        {
+          "screen": "play_store",
+          "profile": "elder_text_heavy",
+          "stem": "play_store_elder_text_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\play_store_elder_text_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\play_store_elder_text_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\play_store_elder_text_heavy.json",
+          "label_count": 95
+        },
+        {
+          "screen": "play_store",
+          "profile": "elder_zoom_heavy",
+          "stem": "play_store_elder_zoom_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\play_store_elder_zoom_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\play_store_elder_zoom_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\play_store_elder_zoom_heavy.json",
+          "label_count": 95
+        },
+        {
+          "screen": "play_store",
+          "profile": "elder_combo_max",
+          "stem": "play_store_elder_combo_max",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\play_store_elder_combo_max.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\play_store_elder_combo_max.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\play_store_elder_combo_max.json",
+          "label_count": 85
+        },
+        {
+          "screen": "play_store",
+          "profile": "elder_combo_mid",
+          "stem": "play_store_elder_combo_mid",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\play_store_elder_combo_mid.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\play_store_elder_combo_mid.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\play_store_elder_combo_mid.json",
+          "label_count": 90
+        },
+        {
+          "screen": "play_store",
+          "profile": "colorblind_deuteranomaly",
+          "stem": "play_store_colorblind_deuteranomaly",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\play_store_colorblind_deuteranomaly.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\play_store_colorblind_deuteranomaly.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\play_store_colorblind_deuteranomaly.json",
+          "label_count": 96
+        },
+        {
+          "screen": "play_store",
+          "profile": "baseline_close",
+          "stem": "play_store_baseline_close",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\play_store_baseline_close.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\play_store_baseline_close.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\play_store_baseline_close.json",
+          "label_count": 96
+        }
+      ],
+      "drift": {
+        "screen": "play_store",
+        "drift_rate": 0.0,
+        "vanished": [],
+        "appeared": [],
+        "flagged": false
+      },
+      "problems": [],
+      "diagnostics": [
+        "play_store/elder_text_heavy: 1 of 11 texts lost, scattered rather than a contiguous tail -- may be content change, may be a container node whose box spans its children (see diagnostics.loss_shape)",
+        "play_store/elder_zoom_heavy: 1 of 11 texts lost, scattered rather than a contiguous tail -- may be content change, may be a container node whose box spans its children (see diagnostics.loss_shape)",
+        "play_store/elder_combo_max: 1 of 11 texts lost, scattered rather than a contiguous tail -- may be content change, may be a container node whose box spans its children (see diagnostics.loss_shape)",
+        "play_store/elder_combo_mid: 1 of 11 texts lost, scattered rather than a contiguous tail -- may be content change, may be a container node whose box spans its children (see diagnostics.loss_shape)"
+      ]
+    },
+    "youtube": {
+      "collected_at": "2026-08-13T21:13:11+00:00",
+      "reconstructed": true,
+      "captures": [
+        {
+          "screen": "youtube",
+          "profile": "baseline",
+          "stem": "youtube_baseline",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\youtube_baseline.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\youtube_baseline.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\youtube_baseline.json",
+          "label_count": 74
+        },
+        {
+          "screen": "youtube",
+          "profile": "elder_text_heavy",
+          "stem": "youtube_elder_text_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\youtube_elder_text_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\youtube_elder_text_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\youtube_elder_text_heavy.json",
+          "label_count": 74
+        },
+        {
+          "screen": "youtube",
+          "profile": "elder_zoom_heavy",
+          "stem": "youtube_elder_zoom_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\youtube_elder_zoom_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\youtube_elder_zoom_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\youtube_elder_zoom_heavy.json",
+          "label_count": 74
+        },
+        {
+          "screen": "youtube",
+          "profile": "elder_combo_max",
+          "stem": "youtube_elder_combo_max",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\youtube_elder_combo_max.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\youtube_elder_combo_max.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\youtube_elder_combo_max.json",
+          "label_count": 67
+        },
+        {
+          "screen": "youtube",
+          "profile": "elder_combo_mid",
+          "stem": "youtube_elder_combo_mid",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\youtube_elder_combo_mid.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\youtube_elder_combo_mid.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\youtube_elder_combo_mid.json",
+          "label_count": 67
+        },
+        {
+          "screen": "youtube",
+          "profile": "colorblind_deuteranomaly",
+          "stem": "youtube_colorblind_deuteranomaly",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\youtube_colorblind_deuteranomaly.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\youtube_colorblind_deuteranomaly.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\youtube_colorblind_deuteranomaly.json",
+          "label_count": 74
+        },
+        {
+          "screen": "youtube",
+          "profile": "baseline_close",
+          "stem": "youtube_baseline_close",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\youtube_baseline_close.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\youtube_baseline_close.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\youtube_baseline_close.json",
+          "label_count": 74
+        }
+      ],
+      "drift": {
+        "screen": "youtube",
+        "drift_rate": 0.0,
+        "vanished": [],
+        "appeared": [],
+        "flagged": false
+      },
+      "problems": [],
+      "diagnostics": []
+    },
+    "photos": {
+      "collected_at": "2026-08-13T21:13:11+00:00",
+      "reconstructed": true,
+      "captures": [
+        {
+          "screen": "photos",
+          "profile": "baseline",
+          "stem": "photos_baseline",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\photos_baseline.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\photos_baseline.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\photos_baseline.json",
+          "label_count": 25
+        },
+        {
+          "screen": "photos",
+          "profile": "elder_text_heavy",
+          "stem": "photos_elder_text_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\photos_elder_text_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\photos_elder_text_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\photos_elder_text_heavy.json",
+          "label_count": 25
+        },
+        {
+          "screen": "photos",
+          "profile": "elder_zoom_heavy",
+          "stem": "photos_elder_zoom_heavy",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\photos_elder_zoom_heavy.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\photos_elder_zoom_heavy.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\photos_elder_zoom_heavy.json",
+          "label_count": 25
+        },
+        {
+          "screen": "photos",
+          "profile": "elder_combo_max",
+          "stem": "photos_elder_combo_max",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\photos_elder_combo_max.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\photos_elder_combo_max.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\photos_elder_combo_max.json",
+          "label_count": 25
+        },
+        {
+          "screen": "photos",
+          "profile": "elder_combo_mid",
+          "stem": "photos_elder_combo_mid",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\photos_elder_combo_mid.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\photos_elder_combo_mid.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\photos_elder_combo_mid.json",
+          "label_count": 25
+        },
+        {
+          "screen": "photos",
+          "profile": "colorblind_deuteranomaly",
+          "stem": "photos_colorblind_deuteranomaly",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\photos_colorblind_deuteranomaly.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\photos_colorblind_deuteranomaly.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\photos_colorblind_deuteranomaly.json",
+          "label_count": 25
+        },
+        {
+          "screen": "photos",
+          "profile": "baseline_close",
+          "stem": "photos_baseline_close",
+          "ok": true,
+          "png": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\images\\photos_baseline_close.png",
+          "xml": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\raw_xml\\photos_baseline_close.xml",
+          "labels": "C:\\Users\\anfeb\\Desktop\\research\\experiment\\dataset\\labels\\photos_baseline_close.json",
+          "label_count": 25
+        }
+      ],
+      "drift": {
+        "screen": "photos",
+        "drift_rate": 0.0,
+        "vanished": [],
+        "appeared": [],
+        "flagged": false
+      },
+      "problems": [],
+      "diagnostics": []
+    }
+  },
+  "problems": [
+    "high content drift: settings_display at 10.5%",
+    "colour-only contamination: settings_display/colorblind_deuteranomaly changed 2 vanished / 0 appeared text(s) despite no geometry vector differing from baseline (vanished=['Color', 'Colors'], appeared=[])",
+    "high content drift: maps at 40.0%",
+    "colour-only contamination: maps/colorblind_deuteranomaly changed 1 vanished / 1 appeared text(s) despite no geometry vector differing from baseline (vanished=['Hello'], appeared=['Local vibe'])"
+  ]
+}
