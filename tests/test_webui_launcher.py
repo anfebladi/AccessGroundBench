@@ -1,0 +1,135 @@
+import io
+import sys
+import tempfile
+import types
+import unittest
+from pathlib import Path
+from unittest import mock
+
+from webui.backend import server
+
+
+class _FakeConfig:
+    def __init__(self, app, **kwargs):
+        self.app = app
+        self.kwargs = kwargs
+
+
+class _FakeServer:
+    def __init__(self, config):
+        self.config = config
+        self.started = False
+        self.should_exit = False
+
+    def run(self):
+        self.started = True
+
+
+class _FakeThread:
+    def __init__(self, target):
+        self.target = target
+        self.running = False
+
+    def start(self):
+        self.target()
+        self.running = True
+
+    def is_alive(self):
+        return self.running
+
+    def join(self, timeout=None):
+        return None
+
+
+class WebuiLauncherTests(unittest.TestCase):
+    def _uvicorn(self, server_obj):
+        return types.SimpleNamespace(Config=_FakeConfig, Server=lambda config: server_obj)
+
+    def _frontend(self):
+        td = tempfile.TemporaryDirectory()
+        root = Path(td.name)
+        vite = root / "node_modules" / ".bin" / "vite"
+        vite.parent.mkdir(parents=True)
+        vite.touch()
+        return td, root
+
+    def test_missing_frontend_dependency_reports_install_command(self):
+        out = io.StringIO()
+        with mock.patch.object(server.shutil, "which", return_value=None), mock.patch(
+            "sys.stdout", out
+        ):
+            with self.assertRaises(SystemExit) as cm:
+                server.ui_main([])
+        self.assertEqual(1, cm.exception.code)
+        self.assertIn("npm ci", out.getvalue())
+
+    def test_starts_api_and_vite_and_passes_menu_url(self):
+        td, frontend = self._frontend()
+        self.addCleanup(td.cleanup)
+        fake_server = _FakeServer(None)
+        process = mock.Mock()
+        process.poll.return_value = None
+        process.wait.return_value = None
+        seen = {}
+
+        def menu(url, shutdown):
+            seen["url"] = url
+            shutdown()
+
+        with mock.patch.object(server, "FRONTEND_DIR", frontend), mock.patch.object(
+            server.shutil, "which", return_value="/usr/bin/npm"
+        ), mock.patch.dict(sys.modules, {"uvicorn": self._uvicorn(fake_server)}), mock.patch(
+            "webui.backend.server.subprocess.Popen", return_value=process
+        ) as popen, mock.patch("webui.backend.server.urllib.request.urlopen") as opener, mock.patch(
+            "webui.backend.banner.run_interactive_menu", side_effect=menu
+        ), mock.patch("webui.backend.server.create_app", return_value=object()):
+            opener.return_value.__enter__.return_value = object()
+            server.ui_main(["--port", "5173", "--api-port", "8081"])
+
+        self.assertEqual("http://127.0.0.1:5173", seen["url"])
+        cmd = popen.call_args.args[0]
+        self.assertEqual([str(frontend / "node_modules/.bin/vite"), "--host", "127.0.0.1", "--port", "5173"], cmd)
+        self.assertTrue(fake_server.should_exit)
+        process.terminate.assert_called_once_with()
+
+    def test_vite_startup_failure_stops_api_server(self):
+        td, frontend = self._frontend()
+        self.addCleanup(td.cleanup)
+        fake_server = _FakeServer(None)
+        process = mock.Mock()
+        process.poll.return_value = 1
+        with mock.patch.object(server, "FRONTEND_DIR", frontend), mock.patch.object(
+            server.shutil, "which", return_value="/usr/bin/npm"
+        ), mock.patch.dict(sys.modules, {"uvicorn": self._uvicorn(fake_server)}), mock.patch(
+            "webui.backend.server.subprocess.Popen", return_value=process
+        ), mock.patch("webui.backend.server.create_app", return_value=object()):
+            with self.assertRaises(SystemExit):
+                server.ui_main([])
+        self.assertTrue(fake_server.should_exit)
+
+    def test_cleanup_kills_vite_when_terminate_does_not_finish(self):
+        td, frontend = self._frontend()
+        self.addCleanup(td.cleanup)
+        fake_server = _FakeServer(None)
+        process = mock.Mock()
+        process.poll.return_value = None
+        process.wait.side_effect = [server.subprocess.TimeoutExpired("vite", 5), None]
+
+        def menu(_url, shutdown):
+            shutdown()
+
+        with mock.patch.object(server, "FRONTEND_DIR", frontend), mock.patch.object(
+            server.shutil, "which", return_value="/usr/bin/npm"
+        ), mock.patch.dict(sys.modules, {"uvicorn": self._uvicorn(fake_server)}), mock.patch(
+            "webui.backend.server.subprocess.Popen", return_value=process
+        ), mock.patch("webui.backend.server.urllib.request.urlopen") as opener, mock.patch(
+            "webui.backend.banner.run_interactive_menu", side_effect=menu
+        ), mock.patch("webui.backend.server.create_app", return_value=object()):
+            opener.return_value.__enter__.return_value = object()
+            server.ui_main([])
+        process.terminate.assert_called_once_with()
+        process.kill.assert_called_once_with()
+
+
+if __name__ == "__main__":
+    unittest.main()

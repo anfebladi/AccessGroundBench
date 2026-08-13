@@ -26,21 +26,97 @@ not configurable -- because provider API keys entered in the browser are held
 in the server process's memory (see [Keys](#keys) below) and must never be
 reachable from another machine.
 
+One `agb ui` process starts both services: the FastAPI API on `--api-port 8081`
+and the Vite development server on `--port 8080`. The Vite server proxies
+`/api` requests to the API.
+
 If `fastapi`/`uvicorn` are not installed, `agb ui` prints the install command
-above and exits; every other `agb` command is unaffected.
+above and exits. If frontend dependencies are missing, it prints the one-time
+Node install command and exits; every other `agb` command is unaffected.
 
 ## Front end
 
-Plain HTML, CSS and ES modules, served straight out of `src/webui/static/`.
-**There is no build step, no `package.json`, and no Node toolchain** -- the UI
-ships as package data inside an optional `pip` extra, so a bundler would put a
-Node install between a contributor and `uv sync --extra ui`. Charts are
-hand-written inline SVG for the same reason. Keep new files flat in `static/` --
-the `package-data` glob in `pyproject.toml` is `static/*` and does not recurse.
+The browser UI is a React + Vite application. Its source, package manifest and
+build configuration live in `src/webui/frontend/` (`src/webui/frontend/src/`,
+`src/webui/frontend/package.json`, and `src/webui/frontend/vite.config.ts`).
+`agb ui` runs the FastAPI API and Vite UI together; Vite serves the React source
+locally and proxies API calls to the API port. Node is required while the local
+UI is running.
+
+The UI is implemented entirely with typed React components and hooks. The
+application shell owns routing, shared dataset/provider/model state, and
+cross-view refreshes; each of the seven workflow views owns its forms and
+loading/error states. Run polling, comparison canvases, charts, keyboard
+navigation, drawers, and exports are React-managed effects and refs. The
+frontend now uses a feature-based layout; the former `src/views/` and
+`src/reporting/` trees are removed. Keep the current route hashes, DOM hooks,
+API payloads, local-storage formats, and visual tokens stable when changing a
+feature.
+
+On desktop, the shell's workflow rail may be collapsed to an icon-only column and
+the preference persists in browser storage (`agb.sidebar.collapsed`). Collapsed
+links retain their route names through accessible labels and tooltips; the mobile
+Sheet menu remains independent and always shows the expanded labels. Shared data
+requests use shape-matched skeletons for predictable content (metadata, cards,
+tables, charts, and image frames), while long-running jobs keep their live status
+and progress indicators. Loading placeholders resolve to the normal empty or error
+state rather than masking a completed request.
+
+### Front-end architecture
+
+`src/webui/frontend/src/main.tsx` is the bootstrap and public export entry
+point. Composition lives in `app/App.tsx`, which connects shared data
+hooks to the keep-mounted page outlet. The shell is split into `AppShell`,
+`TopBar`, `Sidebar`, `CommandPalette`, `PageOutlet`, and `ErrorBoundary`;
+`app/navigation.ts` defines tab order, route hashes, route groups, and palette
+item types. The seven workflow areas live in
+`src/features/{dataset,models,evaluate,collect,compare,results,analyze}/`.
+Cross-feature workflow support is shared under `src/features/shared/`, while
+shell components, UI primitives, hooks, utilities, and global styles remain in
+their respective shared `components/`, `app/`, `lib/`, and `styles/` areas.
+
+Pages remain mounted while inactive and are toggled with `hidden`. This keeps
+in-progress view state and preserves the existing hash and DOM contracts:
+`dataset`, `models`, `evaluate`, `collect`, `compare`, `results`, and `analyze`,
+including numeric shortcuts, `data-tab`, IDs, and ARIA hooks. Shared provider
+refreshes are owned by the app data hook, so Models changes update the sidebar
+and other views without a reload.
+
+If `src/webui/frontend/node_modules/` is absent, install the frontend
+dependencies once with:
+
+```bash
+cd src/webui/frontend
+npm ci
+```
+
+The normal workflow is then `agb ui`. The optional `npm run build` command runs
+the TypeScript check and Vite production build for a local compile check. Its
+output is written to the ignored `src/webui/frontend/dist/` directory; no
+static bundle is committed or served by the Python package. Use `npm run dev`
+only when working on the frontend outside the combined launcher. For frontend
+changes, run the unit baseline and production build from
+`src/webui/frontend/`:
+
+```bash
+npm run test       # Vitest unit test suite
+npm run build      # TypeScript + Vite build
+npm run test:e2e   # Playwright UI and responsive snapshot baseline
+```
+
+The repository's Python test suite remains the backend/integration regression check:
+
+```bash
+uv run python -m unittest discover -s tests -p "test_*.py"
+```
 
 Every colour, size, radius, shadow and duration is a CSS custom property defined
-once at the top of `style.css`, which is organised into layers (`FONTS → TOKENS →
-BASE → LAYOUT → COMPONENTS → UTILITIES → RESPONSIVE`) in place of a preprocessor.
+in the authored token/base styles loaded by `style.css`; `styles/tokens.css` and
+`styles/globals.css` provide shared entry points. Tailwind CSS v4 is the
+component and layout styling authority, including feature and shell composition.
+Authored CSS is intentionally limited to bundled fonts, design tokens, base/reset
+rules, global focus behavior, keyframes, and unavoidable specialized SVG/export
+rules. CSS Modules are not part of the frontend styling contract.
 The page canvas is light-only by design -- the OS dark-mode setting is not
 followed for the *page*, so it never lands on a heavier, bluer theme than the
 one it was designed against. Screenshots, charts and the Compare stage sit on a
@@ -53,9 +129,12 @@ and the responsive rules are in
 One typeface family is bundled rather than loaded from a CDN, because the
 server binds localhost and must work offline: **Geist** for everything but
 numerals, code and data labels, which stay on **Geist Mono** for tabular
-figures. Both are SIL OFL 1.1 and their licence ships beside them in
-`static/FONTS-LICENSE.txt`, which the licence requires. Icons are inline SVG
-(`static/icons.js`) for the same offline-first reason -- no icon font, no CDN.
+figures. The source font files live in `src/webui/frontend/public/` and are
+served by the local Vite frontend; both families remain SIL OFL 1.1. Icons are inline SVG for the same
+offline-first reason -- no icon font, no CDN. Preserve the CSS custom-property
+design tokens in `src/webui/frontend/src/style.css` and the shared files under
+`src/webui/frontend/src/styles/` when changing the visual system;
+`src/webui/frontend/dist/` is disposable local build output.
 
 ## Steps
 
@@ -106,7 +185,7 @@ significant change / **Underpowered -- can't tell**). The third state
 exists because a plain yes/no would misrepresent most of this benchmark's own
 data: a model sitting near ceiling baseline accuracy with only a handful of
 discordant pairs is untestable, not resilient, and the UI must not imply
-otherwise (see [`docs/methods.md`](methods.md) and `src/webui/compare.py`'s
+otherwise (see [`docs/methods.md`](methods.md) and `src/webui/backend/compare.py`'s
 module docstring). The Holm-Bonferroni correction runs across every model
 evaluated on the dataset, not just the one being displayed -- narrowing the
 family to one model's own profiles would let the same p-value read as
@@ -249,6 +328,5 @@ something the bare CLI cannot currently do in a single invocation.
   appends to its own result CSV. Nothing in the UI rewrites a dataset's
   captures, labels, or committed analysis tables.
 - **Run over a network.** Local-only, by design (see [Launch](#install-and-launch)).
-- **Require Node.** See [Front end](#front-end). If you find yourself wanting a
-  bundler, weigh it against the fact that this is an optional extra of a
-  deliberately dependency-light benchmark.
+- **Require Node.** See [Front end](#front-end). Node and the frontend
+  dependencies are required at runtime for the local Vite UI.

@@ -97,7 +97,7 @@ def captures_dir() -> Path:
 def dataset_name(dataset_dir: str | Path | None = None) -> str:
     """Return the registry name for *dataset_dir* (default: the active one).
 
-    Matches the names webui.datasets.discover_datasets assigns, so the UI's
+    Matches the names webui.backend.datasets.discover_datasets assigns, so the UI's
     dataset dropdown and the CLI's --data-dir agree on where a run's outputs
     belong: `dataset` for the default, otherwise the directory's own name
     (`experiment_2`, or whatever `datasets/<name>` was collected as).

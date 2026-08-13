@@ -40,3 +40,19 @@ VLM_MODEL=local/ferret-ui-llama8b
 CUDA is the practical path. CPU fallback is supported but much slower. About
 10 GB of VRAM is an estimate rather than a guarantee; image, tree, and
 generation settings affect memory use, and an undersized GPU may raise CUDA OOM.
+
+## Viewing evaluation reports
+
+Once an evaluation or analysis has produced results, the local Web UI presents
+the Compare, Results, and Analyze feature views alongside the Ferret run status.
+Charts are rendered as SVG on fixed dark data panels while the surrounding
+application stays light.
+Long model/profile lists remain readable in a scrollable chart viewport, and
+the chart's table and direct labels provide the values behind confidence
+intervals, paired deltas, discordant counts, and direction segments. Chart
+motion follows the browser's `prefers-reduced-motion` setting.
+
+Use a chart's **Export** control to download a PNG of that chart. The control
+targets the chart by its explicit view ID and exports the complete SVG at 2×
+resolution; if a chart is moved or renamed during frontend work, preserve that
+target ID so the downloaded image continues to match the visible chart.

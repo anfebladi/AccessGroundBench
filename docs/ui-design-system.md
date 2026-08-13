@@ -1,13 +1,102 @@
 # Web UI design system
 
-The token reference for `src/webui/static/style.css`. Every value here is a CSS custom
-property defined once in the `TOKENS` layer at the top of that file; nothing in the UI
-should hard-code a colour, size or duration.
+The token reference for the local Vite frontend. Global tokens and base rules
+are loaded by `src/webui/frontend/src/style.css`, with shared entry points in
+`src/webui/frontend/src/styles/tokens.css` and `styles/globals.css`. Tailwind
+CSS v4 is imported from `style.css` and supplied by the Vite plugin; it is the
+component and layout styling authority. Shadcn primitives are owned in
+`src/components/ui/`. Authored CSS is reserved for bundled fonts, design tokens,
+base/reset rules, global focus behavior, keyframes, and unavoidable specialized
+SVG/export rules. CSS Modules are removed and are not part of the styling
+contract.
 
-**Constraint that shapes all of it:** no Node, no build step, no CDN, no CSS framework.
-The UI ships as flat files in `static/`, covered by `pyproject.toml`'s
-`webui = ["static/*"]`. Layers inside `style.css` do the job a preprocessor would:
-`FONTS → TOKENS → BASE → LAYOUT → COMPONENTS → UTILITIES → RESPONSIVE`.
+The shadcn contract is recorded in `src/webui/frontend/components.json`:
+`@/*` resolves to `src/*`, with `@/components`, `@/components/ui`,
+`@/lib`, `@/lib/utils`, and `@/app/hooks` as the supported aliases. New shared
+primitives belong in `components/ui/`; feature markup stays in its feature
+directory. Tailwind utilities and shared primitives handle component, layout,
+responsive, and state composition. The CSS token bridge is the source of truth:
+`@theme` exposes selected tokens to Tailwind, while authored global tokens remain
+available to charts, canvas drawing, and SVG export.
+
+**Constraint that shapes all of it:** React + Vite for the local UI, with all
+dependencies resolved from the lockfile and no CDN or runtime network asset.
+Node is required at runtime because `agb ui` starts Vite beside the FastAPI API.
+Run `npm ci` from `src/webui/frontend/` when dependencies are missing, then
+`npm run build` after source changes. Build output in
+`src/webui/frontend/dist/` is ignored and disposable; no static bundle is
+committed. `style.css` imports Tailwind and the authored foundation styles; keep
+those foundation rules limited to the responsibilities listed above.
+
+## 0. Source organization
+
+`src/webui/frontend/src/app/` contains application composition and shared hooks;
+shell components (`AppShell`, `TopBar`, `Sidebar`, `CommandPalette`, `PageOutlet`,
+and `ErrorBoundary`) live in `src/components/shell/`. Route order, hashes,
+groups, and palette metadata are defined in `app/navigation.ts`; `main.tsx`
+bootstraps React and exports the public app entry points. The seven workflow areas
+live in `src/features/{dataset,models,evaluate,collect,compare,results,analyze}/`,
+with cross-feature workflow support in `src/features/shared/`. Shared UI
+primitives, utilities, and global styles remain in `components/ui/`, `lib/`, and
+`styles/` (with the global entry point in `style.css`).
+
+Keep resets, focus-visible behavior, design tokens, and CSS variables consumed
+by charts, canvas drawing, or SVG export global. Use Tailwind utilities and
+shared primitives for markup-specific layout, responsive rules, and component
+states; use React state, refs, ARIA state, or stable `data-*` hooks for behavior.
+Pages remain mounted and switch through the `hidden` attribute, so route hashes
+and accessibility hooks remain stable.
+
+### Tailwind and shadcn ownership
+
+Tailwind v4 utilities are the composition layer and the styling authority, while
+the token system remains the visual source of truth. Use the shadcn/Radix primitives in `src/components/ui/` for
+shared controls (for example `Button`, `Card`, `ScrollArea`, and `Tooltip`),
+composing them with `cn` from `src/lib/utils.ts`. Keep feature-specific
+markup and states in the owning feature directory. When a utility or primitive
+needs a visual value, use a token-backed class or CSS variable so all paths stay
+visually equivalent.
+
+### Reporting charts and export
+
+Reporting charts are SVG-only Nivo `Bar` and `ScatterPlot` components in
+`src/features/shared/reporting/charts.tsx`. Their public row contract is the
+stable `ChartRow` type; normalize missing or non-finite values before rendering
+and preserve the row label as the category key. `ChartFrame` keeps a fixed
+760px SVG width, computes at least 240px of height from row count, caps the
+viewport at 560px, and wraps the result in the Radix `ScrollArea` primitive.
+
+Reachability confidence intervals, baseline/profile dumbbells, discordant
+counts, and direction segments are custom Nivo SVG layers. They add direct
+labels and annotations so marks never rely on hue alone. Charts expose an
+`aria-label`/`role="img"`; `useMotion` disables Nivo animation when
+`prefers-reduced-motion` is enabled. Keep the chart panel on the fixed dark
+data surface while the surrounding application remains light-only.
+
+Each `ExportButton` receives an explicit `targetId`, resolves that element,
+and exports its SVG through `src/lib/export.ts`. SVG styles are inlined and the
+PNG canvas is rendered at 2× width and height before download; preserve stable
+target IDs when changing chart markup so export continues to address the
+intended chart.
+
+### Primitive coverage and intentional native controls
+
+All shared controls used by the feature views and shell are owned in
+`src/components/ui/`: buttons, cards, alerts, badges, inputs, textareas, tables,
+progress, separators, skeletons, tooltips, collapsibles, dialogs, alert dialogs,
+scroll areas, checkboxes, the command palette, and the responsive `Sheet` used by
+the mobile workflow navigation. The command palette is a `Command` primitive
+with keyboard filtering and selection; the mobile menu opens a Radix Sheet and
+closes after a route link is chosen.
+
+Some native elements are deliberate and should not be replaced for visual
+consistency alone. The comparison stage keeps its canvas-backed image controls,
+onion/range slider and custom listbox semantics; specialized screenshot and
+export paths keep `<canvas>`. Native checkbox inputs remain where the surrounding
+feature needs their existing form/DOM contract, while the shared Radix Checkbox is
+used for the results-table selection control. `NativeSelect` wraps native
+`<select>` for ordinary single-choice fields; multi-select/listbox behavior keeps
+native or custom semantics where required.
 
 **Register:** modern product craft (Linear / Raycast / Vercel), not a marketing page or a
 SaaS form. Density and restraint carry the distinctiveness — a 14px UI base, a hairline
@@ -32,8 +121,9 @@ code stay on **Geist Mono** — neither of the other two roles gives you tabular
 | UI | `--font-ui` | Geist (variable 400–600) | Body, lead paragraphs, controls, everything read at length |
 | Mono | `--font-mono` | Geist Mono (variable 400–600) | Numerals, code, IDs, paths only — **not** chrome labels (rail groups, `.kv` terms, `.note-label` are all `--font-ui` now) |
 
-Bundled files, both families SIL OFL 1.1 — the licence ships beside them in
-`static/FONTS-LICENSE.txt` because the licence requires it:
+Bundled source files are served from `src/webui/frontend/public/`, both
+families SIL OFL 1.1 — the licence ships beside them as
+`src/webui/frontend/public/FONTS-LICENSE.txt`:
 
 ```
 geist.woff2         29,400 B   variable 400-600, latin
@@ -152,8 +242,8 @@ viz-orange 6.18:1, viz-red 5.00:1, viz-neutral 5.51:1 — all clear the 3:1 floo
 applies to marks and lines (not the 4.5:1 body-text floor; no chart draws body text in a
 viz-* colour, only marks and lines). `--viz-neutral` is the diverging midpoint and is
 deliberately achromatic, so it is exempt from the categorical chroma floor; because it
-sits closest to the CVD gate against `--viz-red`, the stacked chart (`directionChart` in
-`charts.js`) direct-labels every segment with its count rather than relying on hue alone.
+sits closest to the CVD gate against `--viz-red`, the stacked chart direct-labels every
+segment with its count rather than relying on hue alone.
 
 ---
 
@@ -234,16 +324,23 @@ back into the native `appearance: auto` — a listbox has no dropdown to hint at
 `.note-label`, never a filled background — a tinted box made every note read as alarming
 regardless of what it said.
 
-**Icons.** `src/webui/static/icons.js` — ~30 inline SVGs, `currentColor`-only so a glyph
-inherits its container's text colour with no extra CSS. No icon font, matching the rest of
-the offline-first constraint. The rail's step icons (`icons.js`'s `dataset`/`models`/
-`evaluate`/`collect`/`compare`/`results`/`analyze`) are filled in by `app.js`'s
-`populateRailIcons()` at startup — `index.html` carries only the `data-icon` key, so
-`icons.js` stays the one place a glyph's path data lives.
+**Icons.** Icons are rendered by the React source in `src/webui/frontend/src/` and use
+current colour rather than an icon font or CDN asset, matching the rest of the
+offline-first constraint. Keep icon colour inherited from the surrounding
+component so the design tokens remain the single source of truth.
 
 **Skeletons** (`.skeleton`) replace bare "Loading…" text wherever the result's shape is
 known, so the layout does not jump when data lands. It's the **only** looping animation in
 the UI (see Motion below) and stops the instant real content lands.
+
+Loading placeholders should match the content they reserve: compact rows for metadata and
+rail chips, card/row groups for provider and table data, and block or frame shapes for
+charts, screenshots, and the miss inspector. A skeleton describes a request that has not
+resolved yet; once a request resolves, render its real empty state or error instead of
+leaving a placeholder in place. Keep explanatory status text and determinate progress for
+long-running evaluation or analysis jobs—skeletons cover only the predictable content
+region. Each loading region has an accessible name (and may expose `aria-busy` on its
+container); shimmer is supplementary and never the only loading signal.
 
 ### Motion
 
@@ -258,11 +355,9 @@ Four durations, each tied to a specific use, not to taste:
 
 Explicitly excluded: looping animation (besides the skeleton shimmer, the one deliberate
 exception), spring/bounce overshoot, parallax, decorative motion, staggered cascades.
-Chart draw-in (`.chart-mark` for bars, `.chart-row` for dumbbell's line-and-dots — see
-`charts.js`'s own header comment) is wired per-view with explicit "has this exact result
-set already animated" tracking (`view-compare.js`'s `animatedChartKey`,
-`view-analyze.js`/`view-results.js`'s `shouldAnimate` flag, consumed once per fetch) so a
-filter click or profile-picker change never replays it. Everything collapses to ~0 under
+Chart draw-in (`.chart-mark` for bars, `.chart-row` for dumbbell's line-and-dots) is wired
+per-view with explicit result-set tracking in React component state/effects, so a filter
+click or profile-picker change never replays it. Everything collapses to ~0 under
 `prefers-reduced-motion: reduce` (§8).
 
 ---
@@ -281,6 +376,19 @@ Breakpoints: **sm 480 · md 768 · lg 1024 · xl 1280** (unchanged).
 
 The mobile table is not a horizontal scroller: `thead` is visually hidden and each `<td>`
 carries `data-label`, rendered as the field name beside its value.
+
+### Desktop workflow rail
+
+At desktop widths (`≥ lg`) the workflow rail can be collapsed to an icon-only `64px`
+column. The toggle is keyboard reachable and has an explicit accessible name; each icon
+link keeps its route name in `aria-label` and exposes the same name as a tooltip while the
+rail is collapsed. The active route continues to expose `aria-current="page"`, and the
+rail's status chips remain available in the expanded layout. The preference is stored in
+browser local storage under `agb.sidebar.collapsed` (`"1"` collapsed, `"0"` expanded),
+defaulting to expanded when no preference is present or storage is unavailable. Rail and
+content-column widths animate with the shell motion tokens, and the reduced-motion rule
+removes that transition. The mobile Sheet workflow menu is independent of this preference
+and always uses the full labels and metadata.
 
 **Touch targets are pointer-conditional, not viewport-conditional.** The previous pass
 enforced 44px for every control under one width breakpoint; that conflated "narrow window"
@@ -324,11 +432,22 @@ A benchmark measuring accessibility settings has no business failing these.
   significance is filled-vs-hollow, underpowered rows carry `†`, stacked segments are
   direct-labelled, and the Compare view's three-state significance badge
   (`.badge.sig-yes` / `.sig-no` / `.sig-underpowered`) is worded, not colour-only —
-  see `src/webui/compare.py`'s docstring for why a plain significant/not-significant
+  see `src/webui/backend/compare.py`'s docstring for why a plain significant/not-significant
   binary would misrepresent the data.
 - `aria-current` (rail, filmstrip), `aria-live="polite"` (run status), `aria-busy`
   (loading buttons), `aria-invalid` (fields), `role="alert"` (errors).
+- Collapsed rail links retain their route names through `aria-label` and `title`; the
+  collapse toggle announces whether it will expand or collapse the workflow sidebar.
+- Loading regions use shape-matched skeletons with an accessible name, while status text,
+  progress bars, and errors remain available to assistive technology.
 - Usable at 200% zoom and 400px width.
 - `prefers-reduced-motion: reduce` collapses every animation and transition.
 - Touch targets are guaranteed on any coarse-pointer device regardless of window size,
   not just below a width breakpoint (§6).
+
+## 9. Frontend verification
+
+From `src/webui/frontend/`, install the locked local dependency set with
+`npm ci`, run `npm run build` for the TypeScript/Vite production check, and run
+`npm test` for the Vitest suite. Keep these checks offline after dependencies
+are present; the UI must not require a CDN or runtime network asset.

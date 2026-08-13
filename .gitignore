@@ -20,6 +20,11 @@ ENV/
 # Build and packaging output
 build/
 dist/
+src/webui/frontend/node_modules/
+src/webui/frontend/dist/
+src/webui/frontend/test-results/
+src/webui/frontend/playwright-report/
+src/webui/frontend/*.tsbuildinfo
 *.egg-info/
 
 # IDE and editor files

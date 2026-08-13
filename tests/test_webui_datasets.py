@@ -4,7 +4,7 @@ from pathlib import Path
 from unittest import mock
 
 import paths
-from webui import datasets as datasets_mod
+from webui.backend import datasets as datasets_mod
 
 
 def make_dataset_dir(root: Path, name: str, screens: list[str]) -> Path:

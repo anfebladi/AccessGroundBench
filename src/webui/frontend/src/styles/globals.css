@@ -1,0 +1,41 @@
+@import "./tokens.css";
+
+/* ==========================================================================
+   3  BASE
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; margin: 0; }
+h2 { font-size: var(--text-h2); line-height: var(--lh-h2); letter-spacing: var(--ls-h2); }
+h3 { font-size: var(--text-h3); line-height: var(--lh-h3); letter-spacing: var(--ls-h3); }
+
+p { margin: 0; }
+a { color: var(--primary); text-underline-offset: 2px; }
+a:hover { color: var(--primary-hover); }
+
+/* One focus treatment for everything reachable by keyboard. Never removed
+   without a replacement -- this project has no business shipping a focus trap. */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+/* The dark data surfaces need their own ring: the default blue at 2px reads
+   fine on white but loses definition against near-black. */
+.on-dark :focus-visible, [data-surface="dark"] :focus-visible {
+  outline-color: var(--on-dark);
+  box-shadow: 0 0 0 4px rgba(42, 120, 214, 0.45);
+}
+

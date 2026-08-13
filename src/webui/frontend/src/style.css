@@ -1,0 +1,26 @@
+@import "tailwindcss";
+@import "./styles/globals.css" layer(base);
+
+@theme {
+  --font-sans: var(--font-ui);
+  --color-primary: var(--primary);
+}
+
+/* Keep native hidden content semantics available to views and assistive tech. */
+[hidden] {
+  display: none !important;
+}
+
+@keyframes shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
