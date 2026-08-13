@@ -1,4 +1,4 @@
-"""Fixture-based statistics test for webui.compare.compare_model.
+"""Fixture-based statistics test for webui.backend.compare.compare_model.
 
 Not a smoke test: every assertion here is checked against a hand-derived
 expected value (exact binomial p-values computed independently via
@@ -23,7 +23,7 @@ from unittest import mock
 
 import paths
 from evaluation.storage.results import CSV_COLUMNS
-from webui.compare import CompareError, compare_model
+from webui.backend.compare import CompareError, compare_model
 
 SCREEN = "clock"
 PROFILE = "elder_text_heavy"

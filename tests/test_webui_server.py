@@ -7,8 +7,8 @@ from unittest import mock
 
 import paths
 from evaluation.storage.results import CSV_COLUMNS, append_result, init_csv
-from webui import keys as keys_mod
-from webui.server import create_app
+from webui.backend import keys as keys_mod
+from webui.backend.server import create_app
 
 
 def write_png_header(path: Path, width: int, height: int) -> None:

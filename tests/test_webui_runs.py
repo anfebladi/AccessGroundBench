@@ -5,7 +5,7 @@ import time
 import unittest
 from unittest import mock
 
-from webui import runs as runs_mod
+from webui.backend import runs as runs_mod
 
 
 class RunTailTests(unittest.TestCase):

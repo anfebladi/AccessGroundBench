@@ -41,6 +41,3 @@ py-modules = ["cli", "paths"]
 where = ["src"]
 include = ["analysis", "analysis.*", "collection", "collection.*", "evaluation", "evaluation.*", "webui", "webui.*"]
 namespaces = false
-
-[tool.setuptools.package-data]
-webui = ["static/*"]

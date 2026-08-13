@@ -1,12 +1,16 @@
 # Web UI design system
 
-The token reference for `src/webui/static/style.css`. Every value here is a CSS custom
-property defined once in the `TOKENS` layer at the top of that file; nothing in the UI
-should hard-code a colour, size or duration.
+The token reference for `src/webui/frontend/src/style.css`, served by the
+local Vite frontend. Every value here is a CSS custom
+property defined once in the `TOKENS` layer at the top of the source file;
+nothing in the UI should hard-code a colour, size or duration.
 
-**Constraint that shapes all of it:** no Node, no build step, no CDN, no CSS framework.
-The UI ships as flat files in `static/`, covered by `pyproject.toml`'s
-`webui = ["static/*"]`. Layers inside `style.css` do the job a preprocessor would:
+**Constraint that shapes all of it:** React + Vite for the local UI, no CDN, no
+CSS framework. Node is required at runtime because `agb ui` starts Vite beside
+the FastAPI API. Run `npm ci` once (when dependencies are missing) and use
+`npm run build` from `src/webui/frontend/` after source changes. Build output
+in `src/webui/frontend/dist/` is ignored and disposable; no static bundle is
+committed. Layers inside `style.css` do the job a preprocessor would:
 `FONTS → TOKENS → BASE → LAYOUT → COMPONENTS → UTILITIES → RESPONSIVE`.
 
 **Register:** modern product craft (Linear / Raycast / Vercel), not a marketing page or a
@@ -32,8 +36,9 @@ code stay on **Geist Mono** — neither of the other two roles gives you tabular
 | UI | `--font-ui` | Geist (variable 400–600) | Body, lead paragraphs, controls, everything read at length |
 | Mono | `--font-mono` | Geist Mono (variable 400–600) | Numerals, code, IDs, paths only — **not** chrome labels (rail groups, `.kv` terms, `.note-label` are all `--font-ui` now) |
 
-Bundled files, both families SIL OFL 1.1 — the licence ships beside them in
-`static/FONTS-LICENSE.txt` because the licence requires it:
+Bundled source files are served from `src/webui/frontend/public/`, both
+families SIL OFL 1.1 — the licence ships beside them as
+`src/webui/frontend/public/FONTS-LICENSE.txt`:
 
 ```
 geist.woff2         29,400 B   variable 400-600, latin
@@ -152,8 +157,8 @@ viz-orange 6.18:1, viz-red 5.00:1, viz-neutral 5.51:1 — all clear the 3:1 floo
 applies to marks and lines (not the 4.5:1 body-text floor; no chart draws body text in a
 viz-* colour, only marks and lines). `--viz-neutral` is the diverging midpoint and is
 deliberately achromatic, so it is exempt from the categorical chroma floor; because it
-sits closest to the CVD gate against `--viz-red`, the stacked chart (`directionChart` in
-`charts.js`) direct-labels every segment with its count rather than relying on hue alone.
+sits closest to the CVD gate against `--viz-red`, the stacked chart direct-labels every
+segment with its count rather than relying on hue alone.
 
 ---
 
@@ -234,12 +239,10 @@ back into the native `appearance: auto` — a listbox has no dropdown to hint at
 `.note-label`, never a filled background — a tinted box made every note read as alarming
 regardless of what it said.
 
-**Icons.** `src/webui/static/icons.js` — ~30 inline SVGs, `currentColor`-only so a glyph
-inherits its container's text colour with no extra CSS. No icon font, matching the rest of
-the offline-first constraint. The rail's step icons (`icons.js`'s `dataset`/`models`/
-`evaluate`/`collect`/`compare`/`results`/`analyze`) are filled in by `app.js`'s
-`populateRailIcons()` at startup — `index.html` carries only the `data-icon` key, so
-`icons.js` stays the one place a glyph's path data lives.
+**Icons.** Icons are rendered by the React source in `src/webui/frontend/src/` and use
+current colour rather than an icon font or CDN asset, matching the rest of the
+offline-first constraint. Keep icon colour inherited from the surrounding
+component so the design tokens remain the single source of truth.
 
 **Skeletons** (`.skeleton`) replace bare "Loading…" text wherever the result's shape is
 known, so the layout does not jump when data lands. It's the **only** looping animation in
@@ -258,11 +261,9 @@ Four durations, each tied to a specific use, not to taste:
 
 Explicitly excluded: looping animation (besides the skeleton shimmer, the one deliberate
 exception), spring/bounce overshoot, parallax, decorative motion, staggered cascades.
-Chart draw-in (`.chart-mark` for bars, `.chart-row` for dumbbell's line-and-dots — see
-`charts.js`'s own header comment) is wired per-view with explicit "has this exact result
-set already animated" tracking (`view-compare.js`'s `animatedChartKey`,
-`view-analyze.js`/`view-results.js`'s `shouldAnimate` flag, consumed once per fetch) so a
-filter click or profile-picker change never replays it. Everything collapses to ~0 under
+Chart draw-in (`.chart-mark` for bars, `.chart-row` for dumbbell's line-and-dots) is wired
+per-view with explicit result-set tracking in React component state/effects, so a filter
+click or profile-picker change never replays it. Everything collapses to ~0 under
 `prefers-reduced-motion: reduce` (§8).
 
 ---
@@ -324,7 +325,7 @@ A benchmark measuring accessibility settings has no business failing these.
   significance is filled-vs-hollow, underpowered rows carry `†`, stacked segments are
   direct-labelled, and the Compare view's three-state significance badge
   (`.badge.sig-yes` / `.sig-no` / `.sig-underpowered`) is worded, not colour-only —
-  see `src/webui/compare.py`'s docstring for why a plain significant/not-significant
+  see `src/webui/backend/compare.py`'s docstring for why a plain significant/not-significant
   binary would misrepresent the data.
 - `aria-current` (rail, filmstrip), `aria-live="polite"` (run status), `aria-busy`
   (loading buttons), `aria-invalid` (fields), `role="alert"` (errors).

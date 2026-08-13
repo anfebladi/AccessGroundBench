@@ -1,0 +1,335 @@
+import { FormEvent, useEffect, useState } from "react";
+import { api, enc, Model, Preflight, StartedRun } from "../lib/api";
+import { RunMonitor } from "./RunMonitor";
+import type { TabViewProps } from "../lib/types";
+export interface PreflightSummary {
+  text: string;
+  tone: "info" | "muted" | "error";
+}
+
+interface EvaluateViewProps extends TabViewProps {
+  dataset: string;
+  models: Model[];
+  onRunFinished?: () => void;
+  onPreflightSummary?: (summary: PreflightSummary) => void;
+}
+
+export function EvaluateView({
+  dataset,
+  models,
+  onRunFinished,
+  onPreflightSummary,
+  hidden,
+}: EvaluateViewProps) {
+  const [model, setModel] = useState(models[0]?.id || "");
+  const [mode, setMode] = useState("vision");
+  const [coord, setCoord] = useState<Model["coord_space"]>(
+    models[0]?.coord_space || "pixel",
+  );
+  const [trials, setTrials] = useState(1);
+  const [pace, setPace] = useState(0);
+  const [fresh, setFresh] = useState(false);
+  const [forceUnlock, setForceUnlock] = useState(false);
+  const [preflight, setPreflight] = useState<Preflight | null>(null);
+  const [preflightKey, setPreflightKey] = useState("");
+  const [error, setError] = useState("");
+  const [run, setRun] = useState<StartedRun | null>(null);
+  const [starting, setStarting] = useState(false);
+  useEffect(() => {
+    const found = models.find((m) => m.id === model);
+    if (found) setCoord(found.coord_space);
+    else if (!models.length) setModel("");
+  }, [model, models]);
+  useEffect(() => {
+    setPreflight(null);
+    setPreflightKey("");
+    if (!dataset || !model) return;
+    const key = `${dataset}\u0000${model}\u0000${mode}`;
+    const controller = new AbortController();
+    setError("");
+    void api<Preflight>(
+      `/api/datasets/${enc(dataset)}/preflight?model=${enc(model)}&use_a11y_tree=${mode === "tree"}`,
+      { signal: controller.signal },
+    )
+      .then((value) => {
+        setPreflight(value);
+        setPreflightKey(key);
+      })
+      .catch((e) => {
+        if (!controller.signal.aborted) {
+          setPreflight(null);
+          setError(e instanceof Error ? e.message : String(e));
+        }
+      });
+    return () => controller.abort();
+  }, [dataset, model, mode]);
+  useEffect(() => {
+    if (!onPreflightSummary) return;
+    if (error) {
+      onPreflightSummary({ text: error, tone: "error" });
+      return;
+    }
+    const currentKey = `${dataset}\u0000${model}\u0000${mode}`;
+    if (
+      preflightKey !== currentKey ||
+      !preflight ||
+      !preflight.expected_total
+    ) {
+      onPreflightSummary({ text: "", tone: "muted" });
+      return;
+    }
+    const remaining = preflight.expected_total - preflight.already_done;
+    onPreflightSummary({
+      text:
+        preflight.already_done > 0
+          ? `${remaining} queries left`
+          : `${preflight.expected_total} queries planned`,
+      tone: preflight.already_done > 0 ? "info" : "muted",
+    });
+  }, [
+    dataset,
+    model,
+    mode,
+    preflight,
+    preflightKey,
+    error,
+    onPreflightSummary,
+  ]);
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError("");
+    if (!model) {
+      setError("Add a model on the Models step before starting a run.");
+      return;
+    }
+    setStarting(true);
+    try {
+      setRun(
+        await api<StartedRun>("/api/runs", {
+          method: "POST",
+          body: JSON.stringify({
+            dataset,
+            model,
+            use_a11y_tree: mode === "tree",
+            trials,
+            pace_seconds: pace,
+            coord_space: coord,
+            fresh,
+            force_unlock: forceUnlock,
+          }),
+        }),
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setStarting(false);
+    }
+  };
+  const remaining = preflight
+    ? preflight.expected_total - preflight.already_done
+    : 0;
+  return (
+    <section id="tab-evaluate" className="tab" aria-labelledby="head-evaluate" hidden={hidden}>
+      <div className="view-head">
+        <h2 id="head-evaluate">Evaluate</h2>
+        <p className="lead">
+          Query one model against every target on every profile. Runs append as
+          they go and resume where they stopped, so an interrupted run never
+          loses the calls it already paid for.
+        </p>
+      </div>
+      <div className="card card-primary">
+        <form id="evaluate-form" onSubmit={submit}>
+          <div className="field-row">
+            <div className="field field-wide">
+              <label htmlFor="eval-model-select">Model</label>
+              <select
+                id="eval-model-select"
+                value={model}
+                disabled={!models.length}
+                onChange={(e) => setModel(e.target.value)}
+              >
+                <option value="">
+                  {models.length ? "Select model" : "No models configured"}
+                </option>
+                {models.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.id}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="field">
+              <label htmlFor="eval-mode-select">Prompt mode</label>
+              <select
+                id="eval-mode-select"
+                value={mode}
+                onChange={(e) => setMode(e.target.value)}
+              >
+                <option value="vision">Vision only</option>
+                <option value="tree">Vision + a11y tree</option>
+              </select>
+            </div>
+            <button
+              type="submit"
+              id="eval-start"
+              disabled={!models.length || starting}
+            >
+              {starting ? "Starting…" : "Start evaluation"}
+            </button>
+          </div>
+          <details className="advanced">
+            <summary>Advanced options</summary>
+            <div className="advanced-body">
+              <div className="field-grid">
+                <div className="field">
+                  <label htmlFor="eval-trials">Trials per query</label>
+                  <input
+                    id="eval-trials"
+                    type="number"
+                    min={1}
+                    value={trials}
+                    onChange={(e) => setTrials(Number(e.target.value) || 1)}
+                  />
+                  <p className="field-hint">
+                    Above 1, answers are majority-voted and a flip rate is
+                    reported.
+                  </p>
+                </div>
+                <div className="field">
+                  <label htmlFor="eval-pace">Pace (seconds)</label>
+                  <input
+                    id="eval-pace"
+                    type="number"
+                    min={0}
+                    step={0.1}
+                    value={pace}
+                    onChange={(e) => setPace(Number(e.target.value) || 0)}
+                  />
+                  <p className="field-hint">
+                    Delay between calls, for rate-limited providers.
+                  </p>
+                </div>
+                <div className="field">
+                  <label htmlFor="eval-coord-space">Coordinate space</label>
+                  <select
+                    id="eval-coord-space"
+                    value={coord}
+                    onChange={(e) =>
+                      setCoord(e.target.value as Model["coord_space"])
+                    }
+                  >
+                    <option value="pixel">Pixel</option>
+                    <option value="norm1000">Normalized (0-1000)</option>
+                  </select>
+                  <p className="field-hint">
+                    Set per run, from the model's configuration.
+                  </p>
+                </div>
+              </div>
+              <div
+                className="field-grid"
+                style={{ marginTop: "var(--space-4)" }}
+              >
+                <label className="check">
+                  <input
+                    id="eval-fresh"
+                    type="checkbox"
+                    checked={fresh}
+                    onChange={(e) => setFresh(e.target.checked)}
+                  />
+                  <span className="check-body">
+                    Start fresh
+                    <span className="field-hint">
+                      Discards existing rows and re-runs every query. You pay
+                      the full call count again.
+                    </span>
+                  </span>
+                </label>
+                <div id="eval-unlock-field">
+                  {preflight?.lock_present && (
+                    <label className="check">
+                      <input
+                        id="eval-force-unlock"
+                        type="checkbox"
+                        checked={forceUnlock}
+                        onChange={(e) => setForceUnlock(e.target.checked)}
+                      />
+                      <span className="check-body">
+                        Override stale lock
+                        <span className="field-hint">
+                          Only if you are certain no other run is writing this
+                          file.
+                        </span>
+                      </span>
+                    </label>
+                  )}
+                </div>
+              </div>
+            </div>
+          </details>
+        </form>
+        <div id="eval-preflight">
+          {preflight && (
+            <>
+              <div
+                style={{
+                  marginTop: "var(--space-4)",
+                  display: "flex",
+                  gap: "var(--space-3)",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                }}
+              >
+                <span
+                  className={`badge ${preflight.already_done ? "info" : "muted"}`}
+                >
+                  {preflight.already_done
+                    ? `Resuming -- ${remaining} of ${preflight.expected_total} queries left`
+                    : `${preflight.expected_total} queries planned`}
+                </span>
+                <span className="field-hint">
+                  Writes to <code>{preflight.results_csv}</code>
+                </span>
+              </div>
+              {preflight.lock_present && (
+                <div className="note note-warn">
+                  <span className="note-label">Warning</span>{" "}
+                  <b>This results file is locked.</b>
+                  {preflight.lock_holder && (
+                    <>
+                      Held by <code>{preflight.lock_holder}</code>.
+                    </>
+                  )}{" "}
+                  If no run is actually active -- a crashed process leaves its
+                  lock behind -- enable <b>Override stale lock</b> under
+                  Advanced options, or this run will exit without doing
+                  anything.
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        <div id="eval-error">
+          {error && (
+            <p className="state-error" role="alert">
+              {error}
+            </p>
+          )}
+        </div>
+        <div id="eval-command" />
+      </div>
+      <div id="eval-run">
+        {run && (
+          <RunMonitor
+            runId={run.run_id}
+            command={run.equivalent_command}
+            expectedTotal={preflight?.expected_total}
+            alreadyDone={fresh ? 0 : preflight?.already_done || 0}
+            onFinish={onRunFinished}
+          />
+        )}
+      </div>
+    </section>
+  );
+}
