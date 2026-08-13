@@ -6,6 +6,7 @@
 ## Workflow and safety
 
 - Run the full test suite with `uv run python -m unittest discover -s tests -p "test_*.py"`; for behavior changes, also run the narrowest relevant tests. For documentation-only edits, run `git diff --check`.
+- Do not produce diabolical one-line code: when code contains nested logic, multiple operations, complex data, or substantial markup, format it across clear, readable lines with sensible indentation. One-line code is acceptable only when it remains obviously simple.
 - Treat `.env` as sensitive: never add credentials, and do not change the selected model or provider implicitly. `agb evaluate` calls external providers, may incur cost, resumes through a lock by default, and `--fresh` discards and recreates the result CSV.
 - `agb collect`, `agb profile`, and `agb capture` mutate emulator state or captures; require explicit user authorization and preserve/reset a known baseline. `agb analyze` rewrites reports. `agb canonicalize` and non-check `agb rescore` rewrite CSVs with backups; `agb rescore --check` is read-only.
 - `agb collect --rebuild-manifest` works offline from existing assets but overwrites/merges the manifest for selected records while preserving other existing records. The archived `dataset/experiment_2` is historical and must not be cited as current evidence. There is no current RTL profile.

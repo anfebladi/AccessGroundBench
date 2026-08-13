@@ -1,12 +1,12 @@
 import {cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
-import {CompareView, ResultsView} from './reporting/views';
-import {DatasetView} from './views/DatasetView';
-import {ModelsView} from './views/ModelsView';
-import {EvaluateView} from './views/EvaluateView';
-import {CollectView} from './views/CollectView';
-import {AnalyzeView} from './reporting/views';
-import {RunMonitor} from './views/RunMonitor';
+import {CompareView, ResultsView} from '../../src/reporting/views';
+import {DatasetView} from '../../src/views/DatasetView';
+import {ModelsView} from '../../src/views/ModelsView';
+import {EvaluateView} from '../../src/views/EvaluateView';
+import {CollectView} from '../../src/views/CollectView';
+import {AnalyzeView} from '../../src/reporting/views';
+import {RunMonitor} from '../../src/views/RunMonitor';
 
 const json = (value: unknown, status = 200) => new Response(JSON.stringify(value), {
   status,

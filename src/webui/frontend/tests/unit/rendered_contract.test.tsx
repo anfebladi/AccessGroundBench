@@ -1,6 +1,6 @@
 import {cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
-import contract from '../ui-contract.json';
+import contract from '../../ui-contract.json';
 
 vi.mock('react-dom/client', () => ({createRoot: () => ({render: vi.fn(), unmount: vi.fn()})}));
 
@@ -43,7 +43,7 @@ afterEach(() => cleanup());
 
 describe('rendered legacy contract', () => {
   it('contains every required historical ID, data hook, and control in the React DOM', async () => {
-    const {App} = await import('./main');
+    const {App} = await import('../../src/main');
     render(<App />);
     await waitFor(() => expect(screen.getByDisplayValue('demo')).toBeTruthy());
 
@@ -61,7 +61,7 @@ describe('rendered legacy contract', () => {
   });
 
   it('keeps rail chips and command palette navigation wired to the shell', async () => {
-    const {App} = await import('./main');
+    const {App} = await import('../../src/main');
     render(<App />);
     await waitFor(() => expect(screen.getByDisplayValue('demo')).toBeTruthy());
     expect(screen.getByText('2 screens')).toBeTruthy();
@@ -75,7 +75,7 @@ describe('rendered legacy contract', () => {
   });
 
   it('does not let contenteditable fields trigger global numeric shortcuts', async () => {
-    const {App} = await import('./main');
+    const {App} = await import('../../src/main');
     render(<App />);
     await waitFor(() => expect(screen.getByDisplayValue('demo')).toBeTruthy());
     const editable = document.createElement('div');

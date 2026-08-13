@@ -5,14 +5,14 @@ import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest';
 // surviving jsdom teardown.
 vi.mock('react-dom/client', () => ({createRoot: () => ({render: vi.fn(), unmount: vi.fn()})}));
 
-let api: typeof import('./main').api;
-let normalizeTab: typeof import('./main').normalizeTab;
-let isTerminalRunStatus: typeof import('./main').isTerminalRunStatus;
+let api: typeof import('../../src/main').api;
+let normalizeTab: typeof import('../../src/main').normalizeTab;
+let isTerminalRunStatus: typeof import('../../src/main').isTerminalRunStatus;
 
 beforeAll(async () => {
   document.body.innerHTML = '<div id="root"></div>';
   Object.defineProperty(window, 'scrollTo', {configurable: true, value: vi.fn()});
-  ({api, normalizeTab, isTerminalRunStatus} = await import('./main'));
+  ({api, normalizeTab, isTerminalRunStatus} = await import('../../src/main'));
 });
 
 afterAll(() => {

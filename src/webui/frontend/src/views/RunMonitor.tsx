@@ -1,16 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { api, isTerminalRunStatus } from "../lib/api";
+import { RunTally } from "./run-monitor/RunTally";
 const POLL_MS = 1200;
 const RESULT =
   /^ {4}\[(HIT|MISS|OFF-SCREEN|OFF-FRAME|LABEL-CHANGED|API-ERROR)\]/;
-const TALLY: Array<[string, string, string]> = [
-  ["HIT", "Hit", "is-ok"],
-  ["MISS", "Miss", ""],
-  ["OFF-SCREEN", "Off-screen", ""],
-  ["OFF-FRAME", "Off-frame", ""],
-  ["LABEL-CHANGED", "Label changed", ""],
-  ["API-ERROR", "API error", "is-err"],
-];
 
 function duration(seconds: number): string {
   if (seconds < 60) return `${Math.round(seconds)}s`;
@@ -167,13 +160,7 @@ export function RunMonitor({
             }}
           />
         </div>
-        <div id="run-tally" className="tally">
-          {TALLY.filter(([key]) => counts[key]).map(([key, label, cls]) => (
-            <span className={`tally-item ${cls}`} key={key}>
-              <b>{counts[key]}</b> {label}
-            </span>
-          ))}
-        </div>
+        <RunTally counts={counts} />
         <p id="run-live" className="sr-only" aria-live="polite">
           Run {status}. {done}
           {expectedTotal ? ` of ${expectedTotal}` : ""} queries done.

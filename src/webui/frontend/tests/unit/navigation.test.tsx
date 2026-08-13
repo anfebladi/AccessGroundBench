@@ -48,7 +48,7 @@ async function renderApp() {
   window.location.hash = '#dataset';
   mockFixtureApi();
   installCanvasAndImageStubs();
-  const {App} = await import('./main');
+  const {App} = await import('../../src/main');
   render(<App />);
   await waitFor(() => expect(screen.getByDisplayValue('demo')).toBeTruthy());
 }
