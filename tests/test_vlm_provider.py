@@ -10,10 +10,41 @@ from types import SimpleNamespace
 from unittest import mock
 
 from evaluation.providers import hosted as vlm_provider
+from evaluation.providers import retry as vlm_retry
 
 
 class FakeRateLimitError(Exception):
     pass
+
+
+class SamplingEnvIsolation:
+    """Unset the sampling knobs so a local .env cannot decide a default.
+
+    Every one of these is read straight from os.environ, which importing
+    evaluation.workflow populates from the developer's own .env via load_dotenv.
+    A local VLM_THINKING=disabled would otherwise decide what the "by default"
+    tests see -- and only once some other test module had pulled workflow in
+    first, so the suite passed or failed depending on discovery order. Unset
+    rather than blanked: an empty VLM_TEMPERATURE means "omit the parameter",
+    which is not the same as the default. setUp runs before the method-level
+    patch.dict decorators, so a test that does want a value still gets one.
+    """
+
+    SAMPLING_ENV_VARS = (
+        vlm_retry.TEMPERATURE_ENV_VAR,
+        vlm_retry.MAX_TOKENS_ENV_VAR,
+        vlm_retry.THINKING_ENV_VAR,
+        vlm_retry.STRUCTURED_COORDS_ENV_VAR,
+    )
+
+    def setUp(self):
+        super().setUp()
+        saved = {
+            name: os.environ.pop(name)
+            for name in self.SAMPLING_ENV_VARS
+            if name in os.environ
+        }
+        self.addCleanup(os.environ.update, saved)
 
 
 class VlmProviderTests(unittest.TestCase):
@@ -759,7 +790,7 @@ if __name__ == "__main__":
     unittest.main()
 
 
-class ReplyBudgetAndThinkingTests(unittest.TestCase):
+class ReplyBudgetAndThinkingTests(SamplingEnvIsolation, unittest.TestCase):
     """max_tokens / thinking plumbing, and the truncation guard.
 
     A truncated reply used to reach the coordinate parser, fail to parse, and
@@ -1026,7 +1057,7 @@ class ScaleTreeRowsTests(unittest.TestCase):
         self.assertGreaterEqual(y2, y1)
 
 
-class StructuredCoordinateTests(unittest.TestCase):
+class StructuredCoordinateTests(SamplingEnvIsolation, unittest.TestCase):
     """Constraining the reply to coordinates, for models that ignore the prompt.
 
     The schema returns an array, so the rendered JSON contains a literal
