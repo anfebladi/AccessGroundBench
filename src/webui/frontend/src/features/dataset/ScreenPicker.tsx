@@ -19,7 +19,7 @@ export function ScreenPicker({
     screen.toLowerCase().includes(filter.trim().toLowerCase()),
   );
   return (
-    <div className="picker" style={{ flex: "0 0 15rem" }}>
+    <div className="flex w-60 min-w-0 shrink-0 flex-col gap-2 max-md:w-full">
       <Input
         id="screen-filter"
         type="search"
@@ -28,17 +28,17 @@ export function ScreenPicker({
         value={filter}
         onChange={(event) => onFilter(event.target.value)}
       />
-      <ul id="screen-list" className="list picker-list">
+      <ul id="screen-list" className="m-0 max-h-[30rem] list-none overflow-y-auto p-0">
         {visible.length ? (
           visible.map((screen) => (
             <li
               data-screen={screen}
-              className={screen === selected ? "selected" : ""}
+              className={`p-0 ${screen === selected ? "selected rounded-md bg-[var(--primary)] font-medium text-[var(--primary-fg)]" : ""}`}
               key={screen}
             >
               <Button
                 type="button"
-                className="screen-picker-button"
+                className="w-full justify-start border-transparent bg-transparent px-2 py-1 text-left text-[var(--text)]"
                 aria-label={screen}
                 onClick={() => onSelect(screen)}
               >
@@ -47,7 +47,7 @@ export function ScreenPicker({
             </li>
           ))
         ) : (
-          <li className="muted" style={{ cursor: "default" }}>
+          <li className="cursor-default px-2 py-1 text-sm text-[var(--muted)]">
             No matching screens
           </li>
         )}

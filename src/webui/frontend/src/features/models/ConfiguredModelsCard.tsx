@@ -1,6 +1,5 @@
 import type { RefObject } from "react";
 import type { Model } from "../../lib/api";
-import styles from "./models.module.css";
 import { Button } from "../../components/ui/button";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "../../components/ui/table";
 import { Card } from "../../components/ui/card";
@@ -25,14 +24,14 @@ export function ConfiguredModelsCard({
   examples,
 }: ConfiguredModelsCardProps) {
   return (
-    <Card className="card">
-      <div className="card-head">
+    <Card className="mt-4 p-4">
+      <div className="flex items-center justify-between gap-3 pb-3">
         <h3>Configured models</h3>
       </div>
       <div id="model-list">
         {models.length ? (
           <>
-            <div className="table-wrap">
+            <div className="w-full overflow-x-auto">
               <Table>
                 <TableHeader><TableRow><TableHead>Model</TableHead><TableHead>Coordinate space</TableHead><TableHead /></TableRow></TableHeader>
                 <TableBody>
@@ -44,17 +43,17 @@ export function ConfiguredModelsCard({
                         {model.coord_space === "norm1000"
                           ? "Normalized (0-1000)"
                           : "Pixel"}
-                      </TableCell><TableCell className={styles.modelActions}>
+                      </TableCell><TableCell className="text-right">
                         <Button
                           type="button"
-                          className="secondary small"
+                          variant="secondary" size="sm"
                           data-test={model.id}
                           onClick={() => runSmoke(model)}
                         >
                           Test model
                         </Button><Button
                           type="button"
-                          className="ghost small"
+                          variant="ghost" size="sm"
                           data-remove={model.id}
                           onClick={() => removeModel(model)}
                         >
@@ -66,23 +65,23 @@ export function ConfiguredModelsCard({
                 </TableBody>
               </Table>
             </div>
-            <p className={`field-hint ${styles.hint}`}>
+            <p className="mt-3 text-sm text-[var(--muted)]">
               Test model sends one real query against one target and draws the
               answer over the ground-truth box.
             </p>
           </>
         ) : (
-          <div className="empty-state">
-            <p className="empty-state-title">No models configured yet</p>
-            <p className="empty-state-body">
+          <div className="rounded-md border border-dashed border-[var(--border)] p-6 text-center">
+            <p className="font-medium">No models configured yet</p>
+            <p className="mt-1 text-sm text-[var(--muted)]">
               A model id is a LiteLLM model string. Add one above, or start from
               an example:
             </p>
-            <div className="empty-state-action">
+            <div className="mt-3 flex flex-wrap justify-center gap-2">
               {examples.map(([example, exampleSpace]) => (
                 <Button
                   type="button"
-                  className="secondary small"
+                  variant="secondary" size="sm"
                   key={example}
                   onClick={() => {
                     setId(example);

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Bar } from "@nivo/bar";
 import { ScatterPlot } from "@nivo/scatterplot";
 import { ScrollArea } from "../../../components/ui/scroll-area";
-import "./reporting.module.css";
 
 if (typeof window !== "undefined" && !window.matchMedia) {
   window.matchMedia = ((query: string) => ({
@@ -88,10 +87,20 @@ function ChartFrame({
 }) {
   const animate = useMotion();
   const usable = validRows(rows);
-  if (!usable.length) return <div className="chart-empty">No valid data available.</div>;
+  if (!usable.length) {
+    return <div className="text-sm text-[var(--muted)]">No valid data available.</div>;
+  }
   const height = Math.max(240, usable.length * 42 + MARGIN.top + MARGIN.bottom);
   return (
-    <div className={`chart-shell chart-${tone}`} role="img" aria-label={label} data-chart-label={label} data-chart-tone={tone}>
+    <div
+      className={`w-full overflow-visible ${
+        tone === "dark" ? "text-[var(--on-dark-muted)]" : "text-[var(--text-2)]"
+      }`}
+      role="img"
+      aria-label={label}
+      data-chart-label={label}
+      data-chart-tone={tone}
+    >
       <ScrollArea className="max-h-[560px]">
         <div style={{ width: WIDTH, height }} data-chart-target>
           {children(height, animate, tone === "dark" ? darkTheme : lightTheme)}
@@ -144,11 +153,35 @@ const reachabilityLayer = ({ bars: renderedBars = [], xScale, yScale }: LayerPro
       const y = (bar.y ?? (yScale?.(rowLabel) ?? 0)) + (bar.height ?? 0) / 2;
       const xLo = scaleCoordinate(xScale, lo);
       const xHi = scaleCoordinate(xScale, hi);
-      return <g key={rowLabel} className="chart-ci" aria-label={`${rowLabel} 95% confidence interval`}>
-        <line x1={xLo} x2={xHi} y1={y} y2={y} />
-        <line x1={xLo} x2={xLo} y1={y - 5} y2={y + 5} />
-        <line x1={xHi} x2={xHi} y1={y - 5} y2={y + 5} />
-      </g>;
+      return (
+        <g
+          key={rowLabel}
+          className="chart-ci"
+          aria-label={`${rowLabel} 95% confidence interval`}
+        >
+          <line
+            className="stroke-[var(--text-2)] [stroke-width:1.5] [vector-effect:non-scaling-stroke]"
+            x1={xLo}
+            x2={xHi}
+            y1={y}
+            y2={y}
+          />
+          <line
+            className="stroke-[var(--text-2)] [stroke-width:1.5]"
+            x1={xLo}
+            x2={xLo}
+            y1={y - 5}
+            y2={y + 5}
+          />
+          <line
+            className="stroke-[var(--text-2)] [stroke-width:1.5]"
+            x1={xHi}
+            x2={xHi}
+            y1={y - 5}
+            y2={y + 5}
+          />
+        </g>
+      );
     })}
   </g>
 );
@@ -211,16 +244,37 @@ const directionLayer = ({ xScale, yScale }: LayerProps) => {
   if (!xScale || !yScale) return null;
   return <g className="chart-direction-overlay" aria-label="Direction segment counts">
     {rows.map((row) => {
-      const values = [Math.max(0, finiteNumber(row.down)), Math.max(0, finiteNumber(row.tied)), Math.max(0, finiteNumber(row.up))];
+      const values = [
+        Math.max(0, finiteNumber(row.down)),
+        Math.max(0, finiteNumber(row.tied)),
+        Math.max(0, finiteNumber(row.up)),
+      ];
       const y = scaleCoordinate(yScale, row.id || row.label) + 0.5;
       let offset = 0;
       return <g key={row.id || row.label}>
         {values.map((value, index) => {
           const start = offset;
           offset += Math.max(0, value);
-          return value > 0 ? <text key={`${row.label}-${index}`} className="chart-direct-label" x={scaleCoordinate(xScale, start + value / 2) + 4} y={y + 4}>{value}</text> : null;
+          return value > 0 ? (
+            <text
+              key={`${row.label}-${index}`}
+              className="chart-direct-label"
+              x={scaleCoordinate(xScale, start + value / 2) + 4}
+              y={y + 4}
+            >
+              {value}
+            </text>
+          ) : null;
         })}
-        {(row.p || row.annotation) && <text className="chart-significance" x={scaleCoordinate(xScale, offset) + 8} y={y + 4}>{row.annotation || `p ${row.p}`}</text>}
+        {(row.p || row.annotation) && (
+          <text
+            className="chart-significance"
+            x={scaleCoordinate(xScale, offset) + 8}
+            y={y + 4}
+          >
+            {row.annotation || `p ${row.p}`}
+          </text>
+        )}
       </g>;
     })}
   </g>;
@@ -313,13 +367,33 @@ export function DirectionChart({ rows }: { rows: ChartRow[] }) {
   );
 }
 
-export function Legend({ items }: { items: Array<{ color: string; label: string; shape?: "hollow" }> }) {
+export function Legend({
+  items,
+  tone = "light",
+}: {
+  items: Array<{ color: string; label: string; shape?: "hollow" }>;
+  tone?: ChartTone;
+}) {
   return (
-    <div className="chart-legend">
+    <div
+      className={`mb-4 flex flex-wrap gap-4 text-xs ${
+        tone === "dark" ? "text-[var(--on-dark-muted)]" : "text-[var(--muted)]"
+      }`}
+    >
       {items.map((item) => (
-        <span className="legend-item" style={{ color: item.color }} key={item.label}>
-          <span className={`legend-swatch${item.shape === "hollow" ? "" : " filled"}`} />
-          <span style={{ color: "var(--muted)" }}>{item.label}</span>
+        <span className="flex items-center gap-1.5" style={{ color: item.color }} key={item.label}>
+          <span
+            className={`inline-block size-2.5 shrink-0 rounded-sm border ${item.shape === "hollow" ? "bg-transparent" : "border-transparent"}`}
+            style={item.shape === "hollow" ? { borderColor: item.color } : { backgroundColor: item.color }}
+            aria-hidden="true"
+          />
+          <span
+            className={
+              tone === "dark" ? "text-[var(--on-dark-muted)]" : "text-[var(--muted)]"
+            }
+          >
+            {item.label}
+          </span>
         </span>
       ))}
     </div>

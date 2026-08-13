@@ -23,7 +23,7 @@ beforeEach(() => {
   vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined);
   vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({
     drawImage: vi.fn(), clearRect: vi.fn(), fillText: vi.fn(), strokeRect: vi.fn(),
-    beginPath: vi.fn(), arc: vi.fn(), fill: vi.fn(), scale: vi.fn(),
+    beginPath: vi.fn(), arc: vi.fn(), fill: vi.fn(), fillRect: vi.fn(), scale: vi.fn(), measureText: vi.fn(() => ({width: 0})),
   } as unknown as CanvasRenderingContext2D);
 });
 
@@ -45,7 +45,7 @@ describe('view contract coverage', () => {
       const {unmount} = render(view);
       const root = document.querySelector('[id^="tab-"]');
       expect(root).not.toBeNull();
-      expect(root?.classList.contains('tab')).toBe(true);
+      expect(root?.id).toMatch(/^tab-/);
       unmount();
     });
   });
@@ -70,7 +70,56 @@ describe('dataset comparison stage', () => {
     const list = screen.getByRole('listbox');
     fireEvent.click(screen.getByRole('button', {name: 'First'}));
     fireEvent.keyDown(list, {key: 'ArrowDown'});
-    expect(screen.getByRole('button', {name: /Second/}).className).toContain('is-selected');
+    expect(screen.getByRole('button', {name: /Second/}).getAttribute('aria-selected')).toBe('true');
+  });
+
+  it('keeps a clicked target selected, supports clear and Escape, and selects from the canvas', async () => {
+    vi.stubGlobal('Image', class {
+      complete = true;
+      naturalWidth = 100;
+      width = 100;
+      height = 100;
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      set src(_value: string) { queueMicrotask(() => this.onload?.()); }
+    });
+    vi.mocked(fetch).mockImplementation(async (input) => {
+      const path = String(input);
+      if (path.endsWith('/screens')) return json({screens: ['home']});
+      if (path.endsWith('/manifest')) return json({available: true, manifest: {expected_captures: 2, successful_captures: 2}});
+      if (path.includes('/targets/')) return json({targets: [
+        {text: 'First', baseline_box: [0, 0, 10, 10]},
+        {text: 'Second', baseline_box: [20, 20, 40, 40]},
+      ]});
+      if (path.includes('/labels/')) return json([{text: 'First', box: [0, 0, 10, 10]}]);
+      return json([]);
+    });
+
+    render(<DatasetView dataset="demo" />);
+    await waitFor(() => expect(screen.getByRole('button', {name: 'First'})).toBeTruthy());
+    const list = screen.getByRole('listbox');
+    const first = screen.getByRole('button', {name: 'First'});
+    fireEvent.click(first);
+    expect(first.getAttribute('aria-selected')).toBe('true');
+    expect(first.className).toContain('bg-white');
+    fireEvent.click(first);
+    expect(first.getAttribute('aria-selected')).toBe('true');
+    fireEvent.click(screen.getByRole('button', {name: 'Clear selection'}));
+    expect(first.getAttribute('aria-selected')).toBe('false');
+
+    fireEvent.click(first);
+    fireEvent.keyDown(list, {key: 'Escape'});
+    expect(first.getAttribute('aria-selected')).toBe('false');
+    fireEvent.keyDown(list, {key: 'ArrowDown'});
+    expect(first.getAttribute('aria-selected')).toBe('true');
+    fireEvent.keyDown(list, {key: 'ArrowDown'});
+    expect(screen.getByRole('button', {name: /Second/}).getAttribute('aria-selected')).toBe('true');
+
+    const canvas = document.querySelector('#canvas-baseline') as HTMLCanvasElement;
+    expect(canvas).toBeTruthy();
+    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({left: 0, top: 0, width: 100, height: 100} as DOMRect);
+    fireEvent.click(canvas, {clientX: 25, clientY: 25});
+    expect(screen.getByRole('button', {name: /Second/}).getAttribute('aria-selected')).toBe('true');
   });
 });
 

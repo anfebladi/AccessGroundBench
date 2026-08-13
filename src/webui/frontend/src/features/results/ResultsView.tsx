@@ -51,17 +51,17 @@ function Badge({
   className: string;
   children: React.ReactNode;
 }) {
-  return <UiBadge className={`badge ${className}`}>{children}</UiBadge>;
+  return <UiBadge className={className}>{children}</UiBadge>;
 }
 function ErrorState({ message }: { message: string }) {
   return (
-    <p className="state-error" role="alert">
+    <p className="rounded-md border border-[var(--err)]/40 bg-[var(--err)]/10 p-3 text-sm text-[var(--err)]" role="alert">
       {message}
     </p>
   );
 }
 function LoadingState({ message }: { message: string }) {
-  return <p className="state-loading">{message}</p>;
+  return <p className="text-sm text-[var(--muted)]">{message}</p>;
 }
 
 const STATUS_COLUMNS: [string, string, string][] = [
@@ -80,16 +80,16 @@ const STATUS_COLUMNS: [string, string, string][] = [
 ];
 function NotScored({ statuses }: { statuses: Record<string, number> }) {
   const parts = STATUS_COLUMNS.filter(([key]) => (statuses?.[key] || 0) > 0);
-  if (!parts.length) return <span className="muted">--</span>;
+  if (!parts.length) return <span className="text-[var(--muted)]">--</span>;
   return (
-    <div className="tally" style={{ marginTop: 0 }}>
+    <div className="tally mt-0 flex flex-wrap gap-2">
       {parts.map(([key, label, hint]) =>
         key === "api_error" ? (
           <Badge className="err" key={key}>
             {statuses[key]} API errors
           </Badge>
         ) : (
-          <span className="tally-item" title={hint} key={key}>
+          <span className="tally-item inline-flex items-baseline gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-2)] px-2 py-1 text-xs" title={hint} key={key}>
             <b>{statuses[key]}</b> {label}
           </span>
         ),
@@ -98,7 +98,7 @@ function NotScored({ statuses }: { statuses: Record<string, number> }) {
   );
 }
 function AccuracyCell({ row }: { row: Result }) {
-  if (row.accuracy == null) return <span className="muted">--</span>;
+  if (row.accuracy == null) return <span className="text-[var(--muted)]">--</span>;
   return (
     <div className="bar-cell">
       <span className="bar-track">
@@ -197,23 +197,23 @@ export function ResultsView({
   return (
     <section
       id="tab-results"
-      className="tab"
+      className="tab min-w-0"
       aria-labelledby="head-results"
       hidden={hidden}
     >
-      <div className="view-head">
-        <h2 id="head-results">Results</h2>
-        <p className="lead">
+      <div className="mb-[var(--space-5)] max-w-[var(--prose-max)]">
+        <h2 id="head-results" className="mb-[var(--space-2)] text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]">Results</h2>
+        <p className="font-[var(--font-ui)] text-[length:var(--text-lead)] leading-[var(--lh-lead)] text-[var(--text-2)]">
           Per-model accuracy over the targets present on both profiles.
         </p>
       </div>
-      <Card className="card">
-        <div className="card-head">
+      <Card className="rounded-[var(--radius-lg)]">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <h3>Evaluated models</h3>
           <div id="results-mode-filter">
             {modes.length > 1 && (
               <div
-                className="segmented"
+                className="flex flex-wrap gap-1 rounded-md border border-[var(--border)] p-1"
                 role="group"
                 aria-label="Prompt mode filter"
               >
@@ -246,7 +246,7 @@ export function ResultsView({
           ) : resultsLoading ? (
             <LoadingState message="Loading evaluation results…" />
           ) : !rows.length ? (
-            <div className="empty-state">
+            <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--border)] p-6 text-center">
               <h3>No evaluations yet</h3>
               <p>
                 Result files appear here once a model has been evaluated against
@@ -257,24 +257,24 @@ export function ResultsView({
           ) : (
             <>
               {modes.length > 1 && (
-                <div className="note">
-                  <span className="note-label">Note</span>Vision and tree
+                <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm">
+                  <span className="mr-2 font-semibold">Note</span>Vision and tree
                   results answer different research questions and are never
                   pooled. Analyze runs one arm at a time.
                 </div>
               )}
               {visible.some((row) => row.accuracy != null) && (
-                <Card className="card" id="results-overall-accuracy">
-                  <div className="card-head">
+                <Card id="results-overall-accuracy">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <h3>Overall accuracy</h3>
-                      <p className="card-sub">
+                      <p className="text-sm text-[var(--muted)]">
                         Blended across every profile, co-present targets only.
                         The exact figures and the baseline-only breakdown are in
                         the table below.
                       </p>
                     </div>
-                    <div className="card-head-actions">
+                    <div className="flex items-center gap-2">
                       <ExportButton name="results-overall-accuracy" targetId="results-overall-accuracy" />
                     </div>
                   </div>
@@ -293,20 +293,20 @@ export function ResultsView({
                 </Card>
               )}
               {selectedRows.length >= 2 && (
-                <Card className="card card-dark" id="results-selected-comparison">
-                  <div className="card-head">
+                <Card id="results-selected-comparison">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <h3>Comparing {selectedRows.length} selected models</h3>
-                      <p className="card-sub">
+                      <p className="text-sm text-[var(--muted)]">
                         Same accuracy figures as the table below, isolated for a
                         direct look.
                       </p>
                     </div>
-                    <div className="card-head-actions">
+                    <div className="flex items-center gap-2">
                       <ExportButton name="results-selected-comparison" targetId="results-selected-comparison" />
                       <Button
                         type="button"
-                        className="secondary small"
+                        className="text-sm"
                         id="results-compare-clear"
                         onClick={() => setSelected(new Set())}
                       >
@@ -314,7 +314,7 @@ export function ResultsView({
                       </Button>
                     </div>
                   </div>
-                  <div className="chart-dark">
+                  <div className="chart-dark rounded-[var(--radius-lg)] bg-[var(--surface-dark,var(--surface))] p-2 text-[var(--on-dark-muted)]">
                     <AccuracyChart
                       tone="dark"
                       rows={selectedRows
@@ -328,8 +328,8 @@ export function ResultsView({
                   </div>
                 </Card>
               )}
-              <div className="table-stack">
-                <div className="table-wrap">
+              <div className="table-stack min-w-0">
+                <div className="overflow-x-auto">
                   <Table id="results-table">
                     <TableHeader>
                       <TableRow>
@@ -386,7 +386,7 @@ export function ResultsView({
                           </TableCell>
                           <TableCell data-label="Mode">
                             {row.prompt_mode || (
-                              <span className="muted">--</span>
+                              <span className="text-[var(--muted)]">--</span>
                             )}
                           </TableCell>
                           <TableCell className="num" data-label="Rows">
@@ -398,7 +398,7 @@ export function ResultsView({
                           <TableCell data-label="vs. baseline">
                             {row.accuracy == null ||
                             row.baseline_accuracy == null ? (
-                              <span className="muted">--</span>
+                              <span className="text-[var(--muted)]">--</span>
                             ) : (
                               `${((row.baseline_accuracy - row.accuracy) * 100).toFixed(1)} pts`
                             )}
@@ -409,7 +409,7 @@ export function ResultsView({
                           <TableCell data-label="" style={{ textAlign: "right" }}>
                             <Button
                               type="button"
-                              className="secondary small"
+                              className="text-sm"
                               data-inspect={row.filename}
                               data-model={row.model}
                               onClick={() =>
@@ -509,27 +509,27 @@ function MissInspector({
   const current = rows[index];
   const content = (
     <div
-      className="drawer-backdrop"
+      className="fixed inset-0 z-40 grid place-items-center bg-black/60 p-5"
       onClick={(event) => event.currentTarget === event.target && close()}
     >
       <div
-        className="drawer"
+        className="flex max-h-[min(88vh,100%)] w-full max-w-[1000px] flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] shadow-2xl"
         role="dialog"
         aria-modal="true"
         aria-label="Miss inspector"
       >
-        <div className="drawer-head">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] p-4">
           <h3>Misses -- {info.model}</h3>
           {!loading && (
-            <div className="drawer-nav">
-              <span className="drawer-position">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-mono text-xs tabular-nums text-[var(--muted)]">
                 {rows.length ? `${index + 1} of ${rows.length}` : ""}
               </span>
               {rows.length > 0 && (
                 <>
                   <Button
                     type="button"
-                    className="secondary small"
+                    className="text-sm"
                     data-step="-1"
                     aria-label="Previous miss"
                     onClick={() =>
@@ -543,7 +543,7 @@ function MissInspector({
                   </Button>
                   <Button
                     type="button"
-                    className="secondary small"
+                    className="text-sm"
                     data-step="1"
                     aria-label="Next miss"
                     onClick={() =>
@@ -558,7 +558,7 @@ function MissInspector({
               )}
               <Button
                 type="button"
-                className="secondary small"
+                className="text-sm"
                 id="drawer-close"
                 onClick={close}
               >
@@ -567,22 +567,22 @@ function MissInspector({
             </div>
           )}
         </div>
-        <div className="drawer-body">
+        <div className="overflow-y-auto p-4">
           {loading ? (
-            <div aria-label="Loading result rows" className="stack">
-              <Skeleton className="skeleton-row" /><Skeleton className="skeleton-row" /><Skeleton className="skeleton-block" />
+            <div aria-label="Loading result rows" className="flex flex-col gap-3">
+              <Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-24 w-full" />
             </div>
           ) : error ? (
             <ErrorState message={error} />
           ) : !current ? (
-            <div className="empty-state">
+            <div className="rounded-md border border-dashed border-[var(--border)] p-6 text-center">
               <h3>No misses to inspect</h3>
               <p>This model scored every co-present target on this dataset.</p>
             </div>
           ) : (
-            <div className="row">
-              <div className="grow">
-                <dl className="kv">
+            <div className="flex items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <dl className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-2 text-sm [&>dt]:text-[var(--muted)] [&>dd]:min-w-0">
                   <dt>Target</dt>
                   <dd>
                     <b>{text(current.target_text)}</b>
@@ -599,7 +599,7 @@ function MissInspector({
                   <dt>Parsed by</dt>
                   <dd>{text(current.parse_method) || "unknown"}</dd>
                 </dl>
-                <div className="overlay-legend">
+                <div className="mt-4 flex flex-wrap gap-4 text-xs text-[var(--muted)]">
                   <span className="legend-item" style={{ color: "var(--ok)" }}>
                     <span className="legend-swatch" />
                     Ground truth
@@ -611,7 +611,7 @@ function MissInspector({
                 </div>
               </div>
               <div>
-                <div className="image-frame">
+                <div className="overflow-hidden rounded-md border border-[var(--border)] bg-[var(--surface-2)]">
                   <MissCanvas dataset={dataset} row={current} />
                 </div>
               </div>
@@ -619,13 +619,13 @@ function MissInspector({
           )}
         </div>
         {!loading && rows.length > 0 && (
-          <div className="filmstrip" aria-label="Miss filmstrip">
+          <div className="flex gap-2 overflow-x-auto border-t border-[var(--border)] bg-[var(--surface-2)] p-2 px-4" aria-label="Miss filmstrip">
             {rows.map((row, rowIndex) => (
               <Button
                 type="button"
                 data-jump={rowIndex}
                 aria-current={rowIndex === index}
-                className={rowIndex === index ? "selected" : ""}
+                className={`block min-h-8 max-w-48 shrink-0 overflow-hidden text-ellipsis whitespace-nowrap border border-[var(--border-strong)] bg-[var(--surface)] px-2.5 py-1 text-xs text-[var(--text-2)] shadow-none hover:bg-[var(--surface-2)] ${rowIndex === index ? "!border-[var(--primary)] !bg-[var(--primary)] !text-[var(--primary-fg)]" : ""}`}
                 key={`${text(row.screen)}-${rowIndex}`}
                 onClick={() => setIndex(rowIndex)}
               >

@@ -9,7 +9,6 @@ import {
   Legend,
   ReachabilityChart,
 } from "../shared/reporting/charts";
-import "../shared/reporting/reporting.module.css";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { NativeSelect } from "../../components/ui/native-select";
@@ -55,17 +54,17 @@ function Badge({
   className: string;
   children: React.ReactNode;
 }) {
-  return <UiBadge className={`badge ${className}`}>{children}</UiBadge>;
+  return <UiBadge className={className}>{children}</UiBadge>;
 }
 function ErrorState({ message }: { message: string }) {
   return (
-    <p className="state-error" role="alert">
+    <p className="rounded-md border border-[var(--err)]/40 bg-[var(--err)]/10 p-3 text-sm text-[var(--err)]" role="alert">
       {message}
     </p>
   );
 }
 function LoadingState({ message }: { message: string }) {
-  return <div aria-label={message}><p className="state-loading">{message}</p><Skeleton className="skeleton-row" /><Skeleton className="skeleton-block" /></div>;
+  return <div aria-label={message}><p className="text-sm text-[var(--muted)]">{message}</p><Skeleton className="h-4 w-full" /><Skeleton className="h-24 w-full" /></div>;
 }
 function Table({
   headers,
@@ -75,9 +74,9 @@ function Table({
   rows: React.ReactNode[][];
 }) {
   return (
-    <details className="data-table">
+    <details>
       <summary>Show table</summary>
-      <div className="table-wrap">
+      <div className="overflow-x-auto">
         <UiTable>
           <TableHeader>
             <TableRow>
@@ -165,20 +164,20 @@ export function AnalyzeView({
   return (
     <section
       id="tab-analyze"
-      className="tab"
+      className="tab min-w-0"
       aria-labelledby="head-analyze"
       hidden={hidden}
     >
-      <div className="view-head">
-        <h2 id="head-analyze">Analyze</h2>
-        <p className="lead">
+      <div className="mb-[var(--space-5)] max-w-[var(--prose-max)]">
+        <h2 id="head-analyze" className="mb-[var(--space-2)] text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]">Analyze</h2>
+        <p className="font-[var(--font-ui)] text-[length:var(--text-lead)] leading-[var(--lh-lead)] text-[var(--text-2)]">
           Reachability, pooled permutation tests, and per-model tests.
         </p>
       </div>
-      <Card className="card card-primary">
+      <Card className="rounded-[var(--radius-lg)]">
         <form id="analyze-form" onSubmit={run}>
-          <div className="field-row">
-            <label className="field field-wide">
+          <div className="flex flex-wrap items-end gap-3">
+            <label className="flex min-w-0 flex-[1_1_22rem] flex-col gap-[var(--space-1)] text-[length:var(--text-sm)] font-medium text-[var(--text)]">
               Sample
               <NativeSelect
                 id="analyze-sample"
@@ -192,7 +191,7 @@ export function AnalyzeView({
                 <option value="uniform">Uniform</option>
               </NativeSelect>
             </label>
-            <label className="field">
+            <label className="flex min-w-0 flex-col gap-[var(--space-1)] text-[length:var(--text-sm)] font-medium text-[var(--text)]">
               Prompt mode
               <NativeSelect
                 id="analyze-mode"
@@ -207,10 +206,10 @@ export function AnalyzeView({
               {loading ? "Running" : "Run analysis"}
             </Button>
           </div>
-          <details className="advanced">
+          <details className="advanced mt-4">
             <summary>Advanced options</summary>
             <div className="advanced-body">
-              <label className="field">
+              <label className="flex min-w-0 flex-col gap-[var(--space-1)] text-[length:var(--text-sm)] font-medium text-[var(--text)]">
                 Permutations
                 <Input
                   id="analyze-permutations"
@@ -222,7 +221,7 @@ export function AnalyzeView({
                   }
                 />
               </label>
-              <label className="field">
+              <label className="flex min-w-0 flex-col gap-[var(--space-1)] text-[length:var(--text-sm)] font-medium text-[var(--text)]">
                 Seed
                 <Input
                   id="analyze-seed"
@@ -238,18 +237,18 @@ export function AnalyzeView({
       </Card>
       <div id="analyze-results">
         {loading ? (
-          <Card className="card">
+          <Card className="rounded-[var(--radius-lg)]">
             <LoadingState
               message={`Running ${permutations.toLocaleString()} permutations. This can take a minute.`}
             />
             <Progress
               value={undefined}
-              className="progress is-indeterminate"
+              className="h-1.5 overflow-hidden rounded-full bg-[var(--surface-3)] [&>div]:h-full [&>div]:rounded-full [&>div]:bg-[var(--primary)]"
               style={{ marginTop: "var(--space-3)" }}
             />
           </Card>
         ) : readLoading ? (
-          <Card className="card" aria-label="Loading analysis">
+          <Card aria-label="Loading analysis">
             <LoadingState message="Loading analysis results…" />
           </Card>
         ) : result ? (
@@ -261,8 +260,8 @@ export function AnalyzeView({
             setActiveProfile={setActiveProfile}
           />
         ) : (
-          <div className="note">
-            <span className="note-label">Note</span>No analysis has been run yet
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm">
+            <span className="mr-2 font-semibold">Note</span>No analysis has been run yet
             for <code>{mode}</code> / <code>{sample}</code>. Run one below --
             results appear here immediately for any mode/sample combination that
             already has tables, without waiting on a new run.
@@ -311,8 +310,8 @@ function AnalysisResult({
   return (
     <>
       {
-        <div className="note note-info">
-          <span className="note-label">Note</span>
+        <div className="rounded-md border border-[var(--primary)]/30 bg-[var(--primary-soft)] p-3 text-sm">
+          <span className="mr-2 font-semibold">Note</span>
           <b>
             Pooled permutation is the primary test; per-model McNemar is
             secondary.
@@ -326,14 +325,14 @@ function AnalysisResult({
         </div>
       }
       {result.output_dir && (
-        <p className="muted small" style={{ margin: "0 0 var(--space-4)" }}>
+        <p className="mb-4 text-sm text-[var(--muted)]">
           Tables written to <code>{result.output_dir}/</code> -- the dataset's
           own analysis files are left alone.
         </p>
       )}
       {samples.length > 1 && (
         <div
-          className="segmented"
+          className="mb-4 flex flex-wrap gap-1 rounded-md border border-[var(--border)] p-1"
           role="group"
           aria-label="Sample"
           style={{ marginBottom: "var(--space-4)" }}
@@ -432,7 +431,7 @@ function AnalysisResult({
             text(row.Significant) === "Yes" ? (
               <Badge className="ok">significant</Badge>
             ) : (
-              <Badge className="muted">ns</Badge>
+              <Badge className="text-[var(--muted)]">ns</Badge>
             ),
           ])}
         />
@@ -444,7 +443,7 @@ function AnalysisResult({
         empty="No per-model rows were produced."
         id="per-model-card"
       >
-        <div className="segmented" role="group" aria-label="Profile">
+        <div className="flex flex-wrap gap-1 rounded-md border border-[var(--border)] p-1" role="group" aria-label="Profile">
           {profiles.map((value) => (
             <button
               type="button"
@@ -562,17 +561,17 @@ function AnalysisCard({
   children: React.ReactNode;
 }) {
   return (
-    <Card className="card" id={id}>
-      <div className="card-head">
+    <Card id={id}>
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3>{title}</h3>
-          <p className="card-sub">{subtitle}</p>
+          <p className="text-sm text-[var(--muted)]">{subtitle}</p>
         </div>
-        <div className="card-head-actions">
+        <div className="flex items-center gap-2">
           <ExportButton name={exportName} targetId={id || exportName} />
         </div>
       </div>
-      {children || <p className="muted small">{empty}</p>}
+      {children || <p className="text-sm text-[var(--muted)]">{empty}</p>}
     </Card>
   );
 }

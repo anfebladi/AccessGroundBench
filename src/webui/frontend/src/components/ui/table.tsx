@@ -4,7 +4,7 @@ export const Table = ({
   ...p
 }: React.HTMLAttributes<HTMLTableElement>) => (
   <div className="relative w-full overflow-auto">
-    <table className={cn("w-full caption-bottom text-sm", className)} {...p} />
+    <table className={cn("w-full border-collapse text-sm", className)} {...p} />
   </div>
 );
 export const TableHeader = ({
@@ -25,7 +25,7 @@ export const TableRow = ({
 }: React.HTMLAttributes<HTMLTableRowElement>) => (
   <tr
     className={cn(
-      "border-b transition-colors hover:bg-[var(--surface-2)]",
+      "border-b transition-colors duration-[var(--dur-fast)] hover:bg-[var(--surface-2)]",
       className,
     )}
     {...p}
@@ -37,7 +37,7 @@ export const TableHead = ({
 }: React.ThHTMLAttributes<HTMLTableCellElement>) => (
   <th
     className={cn(
-      "h-9 px-3 text-left align-middle text-xs font-medium text-[var(--muted)]",
+      "whitespace-nowrap border-b border-[var(--border)] px-3 py-2 text-left align-middle text-xs font-semibold uppercase tracking-[var(--ls-xs)] text-[var(--muted)]",
       className,
     )}
     {...p}
@@ -47,5 +47,5 @@ export const TableCell = ({
   className,
   ...p
 }: React.TdHTMLAttributes<HTMLTableCellElement>) => (
-  <td className={cn("p-3 align-middle", className)} {...p} />
+  <td className={cn("border-b border-[var(--border)] px-3 py-2 align-middle", className)} {...p} />
 );

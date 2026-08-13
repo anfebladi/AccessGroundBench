@@ -1,6 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { Provider } from "../../lib/api";
-import styles from "./models.module.css";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
@@ -24,24 +23,24 @@ export function ProviderCredentialsCard({
   clearKey: (provider: string) => void;
 }) {
   return (
-    <Card className="card">
-      <div className="card-head">
+    <Card className="mt-4 p-4">
+      <div className="flex items-center justify-between gap-3 pb-3">
         <div>
           <h3>Providers</h3>
-          <p className="card-sub">
+          <p className="text-sm text-[var(--muted)]">
             Session keys stay in this server's memory and are never written to
             disk.
           </p>
         </div>
       </div>
-      <div className="table-wrap">
+      <div className="w-full overflow-x-auto">
         <Table id="provider-table">
           <TableHeader><TableRow><TableHead>Provider</TableHead><TableHead>Environment variable</TableHead><TableHead>Status</TableHead><TableHead>Session key</TableHead></TableRow></TableHeader>
           <TableBody>
             {providerError ? (
               <TableRow>
                 <TableCell colSpan={4}>
-                  <Alert className="state-error">
+                  <Alert className="border-[var(--danger)]">
                     {providerError}
                   </Alert>
                 </TableCell>
@@ -66,7 +65,7 @@ export function ProviderCredentialsCard({
                         </Badge>
                     </TableCell>
                     <TableCell>
-                      <div className={styles.providerActions}>
+                      <div className="flex items-center gap-2">
                         <Input
                           type="password"
                           placeholder="Paste key for this session"

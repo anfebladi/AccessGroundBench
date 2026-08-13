@@ -7,7 +7,7 @@ export const Input = React.forwardRef<
   <input
     ref={r}
     className={cn(
-      "flex h-8 w-full rounded-md border border-[var(--border-strong)] bg-white px-3 py-1 text-sm text-[var(--text)] shadow-sm placeholder:text-[var(--muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] disabled:cursor-not-allowed disabled:opacity-50",
+      "min-h-[var(--control-h)] w-full rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--surface)] px-[10px] py-[7px] text-sm text-[var(--text)] placeholder:text-[var(--muted)] transition-[border-color,box-shadow] duration-[var(--dur-fast)] ease-[var(--ease)] hover:not-disabled:border-[var(--text-2)] focus-visible:border-[var(--primary)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--primary-soft)] disabled:cursor-not-allowed disabled:bg-[var(--surface-2)] disabled:text-[var(--muted)] max-[767px]:min-h-[var(--tap)] [@media(pointer:coarse)]:min-h-[var(--tap)]",
       className,
     )}
     {...p}

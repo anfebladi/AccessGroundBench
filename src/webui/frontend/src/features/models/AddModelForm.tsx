@@ -24,11 +24,10 @@ export function AddModelForm({
   submit: (event: FormEvent) => void;
 }) {
   return (
-    <Card className="card card-primary">
-      <div className="card-head"><h3>Add a model</h3></div>
+    <Card className="mt-4 border-[var(--primary)] p-4"><div className="pb-3"><h3>Add a model</h3></div>
       <form id="add-model-form" onSubmit={submit}>
-        <div className="field-row">
-          <div className="field field-wide">
+        <div className="flex flex-wrap items-end gap-4">
+          <div className="min-w-0 flex-1">
             <label htmlFor="model-id-input">Model id</label>
             <Input
               id="model-id-input"
@@ -38,20 +37,20 @@ export function AddModelForm({
               placeholder="openai/gpt-4o-mini"
               required
             />
-            <p className="field-hint">Any LiteLLM model string, or a <code>9router/</code> / <code>openai_compatible/</code> route.</p>
+            <p className="mt-1 text-xs text-[var(--muted)]">Any LiteLLM model string, or a <code>9router/</code> / <code>openai_compatible/</code> route.</p>
           </div>
-          <div className="field">
+          <div className="min-w-48">
             <label htmlFor="model-coord-space">Coordinate space</label>
             <NativeSelect id="model-coord-space" value={space} onChange={(e) => setSpace(e.target.value as Model["coord_space"]) }>
               <option value="pixel">Pixel</option>
               <option value="norm1000">Normalized (0-1000 grid)</option>
             </NativeSelect>
-            <p className="field-hint">Gemini, Qwen and GLM answer normalized.</p>
+            <p className="mt-1 text-xs text-[var(--muted)]">Gemini, Qwen and GLM answer normalized.</p>
           </div>
           <Button type="submit">Add model</Button>
         </div>
       </form>
-      <div id="add-model-error">{error && <Alert className="state-error">{error}</Alert>}</div>
+      <div id="add-model-error">{error && <Alert className="mt-3 border-[var(--danger)]">{error}</Alert>}</div>
     </Card>
   );
 }

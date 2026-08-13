@@ -10,7 +10,6 @@ import {
 } from "../../lib/api";
 import { drawScreenshot, strokeWidthFor } from "../../lib/canvas";
 import type { TabViewProps } from "../../lib/types";
-import styles from "./models.module.css";
 import { SmokeTestResult } from "./SmokeTestResult";
 import { ProviderCredentialsCard } from "./ProviderCredentialsCard";
 import { AddModelForm } from "./AddModelForm";
@@ -135,19 +134,19 @@ export function ModelsView({
   return (
     <section
       id="tab-models"
-      className={`tab ${styles.root}`}
+      className="tab min-w-0"
       aria-labelledby="head-models"
       hidden={hidden}
     >
-      <div className="view-head">
+      <div className="mb-6">
         <h2 id="head-models">Models</h2>
-        <p className="lead">
+        <p className="mt-2 max-w-3xl text-[var(--muted)]">
           Configure the models to evaluate and check each one with a single real
           query before spending a full run. This catches a bad key, a wrong
           coordinate convention, or a malformed model id early.
         </p>
       </div>
-      {providersLoading ? <Card className="card"><Skeleton className="skeleton-row" /><Skeleton className="skeleton-row" /><Skeleton className="skeleton-row" /></Card> : <ProviderCredentialsCard
+      {providersLoading ? <Card className="mt-4 p-4"><Skeleton className="h-8 w-full" /><Skeleton className="mt-2 h-8 w-full" /><Skeleton className="mt-2 h-8 w-full" /></Card> : <ProviderCredentialsCard
         providers={providers}
         providerError={providerError}
         keys={keys}
@@ -177,7 +176,7 @@ export function ModelsView({
       />
       <div id="smoke-test-result">
         {smoke && (
-          <Card className="card">
+          <Card className="mt-4 p-4">
             <SmokeTestResult
               smoke={smoke}
               dataset={dataset}
@@ -243,16 +242,16 @@ function SmokeSuccess({
   }, [dataset, screen, result]);
   return (
     <>
-      <div className="card-head">
+      <div className="flex items-center justify-between gap-3 pb-3">
         <div>
           <h3>Test result -- {model.id}</h3>
-          <p className="card-sub">
+          <p className="text-sm text-[var(--muted)]">
             One query against <code>{screen}</code> at baseline.
           </p>
         </div>
-        <div className="card-head-actions">
+        <div className="flex items-center gap-2">
           <span
-            className={`badge ${result.hit === 1 ? "ok" : result.hit === 0 ? "err" : "warn"}`}
+            className={result.hit === 1 ? "text-[var(--ok)]" : result.hit === 0 ? "text-[var(--err)]" : "text-[var(--warn)]"}
           >
             {result.hit === 1
               ? "Hit"
@@ -263,8 +262,8 @@ function SmokeSuccess({
         </div>
       </div>
       {result.coord_space_mismatch && (
-        <div className="note note-warn">
-          <span className="note-label">Warning</span>{" "}
+        <div className="mt-3 rounded-md border border-[var(--warn)]/40 bg-[var(--warn)]/10 p-3 text-sm">
+          <span className="font-semibold">Warning</span>{" "}
           <b>Coordinate-space mismatch.</b> This reply looks like{" "}
           <code>{result.coord_space_detected}</code> but the model is configured
           as <code>{result.coord_space_used || model.coord_space}</code>. Switch
@@ -272,9 +271,9 @@ function SmokeSuccess({
           zero while appearing to answer normally.
         </div>
       )}
-      <div className="row">
-        <div className="grow">
-          <dl className="kv">
+      <div className="flex min-w-0 flex-wrap gap-4">
+        <div className="min-w-0 flex-1">
+          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
             <dt>Target</dt>
             <dd>
               <b>{result.target_text}</b>
@@ -292,7 +291,7 @@ function SmokeSuccess({
           </dl>
         </div>
         <div>
-          <div className="image-frame">
+          <div className="grid min-w-0 place-items-center rounded-lg bg-[var(--panel-dark)] p-3">
             <canvas
               id="smoke-canvas"
               ref={canvas}
@@ -300,15 +299,14 @@ function SmokeSuccess({
             />
           </div>
           <div
-            className="overlay-legend"
-            style={{ justifyContent: "center", marginTop: "var(--space-2)" }}
+            className="mt-2 flex justify-center gap-3 text-xs"
           >
-            <span className="legend-item" style={{ color: "var(--ok)" }}>
-              <span className="legend-swatch" />
+            <span className="flex items-center gap-1 text-[var(--ok)]">
+              <span className="size-2 rounded-full border border-current" />
               Ground truth
             </span>
-            <span className="legend-item" style={{ color: "var(--err)" }}>
-              <span className="legend-swatch filled" />
+            <span className="flex items-center gap-1 text-[var(--err)]">
+              <span className="size-2 rounded-full bg-current" />
               Predicted point
             </span>
           </div>

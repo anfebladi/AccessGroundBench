@@ -37,7 +37,6 @@ import {
   type ViewConfig,
 } from "./types";
 export { PROFILES } from "./types";
-import styles from "./DatasetView.module.css";
 import { Skeleton } from "../../components/ui/skeleton";
 
 
@@ -154,10 +153,10 @@ export function DatasetView({
     s.toLowerCase().includes(filter.trim().toLowerCase()),
   );
   return (
-    <section id="tab-dataset" className={`tab ${styles.root}`} aria-labelledby="head-dataset" hidden={hidden}>
-      <div className="view-head">
-        <h2 id="head-dataset">Dataset</h2>
-        <p className="lead">
+    <section id="tab-dataset" className="tab min-w-0" aria-labelledby="head-dataset" hidden={hidden}>
+      <div className="view-head mb-[var(--space-5)] max-w-[var(--prose-max)]">
+        <h2 id="head-dataset" className="mb-[var(--space-2)] text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]">Dataset</h2>
+        <p className="font-[var(--font-ui)] text-[length:var(--text-lead)] leading-[var(--lh-lead)] text-[var(--text-2)]">
           The screens this benchmark grounds against, captured under each
           accessibility profile.
           <br />
@@ -168,17 +167,17 @@ export function DatasetView({
       <div id="dataset-warnings">
         <CaptureHealth manifest={manifest} available={manifestAvailable} />
       </div>
-      <Card className="card">
-        <div className="card-head">
+      <Card>
+        <div className="flex items-center justify-between gap-3 pb-3">
           <div>
             <h3>Screen comparison</h3>
-            <p className="card-sub">
+            <p className="text-sm text-[var(--muted)]">
               Baseline against one accessibility profile, with ground-truth
               boxes.
             </p>
           </div>
-          <div className="card-head-actions" id="compare-overlay-toggles">
-            <label className="chip-check">
+          <div className="flex items-center gap-3" id="compare-overlay-toggles">
+            <label className="flex items-center gap-2 text-sm">
               <Input
                 type="checkbox"
                 checked={showBoxes}
@@ -186,7 +185,7 @@ export function DatasetView({
               />{" "}
               Target boxes
             </label>
-            <label className="chip-check">
+            <label className="flex items-center gap-2 text-sm">
               <Input
                 type="checkbox"
                 checked={showMissing}
@@ -196,20 +195,20 @@ export function DatasetView({
             </label>
           </div>
         </div>
-        <div className="row">
+        <div className="flex min-w-0 flex-wrap gap-4">
           <ScreenPicker screens={screens} selected={selected} filter={filter} onFilter={setFilter} onSelect={setSelected} />
           <div
-            className={`grow ${loading ? "is-loading" : ""}`}
+            className={`min-w-0 flex-1 transition-opacity ${loading ? "pointer-events-none opacity-45" : ""}`}
             id="screen-browser"
           >
             {initialLoading ? (
               <div aria-label="Loading dataset">
-                <Skeleton className="skeleton-block" />
-                <Skeleton className="skeleton-row" />
-                <Skeleton className="skeleton-row" />
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
               </div>
             ) : stageError ? (
-              <Alert className="state-error">
+                <Alert className="border-[var(--danger)]">
                 {stageError}
               </Alert>
             ) : selected ? (
@@ -226,9 +225,9 @@ export function DatasetView({
                 setShowMissing={setShowMissing}
               />
             ) : (
-              <div className="empty-state">
-                <p className="empty-state-title">No screen selected</p>
-                <p className="empty-state-body">
+              <div className="rounded-md border border-dashed p-6 text-center">
+                <p className="font-medium">No screen selected</p>
+                <p className="mt-1 text-sm text-[var(--muted)]">
                   Pick a screen from the list to compare its baseline capture
                   against an accessibility profile.
                 </p>

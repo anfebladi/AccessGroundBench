@@ -51,9 +51,22 @@ export function ScreenshotCanvas({
     const warn = "#a15c00";
     const draw = (text: string | undefined, b: Box | undefined, color: string) => {
       if (!b) return;
-      ctx.strokeStyle = text === selected ? warn : color;
-      ctx.lineWidth = text === selected ? sw * 1.6 : sw;
+      const isSelected = text === selected;
+      ctx.strokeStyle = isSelected ? warn : color;
+      ctx.lineWidth = isSelected ? sw * 2.4 : sw;
       ctx.strokeRect(b[0], b[1], b[2] - b[0], b[3] - b[1]);
+      if (isSelected && text) {
+        ctx.font = `${Math.max(12, sw * 5)}px sans-serif`;
+        const pad = Math.max(3, sw * 2);
+        const width = ctx.measureText(text).width + pad * 2;
+        const height = Math.max(18, sw * 8);
+        const x = Math.max(0, Math.min(img.width - width, b[0]));
+        const y = Math.max(height, b[1]);
+        ctx.fillStyle = warn;
+        ctx.fillRect(x, y - height, width, height);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText(text, x + pad, y - pad);
+      }
     };
     if (profile === "baseline") {
       if (!evictedOnly) {
@@ -89,17 +102,20 @@ export function ScreenshotCanvas({
         const rect = event.currentTarget.getBoundingClientRect();
         const x = ((event.clientX - rect.left) / rect.width) * img.width;
         const y = ((event.clientY - rect.top) / rect.height) * img.height;
-        const hit = (evictedOnly ? missing : targets).find((target) => {
-          const box = target.baseline_box;
-          return (
-            box &&
-            x >= box[0] &&
-            x <= box[2] &&
-            y >= box[1] &&
-            y <= box[3]
-          );
-        });
-        if (hit) onSelect(hit.text);
+        const targetTexts = new Set(targets.map((target) => target.text));
+        const hit = profile === "baseline"
+          ? (evictedOnly ? missing : targets).find((target) => {
+              const box = target.baseline_box;
+              return box && x >= box[0] && x <= box[2] && y >= box[1] && y <= box[3];
+            })
+          : (!evictedOnly ? labels : []).map((label) => ({
+              text: asText(label.text),
+              box: label.box,
+            })).find((label) => {
+              const box = label.box;
+              return Boolean(label.text && targetTexts.has(label.text) && box && x >= box[0] && x <= box[2] && y >= box[1] && y <= box[3]);
+            });
+        if (hit?.text) onSelect(hit.text);
       }}
     />
   );

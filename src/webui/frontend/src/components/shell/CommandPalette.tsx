@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import type { PaletteItem } from "../../app/navigation";
-import styles from "./Shell.module.css";
 import {
   Command,
   CommandEmpty,
@@ -55,17 +54,17 @@ export function CommandPalette({
 
   return (
     <div
-      className={styles.paletteBackdrop}
+      className="fixed inset-0 z-50 grid place-items-start justify-center bg-[rgba(9,9,11,0.5)] px-4 pt-[min(14vh,var(--space-8))]"
       id="palette-backdrop"
       hidden={!open}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <Command
-        className={styles.palette}
+        className="w-[min(560px,100%)] overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--elev-overlay)]"
         aria-modal="true"
         aria-label="Command palette"
       >
-        <div className="palette-input-row">
+        <div className="border-b border-[var(--border)]">
           <CommandInput
             autoComplete="off"
             type="text"
@@ -73,6 +72,7 @@ export function CommandPalette({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={keyDown}
+            className="w-full rounded-none border-0 shadow-none"
             role="combobox"
             aria-expanded="true"
             aria-controls="palette-list"
@@ -88,20 +88,20 @@ export function CommandPalette({
             filtered.map((item, i) => (
               <CommandItem
                 id={`palette-opt-${i}`}
-                className={i === active ? "is-active" : ""}
+                className={`relative flex cursor-pointer items-center justify-between gap-3 rounded-md p-3 text-sm ${i === active ? "bg-[var(--primary-soft)] text-[var(--primary)]" : "hover:bg-[var(--surface-2)]"}`}
                 aria-selected={i === active}
                 key={`${item.hint}-${item.label}`}
                 onClick={() => onSelect(item)}
               >
-                <span className="palette-item-label">{item.label}</span>
-                <span className="palette-item-hint">{item.hint}</span>
+                <span className="overflow-hidden text-ellipsis whitespace-nowrap">{item.label}</span>
+                <span className="shrink-0 text-xs text-[var(--muted)]">{item.hint}</span>
               </CommandItem>
             ))
           ) : (
-            <CommandEmpty className="palette-empty muted small">No matches</CommandEmpty>
+            <CommandEmpty className="py-6 text-center text-sm text-[var(--muted)]">No matches</CommandEmpty>
           )}
         </CommandList>
-        <div className="palette-foot">
+        <div className="flex flex-wrap gap-3 border-t border-[var(--border)] p-3 text-xs text-[var(--muted)]">
           <span>
             <kbd>↑</kbd>
             <kbd>↓</kbd> navigate

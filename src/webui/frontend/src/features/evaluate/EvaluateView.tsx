@@ -3,7 +3,6 @@ import { api, enc, Model, Preflight, StartedRun } from "../../lib/api";
 import { RunMonitor } from "../shared/run-monitor/RunMonitor";
 import type { PreflightSummary, TabViewProps } from "../../lib/types";
 import { EvaluatePreflight } from "./EvaluatePreflight";
-import styles from "./evaluate.module.css";
 import { Input } from "../../components/ui/input";
 import { NativeSelect } from "../../components/ui/native-select";
 import { Button } from "../../components/ui/button";
@@ -132,19 +131,19 @@ export function EvaluateView({
     ? preflight.expected_total - preflight.already_done
     : 0;
   return (
-    <section id="tab-evaluate" className={`tab ${styles.root}`} aria-labelledby="head-evaluate" hidden={hidden}>
-      <div className="view-head">
+    <section id="tab-evaluate" className="tab min-w-0" aria-labelledby="head-evaluate" hidden={hidden}>
+      <div className="mb-6">
         <h2 id="head-evaluate">Evaluate</h2>
-        <p className="lead">
+        <p className="mt-2 max-w-3xl text-[var(--muted)]">
           Query one model against every target on every profile. Runs append as
           they go and resume where they stopped, so an interrupted run never
           loses the calls it already paid for.
         </p>
       </div>
-      <Card className="card card-primary">
+      <Card className="mt-4 border-[var(--primary)] p-4">
         <form id="evaluate-form" onSubmit={submit}>
-          <div className="field-row">
-            <div className="field field-wide">
+          <div className="flex flex-wrap items-end gap-4">
+            <div className="min-w-0 flex-1">
               <label htmlFor="eval-model-select">Model</label>
               <NativeSelect
                 id="eval-model-select"
@@ -162,7 +161,7 @@ export function EvaluateView({
                 ))}
               </NativeSelect>
             </div>
-            <div className="field">
+            <div className="min-w-48">
               <label htmlFor="eval-mode-select">Prompt mode</label>
               <NativeSelect
                 id="eval-mode-select"
@@ -183,9 +182,9 @@ export function EvaluateView({
           </div>
           <details className="advanced">
             <summary>Advanced options</summary>
-            <div className="advanced-body">
-              <div className="field-grid">
-                <div className="field">
+            <div className="mt-3 space-y-4">
+              <div className="grid gap-4 md:grid-cols-3">
+                <div>
                   <label htmlFor="eval-trials">Trials per query</label>
                   <Input
                     id="eval-trials"
@@ -194,12 +193,12 @@ export function EvaluateView({
                     value={trials}
                     onChange={(e) => setTrials(Number(e.target.value) || 1)}
                   />
-                  <p className="field-hint">
+                  <p className="mt-1 text-xs text-[var(--muted)]">
                     Above 1, answers are majority-voted and a flip rate is
                     reported.
                   </p>
                 </div>
-                <div className="field">
+                <div>
                   <label htmlFor="eval-pace">Pace (seconds)</label>
                   <Input
                     id="eval-pace"
@@ -209,11 +208,11 @@ export function EvaluateView({
                     value={pace}
                     onChange={(e) => setPace(Number(e.target.value) || 0)}
                   />
-                  <p className="field-hint">
+                  <p className="mt-1 text-xs text-[var(--muted)]">
                     Delay between calls, for rate-limited providers.
                   </p>
                 </div>
-                <div className="field">
+                <div>
                   <label htmlFor="eval-coord-space">Coordinate space</label>
                   <NativeSelect
                     id="eval-coord-space"
@@ -225,25 +224,24 @@ export function EvaluateView({
                     <option value="pixel">Pixel</option>
                     <option value="norm1000">Normalized (0-1000)</option>
                   </NativeSelect>
-                  <p className="field-hint">
+                  <p className="mt-1 text-xs text-[var(--muted)]">
                     Set per run, from the model's configuration.
                   </p>
                 </div>
               </div>
               <div
-                className="field-grid"
-                style={{ marginTop: "var(--space-4)" }}
+                className="grid gap-4 md:grid-cols-2"
               >
-                <label className="check">
+                <label className="flex items-start gap-2">
                   <input
                     id="eval-fresh"
                     type="checkbox"
                     checked={fresh}
                     onChange={(e) => setFresh(e.target.checked)}
                   />
-                  <span className="check-body">
+                  <span>
                     Start fresh
-                    <span className="field-hint">
+                    <span className="block text-xs text-[var(--muted)]">
                       Discards existing rows and re-runs every query. You pay
                       the full call count again.
                     </span>
@@ -251,16 +249,16 @@ export function EvaluateView({
                 </label>
                 <div id="eval-unlock-field">
                   {preflight?.lock_present && (
-                    <label className="check">
+                    <label className="flex items-start gap-2">
                       <input
                         id="eval-force-unlock"
                         type="checkbox"
                         checked={forceUnlock}
                         onChange={(e) => setForceUnlock(e.target.checked)}
                       />
-                      <span className="check-body">
+                      <span>
                         Override stale lock
-                        <span className="field-hint">
+                        <span className="block text-xs text-[var(--muted)]">
                           Only if you are certain no other run is writing this
                           file.
                         </span>
@@ -277,7 +275,7 @@ export function EvaluateView({
         </div>
         <div id="eval-error">
           {error && (
-            <Alert className="state-error">
+            <Alert className="rounded-md border border-[var(--err)]/40 bg-[var(--err)]/10 p-3 text-sm text-[var(--err)]">
               {error}
             </Alert>
           )}

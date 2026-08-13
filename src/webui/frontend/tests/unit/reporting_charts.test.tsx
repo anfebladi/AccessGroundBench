@@ -33,6 +33,7 @@ vi.mock("../../src/lib/export", () => ({ exportSvgAsPng: vi.fn() }));
 import { AccuracyChart, DirectionChart, DiscordantChart, DumbbellChart, ReachabilityChart } from "../../src/features/shared/reporting/charts";
 import { ExportButton } from "../../src/features/shared/reporting/components/ExportButton";
 import { exportSvgAsPng } from "../../src/lib/export";
+import { CompareView } from "../../src/features/compare/CompareView";
 
 describe("reporting charts", () => {
   beforeEach(() => { document.body.innerHTML = ""; vi.clearAllMocks(); });
@@ -95,6 +96,20 @@ describe("reporting charts", () => {
     expect(chart().getAttribute("data-theme-text")).toBe("var(--text-2)");
     rerender(<AccuracyChart tone="dark" rows={[{ label: "A", value: 0.5 }]} />);
     expect(chart().getAttribute("data-theme-text")).toBe("var(--on-dark-muted)");
+  });
+
+  it("keeps Compare charts in the dark card treatment", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      const path = String(input);
+      if (path.endsWith("/results")) return new Response(JSON.stringify([{filename: "r.csv", model: "model-a", prompt_mode: "vision", row_count: 1, statuses: {HIT: 1}, hits: 1, co_present_count: 1, accuracy: 1, baseline_accuracy: 1}]), {headers: {"Content-Type": "application/json"}});
+      if (path.includes("/results/compare?")) return new Response(JSON.stringify({model: "model-a", mode: "vision", models_in_family: ["model-a"], profiles: [{profile: "high_contrast", baseline_accuracy: 50, profile_accuracy: 25, delta: 25, b: 1, c: 0, reachability: .8, significance_state: "significant"}]}), {headers: {"Content-Type": "application/json"}});
+      return new Response(JSON.stringify([]), {headers: {"Content-Type": "application/json"}});
+    }));
+    render(<CompareView dataset="demo" />);
+    const card = await screen.findByText("Baseline versus each profile");
+    const frame = card.closest("[id='compare-model-a-vision']");
+    expect(frame?.className).toContain("bg-[var(--panel-dark)]");
+    expect(frame?.querySelector('[data-chart-tone="dark"]')).toBeTruthy();
   });
 
   it("renders dumbbell connectors, deltas, and underpowered markers", () => {

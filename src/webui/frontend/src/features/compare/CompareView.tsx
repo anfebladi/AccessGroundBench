@@ -3,7 +3,6 @@ import { api, enc } from "../../lib/api";
 import { ExportButton } from "../shared/reporting/components/ExportButton";
 import type { TabViewProps } from "../../lib/types";
 import { DumbbellChart, Legend } from "../shared/reporting/charts";
-import "../shared/reporting/reporting.module.css";
 import { NativeSelect } from "../../components/ui/native-select";
 import { Card } from "../../components/ui/card";
 import { Skeleton } from "../../components/ui/skeleton";
@@ -66,6 +65,8 @@ const pct = (value: unknown) => {
   return Number.isFinite(n) ? `${(n * 100).toFixed(1)}%` : "--";
 };
 const profileName = (value: string) => profileLabels[value] || value;
+const compareCardClassName =
+  "rounded-[var(--radius-lg)] border-[var(--on-dark-border)] bg-[var(--panel-dark)] text-[var(--on-dark)] [&_.card-sub]:text-[var(--on-dark-muted)] [&_button]:border-[var(--on-dark-border)] [&_button]:bg-[var(--panel-dark-2)] [&_button]:text-[var(--on-dark-muted)] [&_button:hover]:bg-[var(--panel-dark)]";
 
 function Badge({
   className,
@@ -74,17 +75,25 @@ function Badge({
   className: string;
   children: React.ReactNode;
 }) {
-  return <UiBadge className={`badge ${className}`}>{children}</UiBadge>;
+  return <UiBadge className={className}>{children}</UiBadge>;
 }
 function ErrorState({ message }: { message: string }) {
   return (
-    <p className="state-error" role="alert">
+    <p
+      className="rounded-md border border-[var(--err)]/40 bg-[var(--err)]/10 p-3 text-sm text-[var(--err)]"
+      role="alert"
+    >
       {message}
     </p>
   );
 }
 function LoadingState({ message }: { message: string }) {
-  return <div aria-label={message}><p className="state-loading">{message}</p><Skeleton className="skeleton-block" /></div>;
+  return (
+    <div aria-label={message}>
+      <p className="text-sm text-[var(--muted)]">{message}</p>
+      <Skeleton className="h-24 w-full" />
+    </div>
+  );
 }
 
 export function CompareView({
@@ -162,19 +171,26 @@ export function CompareView({
   return (
     <section
       id="tab-compare"
-      className="tab"
+      className="tab min-w-0"
       aria-labelledby="head-compare"
       hidden={hidden}
     >
-      <div className="view-head">
-        <h2 id="head-compare">Compare</h2>
-        <p className="lead">
+      <div className="mb-[var(--space-5)] max-w-[var(--prose-max)]">
+        <h2
+          id="head-compare"
+          className="mb-[var(--space-2)] text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]"
+        >
+          Compare
+        </h2>
+        <p className="font-[var(--font-ui)] text-[length:var(--text-lead)] leading-[var(--lh-lead)] text-[var(--text-2)]">
           Pick a model you've evaluated and compare accessibility profiles.
         </p>
       </div>
-      <Card className="card">
-        <div className="field-row">
-          <label className="field">
+      <Card className="rounded-[var(--radius-lg)]">
+        <div className="flex flex-wrap items-end gap-3">
+          <label
+            className="flex min-w-0 flex-col gap-[var(--space-1)] text-[length:var(--text-sm)] font-medium text-[var(--text)]"
+          >
             Prompt mode
             <NativeSelect
               id="compare-mode-select"
@@ -185,7 +201,9 @@ export function CompareView({
               <option value="tree">Tree</option>
             </NativeSelect>
           </label>
-          <label className="field field-wide">
+          <label
+            className="flex min-w-0 flex-[1_1_22rem] flex-col gap-[var(--space-1)] text-[length:var(--text-sm)] font-medium text-[var(--text)]"
+          >
             Model
             <NativeSelect
               id="compare-model-select"
@@ -225,19 +243,19 @@ function CompareResult({ result }: { result: Compare }) {
   return (
     <>
       <Card
-        className="card card-dark"
+        className={compareCardClassName}
         id={`compare-${result.model}-${result.mode}`}
       >
-        <div className="card-head">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h3>Baseline versus each profile</h3>
-            <p className="card-sub">
+            <p className="text-sm text-[var(--on-dark-muted)]">
               {result.model} -- {rows.length} profile
               {rows.length === 1 ? "" : "s"} tested against baseline,{" "}
               {result.mode} arm.
             </p>
           </div>
-          <div className="card-head-actions">
+          <div className="flex items-center gap-2">
             <ExportButton
               name={`compare-${result.model}-${result.mode}`}
               targetId={`compare-${result.model}-${result.mode}`}
@@ -245,12 +263,13 @@ function CompareResult({ result }: { result: Compare }) {
           </div>
         </div>
         <Legend
+          tone="dark"
           items={[
             { color: "var(--viz-blue)", label: "Baseline accuracy" },
             { color: "var(--viz-orange)", label: "Profile accuracy" },
           ]}
         />
-        <div className="chart-dark chart-draw-in">
+        <div className="overflow-x-auto text-[var(--on-dark-muted)]">
           <DumbbellChart
             tone="dark"
             rows={rows.map((row) => ({
@@ -262,7 +281,7 @@ function CompareResult({ result }: { result: Compare }) {
           />
         </div>
       </Card>
-      <div className="table-wrap">
+      <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -314,8 +333,8 @@ function CompareResult({ result }: { result: Compare }) {
           </TableBody>
         </Table>
       </div>
-      <div className="note">
-        <span className="note-label">Note</span>Corrected across all{" "}
+      <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm">
+        <span className="mr-2 font-semibold">Note</span>Corrected across all{" "}
         {result.models_in_family.length} model
         {result.models_in_family.length === 1 ? "" : "s"} evaluated on this
         dataset's {result.mode} arm (Holm-Bonferroni, α = 0.05) -- per-model

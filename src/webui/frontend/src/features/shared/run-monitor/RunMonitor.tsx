@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { api, isTerminalRunStatus } from "../../../lib/api";
 import { RunTally } from "./RunTally";
-import styles from "./run-monitor.module.css";
 import { Button } from "../../../components/ui/button";
 import { Badge } from "../../../components/ui/badge";
 import { Card } from "../../../components/ui/card";
@@ -108,22 +107,31 @@ export function RunMonitor({
   const remaining =
     status === "running" && expectedTotal && done > alreadyDone
       ? ` -- about ${duration(
-          (elapsed / (done - alreadyDone)) *
-            Math.max(0, expectedTotal - done),
+          (elapsed / (done - alreadyDone)) * Math.max(0, expectedTotal - done),
         )} left`
       : "";
   const timing = `${duration(elapsed)} elapsed${remaining}`;
   const kind =
     status === "running" ? "warn" : status === "completed" ? "ok" : "err";
   return (
-    <Card className={`card run-panel ${styles.root}`}>
-      <div className="run-header">
-        <div className="run-header-top">
-          <div className="run-title">
+    <Card className="min-w-0 p-0">
+      <div className="sticky top-[calc(var(--header-height)+var(--space-2))] z-[5] rounded-t-[var(--radius-lg)] border-b border-[var(--border)] bg-[var(--surface)] p-4">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <span id="run-badge">
-              <Badge className={`badge ${kind}`}>{status}</Badge>
+              <Badge
+                className={
+                  kind === "ok"
+                    ? "text-[var(--ok)]"
+                    : kind === "err"
+                      ? "text-[var(--err)]"
+                      : "text-[var(--warn)]"
+                }
+              >
+                {status}
+              </Badge>
             </span>
-            <span className="run-counts" id="run-counts">
+            <span id="run-counts" className="font-mono text-xl font-medium tabular-nums">
               {expectedTotal
                 ? `${done} / ${expectedTotal} queries (${Math.round(ratio * 100)}%)`
                 : done
@@ -131,13 +139,11 @@ export function RunMonitor({
                   : ""}
             </span>
           </div>
-          <div className="run-title">
-            <span id="run-timing" className="run-timing">
-              {timing}
-            </span>
+          <div className="flex flex-wrap items-center gap-3">
+            <span id="run-timing" className="font-mono text-xs tabular-nums text-[var(--muted)]">{timing}</span>
             <Button
               type="button"
-              className={`secondary small ${status !== "running" ? "hidden" : ""}`}
+              className={`text-sm ${status !== "running" ? "hidden" : ""}`}
               id="run-cancel"
               disabled={cancelled}
               onClick={async () => {
@@ -152,7 +158,7 @@ export function RunMonitor({
           </div>
         </div>
         <Progress
-          className={`progress ${
+          className={`h-1.5 overflow-hidden rounded-full bg-[var(--surface-3)] [&>div]:h-full [&>div]:rounded-full [&>div]:bg-[var(--primary)] ${
             expectedTotal && status === "running"
               ? ""
               : expectedTotal
@@ -176,8 +182,8 @@ export function RunMonitor({
           {expectedTotal ? ` of ${expectedTotal}` : ""} queries done.
         </p>
       </div>
-      <details className="run-log-wrap" id="run-log-details">
-        <summary>Show raw log</summary>
+      <details className="p-4" id="run-log-details">
+        <summary className="flex min-h-8 w-fit cursor-pointer items-center text-sm font-medium text-[var(--text-2)] hover:text-[var(--primary)]">Show raw log</summary>
         <pre
           id="run-log"
           ref={log}
@@ -192,12 +198,12 @@ export function RunMonitor({
         </pre>
         <p
           id="run-log-paused"
-          className={stick ? "log-paused hidden" : "log-paused"}
+          className={stick ? "hidden" : "mt-2 text-xs text-[var(--warn)]"}
         >
           Auto-scroll paused.{" "}
           <Button
             type="button"
-            className="ghost small"
+            className="text-sm"
             id="run-log-resume"
             onClick={() => {
               setStick(true);
@@ -209,13 +215,15 @@ export function RunMonitor({
         </p>
       </details>
       {command && (
-        <div className="run-log-wrap" style={{ paddingTop: 0 }}>
-          <p className="command-label">Equivalent command</p>
-          <div className="command-block">
+        <div style={{ paddingTop: 0 }}>
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+            Equivalent command
+          </p>
+          <div className="flex items-center justify-between gap-3 rounded-md bg-[var(--surface-2)] p-3 font-mono text-xs">
             <code>{command}</code>
             <Button
               type="button"
-              className="secondary small"
+              className="text-sm"
               data-copy-run
               onClick={async (e) => {
                 try {

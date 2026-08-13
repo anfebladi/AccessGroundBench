@@ -13,7 +13,7 @@ export function ExportButton({
     <button
       ref={ref}
       type="button"
-      className="secondary small icon-btn"
+      className="inline-flex size-8 items-center justify-center rounded-md border border-[var(--border)] bg-[var(--surface)] text-sm hover:bg-[var(--surface-2)]"
       data-export-chart={name}
       title="Export chart as PNG"
       aria-label="Export chart as PNG"

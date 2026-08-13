@@ -99,7 +99,7 @@ changes, run the unit baseline and production build from
 `src/webui/frontend/`:
 
 ```bash
-npm run test       # Vitest: 9 files, 71 tests in the current baseline
+npm run test       # Vitest unit test suite
 npm run build      # TypeScript + Vite build
 npm run test:e2e   # Playwright UI and responsive snapshot baseline
 ```
@@ -111,12 +111,12 @@ uv run python -m unittest discover -s tests -p "test_*.py"
 ```
 
 Every colour, size, radius, shadow and duration is a CSS custom property defined
-in the global token/base layer loaded by `style.css`; `styles/tokens.css` and
-`styles/globals.css` provide shared entry points. Shell, feature, and reporting
-selectors are colocated CSS Modules (`*.module.css`) so they are scoped to their
-components. Resets, focus behavior, design tokens, and chart/export variables
-remain global. The global stylesheet is organised into layers (`FONTS → TOKENS →
-BASE → LAYOUT → COMPONENTS → UTILITIES → RESPONSIVE`) in place of a preprocessor.
+in the authored token/base styles loaded by `style.css`; `styles/tokens.css` and
+`styles/globals.css` provide shared entry points. Tailwind CSS v4 is the
+component and layout styling authority, including feature and shell composition.
+Authored CSS is intentionally limited to bundled fonts, design tokens, base/reset
+rules, global focus behavior, keyframes, and unavoidable specialized SVG/export
+rules. CSS Modules are not part of the frontend styling contract.
 The page canvas is light-only by design -- the OS dark-mode setting is not
 followed for the *page*, so it never lands on a heavier, bluer theme than the
 one it was designed against. Screenshots, charts and the Compare stage sit on a

@@ -15,12 +15,12 @@ export function SmokeTestResult({
 }) {
   if (smoke.loading)
     return <div aria-label={`Querying ${smoke.model.id} on ${screen}`}>
-      <p className="state-loading">Querying {smoke.model.id} on {screen}...</p>
-      <div className="row"><Skeleton className="skeleton-block grow" /><Skeleton className="skeleton-block" style={{width: 220}} /></div>
+      <p className="text-sm text-[var(--muted)]">Querying {smoke.model.id} on {screen}...</p>
+      <div className="flex items-center gap-3"><Skeleton className="h-24 min-w-0 flex-1" /><Skeleton className="h-24 w-[220px]" /></div>
     </div>;
   if (smoke.result?.ok) return success;
   return (
-    <Alert className="state-error">
+    <Alert className="rounded-md border border-[var(--err)]/40 bg-[var(--err)]/10 p-3 text-sm text-[var(--err)]">
       {smoke.result?.error || "The model call failed."}
     </Alert>
   );

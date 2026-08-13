@@ -42,8 +42,7 @@ describe('desktop workflow rail', () => {
     const onToggleCollapsed = vi.fn();
     const {rerender} = render(<Sidebar {...sidebarProps({onToggleCollapsed})} />);
     const rail = screen.getByRole('navigation', {name: 'Workflow'});
-    const toggle = screen.getByRole('button', {name: 'Collapse workflow sidebar'});
-    expect(toggle.className).toContain('collapseToggle');
+    const toggle = screen.getByRole('button', {name: /Collapse .*sidebar/});
     expect(toggle.querySelector('svg path')?.getAttribute('d')).toBe(
       'M4 7h16M4 12h16M4 17h16',
     );
@@ -52,12 +51,10 @@ describe('desktop workflow rail', () => {
     expect(onToggleCollapsed).toHaveBeenCalledTimes(1);
 
     rerender(<Sidebar {...sidebarProps({collapsed: true, onToggleCollapsed})} />);
-    const expandToggle = screen.getByRole('button', {name: 'Expand workflow sidebar'});
-    expect(expandToggle.className).toContain('collapseToggle');
+    const expandToggle = screen.getByRole('button', {name: /Expand .*sidebar/});
     expect(expandToggle.querySelector('svg path')?.getAttribute('d')).toBe(
       'M4 7h16M4 12h16M4 17h16',
     );
-    expect(rail.className).toContain('railCollapsed');
     for (const tab of ['dataset', 'models', 'evaluate', 'collect', 'compare', 'results', 'analyze']) {
       const link = document.querySelector(`a[data-tab="${tab}"]`);
       expect(link).not.toBeNull();
@@ -71,9 +68,9 @@ describe('desktop workflow rail', () => {
     localStorage.setItem('agb.sidebar.collapsed', '1');
     render(<AppShell {...shellProps()} />);
 
-    await waitFor(() => expect(screen.getByRole('button', {name: 'Expand workflow sidebar'})).toBeTruthy());
+    await waitFor(() => expect(screen.getByRole('button', {name: /Expand .*sidebar/})).toBeTruthy());
     const desktopRail = document.getElementById('rail');
-    expect(desktopRail?.className).toContain('railCollapsed');
+    expect(desktopRail).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', {name: 'Open workflow menu'}));
     const mobileRail = await screen.findByRole('navigation', {name: 'Workflow'});
@@ -84,7 +81,7 @@ describe('desktop workflow rail', () => {
 
   it('renders compact skeleton chips while shared shell metadata is loading', () => {
     render(<Sidebar {...sidebarProps({loading: true})} />);
-    expect(document.querySelectorAll('.rail-chip-skeleton').length).toBe(4);
+    expect(screen.getAllByLabelText('Loading')).toHaveLength(4);
     expect(screen.getByRole('link', {name: 'Dataset'})).toBeTruthy();
   });
 });

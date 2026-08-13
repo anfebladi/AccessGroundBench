@@ -2,7 +2,6 @@ import { FormEvent, useEffect, useState } from "react";
 import { api, CollectPreflight, StartedRun } from "../../lib/api";
 import { RunMonitor } from "../shared/run-monitor/RunMonitor";
 import type { TabViewProps } from "../../lib/types";
-import styles from "./collect.module.css";
 import { Input } from "../../components/ui/input";
 import { NativeSelect } from "../../components/ui/native-select";
 import { Button } from "../../components/ui/button";
@@ -82,30 +81,30 @@ export function CollectView({
   return (
     <section
       id="tab-collect"
-      className={`tab ${styles.root}`}
+      className="tab min-w-0"
       aria-labelledby="head-collect"
       hidden={hidden}
     >
-      <div className="view-head">
+      <div className="mb-6">
         <h2 id="head-collect">Collect</h2>
-        <p className="lead">
+        <p className="mt-2 max-w-3xl text-[var(--muted)]">
           Capture a new dataset from a live Android emulator. Collection always
           writes to <code>datasets/&lt;name&gt;/</code>, so it can never
           overwrite the shipped dataset or an archived run.
         </p>
       </div>
-      <Card className="card">
-        <div className="card-head">
+      <Card className="mt-4 p-4">
+        <div className="flex items-center justify-between gap-3 pb-3">
           <div>
             <h3>Emulator preflight</h3>
-            <p className="card-sub">
+            <p className="text-sm text-[var(--muted)]">
               Checks that adb sees an authorized device.
             </p>
           </div>
-          <div className="card-head-actions">
+          <div>
             <Button
               type="button"
-              className="secondary"
+              variant="secondary"
               id="collect-preflight-btn"
               onClick={() => void check()}
               disabled={checking}
@@ -115,34 +114,34 @@ export function CollectView({
           </div>
         </div>
         <div id="collect-preflight-result">
-          {checking && <div aria-label="Checking adb"><Alert className="state-loading">Checking adb...</Alert><Skeleton className="skeleton-row" /></div>}
+          {checking && <div aria-label="Checking adb"><Alert className="text-sm text-[var(--muted)]">Checking adb...</Alert><Skeleton className="h-4 w-full" /></div>}
           {preflight &&
             !checking &&
             (!preflight.adb_available ? (
               <>
-                <Badge className="badge err">adb not found</Badge>
-                <p className="field-hint">
+                <Badge className="text-[var(--err)]">adb not found</Badge>
+                <p className="text-sm text-[var(--muted)]">
                   {preflight.error ||
                     "Install the Android platform tools and put adb on PATH."}
                 </p>
               </>
             ) : preflight.error ? (
               <>
-                <Badge className="badge warn">
+                <Badge className="text-[var(--warn)]">
                   adb found, but listing devices failed
                 </Badge>
-                <p className="field-hint">
+                <p className="text-sm text-[var(--muted)]">
                   <code>{preflight.adb_path}</code>
                 </p>
-                <p className="field-hint">{preflight.error}</p>
+                <p className="text-sm text-[var(--muted)]">{preflight.error}</p>
               </>
             ) : authorized.length ? (
               <>
-                <Badge className="badge ok">
+                <Badge className="text-[var(--ok)]">
                   {authorized.length} authorized device
                   {authorized.length === 1 ? "" : "s"}
                 </Badge>
-                <ul className="field-hint">
+                <ul className="text-sm text-[var(--muted)]">
                   {authorized.map((d) => (
                     <li key={d.serial}>
                       <code>{d.serial}</code>
@@ -152,10 +151,10 @@ export function CollectView({
               </>
             ) : (
               <>
-                <Badge className="badge warn">
+                <Badge className="text-[var(--warn)]">
                   adb is working, but no authorized device
                 </Badge>
-                <ul className="field-hint">
+                <ul className="text-sm text-[var(--muted)]">
                   {devices.map((d) => (
                     <li key={d.serial}>
                       <code>{d.serial}</code> -- {d.status}
@@ -166,20 +165,20 @@ export function CollectView({
               </>
             ))}
         </div>
-        <div className="note">
-          <span className="note-label">Prerequisites</span> Not verifiable from
+        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm">
+          <span className="mr-2 font-semibold">Prerequisites</span> Not verifiable from
           here: Pixel 6 / API 34 / 1080x2400 at 420 dpi, a signed-in Google
           account, and Messages, Gmail and Maps each opened once to clear their
           first-run dialogs. See <code>docs/collection.md</code>.
         </div>
       </Card>
-      <Card className="card card-primary">
-        <div className="card-head">
+      <Card className="mt-4 border-[var(--primary)] p-4">
+        <div className="pb-3">
           <h3>New collection</h3>
         </div>
         <form id="collect-form" onSubmit={submit}>
-          <div className="field-grid">
-            <div className="field field-wide">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
               <label htmlFor="collect-name">Dataset name</label>
               <Input
                 id="collect-name"
@@ -188,11 +187,11 @@ export function CollectView({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
-              <p className="field-hint">
+              <p className="mt-1 text-xs text-[var(--muted)]">
                 Captures land in <code>datasets/&lt;name&gt;/</code>.
               </p>
             </div>
-            <div className="field">
+            <div>
               <label htmlFor="collect-screens">Screens</label>
               <NativeSelect
                 id="collect-screens"
@@ -211,48 +210,48 @@ export function CollectView({
                   </option>
                 ))}
               </NativeSelect>
-              <p className="field-hint">Select none to capture every screen.</p>
+              <p className="mt-1 text-xs text-[var(--muted)]">Select none to capture every screen.</p>
             </div>
           </div>
-          <div className="field-grid" style={{ marginTop: "var(--space-4)" }}>
-            <label className="check">
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            <label className="flex items-start gap-2">
               <input
                 type="checkbox"
                 id="collect-dry-run"
                 checked={dry}
                 onChange={(e) => setDry(e.target.checked)}
               />
-              <span className="check-body">
+              <span>
                 Dry run
-                <span className="field-hint">
+                <span className="block text-xs text-[var(--muted)]">
                   Validates the run plan without touching the emulator.
                 </span>
               </span>
             </label>
-            <label className="check">
+            <label className="flex items-start gap-2">
               <input
                 type="checkbox"
                 id="collect-rebuild-manifest"
                 checked={rebuild}
                 onChange={(e) => setRebuild(e.target.checked)}
               />
-              <span className="check-body">
+              <span>
                 Rebuild manifest only
-                <span className="field-hint">
+                <span className="block text-xs text-[var(--muted)]">
                   Recomputes drift from existing captures. Takes no new
                   screenshots.
                 </span>
               </span>
             </label>
           </div>
-          <div className="form-actions">
+          <div className="mt-4 flex flex-wrap gap-2">
             <Button type="submit" disabled={starting}>
               {starting ? "Starting…" : "Start collection"}
             </Button>
           </div>
         </form>
         <div id="collect-error">
-          {error && <Alert className="state-error">{error}</Alert>}
+          {error && <Alert className="rounded-md border border-[var(--err)]/40 bg-[var(--err)]/10 p-3 text-sm text-[var(--err)]">{error}</Alert>}
         </div>
         <div id="collect-command" />
       </Card>

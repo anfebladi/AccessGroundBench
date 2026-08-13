@@ -3,20 +3,21 @@
 The token reference for the local Vite frontend. Global tokens and base rules
 are loaded by `src/webui/frontend/src/style.css`, with shared entry points in
 `src/webui/frontend/src/styles/tokens.css` and `styles/globals.css`. Tailwind
-CSS v4 is imported from `style.css` and supplied by the Vite plugin; shadcn
-primitives are owned in `src/components/ui/`. Feature and shell selectors
-remain in colocated CSS Modules (`*.module.css`), and should consume the same
-variables rather than hard-code a colour, size or duration.
+CSS v4 is imported from `style.css` and supplied by the Vite plugin; it is the
+component and layout styling authority. Shadcn primitives are owned in
+`src/components/ui/`. Authored CSS is reserved for bundled fonts, design tokens,
+base/reset rules, global focus behavior, keyframes, and unavoidable specialized
+SVG/export rules. CSS Modules are removed and are not part of the styling
+contract.
 
 The shadcn contract is recorded in `src/webui/frontend/components.json`:
 `@/*` resolves to `src/*`, with `@/components`, `@/components/ui`,
 `@/lib`, `@/lib/utils`, and `@/app/hooks` as the supported aliases. New shared
 primitives belong in `components/ui/`; feature markup stays in its feature
-directory. Tailwind utilities handle small layout/state composition, while
-CSS Modules retain complex feature layouts and responsive rules. The CSS token
-bridge is the source of truth for both: `@theme` exposes selected tokens to
-Tailwind, and global tokens remain available to CSS Modules, charts, canvas
-drawing, and SVG export.
+directory. Tailwind utilities and shared primitives handle component, layout,
+responsive, and state composition. The CSS token bridge is the source of truth:
+`@theme` exposes selected tokens to Tailwind, while authored global tokens remain
+available to charts, canvas drawing, and SVG export.
 
 **Constraint that shapes all of it:** React + Vite for the local UI, with all
 dependencies resolved from the lockfile and no CDN or runtime network asset.
@@ -24,8 +25,8 @@ Node is required at runtime because `agb ui` starts Vite beside the FastAPI API.
 Run `npm ci` from `src/webui/frontend/` when dependencies are missing, then
 `npm run build` after source changes. Build output in
 `src/webui/frontend/dist/` is ignored and disposable; no static bundle is
-committed. `style.css` still provides the ordered global layers:
-`FONTS → TOKENS → BASE → LAYOUT → COMPONENTS → UTILITIES → RESPONSIVE`.
+committed. `style.css` imports Tailwind and the authored foundation styles; keep
+those foundation rules limited to the responsibilities listed above.
 
 ## 0. Source organization
 
@@ -40,21 +41,21 @@ primitives, utilities, and global styles remain in `components/ui/`, `lib/`, and
 `styles/` (with the global entry point in `style.css`).
 
 Keep resets, focus-visible behavior, design tokens, and CSS variables consumed
-by charts, canvas drawing, or SVG export global. Put markup-specific selectors,
-responsive rules, and component states in the owning CSS Module. CSS Module
-class names must not be queried imperatively; use React state, refs, ARIA state,
-or stable `data-*` hooks for behavior. Pages remain mounted and switch through
-the `hidden` attribute, so route hashes and accessibility hooks remain stable.
+by charts, canvas drawing, or SVG export global. Use Tailwind utilities and
+shared primitives for markup-specific layout, responsive rules, and component
+states; use React state, refs, ARIA state, or stable `data-*` hooks for behavior.
+Pages remain mounted and switch through the `hidden` attribute, so route hashes
+and accessibility hooks remain stable.
 
 ### Tailwind and shadcn ownership
 
-Tailwind v4 utilities are the composition layer, not a replacement for the
-token system. Use the shadcn/Radix primitives in `src/components/ui/` for
+Tailwind v4 utilities are the composition layer and the styling authority, while
+the token system remains the visual source of truth. Use the shadcn/Radix primitives in `src/components/ui/` for
 shared controls (for example `Button`, `Card`, `ScrollArea`, and `Tooltip`),
 composing them with `cn` from `src/lib/utils.ts`. Keep feature-specific
-markup and states in the owning feature directory and its CSS Module. When a
-utility or primitive needs a visual value, use a token-backed class or CSS
-variable so the Tailwind and module paths stay visually equivalent.
+markup and states in the owning feature directory. When a utility or primitive
+needs a visual value, use a token-backed class or CSS variable so all paths stay
+visually equivalent.
 
 ### Reporting charts and export
 

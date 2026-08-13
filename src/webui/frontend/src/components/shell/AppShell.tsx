@@ -4,7 +4,6 @@ import type { PreflightSummary } from "../../lib/types";
 import type { Tab } from "../../app/navigation";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
-import styles from "./Shell.module.css";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
@@ -55,11 +54,13 @@ export function AppShell({
         onPalette={onPalette}
         loading={dataLoading}
       />
-      <div className={`app-body ${styles.appBody} ${collapsed ? styles.bodyCollapsed : ""}`}>
-        <div className={styles.mobileMenu}>
+      <div
+        className={`app-body grid items-start transition-[grid-template-columns] duration-[var(--dur-mid)] ease-[var(--ease)] max-[1023px]:grid-cols-1 ${collapsed ? "grid-cols-[64px_minmax(0,1fr)]" : "grid-cols-[var(--rail-width)_minmax(0,1fr)]"}`}
+      >
+        <div className="hidden p-2 max-[1023px]:block max-[1023px]:px-[var(--page-gutter)]">
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger asChild>
-              <Button type="button" className="secondary small" aria-label="Open workflow menu">Menu</Button>
+              <Button type="button" variant="secondary" size="sm" aria-label="Open workflow menu">Menu</Button>
             </SheetTrigger>
             <SheetContent>
               <SheetTitle>Workflow</SheetTitle>
@@ -92,7 +93,7 @@ export function AppShell({
           loading={dataLoading}
           onToggleCollapsed={toggleCollapsed}
         />
-        <main>{children}</main>
+        <main className="min-w-0 max-w-[var(--content-max)] px-[var(--page-gutter)] pb-[var(--space-8)] pt-[var(--space-6)] min-[1280px]:px-[var(--space-6)] max-[767px]:px-[var(--space-4)] max-[767px]:pt-[var(--space-4)]">{children}</main>
       </div>
     </>
   );

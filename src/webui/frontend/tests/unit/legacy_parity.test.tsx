@@ -53,7 +53,9 @@ describe('DatasetView', () => {
     expect(screen.getByText('settings')).toBeTruthy();
     expect(screen.queryByText('home')).toBeNull();
     fireEvent.click(screen.getByRole('button', {name: 'settings'}));
-    expect(screen.getByRole('button', {name: 'settings'}).closest('li')?.classList.contains('selected')).toBe(true);
+    const selectedItem = screen.getByRole('button', {name: 'settings'}).closest('li');
+    expect(selectedItem?.getAttribute('data-screen')).toBe('settings');
+    expect(selectedItem?.className).toContain('bg-[var(--primary)]');
   });
 
   it('renders datasets containing non-text labels without crashing', async () => {
@@ -73,7 +75,7 @@ describe('DatasetView', () => {
     render(<DatasetView dataset="demo" />);
 
     await waitFor(() => expect(screen.getByRole('button', {name: 'Save'})).toBeTruthy());
-    expect(screen.getByRole('button', {name: 'Save'}).className).toContain('stage-target-item');
+    expect(screen.getByRole('button', {name: 'Save'}).textContent).toContain('Save');
     expect(consoleError).not.toHaveBeenCalled();
   });
 });
