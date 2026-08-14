@@ -7,7 +7,9 @@ from pathlib import Path
 
 from .providers import call_vlm, image_send_scale
 
-from .config import ALL_PROFILES, DEFAULT_COORD_SPACE, IMAGES_DIR, LABELS_DIR
+import paths
+
+from .config import ALL_PROFILES, DEFAULT_COORD_SPACE
 from .storage.results import (
     PROMPT_MODE_TREE,
     PROMPT_MODE_VISION,
@@ -94,8 +96,8 @@ def evaluate_screen(
     screen_name: str,
     pace_seconds: float,
     results_csv: Path,
-    images_dir: Path = IMAGES_DIR,
-    labels_dir: Path = LABELS_DIR,
+    images_dir: Path | None = None,
+    labels_dir: Path | None = None,
     profiles: list[str] | None = None,
     use_a11y_tree: bool = False,
     trials: int = 1,
@@ -114,6 +116,12 @@ def evaluate_screen(
 
     Returns the total number of evaluation rows generated.
     """
+    # Resolved here rather than as default arguments, which would have been
+    # evaluated at import time and so frozen to whichever dataset happened to be
+    # active first -- or, with no default dataset, failed the import outright.
+    images_dir = images_dir if images_dir is not None else paths.images_dir()
+    labels_dir = labels_dir if labels_dir is not None else paths.labels_dir()
+
     # Targets absent from a profile's layout are recorded with
     # status=off_screen and NO score: they are a property of the layout,
     # not a grounding failure, and are analysed separately as

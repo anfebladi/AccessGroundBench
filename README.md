@@ -116,17 +116,20 @@ front of a model does not leak into published filenames.
 ```bash
 uv run agb evaluate                    # resumes by default; --fresh restarts
 uv run agb analyze                     # writes the full table set
-uv run agb rescore --csv experiment/outputs/evaluations/MODEL_vision.csv --check
+uv run agb rescore --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --check
 ```
 
 Evaluation appends one row per `(screen, target, profile)` and is **resumable** — an
 interrupted run does not lose paid API calls. Nothing that truncates or rewrites a
 result file does so without first copying it aside into a `.backups/` directory.
 
-Analysis writes to `experiment/outputs/analysis/`. Every dataset owns exactly one output
-root — the active one uses `experiment/outputs/`, and any other dataset (an archive, or a
-directory passed to `--data-dir`) owns an `outputs/` directory inside itself. That is what
-stops re-analysing an archive from overwriting the current run's tables.
+Analysis writes to `collections/experiment/outputs/analysis/`. Every dataset owns exactly one output
+root, derived from where the dataset sits. A directory named `dataset` is one half of a run
+root, so its outputs are its sibling: `collections/experiment/dataset/` → `collections/experiment/outputs/`, and a
+collected `collections/<name>/dataset/` → `collections/<name>/outputs/`. Anything else (an
+archive, or a bare directory passed to `--data-dir`) owns an `outputs/` directory inside
+itself. That is what stops re-analysing an archive from overwriting the current run's
+tables.
 
 Collecting a *new* dataset needs a configured emulator and is documented separately —
 see [`docs/collection.md`](docs/collection.md) and the
@@ -160,17 +163,27 @@ src/webui/frontend/      React + TypeScript web UI
 ferret_ui/               Optional local Ferret-UI server (separate environment)
 docs/                    Reference documentation and runbooks
 tests/                   Unit tests
-experiment/
-  dataset/               Input captures, labels, raw XML, and the manifest
-  outputs/               Results derived from it: evaluations/ and analysis/
-  archive/               Superseded runs -- local only, gitignored, not citable
-    experiment_1/        Each archive is self-contained: its captures plus
-    experiment_2/          its own outputs/ holding that run's tables
+collections/             Every run, shipped or collected, in one shape
+  experiment/            The run that ships with the benchmark
+    dataset/             Input captures, labels, raw XML, and the manifest
+    outputs/             Results derived from it: evaluations/ and analysis/
+    archive/             Superseded runs -- local only, gitignored, not citable
+      experiment_1/      Each archive is self-contained: its captures plus
+      experiment_2/        its own outputs/ holding that run's tables
+  <name>/                A run you captured yourself, same two directories
+    dataset/
+    outputs/
 ```
 
-One experiment is a dataset plus everything derived from it, so both live under a single
-root. Captures under `experiment/dataset/` **are** committed; `experiment/archive/` is
-not — those runs predate several scoring fixes and must not be cited.
+One run is a dataset plus everything derived from it, so both live under a single root —
+and every run lives under `collections/`, whether it shipped with the benchmark or you
+captured it. The shipped run has no privileged location, only a reserved name: `agb
+collect` and the UI refuse `experiment` (and the archived names) so a new run cannot
+overwrite it.
+
+Captures under `collections/experiment/dataset/` **are** committed;
+`collections/experiment/archive/` is not — those runs predate several scoring fixes and
+must not be cited.
 
 ## The profiles
 

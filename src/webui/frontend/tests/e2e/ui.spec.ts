@@ -121,14 +121,6 @@ test.describe("legacy UI rendered parity", () => {
     await expect(page.locator("#compare-overlay-toggles")).toBeVisible();
   });
 
-  test("command palette routes to a screen", async ({ page }) => {
-    await page.goto("/#dataset");
-    await page.locator("#palette-trigger").click();
-    await page.locator("#palette-input").fill("settings");
-    await page.locator("#palette-input").press("Enter");
-    await expect(page.locator("#screen-list li.selected")).toContainText("settings");
-  });
-
   test("workflow navigation switches the hash route and hides every non-selected view", async ({ page }) => {
     const tabs = ["dataset", "models", "evaluate", "collect", "compare", "results", "analyze"];
     const responsive = test.info().project.name === "responsive";

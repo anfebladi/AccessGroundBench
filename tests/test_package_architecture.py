@@ -471,12 +471,36 @@ class WebuiBackendBoundaryTests(unittest.TestCase):
 
     def test_routers_do_not_import_the_process_launcher(self):
         """A route handler has no business starting or stopping processes."""
-        for source_path in sorted((self.BACKEND_ROOT / "routers").glob("*.py")):
+        for source_path in sorted((self.BACKEND_ROOT / "api").glob("*.py")):
             with self.subTest(module=source_path.name):
                 self.assertNotIn(
                     "launcher",
                     self._relative_imports(source_path),
                     f"{source_path.name} imports the process launcher",
+                )
+
+    def test_services_layer_knows_nothing_about_http(self):
+        """No module under services/ may import fastapi.
+
+        This is the rule that makes the api/ + services/ split worth having, and
+        the one a future edit is most likely to break silently: reaching for
+        HTTPException inside a service is the easy shortcut. It is also what
+        keeps the `ui` extra genuinely optional -- every other `agb` subcommand
+        imports this layer.
+        """
+        for source_path in sorted((self.BACKEND_ROOT / "services").glob("*.py")):
+            tree = ast.parse(source_path.read_text(encoding="utf-8"))
+            imported = set()
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Import):
+                    imported.update(alias.name.split(".")[0] for alias in node.names)
+                elif isinstance(node, ast.ImportFrom) and not node.level and node.module:
+                    imported.add(node.module.split(".")[0])
+            with self.subTest(module=source_path.name):
+                self.assertNotIn(
+                    "fastapi",
+                    imported,
+                    f"services/{source_path.name} imports fastapi -- HTTP belongs in api/",
                 )
 
     def test_server_module_only_wires_routers_together(self):
@@ -502,11 +526,11 @@ class WebuiBackendBoundaryTests(unittest.TestCase):
         var a session key writes, one of every var that counts as configured --
         is how they silently drifted apart.
         """
-        source = (self.BACKEND_ROOT / "keys.py").read_text(encoding="utf-8")
+        source = (self.BACKEND_ROOT / "services" / "keys.py").read_text(encoding="utf-8")
         self.assertIn("from .providers import PROVIDERS", source)
 
-        from webui.backend import keys as keys_mod
-        from webui.backend.providers import PROVIDERS
+        from webui.backend.services import keys as keys_mod
+        from webui.backend.services.providers import PROVIDERS
 
         self.assertEqual(
             {name: spec.key_env for name, spec in PROVIDERS.items()},

@@ -15,10 +15,10 @@ from fastapi import APIRouter, HTTPException
 
 import paths
 
-from .. import keys as keys_mod
-from .. import runs as runs_mod
-from ..dependencies import baseline_screens, dataset_or_404, writable_dataset_or_400
-from ..schemas import StartEvaluateRun
+from ..services import keys as keys_mod
+from ..services import runs as runs_mod
+from .dependencies import baseline_screens, dataset_or_404
+from .schemas import StartEvaluateRun
 
 router = APIRouter()
 
@@ -37,11 +37,10 @@ def evaluate_preflight(name: str, model: str, use_a11y_tree: bool = False) -> di
     labels_dir = info.path / "labels"
     expected_keys = build_expected_keys(baseline_screens(labels_dir), labels_dir, ALL_PROFILES)
 
-    # Scoped to the selected dataset explicitly. evaluation.config's
-    # module-level DATASET_DIR reflects whatever dataset this server
-    # process happened to import under -- not necessarily the one the
-    # caller picked in the UI -- so the preflight would otherwise count
-    # another dataset's completed rows as this run's progress.
+    # Scoped to the selected dataset explicitly. The path helpers otherwise read
+    # AGB_DATASET_DIR, which this server process does not set -- so the preflight
+    # would either fail outright or, if something else had set it, count another
+    # dataset's completed rows as this run's progress.
     results_csv = paths.evaluation_results_path(model, use_a11y_tree, info.path)
 
     already_done = len(load_completed_keys(results_csv)) if results_csv.is_file() else 0
@@ -63,7 +62,7 @@ def evaluate_preflight(name: str, model: str, use_a11y_tree: bool = False) -> di
 
 @router.post("/api/runs")
 def start_evaluate_run(payload: StartEvaluateRun) -> dict:
-    info = writable_dataset_or_400(payload.dataset)
+    info = dataset_or_404(payload.dataset)
     model = payload.model
     if not model:
         raise HTTPException(status_code=400, detail="model is required")

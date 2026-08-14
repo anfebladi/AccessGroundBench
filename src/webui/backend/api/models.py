@@ -13,11 +13,11 @@ import threading
 
 from fastapi import APIRouter, HTTPException
 
-from .. import keys as keys_mod
-from ..dependencies import dataset_or_404
-from ..providers import PROVIDERS, is_configured_value
-from ..schemas import SetKey, SmokeTest
-from ..stdout_capture import capture_stdout
+from ..services import keys as keys_mod
+from .dependencies import dataset_or_404
+from ..services.providers import PROVIDERS, is_configured_value
+from .schemas import SetKey, SmokeTest
+from ..services.stdout_capture import capture_stdout
 
 router = APIRouter()
 

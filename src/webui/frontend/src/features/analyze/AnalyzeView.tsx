@@ -13,10 +13,11 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { NativeSelect } from "../../components/ui/native-select";
 import { Card } from "../../components/ui/card";
-import { Skeleton } from "../../components/ui/skeleton";
+import { LoadingState } from "../../components/ui/spinner";
 import { Progress } from "../../components/ui/progress";
 import { Badge as UiBadge } from "../../components/ui/badge";
 import { SegmentedButton, SegmentedGroup } from "../../components/ui/segmented";
+import { StageHeader } from "../shared/StageHeader";
 import {
   Table as UiTable,
   TableHeader,
@@ -63,9 +64,6 @@ function ErrorState({ message }: { message: string }) {
       {message}
     </p>
   );
-}
-function LoadingState({ message }: { message: string }) {
-  return <div aria-label={message}><p className="text-sm text-[var(--muted)]">{message}</p><Skeleton className="h-4 w-full" /><Skeleton className="h-24 w-full" /></div>;
 }
 function Table({
   headers,
@@ -169,13 +167,9 @@ export function AnalyzeView({
       aria-labelledby="head-analyze"
       hidden={hidden}
     >
-      <div className="view-head mb-[var(--space-5)] max-w-[var(--prose-max)]">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--primary)]">Read evidence</p>
-        <h2 id="head-analyze" className="mb-[var(--space-2)] text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]">Analyze</h2>
-        <p className="font-[var(--font-ui)] text-[length:var(--text-lead)] leading-[var(--lh-lead)] text-[var(--text-2)]">
-          Reachability, pooled permutation tests, and per-model tests.
-        </p>
-      </div>
+      <StageHeader stage="analyze" title="Analyze">
+        Reachability, pooled permutation tests, and per-model tests.
+      </StageHeader>
       <Card className="rounded-[var(--radius-lg)]">
         <form id="analyze-form" onSubmit={run}>
           <div className="flex flex-wrap items-end gap-3">
@@ -241,7 +235,7 @@ export function AnalyzeView({
         {loading ? (
           <Card className="rounded-[var(--radius-lg)]">
             <LoadingState
-              message={`Running ${permutations.toLocaleString()} permutations. This can take a minute.`}
+              label={`Running ${permutations.toLocaleString()} permutations. This can take a minute.`}
             />
             <Progress
               value={undefined}
@@ -251,7 +245,7 @@ export function AnalyzeView({
           </Card>
         ) : readLoading ? (
           <Card aria-label="Loading analysis">
-            <LoadingState message="Loading analysis results…" />
+            <LoadingState label="Loading analysis results…" />
           </Card>
         ) : result ? (
           <AnalysisResult

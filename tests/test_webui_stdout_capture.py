@@ -7,7 +7,7 @@ import threading
 import unittest
 from contextlib import redirect_stdout
 
-from webui.backend.stdout_capture import capture_stdout
+from webui.backend.services.stdout_capture import capture_stdout
 
 
 class StdoutCaptureTests(unittest.TestCase):

@@ -99,6 +99,32 @@ describe('DatasetView', () => {
     expect(captureHealth.compareDocumentPosition(comparison) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
+  it('mounts the comparison stage when the manifest resolves after the screen list', async () => {
+    // Regression: one shared token ref let the screen/profile effect invalidate
+    // this slower manifest response, so initialLoading never cleared and the
+    // stage never mounted until a page refresh reordered the two responses.
+    vi.mocked(fetch).mockImplementation(async (input) => {
+      const path = String(input);
+      if (path.endsWith('/screens')) return json({screens: ['home', 'settings']});
+      if (path.endsWith('/manifest')) {
+        await new Promise((resolve) => setTimeout(resolve, 20));
+        return json({
+          available: true,
+          manifest: {expected_captures: 2, successful_captures: 1, problems: ['home capture is incomplete']},
+        });
+      }
+      if (path.includes('/targets/')) return json({targets: [{text: 'Save', baseline_box: [10, 20, 110, 60]}]});
+      if (path.includes('/labels/')) return json([{text: 'Save', box: [12, 22, 112, 62]}]);
+      return json([]);
+    });
+
+    render(<DatasetView dataset="demo" />);
+
+    await waitFor(() => expect(screen.getByRole('button', {name: 'Save'})).toBeTruthy());
+    expect(screen.queryByRole('status', {name: 'Loading dataset'})).toBeNull();
+    expect(screen.getByText('home capture is incomplete')).toBeTruthy();
+  });
+
   it('renders datasets containing non-text labels without crashing', async () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     vi.mocked(fetch).mockImplementation(async (input) => {

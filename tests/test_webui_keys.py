@@ -1,6 +1,6 @@
 import unittest
 
-from webui.backend import keys
+from webui.backend.services import keys
 
 
 class SessionKeyStoreTests(unittest.TestCase):

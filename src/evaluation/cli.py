@@ -5,11 +5,10 @@ import os
 import sys
 from pathlib import Path
 
-# Deliberately NOT `from paths import DATASET_DIR_ENV_VAR`: importing the
-# `paths` module at all runs its top-level DATASET_DIR computation
-# immediately, before --data-dir has been parsed below -- which would freeze
-# DATASET_DIR to the default and silently ignore the override for the rest
-# of the process. Kept in sync with paths.DATASET_DIR_ENV_VAR by
+# Deliberately NOT `from paths import DATASET_DIR_ENV_VAR`: kept hardcoded so this
+# module has no import-time dependency on `paths` at all, which is what lets
+# --data-dir be parsed and published to the environment before the domain
+# packages are imported. Kept in sync with paths.DATASET_DIR_ENV_VAR by
 # tests/test_dataset_dir_and_byo_model.py.
 _DATASET_DIR_ENV_VAR = "AGB_DATASET_DIR"
 
@@ -37,14 +36,18 @@ def evaluate_main(argv: list[str] | None = None) -> None:
         type=Path,
         default=None,
         help="Directory holding images/ and labels/ "
-        "(default: ./experiment/dataset, or $AGB_DATASET_DIR if set)",
+        f"(or set ${_DATASET_DIR_ENV_VAR}; no default)",
     )
     args = parser.parse_args(argv)
+    # No default dataset: evaluating one the user never named is how paid API
+    # calls end up appended to the wrong run's CSV.
     if args.data_dir is not None:
-        # Must land in os.environ before `paths` (and anything importing it,
-        # e.g. .workflow) is first imported in this process -- paths.py reads
-        # this once at import time. Hence the lazy import below.
         os.environ[_DATASET_DIR_ENV_VAR] = str(args.data_dir.expanduser().resolve())
+    elif not os.environ.get(_DATASET_DIR_ENV_VAR, "").strip():
+        parser.error(
+            f"--data-dir is required (or set ${_DATASET_DIR_ENV_VAR}). "
+            "There is no default dataset."
+        )
 
     from .workflow import evaluate
 

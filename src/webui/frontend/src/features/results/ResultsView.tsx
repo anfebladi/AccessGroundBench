@@ -7,10 +7,11 @@ import type { TabViewProps } from "../../lib/types";
 import { AccuracyChart } from "../shared/reporting/charts";
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
-import { Skeleton } from "../../components/ui/skeleton";
+import { LoadingState } from "../../components/ui/spinner";
 import { Badge as UiBadge } from "../../components/ui/badge";
 import { Checkbox } from "../../components/ui/checkbox";
 import { SegmentedButton, SegmentedGroup } from "../../components/ui/segmented";
+import { StageHeader } from "../shared/StageHeader";
 import {
   Table,
   TableHeader,
@@ -61,10 +62,6 @@ function ErrorState({ message }: { message: string }) {
     </p>
   );
 }
-function LoadingState({ message }: { message: string }) {
-  return <p className="text-sm text-[var(--muted)]">{message}</p>;
-}
-
 const STATUS_COLUMNS: [string, string, string][] = [
   [
     "off_screen",
@@ -202,13 +199,9 @@ export function ResultsView({
       aria-labelledby="head-results"
       hidden={hidden}
     >
-      <div className="view-head mb-[var(--space-5)] max-w-[var(--prose-max)]">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--primary)]">Read evidence</p>
-        <h2 id="head-results" className="mb-[var(--space-2)] text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]">Results</h2>
-        <p className="font-[var(--font-ui)] text-[length:var(--text-lead)] leading-[var(--lh-lead)] text-[var(--text-2)]">
-          Per-model accuracy over the targets present on both profiles.
-        </p>
-      </div>
+      <StageHeader stage="results" title="Results">
+        Per-model accuracy over the targets present on both profiles.
+      </StageHeader>
       <Card className="rounded-[var(--radius-lg)]">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h3>Evaluated models</h3>
@@ -240,7 +233,7 @@ export function ResultsView({
           {error ? (
             <ErrorState message={error} />
           ) : resultsLoading ? (
-            <LoadingState message="Loading evaluation results…" />
+            <LoadingState label="Loading evaluation results…" />
           ) : !rows.length ? (
             <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--border)] p-6 text-center">
               <h3>No evaluations yet</h3>
@@ -565,9 +558,7 @@ function MissInspector({
         </div>
         <div className="overflow-y-auto p-4">
           {loading ? (
-            <div aria-label="Loading result rows" className="flex flex-col gap-3">
-              <Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-24 w-full" />
-            </div>
+            <LoadingState label="Loading result rows" />
           ) : error ? (
             <ErrorState message={error} />
           ) : !current ? (

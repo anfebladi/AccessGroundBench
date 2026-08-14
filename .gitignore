@@ -39,14 +39,14 @@ src/webui/frontend/*.tsbuildinfo
 ._*
 
 # Scratch output from the standalone `agb capture` command. Everything else
-# under experiment/outputs/ is per-dataset results and is committed.
-experiment/outputs/captures/
+# under collections/experiment/outputs/ is per-dataset results and is committed.
+collections/experiment/outputs/captures/
 
 # Superseded collection runs. Kept locally as a record, never published: they
 # predate several scoring fixes (so they must not be cited) and their captures
 # contain personal data that the current dataset has had removed. Each archive
 # holds its own outputs/ too, so this one rule covers their tables as well.
-experiment/archive/
+collections/experiment/archive/
 
 # Copies kept aside before a command replaces a result file (src/backups.py).
 # Local safety net, not a record: committing them would put stale evaluation
@@ -73,9 +73,6 @@ adb*.txt
 
 # Stale local Ferret-UI input fixture at the repository root only.
 /eval.json
-
-# Analysis output from the web UI (derived, regenerable; never the dataset itself)
-ui_experiments/
 
 # Local scratch notes for in-flight work. Not a project record -- anything worth
 # keeping belongs in docs/.

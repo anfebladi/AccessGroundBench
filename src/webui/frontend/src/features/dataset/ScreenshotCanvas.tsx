@@ -6,12 +6,12 @@ import { asText } from "./types";
 
 export function ScreenshotCanvas({
   dataset, screen, profile, targets, present, missing, labels, selected,
-  showBoxes, showMissing, evictedOnly, zoom, onSelect, id, wrapperRef,
+  showBoxes, showMissing, evictedOnly, onSelect, id, wrapperRef,
   hidden, className, onDimensions, onCanvasReady,
 }: {
   dataset: string; screen: string; profile: string; targets: Target[];
   present: Set<string>; missing: Target[]; labels: Label[]; selected: string | null;
-  showBoxes: boolean; showMissing: boolean; evictedOnly: boolean; zoom: "fit" | number;
+  showBoxes: boolean; showMissing: boolean; evictedOnly: boolean;
   onSelect: (text: string) => void; id: string; wrapperRef: React.RefObject<HTMLDivElement | null>;
   hidden?: boolean; className?: string; onDimensions?: (value: string) => void;
   onCanvasReady?: (canvas: HTMLCanvasElement) => void;
@@ -83,20 +83,18 @@ export function ScreenshotCanvas({
         if (text && present.has(text)) draw(text, label.box, accent);
       });
     }
-  }, [img, targets, present, missing, labels, selected, showBoxes, showMissing, evictedOnly, zoom, wrapperRef, profile, onDimensions]);
+  }, [img, targets, present, missing, labels, selected, showBoxes, showMissing, evictedOnly, wrapperRef, profile, onDimensions]);
   useEffect(() => { if (canvasRef.current) onCanvasReady?.(canvasRef.current); }, [onCanvasReady]);
-  const style: React.CSSProperties = {};
-  if (zoom !== "fit" && img && imageIsDrawable(img)) {
-    style.width = `${Math.round(img.width * zoom)}px`;
-    style.height = `${Math.round(img.height * zoom)}px`;
-  }
+  /* No inline width/height on purpose: the caller's max-* classes scale the canvas
+     down and the browser preserves the capture's intrinsic aspect ratio. Setting
+     both dimensions explicitly would let max-width and max-height clamp each axis
+     independently, which stretches the screenshot. */
   return (
     <canvas
       id={`canvas-${id}`}
       ref={canvasRef}
       hidden={hidden}
       className={className}
-      style={style}
       onClick={(event) => {
         if (!img || !imageIsDrawable(img)) return;
         const rect = event.currentTarget.getBoundingClientRect();

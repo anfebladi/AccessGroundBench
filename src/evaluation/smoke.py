@@ -22,7 +22,8 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-from .config import IMAGES_DIR, LABELS_DIR
+import paths
+
 from .grounding.scoring import hit_test, parse_coordinates_detailed, to_pixel_space
 from .grounding.targets import harvest_targets, locate_element
 from .grounding.task_prompting import PROMPT_TEMPLATE
@@ -63,8 +64,8 @@ def smoke_test_model(
     model: str,
     screen_name: str,
     *,
-    images_dir: Path = IMAGES_DIR,
-    labels_dir: Path = LABELS_DIR,
+    images_dir: Path | None = None,
+    labels_dir: Path | None = None,
     profile_name: str = "baseline",
     coord_space: str = "pixel",
     target_text: str | None = None,
@@ -76,6 +77,11 @@ def smoke_test_model(
     reply looks like the other convention, so the UI can suggest a switch
     before the user spends a full run finding out the hard way.
     """
+    # Resolved here, not as default arguments: those evaluate at import time,
+    # when no dataset need be known yet.
+    images_dir = images_dir if images_dir is not None else paths.images_dir()
+    labels_dir = labels_dir if labels_dir is not None else paths.labels_dir()
+
     image_path = images_dir / f"{screen_name}_{profile_name}.png"
     label_path = labels_dir / f"{screen_name}_{profile_name}.json"
 

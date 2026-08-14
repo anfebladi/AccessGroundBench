@@ -1,4 +1,4 @@
-import {cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react';
+import {cleanup, fireEvent, render, screen, waitFor} from '@testing-library/react';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import contract from '../../ui-contract.json';
 
@@ -60,18 +60,12 @@ describe('rendered legacy contract', () => {
     expect(document.querySelectorAll('main [aria-labelledby]').length).toBeGreaterThanOrEqual(7);
   });
 
-  it('keeps rail chips and command palette navigation wired to the shell', async () => {
+  it('keeps rail chips wired to the shell', async () => {
     const {App} = await import('../../src/main');
     render(<App />);
     await waitFor(() => expect(screen.getByDisplayValue('demo')).toBeTruthy());
     expect(screen.getByText('2 screens')).toBeTruthy();
     expect(screen.getByText('none configured')).toBeTruthy();
-
-    fireEvent.click(screen.getByRole('button', {name: 'Open command palette'}));
-    const palette = screen.getByRole('dialog', {name: 'Command palette'});
-    fireEvent.change(within(palette).getByRole('combobox'), {target: {value: 'results'}});
-    fireEvent.keyDown(within(palette).getByRole('combobox'), {key: 'Enter'});
-    expect(window.location.hash).toBe('#results');
   });
 
   it('does not let contenteditable fields trigger global numeric shortcuts', async () => {

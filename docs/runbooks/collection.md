@@ -47,8 +47,8 @@ device is reset to baseline after each screen.
 
 ## Validate and stop
 
-Inspect `experiment/dataset/images/`, `experiment/dataset/raw_xml/`, `experiment/dataset/labels/`, and
-`experiment/dataset/collection_manifest.json`. Stop the run and investigate if any command
+Inspect `collections/experiment/dataset/images/`, `collections/experiment/dataset/raw_xml/`, `collections/experiment/dataset/labels/`, and
+`collections/experiment/dataset/collection_manifest.json`. Stop the run and investigate if any command
 returns nonzero or reports problems; do not proceed to evaluation with an
 unresolved manifest problem. See the [collection guide](../collection.md) for
 artifact and validation details.

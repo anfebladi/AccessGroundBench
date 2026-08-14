@@ -7,6 +7,7 @@ import importlib
 import sys
 from collections.abc import Callable, Sequence
 
+from paths import NoDatasetSpecified
 
 CommandMain = Callable[[list[str] | None], object]
 
@@ -102,7 +103,17 @@ def main(argv: Sequence[str] | None = None) -> object:
         _print_help(parser)
         return None
 
-    return _load_command(namespace.command)(arguments[1:])
+    try:
+        return _load_command(namespace.command)(arguments[1:])
+    except NoDatasetSpecified as exc:
+        # Backstop for the commands that cannot fail at argparse time -- notably
+        # `agb analyze`, which legitimately infers its dataset from a --csv
+        # sitting beside labels/ and so can only discover the gap afterwards.
+        # Printed rather than raised so the web UI's run panel (which spawns
+        # cli.main with stderr merged into stdout) shows one line, not a
+        # traceback.
+        print(f"[ERROR] {exc}")
+        return 1
 
 
 if __name__ == "__main__":

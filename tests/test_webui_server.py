@@ -9,7 +9,7 @@ from unittest import mock
 
 import paths
 from evaluation.storage.results import CSV_COLUMNS, append_result, init_csv
-from webui.backend import keys as keys_mod
+from webui.backend.services import keys as keys_mod
 from webui.backend.server import create_app
 
 
@@ -30,7 +30,7 @@ class WebuiServerTests(unittest.TestCase):
         self.root = Path(self.tmp_dir.name)
         self.addCleanup(self.tmp_dir.cleanup)
 
-        self.dataset_dir = self.root / "experiment" / "dataset"
+        self.dataset_dir = self.root / "collections" / "experiment" / "dataset"
         (self.dataset_dir / "images").mkdir(parents=True)
         (self.dataset_dir / "labels").mkdir(parents=True)
 
@@ -44,10 +44,12 @@ class WebuiServerTests(unittest.TestCase):
             json.dumps(labels), encoding="utf-8",
         )
 
-        exp1 = self.root / "experiment" / "archive" / "experiment_1"
-        (exp1 / "images").mkdir(parents=True)
-        (exp1 / "labels").mkdir(parents=True)
-        (exp1 / "labels" / "clock_baseline.json").write_text("[]", encoding="utf-8")
+        # A second, ordinary run. Every run under collections/ is equal, so this
+        # is what a "some other dataset" fixture looks like now.
+        self.other_dir = self.root / "collections" / "other_run" / "dataset"
+        (self.other_dir / "images").mkdir(parents=True)
+        (self.other_dir / "labels").mkdir(parents=True)
+        (self.other_dir / "labels" / "clock_baseline.json").write_text("[]", encoding="utf-8")
 
         # Every output root is derived from PROJECT_ROOT at call time, so this
         # one patch isolates the whole test from the real checkout's outputs.
@@ -77,28 +79,29 @@ class WebuiServerTests(unittest.TestCase):
             append_result(path, full_row)
         return path
 
-    def test_list_datasets_includes_default_and_archived(self):
+    def test_list_datasets_names_each_run_after_its_folder(self):
         resp = self.client.get("/api/datasets")
         self.assertEqual(200, resp.status_code)
         by_name = {d["name"]: d for d in resp.json()}
-        self.assertIn("dataset", by_name)
-        self.assertTrue(by_name["dataset"]["is_default"])
-        self.assertIn("experiment_1", by_name)
-        self.assertTrue(by_name["experiment_1"]["is_archived"])
+        # No run is privileged and none is called "dataset" -- that was the
+        # registry name the shipped run used to be given by a special case.
+        self.assertEqual({"experiment", "other_run"}, set(by_name))
+        self.assertNotIn("is_default", by_name["experiment"])
+        self.assertNotIn("is_archived", by_name["experiment"])
 
     def test_unknown_dataset_is_404(self):
         resp = self.client.get("/api/datasets/nonexistent/screens")
         self.assertEqual(404, resp.status_code)
 
     def test_dataset_screens_lists_baseline_derived_names(self):
-        resp = self.client.get("/api/datasets/dataset/screens")
+        resp = self.client.get("/api/datasets/experiment/screens")
         self.assertEqual(200, resp.status_code)
         self.assertEqual(["clock"], resp.json()["screens"])
 
     def test_dataset_targets_returns_harvested_targets(self):
         terminal = io.StringIO()
         with contextlib.redirect_stdout(terminal):
-            resp = self.client.get("/api/datasets/dataset/targets/clock")
+            resp = self.client.get("/api/datasets/experiment/targets/clock")
         self.assertEqual(200, resp.status_code)
         targets = resp.json()["targets"]
         self.assertEqual(1, len(targets))
@@ -128,7 +131,7 @@ class WebuiServerTests(unittest.TestCase):
         with mock.patch("evaluation.smoke.smoke_test_model", side_effect=noisy_smoke):
             with contextlib.redirect_stdout(terminal):
                 resp = self.client.post("/api/smoke-test", json={
-                    "dataset": "dataset",
+                    "dataset": "experiment",
                     "model": "test-model",
                     "screen": "clock",
                 })
@@ -142,23 +145,43 @@ class WebuiServerTests(unittest.TestCase):
         self.assertNotIn("SMOKE BACKEND OUTPUT", terminal.getvalue())
 
     def test_dataset_image_serves_png(self):
-        resp = self.client.get("/api/datasets/dataset/image/clock/baseline")
+        resp = self.client.get("/api/datasets/experiment/image/clock/baseline")
         self.assertEqual(200, resp.status_code)
         self.assertEqual("image/png", resp.headers["content-type"])
 
     def test_dataset_image_missing_is_404(self):
-        resp = self.client.get("/api/datasets/dataset/image/clock/elder_combo_max")
+        resp = self.client.get("/api/datasets/experiment/image/clock/elder_combo_max")
         self.assertEqual(404, resp.status_code)
 
     def test_dataset_labels_returns_json(self):
-        resp = self.client.get("/api/datasets/dataset/labels/clock/baseline")
+        resp = self.client.get("/api/datasets/experiment/labels/clock/baseline")
         self.assertEqual(200, resp.status_code)
         self.assertEqual("8:30 AM", resp.json()[0]["text"])
 
     def test_dataset_manifest_reports_unavailable_when_absent(self):
-        resp = self.client.get("/api/datasets/dataset/manifest")
+        resp = self.client.get("/api/datasets/experiment/manifest")
         self.assertEqual(200, resp.status_code)
         self.assertFalse(resp.json()["available"])
+
+    def test_get_doc_returns_content(self):
+        docs_dir = self.root / "docs"
+        docs_dir.mkdir(parents=True)
+        (docs_dir / "collection.md").write_text("# Collection guide\n", encoding="utf-8")
+
+        resp = self.client.get("/api/docs/collection.md")
+
+        self.assertEqual(200, resp.status_code)
+        body = resp.json()
+        self.assertEqual("collection.md", body["name"])
+        self.assertEqual("# Collection guide\n", body["content"])
+
+    def test_get_doc_rejects_unknown_name(self):
+        resp = self.client.get("/api/docs/nope.md")
+        self.assertEqual(404, resp.status_code)
+
+    def test_get_doc_404s_when_allowed_but_missing_on_disk(self):
+        resp = self.client.get("/api/docs/collection.md")
+        self.assertEqual(404, resp.status_code)
 
     def test_provider_status_defaults_to_unconfigured(self):
         with mock.patch.dict("os.environ", {}, clear=True):
@@ -195,7 +218,7 @@ class WebuiServerTests(unittest.TestCase):
             {"screen": "clock", "target_text": "8:30 AM", "profile": "elder_text_heavy",
              "status": "co_present", "score": "0", "prompt_mode": "vision"},
         ])
-        resp = self.client.get("/api/datasets/dataset/results")
+        resp = self.client.get("/api/datasets/experiment/results")
         self.assertEqual(200, resp.status_code)
         rows = resp.json()
         self.assertEqual(1, len(rows))
@@ -206,7 +229,7 @@ class WebuiServerTests(unittest.TestCase):
         self.assertEqual("test-model_vision.csv", rows[0]["filename"])
 
     def test_analysis_endpoint_reports_unavailable_when_nothing_has_been_run(self):
-        resp = self.client.get("/api/datasets/dataset/analysis?mode=vision&sample=all")
+        resp = self.client.get("/api/datasets/experiment/analysis?mode=vision&sample=all")
         self.assertEqual(200, resp.status_code)
         body = resp.json()
         self.assertFalse(body["available"])
@@ -225,11 +248,11 @@ class WebuiServerTests(unittest.TestCase):
             encoding="utf-8",
         )
 
-        resp = self.client.get("/api/datasets/dataset/analysis?mode=vision&sample=all")
+        resp = self.client.get("/api/datasets/experiment/analysis?mode=vision&sample=all")
         self.assertEqual(200, resp.status_code)
         body = resp.json()
         self.assertTrue(body["available"])
-        self.assertEqual("experiment/outputs/analysis/vision_all", body["output_dir"])
+        self.assertEqual("collections/experiment/outputs/analysis/vision_all", body["output_dir"])
         self.assertEqual(1, len(body["reachability"]))
         self.assertEqual("elder_text_heavy", body["reachability"][0]["Profile"])
         # The other three tables have no file on disk yet -- empty, not an error.
@@ -239,10 +262,10 @@ class WebuiServerTests(unittest.TestCase):
 
     def test_analysis_endpoint_rejects_unknown_mode_or_sample(self):
         self.assertEqual(400, self.client.get(
-            "/api/datasets/dataset/analysis?mode=bogus"
+            "/api/datasets/experiment/analysis?mode=bogus"
         ).status_code)
         self.assertEqual(400, self.client.get(
-            "/api/datasets/dataset/analysis?sample=bogus"
+            "/api/datasets/experiment/analysis?sample=bogus"
         ).status_code)
 
     def test_result_rows_endpoint_returns_scoreable_fields(self):
@@ -256,7 +279,7 @@ class WebuiServerTests(unittest.TestCase):
              "x_min": "84", "y_min": "231", "x_max": "429", "y_max": "414",
              "raw_response": "[10, 10]", "prompt_mode": "vision"},
         ])
-        resp = self.client.get("/api/datasets/dataset/results/test-model_vision.csv/rows")
+        resp = self.client.get("/api/datasets/experiment/results/test-model_vision.csv/rows")
         self.assertEqual(200, resp.status_code)
         rows = resp.json()
         self.assertEqual(2, len(rows))
@@ -266,18 +289,18 @@ class WebuiServerTests(unittest.TestCase):
         self.assertEqual("[10, 10]", misses[0]["raw_response"])
 
     def test_result_rows_rejects_path_traversal_filename(self):
-        resp = self.client.get("/api/datasets/dataset/results/../../../etc/passwd/rows")
+        resp = self.client.get("/api/datasets/experiment/results/../../../etc/passwd/rows")
         self.assertIn(resp.status_code, (404, 400))
 
     def test_result_rows_missing_file_is_404(self):
-        resp = self.client.get("/api/datasets/dataset/results/nope_vision.csv/rows")
+        resp = self.client.get("/api/datasets/experiment/results/nope_vision.csv/rows")
         self.assertEqual(404, resp.status_code)
 
     def test_preflight_reports_expected_and_completed_counts(self):
         # Only one screen (clock, one target) exists in the fixture, so
         # expected_total = 1 target x 6 profiles = 6, regardless of model.
         resp = self.client.get(
-            "/api/datasets/dataset/preflight",
+            "/api/datasets/experiment/preflight",
             params={"model": "openai/gpt-4o-mini", "use_a11y_tree": "false"},
         )
         self.assertEqual(200, resp.status_code)
@@ -293,7 +316,7 @@ class WebuiServerTests(unittest.TestCase):
              "status": "co_present", "score": "1", "prompt_mode": "vision"},
         ])
         resp = self.client.get(
-            "/api/datasets/dataset/preflight",
+            "/api/datasets/experiment/preflight",
             params={"model": "openai/gpt-4o-mini"},
         )
         self.assertEqual(1, resp.json()["already_done"])
@@ -306,27 +329,28 @@ class WebuiServerTests(unittest.TestCase):
         self.addCleanup(lambda: lock_path(results_csv).unlink(missing_ok=True))
 
         resp = self.client.get(
-            "/api/datasets/dataset/preflight",
+            "/api/datasets/experiment/preflight",
             params={"model": "openai/gpt-4o-mini"},
         )
         self.assertTrue(resp.json()["lock_present"])
         self.assertIsNotNone(resp.json()["lock_holder"])
 
     def test_preflight_without_model_is_400(self):
-        resp = self.client.get("/api/datasets/dataset/preflight", params={"model": ""})
+        resp = self.client.get("/api/datasets/experiment/preflight", params={"model": ""})
         self.assertEqual(400, resp.status_code)
 
-    def test_start_run_against_archived_dataset_is_rejected(self):
-        resp = self.client.post("/api/runs", json={"dataset": "experiment_1", "model": "openai/gpt-4o-mini"})
-        self.assertEqual(400, resp.status_code)
+    def test_start_run_against_an_unknown_dataset_is_a_404(self):
+        resp = self.client.post(
+            "/api/runs", json={"dataset": "no_such_run", "model": "openai/gpt-4o-mini"})
+        self.assertEqual(404, resp.status_code)
 
     def test_start_run_without_model_is_a_400(self):
-        resp = self.client.post("/api/runs", json={"dataset": "dataset"})
+        resp = self.client.post("/api/runs", json={"dataset": "experiment"})
         self.assertEqual(400, resp.status_code)
 
     def test_start_run_returns_run_id_and_equivalent_command(self):
         resp = self.client.post("/api/runs", json={
-            "dataset": "dataset", "model": "openai/gpt-4o-mini", "use_a11y_tree": False,
+            "dataset": "experiment", "model": "openai/gpt-4o-mini", "use_a11y_tree": False,
         })
         self.assertEqual(200, resp.status_code)
         body = resp.json()
@@ -373,20 +397,41 @@ class WebuiServerTests(unittest.TestCase):
         self.assertFalse(body["adb_available"])
         self.assertIsNotNone(body["error"])
 
-    def test_start_collect_run_rejects_reserved_and_unsafe_names(self):
-        for bad_name in ("", "dataset", "experiment_1", "experiment_2", "a/b", "a\\b", ".."):
+    def test_start_collect_run_rejects_only_unsafe_names(self):
+        # Path safety only. No name is reserved: every run under collections/ is
+        # ordinary data, so there is nothing for this endpoint to treat as
+        # special. See the companion test below for what that permits.
+        bad_names = ("", "a/b", "a\\b", "..")
+        for bad_name in bad_names:
             with self.subTest(bad_name=bad_name):
-                resp = self.client.post("/api/collect/runs", json={"name": bad_name, "dry_run": True})
+                resp = self.client.post(
+                    "/api/collect/runs", json={"name": bad_name, "dry_run": True})
                 self.assertEqual(400, resp.status_code)
 
-    def test_start_collect_run_targets_datasets_subdirectory(self):
+    def test_start_collect_run_accepts_an_existing_run_name(self):
+        """Collecting into a run that already exists is a supported workflow.
+
+        `--screens <subset>` adds screens to a run already on disk and
+        `--rebuild-manifest` does nothing else, so refusing existing names would
+        break both. The consequence, accepted deliberately: a collection named
+        after a committed run adds to it.
+        """
+        resp = self.client.post(
+            "/api/collect/runs", json={"name": "experiment", "dry_run": True})
+        self.assertEqual(200, resp.status_code, resp.text)
+        self.assertIn(
+            str(self.root / "collections" / "experiment" / "dataset"),
+            resp.json()["equivalent_command"],
+        )
+
+    def test_start_collect_run_targets_the_collections_subdirectory(self):
         resp = self.client.post("/api/collect/runs", json={
             "name": "my_new_app", "dry_run": True, "screens": ["clock"],
         })
         self.assertEqual(200, resp.status_code)
         body = resp.json()
         self.assertIn("run_id", body)
-        expected_path = str(self.root / "datasets" / "my_new_app")
+        expected_path = str(self.root / "collections" / "my_new_app" / "dataset")
         self.assertIn(expected_path, body["equivalent_command"])
         self.assertIn("--dry-run", body["equivalent_command"])
 
@@ -401,9 +446,11 @@ class WebuiServerTests(unittest.TestCase):
         # ensure_dirs() -- so the (empty) directory skeleton is expected,
         # while no actual capture output (images/xml/labels files) is.
         self.assertEqual("completed", status)
-        new_dataset_dir = self.root / "datasets" / "my_new_app"
+        new_dataset_dir = self.root / "collections" / "my_new_app" / "dataset"
         self.assertTrue(new_dataset_dir.is_dir())
         self.assertEqual([], list((new_dataset_dir / "images").iterdir()))
+        # The old flat layout must not come back alongside it.
+        self.assertFalse((self.root / "datasets").exists())
 
     def test_start_collect_run_uses_the_real_project_root_not_a_mocked_one(self):
         # The subprocess resolves paths.PROJECT_ROOT for itself -- mocking
@@ -424,10 +471,10 @@ class WebuiServerTests(unittest.TestCase):
             status = poll.json()["status"]
 
         self.assertEqual("completed", status)
-        self.assertTrue((self.root / "datasets" / "my_new_app2").is_dir())
+        self.assertTrue((self.root / "collections" / "my_new_app2" / "dataset").is_dir())
 
     def test_analyze_with_no_result_csvs_is_a_400(self):
-        resp = self.client.post("/api/analyze", json={"dataset": "dataset", "mode": "vision"})
+        resp = self.client.post("/api/analyze", json={"dataset": "experiment", "mode": "vision"})
         self.assertEqual(400, resp.status_code)
 
     def write_analyzable_results(self, model: str = "m1", *, use_a11y_tree: bool = False,
@@ -447,7 +494,7 @@ class WebuiServerTests(unittest.TestCase):
                                dataset_dir=dataset_dir)
 
     def run_analysis_request(self, **overrides):
-        payload = {"dataset": "dataset", "mode": "vision", "sample": "primary",
+        payload = {"dataset": "experiment", "mode": "vision", "sample": "primary",
                    "permutations": 10, "seed": 0}
         payload.update(overrides)
         return self.client.post("/api/analyze", json=payload)
@@ -474,14 +521,15 @@ class WebuiServerTests(unittest.TestCase):
                      "direction_consistency.csv"):
             self.assertFalse((self.dataset_dir / name).exists(), name)
 
-    def test_analyze_writes_under_ui_experiments_and_reports_the_path(self):
+    def test_analyze_writes_under_the_runs_output_root_and_reports_the_path(self):
         self.write_analyzable_results()
 
         resp = self.run_analysis_request()
         self.assertEqual(200, resp.status_code, resp.text)
-        self.assertEqual("experiment/outputs/analysis/vision_primary", resp.json()["output_dir"])
+        self.assertEqual("collections/experiment/outputs/analysis/vision_primary",
+                         resp.json()["output_dir"])
 
-        out = self.root / "experiment" / "outputs" / "analysis" / "vision_primary"
+        out = self.root / "collections" / "experiment" / "outputs" / "analysis" / "vision_primary"
         self.assertTrue((out / "reachability_results.csv").is_file())
         self.assertTrue(resp.json()["reachability"])
 
@@ -493,46 +541,45 @@ class WebuiServerTests(unittest.TestCase):
         self.assertEqual(200, self.run_analysis_request(mode="vision").status_code)
         self.assertEqual(200, self.run_analysis_request(mode="tree").status_code)
 
-        root = self.root / "experiment" / "outputs" / "analysis"
+        root = self.root / "collections" / "experiment" / "outputs" / "analysis"
         self.assertTrue((root / "vision_primary" / "reachability_results.csv").is_file())
         self.assertTrue((root / "tree_primary" / "reachability_results.csv").is_file())
 
-    def test_analyze_of_an_archived_dataset_writes_nothing_into_the_archive(self):
-        archive = self.root / "experiment" / "archive" / "experiment_1"
-        (archive / "images").mkdir(exist_ok=True)
-        write_png_header(archive / "images" / "clock_baseline.png", 1080, 2274)
-        write_png_header(archive / "images" / "clock_elder_text_heavy.png", 1080, 2274)
+    def test_analyzing_one_run_writes_nothing_into_another(self):
+        """Output roots are per-run, so two runs can never reach the same table."""
+        other = self.other_dir
+        write_png_header(other / "images" / "clock_baseline.png", 1080, 2274)
+        write_png_header(other / "images" / "clock_elder_text_heavy.png", 1080, 2274)
         labels = [{"text": "8:30 AM", "box": [84, 231, 429, 414]}]
         for profile in ("baseline", "elder_text_heavy"):
-            (archive / "labels" / f"clock_{profile}.json").write_text(
+            (other / "labels" / f"clock_{profile}.json").write_text(
                 json.dumps(labels), encoding="utf-8")
 
-        self.write_analyzable_results(dataset_dir=archive)
-        # The current dataset's own tables must survive untouched: an archive
-        # analysis writes to the archive's own output root, not the shared one.
+        self.write_analyzable_results(dataset_dir=other)
         self.write_analyzable_results()
         self.assertEqual(200, self.run_analysis_request().status_code)
-        current_table = (self.root / "experiment" / "outputs" / "analysis"
+        current_table = (self.root / "collections" / "experiment" / "outputs" / "analysis"
                          / "vision_primary" / "reachability_results.csv")
         current_before = current_table.read_text(encoding="utf-8")
 
-        # An archive's outputs now live inside the archive, so the directory
-        # does gain an outputs/ child. What must not change is its *captures*:
-        # analysis reads images/labels/raw_xml and writes none of them.
+        # The other run's captures must not change: analysis reads
+        # images/labels/raw_xml and writes none of them.
         captures_before = {
-            name: sorted(p.name for p in (archive / name).iterdir())
+            name: sorted(p.name for p in (other / name).iterdir())
             for name in ("images", "labels")
         }
-        resp = self.run_analysis_request(dataset="experiment_1")
+        resp = self.run_analysis_request(dataset="other_run")
         self.assertEqual(200, resp.status_code, resp.text)
 
         self.assertEqual(captures_before, {
-            name: sorted(p.name for p in (archive / name).iterdir())
+            name: sorted(p.name for p in (other / name).iterdir())
             for name in ("images", "labels")
         })
+        # collections/other_run/dataset is half of a run root, so its tables land
+        # in the sibling outputs/, not inside its own captures.
         self.assertTrue(
-            (archive / "outputs" / "analysis" / "vision_primary"
-             / "reachability_results.csv").is_file()
+            (self.root / "collections" / "other_run" / "outputs" / "analysis"
+             / "vision_primary" / "reachability_results.csv").is_file()
         )
         self.assertEqual(current_before, current_table.read_text(encoding="utf-8"))
 
@@ -540,7 +587,8 @@ class WebuiServerTests(unittest.TestCase):
         self.write_analyzable_results()
         self.assertEqual(400, self.run_analysis_request(sample="../escape").status_code)
         self.assertEqual(400, self.run_analysis_request(mode="../escape").status_code)
-        self.assertFalse((self.root / "experiment" / "outputs" / "analysis").exists())
+        self.assertFalse((self.root / "collections" / "experiment" / "outputs"
+                          / "analysis").exists())
 
 
 if __name__ == "__main__":

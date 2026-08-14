@@ -14,9 +14,8 @@ from fastapi import APIRouter, HTTPException
 
 import paths
 
-from .. import datasets as datasets_mod
-from .. import runs as runs_mod
-from ..schemas import StartCollectRun
+from ..services import runs as runs_mod
+from .schemas import StartCollectRun
 
 router = APIRouter()
 
@@ -63,19 +62,23 @@ def collect_preflight() -> dict:
 @router.post("/api/collect/runs")
 def start_collect_run(payload: StartCollectRun) -> dict:
     name = payload.name.strip()
-    # Collection always targets datasets/<name>/, never the shipped
-    # dataset/ directory or the archived experiment_N/ dirs -- the
-    # dataset dropdown intentionally keeps those separate (see the
-    # discovery conversation this UI's plan settled on) so collecting
-    # into a new name can never overwrite the paper's committed data.
-    if not name or name in ("dataset", *datasets_mod.ARCHIVED_NAMES) \
-            or any(sep in name for sep in ("/", "\\")) or ".." in name:
+    # Path safety only -- no reserved names. Every run under collections/ is
+    # ordinary data, including the one that ships with the benchmark, so there is
+    # no name this endpoint treats as special.
+    #
+    # Note this deliberately permits an existing run: `--screens` collects a
+    # subset into a run that is already there, and `--rebuild-manifest` does
+    # nothing else. Refusing existing names would break both. What that leaves
+    # open is that a collection named after a committed run will add to it --
+    # visible in `git status`, and the reason nothing here silently guesses a
+    # target.
+    if not name or any(sep in name for sep in ("/", "\\")) or ".." in name:
         raise HTTPException(
             status_code=400,
-            detail="name must be a plain directory name, not 'dataset' or an archived experiment name.",
+            detail="name must be a plain directory name: no path separators or '..'.",
         )
 
-    dataset_path = paths.PROJECT_ROOT / "datasets" / name
+    dataset_path = paths.collections_dir() / name / "dataset"
     args = ["--data-dir", str(dataset_path)]
     screens = payload.screens or []
     if screens:

@@ -18,16 +18,16 @@ agb collect [--dry-run] [--screens SCREEN [SCREEN ...]] [--rebuild-manifest]
 ```
 
 **Purpose.** Capture the configured screens under each accessibility profile,
-extract labels, and write `experiment/dataset/collection_manifest.json`.
+extract labels, and write `collections/experiment/dataset/collection_manifest.json`.
 
 **Use when.** Run a live collection with an attached emulator, preview the
 planned sequence, or reconstruct a manifest from assets already on disk.
 
 **Inputs and outputs.** Live mode uses the emulator/ADB and writes
-`experiment/dataset/images/{screen}_{profile}.png`,
-`experiment/dataset/raw_xml/{screen}_{profile}.xml`,
-`experiment/dataset/labels/{screen}_{profile}.json`, and
-`experiment/dataset/collection_manifest.json`. `--rebuild-manifest` reads those existing
+`collections/experiment/dataset/images/{screen}_{profile}.png`,
+`collections/experiment/dataset/raw_xml/{screen}_{profile}.xml`,
+`collections/experiment/dataset/labels/{screen}_{profile}.json`, and
+`collections/experiment/dataset/collection_manifest.json`. `--rebuild-manifest` reads those existing
 directories and rewrites the manifest without captures. A rebuild with
 `--screens` updates that subset, carries unselected screen records forward,
 and overwrites the manifest file; omit it to rebuild all screens.
@@ -55,7 +55,7 @@ agb evaluate [--fresh] [--force-unlock]
 
 **Purpose.** Call the configured VLM APIs for targets in the input captures and
 write one result file per configured model and prompt mode at
-`experiment/outputs/evaluations/<model>_<vision|tree>.csv`.
+`collections/experiment/outputs/evaluations/<model>_<vision|tree>.csv`.
 
 **Use when.** Evaluate new captures or continue an interrupted evaluation.
 
@@ -95,9 +95,9 @@ reports, and serialize analysis tables.
 vision-only file with a with-tree file.
 
 **Inputs and outputs.** `--csv` selects one result file; otherwise discovery
-uses evaluation results under `experiment/outputs/evaluations/` for `--mode` (`vision` by
-default). Reports are written under `experiment/outputs/analysis/<mode>_<sample>/`.
-Paired comparisons are written under `experiment/outputs/analysis/comparisons/`.
+uses evaluation results under `collections/experiment/outputs/evaluations/` for `--mode` (`vision` by
+default). Reports are written under `collections/experiment/outputs/analysis/<mode>_<sample>/`.
+Paired comparisons are written under `collections/experiment/outputs/analysis/comparisons/`.
 
 **Effects and safety.** Analysis reads and reclassifies data in memory; it
 does not mutate source evaluation CSVs. Report files are rewritten. The
@@ -109,8 +109,8 @@ uses `primary` when `--sample all` is selected.
 
 ```bash
 agb analyze
-agb analyze --data-dir experiment/archive/experiment_2 --mode vision
-agb analyze --csv experiment/outputs/evaluations/MODEL_vision.csv --sample primary
+agb analyze --data-dir collections/experiment/archive/experiment_2 --mode vision
+agb analyze --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --sample primary
 agb analyze --compare-a a.csv --compare-b b.csv
 ```
 
@@ -131,7 +131,7 @@ mid-run.
 expected key order, removes stale-target, `api_error`, and duplicate rows,
 sorts canonically, and rewrites each selected CSV. A `.csv.bak` backup is
 created before each rewrite. By default it processes all
-evaluation result files under `experiment/outputs/evaluations/`; `--csv` selects one or more.
+evaluation result files under `collections/experiment/outputs/evaluations/`; `--csv` selects one or more.
 
 **Effects and safety.** No API calls or emulator calls are made. Per-CSV locks
 guard the rewrite; a held lock is reported as a problem. Rewriting replaces
@@ -139,7 +139,7 @@ the CSV, while the `.bak` copy preserves the prior bytes.
 
 ```bash
 agb canonicalize
-agb canonicalize --csv experiment/outputs/evaluations/MODEL_vision.csv
+agb canonicalize --csv collections/experiment/outputs/evaluations/MODEL_vision.csv
 ```
 
 ## `agb rescore`
@@ -165,8 +165,8 @@ after making the backup; rerun `agb analyze --csv PATH` afterward.
 accepts `pixel` or `norm1000`.
 
 ```bash
-agb rescore --csv experiment/outputs/evaluations/MODEL_vision.csv --check
-agb rescore --csv experiment/outputs/evaluations/MODEL_vision.csv --coord-space norm1000
+agb rescore --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --check
+agb rescore --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --coord-space norm1000
 ```
 
 ## `agb profile`

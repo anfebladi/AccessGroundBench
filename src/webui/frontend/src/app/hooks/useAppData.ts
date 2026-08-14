@@ -30,6 +30,7 @@ async function fetchDatasetData(
 
 export function useAppData() {
   const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [datasetsError, setDatasetsError] = useState<string | null>(null);
   const [dataset, setDataset] = useState("");
   const [screens, setScreens] = useState<string[]>([]);
   const [providers, setProviders] = useState<Provider[]>([]);
@@ -46,11 +47,18 @@ export function useAppData() {
     ]);
 
     if (datasetList.status === "fulfilled") {
+      setDatasetsError(null);
       setDatasets(datasetList.value);
       setDataset((current) =>
         datasetList.value.some((item) => item.name === current)
           ? current
           : datasetList.value[0]?.name ?? "",
+      );
+    } else {
+      setDatasetsError(
+        datasetList.reason instanceof Error
+          ? datasetList.reason.message
+          : "Failed to load datasets",
       );
     }
 
@@ -91,6 +99,7 @@ export function useAppData() {
 
   return {
     datasets,
+    datasetsError,
     dataset,
     setDataset,
     screens,

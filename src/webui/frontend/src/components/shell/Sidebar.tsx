@@ -2,7 +2,7 @@ import type { Dataset, Model, Provider } from "../../lib/api";
 import type { PreflightSummary } from "../../lib/types";
 import { ROUTE_GROUPS, routeLabel, type Tab } from "../../app/navigation";
 import { Icon } from "./icons";
-import { Skeleton } from "../ui/skeleton";
+import { Spinner } from "../ui/spinner";
 
 export function Sidebar({
   route,
@@ -38,11 +38,7 @@ export function Sidebar({
     (p) => p.configured || p.env_configured || p.session_configured,
   ).length;
   const chips: Record<Tab, string> = {
-    dataset: selected
-      ? selected.is_archived
-        ? "archived, read-only"
-        : `${selected.screen_count} screens`
-      : "",
+    dataset: selected ? `${selected.screen_count} screens` : "",
     models: models.length
       ? `${models.length} model${models.length === 1 ? "" : "s"}, ${configured} provider${configured === 1 ? "" : "s"}`
       : "none configured",
@@ -108,7 +104,7 @@ export function Sidebar({
                 }`}
                 data-chip={tab}
               >
-                {loading && ["dataset", "models", "compare", "results"].includes(tab) ? <Skeleton className="rail-chip-skeleton" aria-label="Loading" /> : chips[tab]}
+                {loading && ["dataset", "models", "compare", "results"].includes(tab) ? <Spinner label="Loading" className="size-3 border" /> : chips[tab]}
               </span>
             </a>
           ))}

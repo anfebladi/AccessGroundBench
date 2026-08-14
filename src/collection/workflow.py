@@ -43,14 +43,7 @@ from .pipeline import capture
 from .runtime import navigation, profiles
 from .screens import SCREENS
 
-from paths import (
-    DATASET_DIR,
-    IMAGES_DIR,
-    LABELS_DIR,
-    MANIFEST_PATH,
-    PROJECT_ROOT,
-    RAW_XML_DIR,
-)
+import paths
 
 # The closing baseline, captured after a screen's profiles, used only to measure
 # drift. It is not an experimental condition.
@@ -62,7 +55,7 @@ DRIFT_WARN_RATIO = manifest.DRIFT_WARN_RATIO
 
 def ensure_dirs() -> None:
     """Create the dataset directory structure if it doesn't exist."""
-    for d in (IMAGES_DIR, RAW_XML_DIR, LABELS_DIR):
+    for d in (paths.images_dir(), paths.raw_xml_dir(), paths.labels_dir()):
         d.mkdir(parents=True, exist_ok=True)
         print(f"  [DIR] {d}")
 
@@ -93,13 +86,13 @@ def capture_one(screen_name: str, profile_name: str, stem: str) -> dict:
     try:
         xml_path, png_path, status_bar_h, nav_bar_h = capture.run_pipeline(
             output_name=stem,
-            image_dir=IMAGES_DIR,
-            xml_dir=RAW_XML_DIR,
+            image_dir=paths.images_dir(),
+            xml_dir=paths.raw_xml_dir(),
             color_mode=color_mode,
         )
         navigation.validate_xml_package(xml_path, screen_name)
 
-        label_path = LABELS_DIR / f"{stem}.json"
+        label_path = paths.labels_dir() / f"{stem}.json"
         labels.run(
             str(xml_path),
             output_path=str(label_path),
@@ -202,7 +195,7 @@ def run_collection(
         print("  Manifest rebuild complete")
         print(f"  Reconstructed : {sum(1 for e in all_entries if e['ok'])} of "
               f"{len(screens) * manifest.PER_SCREEN_EXPECTED} captures for this run's screens")
-        print(f"  Manifest      : {MANIFEST_PATH}")
+        print(f"  Manifest      : {paths.manifest_path()}")
         if problems:
             print(f"\n  {len(problems)} PROBLEM(S) across the full manifest:")
             for problem in problems:
@@ -246,7 +239,7 @@ def run_collection(
     print("  Collection complete")
     print(f"  Captures : {sum(1 for e in all_entries if e['ok'])} of "
           f"{len(screens) * (len(profiles.ELDER_PROFILES) + 1)}")
-    print(f"  Manifest : {MANIFEST_PATH}")
+    print(f"  Manifest : {paths.manifest_path()}")
 
     if problems:
         print(f"\n  {len(problems)} PROBLEM(S) -- this dataset is not ready to use:")

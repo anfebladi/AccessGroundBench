@@ -23,7 +23,11 @@ import csv
 import sys
 from pathlib import Path
 
-from ..config import ALL_PROFILES, COORD_SPACES, DATASET_DIR, IMAGES_DIR, LABELS_DIR
+import os
+
+import paths
+
+from ..config import ALL_PROFILES, COORD_SPACES
 from backups import preserve
 from paths import evaluations_dir
 from .results import (
@@ -42,12 +46,42 @@ from ..grounding.scoring import get_png_dimensions, hit_test, parse_coordinates,
 WITH_TREE_SUFFIX = "_with_tree"
 
 
+def _add_data_dir_argument(parser: argparse.ArgumentParser) -> None:
+    """Declare --data-dir on a maintenance parser.
+
+    These commands own their own parsers rather than going through
+    evaluation.cli, so the flag is declared here: adding it to the thin wrapper
+    and stripping it would make argparse reject an unknown flag.
+    """
+    parser.add_argument(
+        "--data-dir", type=Path, default=None,
+        help=f"Dataset directory to operate on (or set ${paths.DATASET_DIR_ENV_VAR})",
+    )
+
+
+def _require_data_dir(parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
+    """Publish --data-dir through the environment, or fail with usage.
+
+    Set rather than returned because every path helper reads the environment, so
+    one assignment reaches the whole call tree without threading an argument
+    through functions that only ever operate on the active dataset.
+    """
+    if args.data_dir is not None:
+        os.environ[paths.DATASET_DIR_ENV_VAR] = str(args.data_dir.expanduser().resolve())
+    elif not os.environ.get(paths.DATASET_DIR_ENV_VAR, "").strip():
+        parser.error(
+            f"--data-dir is required (or set ${paths.DATASET_DIR_ENV_VAR}). "
+            "There is no default dataset."
+        )
+
+
 def discover_screens() -> list[str]:
     """Auto-discover screen names from baseline label files."""
-    if not LABELS_DIR.is_dir():
+    labels_dir = paths.labels_dir()
+    if not labels_dir.is_dir():
         return []
     return sorted(
-        f.stem.replace("_baseline", "") for f in LABELS_DIR.glob("*_baseline.json")
+        f.stem.replace("_baseline", "") for f in labels_dir.glob("*_baseline.json")
     )
 
 
@@ -79,25 +113,23 @@ def canonicalize_main(argv: list[str] | None = None) -> None:
         "--csv", nargs="+", type=Path, default=None,
         help="Specific CSV path(s) to canonicalize (default: all organized outputs)",
     )
+    _add_data_dir_argument(parser)
     args = parser.parse_args(argv)
+    _require_data_dir(parser, args)
 
     screens = discover_screens()
     if not screens:
-        print("[ERROR] No screens found under dataset/labels/.")
+        print(f"[ERROR] No screens found under {paths.labels_dir()}.")
         sys.exit(1)
 
-    expected_key_order = build_expected_keys(screens, LABELS_DIR, ALL_PROFILES)
+    expected_key_order = build_expected_keys(screens, paths.labels_dir(), ALL_PROFILES)
     print(f"Canonical key count: {len(expected_key_order)} "
           f"({len(screens)} screens x {len(ALL_PROFILES)} profiles)")
 
-    outputs_dir = evaluations_dir()
-    csv_files = args.csv or sorted(outputs_dir.glob("*.csv"))
-    if not args.csv and not csv_files:
-        # Datasets collected before the reorganization keep their results
-        # beside the captures; new runs never write there.
-        csv_files = sorted(DATASET_DIR.glob("evaluation_results_*.csv"))
+    evaluations_root = evaluations_dir()
+    csv_files = args.csv or sorted(evaluations_root.glob("*.csv"))
     if not csv_files:
-        print(f"[ERROR] No evaluation result files found in {outputs_dir}")
+        print(f"[ERROR] No evaluation result files found in {evaluations_root}")
         sys.exit(1)
 
     all_problems: list[str] = []
@@ -116,7 +148,7 @@ def canonicalize_main(argv: list[str] | None = None) -> None:
 
 
 def _dimensions_for(screen: str, profile: str) -> tuple[int, int] | None:
-    image_path = IMAGES_DIR / f"{screen}_{profile}.png"
+    image_path = paths.images_dir() / f"{screen}_{profile}.png"
     if not image_path.is_file():
         return None
     try:
@@ -201,7 +233,11 @@ def rescore_main(argv: list[str] | None = None) -> None:
     parser.add_argument("--csv", type=Path, required=True, help="evaluation_results_*.csv to rescore")
     parser.add_argument("--coord-space", choices=COORD_SPACES)
     parser.add_argument("--check", action="store_true")
+    _add_data_dir_argument(parser)
     args = parser.parse_args(argv)
+    # Needed because rescoring re-runs hit-testing against the captured PNGs,
+    # whose dimensions come from the dataset -- see _dimensions_for.
+    _require_data_dir(parser, args)
 
     if not args.csv.is_file():
         print(f"[ERROR] CSV not found: {args.csv}")

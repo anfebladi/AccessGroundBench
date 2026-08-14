@@ -14,19 +14,10 @@ function isEditableTarget(target: EventTarget | null): boolean {
   );
 }
 
-export function useKeyboardPalette(
-  go: (tab: Tab) => void,
-  setOpen: (open: boolean) => void,
-) {
+export function useKeyboardShortcuts(go: (tab: Tab) => void) {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const modifier = event.metaKey || event.ctrlKey;
-
-      if (modifier && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        setOpen(true);
-        return;
-      }
 
       if (isEditableTarget(event.target) || modifier || event.altKey) return;
 
@@ -35,11 +26,9 @@ export function useKeyboardPalette(
         event.preventDefault();
         go(TABS[index - 1]);
       }
-
-      if (event.key === "Escape") setOpen(false);
     };
 
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [go, setOpen]);
+  }, [go]);
 }

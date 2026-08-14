@@ -7,16 +7,34 @@ import os
 import sys
 from pathlib import Path
 
-# Deliberately NOT `from paths import DATASET_DIR_ENV_VAR`: importing the
-# `paths` module at all runs its top-level DATASET_DIR computation
-# immediately, before --data-dir has been parsed below -- which would freeze
-# DATASET_DIR to the default and silently ignore the override for the rest
-# of the process. Kept in sync with paths.DATASET_DIR_ENV_VAR by
+# Deliberately NOT `from paths import DATASET_DIR_ENV_VAR`: kept hardcoded so
+# this module has no import-time dependency on `paths` at all, which is what lets
+# --data-dir be parsed and published to the environment before the domain
+# packages are imported. Kept in sync with paths.DATASET_DIR_ENV_VAR by
 # tests/test_dataset_dir_and_byo_model.py.
 _DATASET_DIR_ENV_VAR = "AGB_DATASET_DIR"
 
 from .runtime import profiles
 from .screens import SCREENS
+
+
+def _add_data_dir_argument(parser: argparse.ArgumentParser, help_text: str) -> None:
+    parser.add_argument("--data-dir", type=Path, default=None, help=help_text)
+
+
+def _publish_data_dir(parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
+    """Put --data-dir in the environment, or fail with usage.
+
+    There is no default dataset: guessing one is how a collection ends up
+    overwriting captures nobody named on the command line.
+    """
+    if args.data_dir is not None:
+        os.environ[_DATASET_DIR_ENV_VAR] = str(args.data_dir.expanduser().resolve())
+    elif not os.environ.get(_DATASET_DIR_ENV_VAR, "").strip():
+        parser.error(
+            f"--data-dir is required (or set ${_DATASET_DIR_ENV_VAR}). "
+            "There is no default dataset."
+        )
 
 
 def collect_main(argv: list[str] | None = None) -> None:
@@ -44,20 +62,16 @@ def collect_main(argv: list[str] | None = None) -> None:
              "subset run overwrote it, or to get a provenance record for a "
              "dataset collected before this flag existed.",
     )
-    parser.add_argument(
-        "--data-dir",
-        type=Path,
-        default=None,
-        help="Directory to capture into (default: ./experiment/dataset, or "
-             "$AGB_DATASET_DIR if set)",
+    _add_data_dir_argument(
+        parser,
+        f"Directory to capture into (or set ${_DATASET_DIR_ENV_VAR}; no default)",
     )
     args = parser.parse_args(argv)
-    if args.data_dir is not None:
-        # Must land in os.environ before `paths` (and anything importing it,
-        # e.g. .workflow) is first imported in this process -- paths.py reads
-        # this once at import time. Hence the lazy import below.
-        os.environ[_DATASET_DIR_ENV_VAR] = str(args.data_dir.expanduser().resolve())
+    _publish_data_dir(parser, args)
 
+    # Imported after the environment is set. The path helpers read it per call,
+    # so import order no longer freezes anything -- but keeping the import here
+    # means a missing --data-dir fails on usage rather than deep in the workflow.
     from . import workflow
 
     workflow.run_collection(
@@ -96,7 +110,15 @@ def capture_main(argv: list[str] | None = None) -> None:
     """Capture one synchronized screenshot and UI hierarchy."""
     parser = argparse.ArgumentParser(description="Capture synchronized Android UI assets")
     parser.add_argument("output_name", nargs="?", default=None)
+    # A standalone capture writes to the dataset's outputs/captures/ scratch dir,
+    # so it needs to know which dataset owns it.
+    _add_data_dir_argument(
+        parser,
+        f"Dataset whose captures/ dir receives the assets (or set "
+        f"${_DATASET_DIR_ENV_VAR}; no default)",
+    )
     args = parser.parse_args(argv)
+    _publish_data_dir(parser, args)
 
     from .pipeline import capture
 

@@ -5,7 +5,7 @@ import {Sidebar} from '../../src/components/shell/Sidebar';
 import type {Dataset, Model, Provider} from '../../src/lib/api';
 import type {PreflightSummary} from '../../src/lib/types';
 
-const dataset: Dataset = {name: 'demo', screen_count: 2, image_count: 4, is_archived: false};
+const dataset: Dataset = {name: 'demo', screen_count: 2, image_count: 4, query_count: 8, is_archived: false};
 const models: Model[] = [];
 const providers: Provider[] = [];
 const evaluate: PreflightSummary = {text: 'ready', tone: 'muted'};
@@ -28,7 +28,6 @@ function shellProps(overrides: Partial<React.ComponentProps<typeof AppShell>> = 
   return {
     ...sidebarProps(),
     onDatasetChange: vi.fn(),
-    onPalette: vi.fn(),
     children: <div data-testid="content">content</div>,
     ...overrides,
   };
@@ -79,7 +78,7 @@ describe('desktop workflow rail', () => {
     expect(within(mobileRail).getByText('Dataset')).toBeTruthy();
   });
 
-  it('renders compact skeleton chips while shared shell metadata is loading', () => {
+  it('renders compact loading spinners while shared shell metadata is loading', () => {
     render(<Sidebar {...sidebarProps({loading: true})} />);
     expect(screen.getAllByLabelText('Loading')).toHaveLength(4);
     expect(screen.getByRole('link', {name: 'Dataset'})).toBeTruthy();

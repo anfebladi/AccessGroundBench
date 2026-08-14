@@ -1,7 +1,7 @@
 # Android collection guide
 
 This guide covers the reproducible live-capture workflow behind
-`experiment/dataset/collection_manifest.json`. Install the project and prepare the
+`collections/experiment/dataset/collection_manifest.json`. Install the project and prepare the
 emulator as described in [`setup.md`](setup.md) before starting. For command
 syntax, see the [`agb collect` reference](cli-reference.md#agb-collect).
 For an operator-facing checklist, see the [live collection runbook](runbooks/collection.md).
@@ -73,9 +73,9 @@ Each successful capture writes one image, raw UI hierarchy, and extracted-label
 file:
 
 ```text
-experiment/dataset/images/{screen}_{profile}.png
-experiment/dataset/raw_xml/{screen}_{profile}.xml
-experiment/dataset/labels/{screen}_{profile}.json
+collections/experiment/dataset/images/{screen}_{profile}.png
+collections/experiment/dataset/raw_xml/{screen}_{profile}.xml
+collections/experiment/dataset/labels/{screen}_{profile}.json
 ```
 
 The pipeline dumps XML with retries (up to three attempts, waiting up to
@@ -84,7 +84,7 @@ crops status/navigation bars. The colorblind profile also receives the
 software deuteranomaly transform in the saved image; Android's on-device
 daltonizer is not relied on for pixels.
 
-`experiment/dataset/collection_manifest.json` records captures, label counts, drift, and
+`collections/experiment/dataset/collection_manifest.json` records captures, label counts, drift, and
 problems. A run fails validation for missing captures, empty labels, content
 drift above 5%, or color-only contamination (a geometry-preserving profile
 whose text set differs from baseline). Scattered geometric loss is recorded as

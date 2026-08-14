@@ -8,7 +8,7 @@ import { Card, CardTitle } from "../../src/components/ui/card";
 import { Input } from "../../src/components/ui/input";
 import { Progress } from "../../src/components/ui/progress";
 import { Separator } from "../../src/components/ui/separator";
-import { Skeleton } from "../../src/components/ui/skeleton";
+import { LoadingState, Spinner } from "../../src/components/ui/spinner";
 import {
   SegmentedButton,
   SegmentedGroup,
@@ -38,10 +38,14 @@ describe("shadcn primitives", () => {
     );
     expect(screen.getByTestId("card").className).toContain("custom-card");
     expect(screen.getByRole("heading", { name: "Title" })).toBeTruthy();
-    render(<><Badge data-testid="badge">New</Badge><Input aria-label="query" placeholder="Search" /><Skeleton data-testid="skeleton" /></>);
+    render(<><Badge data-testid="badge">New</Badge><Input aria-label="query" placeholder="Search" /><Spinner data-testid="spinner" /><LoadingState label="Loading rows" /></>);
     expect(screen.getByTestId("badge").textContent).toContain("New");
     expect(screen.getByRole("textbox").getAttribute("placeholder")).toBe("Search");
-    expect(screen.getByTestId("skeleton").className).toContain("animate-pulse");
+    expect(screen.getByTestId("spinner").className).toContain("animate-spin");
+    expect(screen.getByTestId("spinner").getAttribute("aria-hidden")).toBe("true");
+    const status = screen.getByRole("status", { name: "Loading rows" });
+    expect(status.getAttribute("aria-busy")).toBe("true");
+    expect(status.textContent).toContain("Loading rows");
     expect(container).toBeTruthy();
   });
 

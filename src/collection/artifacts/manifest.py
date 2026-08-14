@@ -7,7 +7,7 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
-from paths import IMAGES_DIR, LABELS_DIR, MANIFEST_PATH, RAW_XML_DIR
+import paths
 
 from . import diagnostics
 from ..runtime import profiles
@@ -17,8 +17,9 @@ DRIFT_WARN_RATIO = 0.05
 
 def measure_drift(screen_name: str, entries: list[dict]) -> dict | None:
     """Diff the opening and closing baselines to get this screen's noise floor."""
-    open_path = LABELS_DIR / f"{screen_name}_baseline.json"
-    close_path = LABELS_DIR / f"{screen_name}_{DRIFT_PROBE}.json"
+    labels = paths.labels_dir()
+    open_path = labels / f"{screen_name}_baseline.json"
+    close_path = labels / f"{screen_name}_{DRIFT_PROBE}.json"
     if not (open_path.is_file() and close_path.is_file()):
         return None
 
@@ -66,9 +67,10 @@ def load_existing_manifest() -> dict:
     and any screen it covered will simply be rebuilt fresh the next time
     this repo's collection or --rebuild-manifest touches it.
     """
-    if not MANIFEST_PATH.is_file():
+    manifest_file = paths.manifest_path()
+    if not manifest_file.is_file():
         return {}
-    with open(MANIFEST_PATH, "r", encoding="utf-8") as f:
+    with open(manifest_file, "r", encoding="utf-8") as f:
         manifest = json.load(f)
     screens = manifest.get("screens")
     return screens if isinstance(screens, dict) else {}
@@ -277,8 +279,9 @@ def write_manifest(
         "problems": all_problems,
     }
 
-    MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(MANIFEST_PATH, "w", encoding="utf-8") as f:
+    manifest_file = paths.manifest_path()
+    manifest_file.parent.mkdir(parents=True, exist_ok=True)
+    with open(manifest_file, "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
 
     print(f"\n  [MANIFEST] {len(existing_screens)} screen(s) on record, "
@@ -296,9 +299,9 @@ def rebuild_capture_entry(screen_name: str, profile_name: str, stem: str) -> dic
     """
     entry = {"screen": screen_name, "profile": profile_name, "stem": stem, "ok": False}
 
-    png_path = IMAGES_DIR / f"{stem}.png"
-    xml_path = RAW_XML_DIR / f"{stem}.xml"
-    label_path = LABELS_DIR / f"{stem}.json"
+    png_path = paths.images_dir() / f"{stem}.png"
+    xml_path = paths.raw_xml_dir() / f"{stem}.xml"
+    label_path = paths.labels_dir() / f"{stem}.json"
     if not (png_path.is_file() and xml_path.is_file() and label_path.is_file()):
         entry["error"] = "missing capture files on disk"
         return entry

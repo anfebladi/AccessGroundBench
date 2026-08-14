@@ -1,10 +1,9 @@
 """Shared request-handling helpers for the API routers.
 
-Dataset lookup, the archived-dataset write guard, mode/sample validation and
-display-path formatting are each needed by several routers. They lived as
-closures and private helpers inside server.create_app(), which meant a router
-could not be split out without either duplicating them or reaching back into
-the app factory.
+Dataset lookup, mode/sample validation and display-path formatting are each
+needed by several routers. They lived as closures and private helpers inside
+server.create_app(), which meant a router could not be split out without either
+duplicating them or reaching back into the app factory.
 
 Everything here raises fastapi.HTTPException with a *string* `detail`. That is
 load-bearing: the frontend's ApiError (see frontend/src/lib/api.ts) reads
@@ -18,36 +17,21 @@ from pathlib import Path
 
 import paths
 
-from . import datasets as datasets_mod
-from .analysis_tables import ANALYSIS_MODES, analysis_samples
+from ..services import registry
+from ..services.analysis_tables import ANALYSIS_MODES, analysis_samples
 
 
-def dataset_or_404(name: str) -> datasets_mod.DatasetInfo:
+def dataset_or_404(name: str) -> registry.DatasetInfo:
     """Look up one dataset by name, or 404."""
     from fastapi import HTTPException
 
-    info = next((d for d in datasets_mod.discover_datasets() if d.name == name), None)
+    info = next((d for d in registry.discover_datasets() if d.name == name), None)
     if info is None:
         raise HTTPException(status_code=404, detail=f"Unknown dataset: {name}")
     return info
 
 
-def writable_dataset_or_400(name: str) -> datasets_mod.DatasetInfo:
-    """Look up one dataset and refuse it if it is an archived, read-only record."""
-    from fastapi import HTTPException
-
-    info = dataset_or_404(name)
-    if info.is_archived:
-        raise HTTPException(
-            status_code=400,
-            detail=f"{name} is an archived dataset and is read-only. "
-            "Archived runs are a fixed record of a past experiment; writing to "
-            "one would alter results that have already been reported.",
-        )
-    return info
-
-
-def evaluations_root(info: datasets_mod.DatasetInfo) -> Path:
+def evaluations_root(info: registry.DatasetInfo) -> Path:
     """Return the evaluation outputs owned by one dataset record."""
     return paths.evaluations_dir(info.path)
 
@@ -105,11 +89,20 @@ def display_path(path: Path) -> str:
 
     Falls back to the absolute path when it lies outside the checkout -- a
     dataset directory can be pointed anywhere via AGB_DATASET_DIR.
+
+    Retried against the resolved root because a collection's output root is
+    derived from a resolved dataset path, so any symlink between the checkout
+    and the filesystem (`/var` -> `/private/var` on macOS) makes the two sides
+    disagree on spelling while naming the same directory. Without the retry the
+    UI would show an absolute temp-looking path for a dataset that is plainly
+    inside the checkout.
     """
-    try:
-        return path.relative_to(paths.PROJECT_ROOT).as_posix()
-    except ValueError:
-        return str(path)
+    for root in (paths.PROJECT_ROOT, paths.PROJECT_ROOT.resolve()):
+        try:
+            return path.relative_to(root).as_posix()
+        except ValueError:
+            continue
+    return str(path)
 
 
 __all__ = [
@@ -120,5 +113,4 @@ __all__ = [
     "validate_analysis_sample",
     "validate_mode",
     "validate_named_sample",
-    "writable_dataset_or_400",
 ]

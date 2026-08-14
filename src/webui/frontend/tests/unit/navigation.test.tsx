@@ -1,4 +1,4 @@
-import {cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react';
+import {cleanup, fireEvent, render, screen, waitFor} from '@testing-library/react';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
 vi.mock('react-dom/client', () => ({createRoot: () => ({render: vi.fn(), unmount: vi.fn()})}));
@@ -84,18 +84,6 @@ describe('App section navigation', () => {
       await waitFor(() => expect(window.location.hash).toBe(`#${tab}`));
       await waitFor(() => assertVisibleRoute(tab));
     }
-  });
-
-  it('routes command-palette selection to a view and keeps route visibility exclusive', async () => {
-    await renderApp();
-    fireEvent.click(screen.getByRole('button', {name: 'Open command palette'}));
-    const palette = screen.getByRole('dialog', {name: 'Command palette'});
-    const input = within(palette).getByRole('combobox');
-    fireEvent.change(input, {target: {value: 'Analyze'}});
-    fireEvent.keyDown(input, {key: 'Enter'});
-    await waitFor(() => expect(window.location.hash).toBe('#analyze'));
-    await waitFor(() => assertVisibleRoute('analyze'));
-    expect(document.getElementById('palette-backdrop')?.hasAttribute('hidden')).toBe(true);
   });
 
   it('routes numeric shortcuts to each view without unmounting the sections', async () => {

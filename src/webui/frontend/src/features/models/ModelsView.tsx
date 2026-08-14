@@ -15,7 +15,8 @@ import { ProviderCredentialsCard } from "./ProviderCredentialsCard";
 import { AddModelForm } from "./AddModelForm";
 import { ConfiguredModelsCard } from "./ConfiguredModelsCard";
 import { Card } from "../../components/ui/card";
-import { Skeleton } from "../../components/ui/skeleton";
+import { LoadingState } from "../../components/ui/spinner";
+import { StageHeader } from "../shared/StageHeader";
 
 const EXAMPLES: Array<[string, Model["coord_space"]]> = [
   ["openai/gpt-4o-mini", "pixel"],
@@ -138,16 +139,12 @@ export function ModelsView({
       aria-labelledby="head-models"
       hidden={hidden}
     >
-      <div className="view-head mb-[var(--space-5)] max-w-[var(--prose-max)]">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--primary)]">Workspace setup</p>
-        <h2 id="head-models" className="text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]">Models</h2>
-        <p className="mt-2 font-[var(--font-ui)] text-[length:var(--text-lead)] leading-[var(--lh-lead)] text-[var(--text-2)]">
-          Configure the models to evaluate and check each one with a single real
-          query before spending a full run. This catches a bad key, a wrong
-          coordinate convention, or a malformed model id early.
-        </p>
-      </div>
-      {providersLoading ? <Card className="mt-4 p-4"><Skeleton className="h-8 w-full" /><Skeleton className="mt-2 h-8 w-full" /><Skeleton className="mt-2 h-8 w-full" /></Card> : <ProviderCredentialsCard
+      <StageHeader stage="models" title="Models">
+        Configure the models to evaluate and check each one with a single real
+        query before spending a full run. This catches a bad key, a wrong
+        coordinate convention, or a malformed model id early.
+      </StageHeader>
+      {providersLoading ? <Card className="mt-4 p-4"><LoadingState label="Loading providers" /></Card> : <ProviderCredentialsCard
         providers={providers}
         providerError={providerError}
         keys={keys}

@@ -12,16 +12,16 @@ import json
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 
-from .. import datasets as datasets_mod
-from ..dependencies import baseline_screens, dataset_or_404
-from ..stdout_capture import capture_stdout
+from ..services import registry
+from .dependencies import baseline_screens, dataset_or_404
+from ..services.stdout_capture import capture_stdout
 
 router = APIRouter()
 
 
 @router.get("/api/datasets")
 def list_datasets() -> list[dict]:
-    return [d.to_dict() for d in datasets_mod.discover_datasets()]
+    return [d.to_dict() for d in registry.discover_datasets()]
 
 
 @router.get("/api/datasets/{name}/screens")

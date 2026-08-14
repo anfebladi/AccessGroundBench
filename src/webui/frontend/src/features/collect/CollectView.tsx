@@ -7,8 +7,10 @@ import { NativeSelect } from "../../components/ui/native-select";
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
 import { Alert } from "../../components/ui/alert";
-import { Skeleton } from "../../components/ui/skeleton";
+import { Spinner } from "../../components/ui/spinner";
 import { Badge } from "../../components/ui/badge";
+import { DocDialog } from "../../components/ui/doc-dialog";
+import { StageHeader } from "../shared/StageHeader";
 export function CollectView({
   onRunFinished,
   hidden,
@@ -85,15 +87,13 @@ export function CollectView({
       aria-labelledby="head-collect"
       hidden={hidden}
     >
-      <div className="view-head mb-[var(--space-5)] max-w-[var(--prose-max)]">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--primary)]">Capture evidence</p>
-        <h2 id="head-collect" className="text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]">Collect</h2>
-        <p className="mt-2 font-[var(--font-ui)] text-[length:var(--text-lead)] leading-[var(--lh-lead)] text-[var(--text-2)]">
-          Capture a new dataset from a live Android emulator. Collection always
-          writes to <code>datasets/&lt;name&gt;/</code>, so it can never
-          overwrite the shipped dataset or an archived run.
-        </p>
-      </div>
+      <StageHeader stage="collect" title="Collect">
+        Capture a new dataset from a live Android emulator. Collection writes to{" "}
+        <code>collections/&lt;name&gt;/</code> &mdash; captures in{" "}
+        <code>dataset/</code> and that run&rsquo;s results in{" "}
+        <code>outputs/</code> beside them. Every run has that same shape, so a
+        name you have used before adds to it rather than starting fresh.
+      </StageHeader>
       <Card className="mt-4 p-4">
         <div className="flex items-center justify-between gap-3 pb-3">
           <div>
@@ -115,7 +115,7 @@ export function CollectView({
           </div>
         </div>
         <div id="collect-preflight-result">
-          {checking && <div aria-label="Checking adb"><Alert className="text-sm text-[var(--muted)]">Checking adb...</Alert><Skeleton className="h-4 w-full" /></div>}
+          {checking && <Alert role="status" aria-busy="true" aria-label="Checking adb" className="flex items-center gap-3 text-sm text-[var(--muted)]"><Spinner className="size-4" />Checking adb...</Alert>}
           {preflight &&
             !checking &&
             (!preflight.adb_available ? (
@@ -170,7 +170,19 @@ export function CollectView({
           <span className="mr-2 font-semibold">Prerequisites</span> Not verifiable from
           here: Pixel 6 / API 34 / 1080x2400 at 420 dpi, a signed-in Google
           account, and Messages, Gmail and Maps each opened once to clear their
-          first-run dialogs. See <code>docs/collection.md</code>.
+          first-run dialogs. See{" "}
+          <DocDialog
+            doc="collection.md"
+            trigger={
+              <button
+                type="button"
+                className="cursor-pointer underline decoration-dotted underline-offset-2"
+              >
+                <code>docs/collection.md</code>
+              </button>
+            }
+          />
+          .
         </div>
       </Card>
       <Card className="mt-4 border-[var(--primary)] p-4">
@@ -189,11 +201,21 @@ export function CollectView({
                 onChange={(e) => setName(e.target.value)}
               />
               <p className="mt-1 text-xs text-[var(--muted)]">
-                Captures land in <code>datasets/&lt;name&gt;/</code>.
+                Captures land in <code>collections/&lt;name&gt;/dataset/</code>.
               </p>
             </div>
             <div>
-              <label htmlFor="collect-screens">Screens</label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="collect-screens">Screens</label>
+                <Button
+                  type="button"
+                  className="text-sm"
+                  id="collect-screens-clear"
+                  onClick={() => setSelected([])}
+                >
+                  Clear selection
+                </Button>
+              </div>
               <NativeSelect
                 id="collect-screens"
                 multiple

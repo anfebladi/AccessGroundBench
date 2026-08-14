@@ -20,7 +20,6 @@ export type Manifest = {
 export type ViewConfig = {
   profile: Profile;
   mode: Mode;
-  zoom: "fit" | number;
   evictedOnly: boolean;
   onionPct: number;
 };

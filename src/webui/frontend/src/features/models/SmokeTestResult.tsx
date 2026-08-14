@@ -1,7 +1,7 @@
 import type { Model, SmokeResult } from "../../lib/api";
 import type React from "react";
 import { Alert } from "../../components/ui/alert";
-import { Skeleton } from "../../components/ui/skeleton";
+import { Spinner } from "../../components/ui/spinner";
 export function SmokeTestResult({
   smoke,
   dataset,
@@ -14,9 +14,9 @@ export function SmokeTestResult({
   success: React.ReactNode;
 }) {
   if (smoke.loading)
-    return <div className="rounded-[var(--radius-md)] bg-[var(--surface-2)] p-3" aria-label={`Querying ${smoke.model.id} on ${screen}`}>
+    return <div className="flex items-center gap-3 rounded-[var(--radius-md)] bg-[var(--surface-2)] p-3" role="status" aria-busy="true" aria-label={`Querying ${smoke.model.id} on ${screen}`}>
+      <Spinner className="size-4" />
       <p className="text-sm text-[var(--muted)]">Querying {smoke.model.id} on {screen}...</p>
-      <div className="flex items-center gap-3"><Skeleton className="h-24 min-w-0 flex-1" /><Skeleton className="h-24 w-[220px]" /></div>
     </div>;
   if (smoke.result?.ok) return success;
   return (

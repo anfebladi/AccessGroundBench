@@ -131,7 +131,7 @@ class DiscoverResultCsvsTests(unittest.TestCase):
     def test_organized_outputs_are_selected_by_mode(self):
         """A dataset's own output root supplies its results, split by arm."""
         root = Path(self.tmp.name)
-        dataset = root / "experiment" / "dataset"
+        dataset = root / "collections" / "experiment" / "dataset"
         (dataset / "labels").mkdir(parents=True)
         with mock.patch.object(paths, "PROJECT_ROOT", root):
             vision = paths.evaluation_results_path("openai/gpt-4o-mini", False, dataset)
@@ -149,8 +149,8 @@ class DiscoverResultCsvsTests(unittest.TestCase):
     def test_a_datasets_results_are_invisible_to_another_dataset(self):
         """Scoping by dataset is what stops two runs sharing a result file."""
         root = Path(self.tmp.name)
-        dataset_a = root / "experiment" / "dataset"
-        dataset_b = root / "datasets" / "other"
+        dataset_a = root / "collections" / "experiment" / "dataset"
+        dataset_b = root / "collections" / "other" / "dataset"
         for d in (dataset_a, dataset_b):
             (d / "labels").mkdir(parents=True)
         with mock.patch.object(paths, "PROJECT_ROOT", root):
@@ -639,13 +639,14 @@ class ResolveDataDirTests(unittest.TestCase):
     def test_a_csv_beside_its_captures_identifies_its_own_dataset(self):
         # The pre-reorganization layout: results sat next to labels/ and
         # images/ inside the dataset directory.
-        archive = self.root / "experiment" / "archive" / "experiment_2"
+        archive = self.root / "collections" / "experiment" / "archive" / "experiment_2"
         (archive / "labels").mkdir(parents=True)
         csv_path = archive / "evaluation_results_gpt-5.5.csv"
         self.assertEqual(archive, self.resolve(None, csv_path))
 
     def test_a_csv_under_outputs_falls_back_to_the_active_dataset(self):
-        csv_path = self.root / "experiment" / "outputs" / "evaluations" / "m_vision.csv"
+        csv_path = (self.root / "collections" / "experiment" / "outputs"
+                    / "evaluations" / "m_vision.csv")
         csv_path.parent.mkdir(parents=True)
         self.assertEqual(paths.DATASET_DIR, self.resolve(None, csv_path))
 
@@ -665,12 +666,12 @@ class RunCrossComparisonTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
-        self.dir = self.root / "experiment" / "dataset"
+        self.dir = self.root / "collections" / "experiment" / "dataset"
         self.dir.mkdir(parents=True)
         self._root_patch = mock.patch.object(paths, "PROJECT_ROOT", self.root)
         self._root_patch.start()
         self.addCleanup(self._root_patch.stop)
-        self.analysis_dir = self.root / "experiment" / "outputs" / "analysis"
+        self.analysis_dir = self.root / "collections" / "experiment" / "outputs" / "analysis"
 
     def write_csv(self, name: str, rows: list[str]) -> Path:
         path = self.dir / name

@@ -16,15 +16,15 @@ import io
 
 from fastapi import APIRouter, HTTPException
 
-from ..analysis_tables import analysis_output_dir, read_analysis_tables
-from ..dependencies import (
+from ..services.analysis_tables import analysis_output_dir, read_analysis_tables
+from .dependencies import (
     dataset_or_404,
     display_path,
     validate_analysis_sample,
     validate_mode,
 )
-from ..schemas import AnalyzeRequest
-from ..stdout_capture import capture_stdout
+from .schemas import AnalyzeRequest
+from ..services.stdout_capture import capture_stdout
 
 router = APIRouter()
 

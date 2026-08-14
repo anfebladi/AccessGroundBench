@@ -179,7 +179,7 @@
 
   /* -- Motion --------------------------------------------------------------
      Four durations, each tied to a specific use, not to taste. Nothing
-     loops except the skeleton shimmer, which stops the moment content
+     loops except the loading spinner, which stops the moment content
      lands; nothing bounces, springs or parallaxes. --dur-chart fires once,
      on a chart's first render only -- see charts.js. */
   --dur-fast: 120ms;   /* colour, border, focus */

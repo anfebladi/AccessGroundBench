@@ -136,7 +136,7 @@ benchmark is affected. See [`docs/ferret-ui.md`](docs/ferret-ui.md).
 
 ## 5. Screenshots of Android and Google applications (the dataset)
 
-The dataset under `experiment/dataset/images/` consists of screen captures of the
+The dataset under `collections/experiment/dataset/images/` consists of screen captures of the
 **Android** operating system and of first-party applications (Clock, Contacts, Phone,
 Messages, Settings, Maps, Play Store, Photos, YouTube) running on a Google Pixel 6
 emulator image.

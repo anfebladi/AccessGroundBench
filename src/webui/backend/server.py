@@ -1,13 +1,13 @@
 """FastAPI application factory for the AccessGroundBench local UI.
 
 This module builds the API and nothing else. The routes themselves live in
-.routers, one module per route family; the processes that serve them -- the
+.api, one module per route family; the processes that serve them -- the
 uvicorn thread, the Vite child, the terminal menu -- belong to .launcher, which
 is what `agb ui` actually calls.
 
 The server is bound to 127.0.0.1 only, always -- not configurable (see
-.launcher). Session API keys live in this process's memory (see .keys), so it
-must never accept connections from beyond localhost.
+.launcher). Session API keys live in this process's memory (see
+.services.keys), so it must never accept connections from beyond localhost.
 """
 
 from __future__ import annotations
@@ -17,14 +17,14 @@ def create_app():
     """Build the API.
 
     Importing this module does not require the optional `ui` extra; calling
-    this function does. Hence the imports below, and .routers being imported
-    here rather than at module scope.
+    this function does. Hence the imports below, and .api being imported here
+    rather than at module scope.
     """
     from fastapi import FastAPI
     from fastapi.exceptions import RequestValidationError
     from fastapi.responses import JSONResponse
 
-    from .routers import ALL_ROUTERS
+    from .api import ALL_ROUTERS
 
     app = FastAPI(title="AccessGroundBench UI")
 

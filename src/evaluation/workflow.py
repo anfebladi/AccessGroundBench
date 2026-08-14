@@ -5,9 +5,10 @@ import sys
 
 from dotenv import load_dotenv
 
+import paths
+
 from .config import (
     ALL_PROFILES,
-    LABELS_DIR,
     get_results_csv,
     resolve_coord_space,
     resolve_models,
@@ -35,8 +36,9 @@ load_dotenv()
 def discover_screens() -> list[str]:
     """Auto-discover screen names from baseline label files."""
     screens = []
-    if LABELS_DIR.is_dir():
-        for f in sorted(LABELS_DIR.glob("*_baseline.json")):
+    labels_dir = paths.labels_dir()
+    if labels_dir.is_dir():
+        for f in sorted(labels_dir.glob("*_baseline.json")):
             screen_name = f.stem.replace("_baseline", "")
             screens.append(screen_name)
     return screens
@@ -79,7 +81,7 @@ def evaluate(*, fresh: bool = False, force_unlock: bool = False) -> None:
     # Computed once so every model's prepare_csv/finalize_csv call agrees on
     # exactly the same key set -- the canonical row count this collection
     # should produce (138 targets x 6 profiles as of this dataset).
-    expected_key_order = build_expected_keys(screens, LABELS_DIR, ALL_PROFILES)
+    expected_key_order = build_expected_keys(screens, paths.labels_dir(), ALL_PROFILES)
     expected_keys = set(expected_key_order)
 
     mode_label = "Vision + A11y Tree" if use_a11y_tree else "Vision-only"

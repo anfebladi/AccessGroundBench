@@ -14,36 +14,6 @@
 .app-header .brand > span:last-child { letter-spacing: -0.025em; }
 .app-body { background: var(--bg); }
 .workspace-main { min-height: calc(100vh - var(--header-height)); }
-.next-step {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 34px;
-  margin: 0 0 var(--space-5);
-  padding: 8px 12px;
-  border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--border));
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--primary-soft) 55%, var(--surface));
-  color: var(--text-2);
-  font-size: var(--text-sm);
-}
-.next-step-mark {
-  width: 7px;
-  height: 7px;
-  flex: 0 0 auto;
-  border-radius: 50%;
-  background: var(--primary);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 12%, transparent);
-}
-.next-step-copy { display: inline-flex; gap: 8px; align-items: baseline; min-width: 0; }
-.next-step-eyebrow {
-  color: var(--primary);
-  font-size: 0.68rem;
-  font-weight: 650;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
 .tab > div:first-child { position: relative; margin-bottom: var(--space-6) !important; }
 .tab > div:first-child h2 {
   font-size: var(--text-display);
@@ -66,20 +36,9 @@
 .tab .rounded-\[var\(--radius-lg\)\] { transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
 .tab .rounded-\[var\(--radius-lg\)\]:hover { border-color: var(--border-strong); }
 
-@media (max-width: 767px) {
-  .next-step { margin-bottom: var(--space-4); }
-  .next-step-copy { display: block; }
-  .next-step-eyebrow { display: block; margin-bottom: 1px; }
-}
-
 /* Keep native hidden content semantics available to views and assistive tech. */
 [hidden] {
   display: none !important;
-}
-
-@keyframes shimmer {
-  from { background-position: 100% 0; }
-  to { background-position: -100% 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

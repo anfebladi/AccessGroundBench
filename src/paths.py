@@ -57,100 +57,105 @@ def find_project_root(start: str | Path | None = None) -> Path:
     return Path(start).expanduser().resolve() if start is not None else Path.cwd().resolve()
 
 
-# One experiment is a dataset plus everything derived from it, so both live
-# under a single root rather than as unrelated top-level directories:
+# One run is a dataset plus everything derived from it, so both live under a
+# single root, and every run lives under one container:
 #
-#   experiment/dataset/  captures, labels, raw XML, manifest
-#   experiment/outputs/  evaluation results and analysis tables
-#   experiment/archive/  superseded runs (local only; gitignored), each one
-#                        self-contained: its captures plus its own outputs/
-EXPERIMENT_DIR_NAME = "experiment"
-
-
-def _resolve_dataset_dir(project_root: Path) -> Path:
-    """Return the active dataset directory.
-
-    AGB_DATASET_DIR, when set, overrides the default `<project_root>/dataset`
-    so a caller (the web UI, or a --data-dir CLI flag) can point commands at a
-    different dataset without the emulator-collection code ever seeing it --
-    it reads DATASET_DIR the same way regardless of where the value came
-    from. This is only read once, at import time: every downstream module
-    that does `from paths import DATASET_DIR` captures the value at its own
-    import time, so the override must be set in the environment before this
-    module (or anything importing it) is first imported in the process.
-    """
-    override = os.environ.get(DATASET_DIR_ENV_VAR, "").strip()
-    if override:
-        return Path(override).expanduser().resolve()
-    return project_root / EXPERIMENT_DIR_NAME / "dataset"
-
+#   collections/<name>/dataset/  captures, labels, raw XML, manifest
+#   collections/<name>/outputs/  that run's evaluation results and tables
+#
+# No run is privileged. The data that ships with the benchmark happens to be
+# called `experiment`, but nothing in the code knows that name: discovery scans
+# the container and loads whatever is there, naming each run after its folder.
+COLLECTIONS_DIR_NAME = "collections"
 
 PROJECT_ROOT = find_project_root()
-DATASET_DIR = _resolve_dataset_dir(PROJECT_ROOT)
-IMAGES_DIR = DATASET_DIR / "images"
-RAW_XML_DIR = DATASET_DIR / "raw_xml"
-LABELS_DIR = DATASET_DIR / "labels"
-MANIFEST_PATH = DATASET_DIR / "collection_manifest.json"
 PROMPT_MODES = ("vision", "tree")
 
 
-def outputs_dir() -> Path:
-    """Return the repository's generated-output root."""
-    return PROJECT_ROOT / EXPERIMENT_DIR_NAME / "outputs"
+class NoDatasetSpecified(RuntimeError):
+    """Raised when an operation needs a dataset and none was given.
+
+    A deliberate error rather than a default. Picking a dataset on the caller's
+    behalf is how an evaluation ends up appending to the wrong run's CSV, or a
+    collection overwrites captures that were never named on the command line.
+    """
+
+
+def collections_dir() -> Path:
+    """Return the container every run lives under."""
+    return PROJECT_ROOT / COLLECTIONS_DIR_NAME
+
+
+def active_dataset_dir() -> Path:
+    """Return the active dataset directory. Unset is an error, not a default.
+
+    Read from the environment on *every* call rather than captured once at
+    import time. That is what lets `--data-dir` work at all: the CLI adapters
+    set AGB_DATASET_DIR before importing the domain packages, and a test or a
+    subprocess that sets it later is still seen. The previous import-time
+    constants forced every caller to be imported in the right order.
+
+    Named `active_` rather than plain `dataset_dir` because several functions
+    here take a `dataset_dir` parameter, which would shadow it.
+    """
+    override = os.environ.get(DATASET_DIR_ENV_VAR, "").strip()
+    if not override:
+        raise NoDatasetSpecified(
+            "no dataset specified. Pass --data-dir <dir> or set "
+            f"{DATASET_DIR_ENV_VAR}."
+        )
+    return Path(override).expanduser().resolve()
+
+
+def images_dir() -> Path:
+    """Return the active dataset's screenshots."""
+    return active_dataset_dir() / "images"
+
+
+def raw_xml_dir() -> Path:
+    """Return the active dataset's raw UI-hierarchy dumps."""
+    return active_dataset_dir() / "raw_xml"
+
+
+def labels_dir() -> Path:
+    """Return the active dataset's label JSON."""
+    return active_dataset_dir() / "labels"
+
+
+def manifest_path() -> Path:
+    """Return the active dataset's collection manifest."""
+    return active_dataset_dir() / "collection_manifest.json"
 
 
 def captures_dir() -> Path:
     """Return the scratch directory for standalone `agb capture` output."""
-    return outputs_dir() / "captures"
-
-
-def dataset_name(dataset_dir: str | Path | None = None) -> str:
-    """Return the registry name for *dataset_dir* (default: the active one).
-
-    Matches the names webui.backend.datasets.discover_datasets assigns, so the UI's
-    dataset dropdown and the CLI's --data-dir agree on which run is being
-    referred to: `dataset` for the default, otherwise the directory's own name
-    (`experiment_2`, or whatever archived run was pointed at).
-
-    This names a dataset; it no longer chooses where its outputs go. See
-    outputs_root_for.
-    """
-    resolved = Path(dataset_dir or DATASET_DIR).expanduser().resolve()
-    default = (PROJECT_ROOT / EXPERIMENT_DIR_NAME / "dataset").resolve()
-    return "dataset" if resolved == default else resolved.name
+    return outputs_root_for(active_dataset_dir()) / "captures"
 
 
 def outputs_root_for(dataset_dir: str | Path | None = None) -> Path:
     """Return the output root owned by one dataset.
 
     Every generated file -- evaluation results, analysis tables, comparisons --
-    lives beneath the root of the dataset it was derived from, and nothing
-    writes outside it. Two datasets can therefore never reach the same file:
-    evaluating the same model against a second dataset cannot append into (or
-    be skipped against) the first dataset's rows, and re-analysing an archive
-    cannot overwrite the current run's tables.
+    lives beneath the root of the run it was derived from, and nothing writes
+    outside it. Two runs can therefore never reach the same file: evaluating the
+    same model against a second run cannot append into (or be skipped against)
+    the first run's rows, and re-analysing one run cannot overwrite another's
+    tables.
 
-    The active dataset's outputs are the repository's `experiment/outputs/`.
-    Any other dataset -- an archive, or a directory passed to --data-dir --
-    owns an `outputs/` directory *inside itself*, so a superseded run is one
-    self-contained folder holding both its captures and its tables rather than
-    being split across two places.
+    A directory named `dataset` is one half of a run root -- the
+    `{dataset,outputs}/` pair under `collections/<name>/` -- so its outputs are
+    its *sibling*, not a folder buried inside its own captures. A directory of
+    any other shape, such as a bare path passed to --data-dir, owns an
+    `outputs/` inside itself so that it stays self-contained.
 
-    Locating an archive's outputs inside the archive also removes an old
-    hazard: output roots used to be keyed on the dataset directory's basename,
-    so two datasets with the same directory name would silently have shared one
-    root. Containment makes collisions impossible regardless of naming.
-
-    These are functions rather than module constants because the dataset is
-    not always known at import time: `agb analyze --data-dir` and the web UI
-    both choose one per call, while `agb evaluate` and `agb collect` inherit
-    theirs from AGB_DATASET_DIR before import. A constant would freeze
-    whichever dataset happened to be active first.
+    An output root is always derived from the dataset's own location, never from
+    its basename. Roots used to be keyed on the basename, so two runs with the
+    same folder name silently shared one; deriving from the location makes that
+    impossible regardless of naming.
     """
-    resolved = Path(dataset_dir or DATASET_DIR).expanduser().resolve()
-    default = (PROJECT_ROOT / EXPERIMENT_DIR_NAME / "dataset").resolve()
-    if resolved == default:
-        return outputs_dir()
+    resolved = Path(dataset_dir or active_dataset_dir()).expanduser().resolve()
+    if resolved.name == "dataset":
+        return resolved.parent / "outputs"
     return resolved / "outputs"
 
 
@@ -192,27 +197,28 @@ def analysis_output_path(
 
 
 def dataset_path(*parts: str | Path) -> Path:
-    """Return a path beneath the active repository's dataset directory."""
-    return DATASET_DIR.joinpath(*parts)
+    """Return a path beneath the active dataset directory."""
+    return active_dataset_dir().joinpath(*parts)
 
 
 __all__ = [
-    "DATASET_DIR",
+    "COLLECTIONS_DIR_NAME",
     "DATASET_DIR_ENV_VAR",
-    "IMAGES_DIR",
-    "LABELS_DIR",
-    "MANIFEST_PATH",
     "PROJECT_ROOT",
-    "RAW_XML_DIR",
     "PROMPT_MODES",
+    "NoDatasetSpecified",
+    "active_dataset_dir",
     "analysis_dir",
-    "captures_dir",
-    "outputs_dir",
     "analysis_output_path",
-    "dataset_name",
+    "captures_dir",
+    "collections_dir",
+    "dataset_path",
     "evaluation_results_path",
     "evaluations_dir",
-    "outputs_root_for",
-    "dataset_path",
     "find_project_root",
+    "images_dir",
+    "labels_dir",
+    "manifest_path",
+    "outputs_root_for",
+    "raw_xml_dir",
 ]

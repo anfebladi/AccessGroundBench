@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from "react";
-import { exportCanvasAsPng } from "../../lib/export";
-import { deleteView, listViews, saveView, type SavedView } from "../../lib/storage";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type RefObject } from "react";
+import { exportCanvasAsPng, exportCanvasPairAsPng } from "../../lib/export";
 import { Icon } from "./Icon";
 import { ScreenshotCanvas } from "./ScreenshotCanvas";
-import { PROFILES, asText, ordered, type Label, type Mode, type Profile, type Target, type ViewConfig } from "./types";
+import { PROFILES, asText, ordered, type Label, type Mode, type Profile, type Target } from "./types";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
+import { Checkbox } from "../../components/ui/checkbox";
 import { SegmentedButton, SegmentedGroup } from "../../components/ui/segmented";
 
 export function ComparisonStage({
@@ -32,14 +32,9 @@ export function ComparisonStage({
   setShowMissing: (v: boolean) => void;
 }) {
   const [mode, setMode] = useState<Mode>("side-by-side");
-  const [zoom, setZoom] = useState<"fit" | number>("fit");
   const [evictedOnly, setEvictedOnly] = useState(false);
   const [onionPct, setOnionPct] = useState(50);
   const [selected, setSelected] = useState<string | null>(null);
-  const [saved, setSaved] =
-    useState<SavedView<ViewConfig>[]>(listViews<ViewConfig>());
-  const [viewName, setViewName] = useState("");
-  const [chosenView, setChosenView] = useState("");
   const [baseDims, setBaseDims] = useState(""),
     [profileDims, setProfileDims] = useState("");
   const baseWrap = useRef<HTMLDivElement>(null);
@@ -56,7 +51,7 @@ export function ComparisonStage({
     const id = window.setInterval(update, 100);
     update();
     return () => window.clearInterval(id);
-  }, [dataset, screen, profile, mode, zoom]);
+  }, [dataset, screen, profile, mode]);
   const present = useMemo(
     () =>
       new Set(
@@ -83,24 +78,6 @@ export function ComparisonStage({
       setSelected(null);
     }
   }, [list, selected]);
-  const changeZoom = (action: string) => {
-    if (action === "fit") return setZoom("fit");
-    if (action === "1:1") return setZoom(1);
-    const current = zoom === "fit" ? 1 : zoom;
-    setZoom(
-      Math.max(0.25, Math.min(4, current + (action === "in" ? 0.25 : -0.25))),
-    );
-  };
-  const applyView = (name: string) => {
-    const view = saved.find((x) => x.name === name);
-    if (!view) return;
-    const c = view.config;
-    setMode(c.mode === "onion" ? "onion" : "side-by-side");
-    setZoom(c.zoom);
-    setEvictedOnly(Boolean(c.evictedOnly));
-    setOnionPct(Number.isFinite(c.onionPct) ? c.onionPct : 50);
-    if (c.profile !== profile) setProfile(c.profile);
-  };
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (
       e.target instanceof HTMLElement &&
@@ -109,22 +86,12 @@ export function ComparisonStage({
     )
       return;
     if (
-      ![
-        "j",
-        "k",
-        "ArrowLeft",
-        "ArrowRight",
-        "ArrowUp",
-        "ArrowDown",
-        "+",
-        "=",
-        "-",
-      ].includes(e.key)
+      !["j", "k", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(
+        e.key,
+      )
     )
       return;
     e.preventDefault();
-    if (e.key === "+" || e.key === "=") return changeZoom("in");
-    if (e.key === "-") return changeZoom("out");
     if (e.key.startsWith("Arrow")) {
       const dx = e.key === "ArrowLeft" ? -80 : e.key === "ArrowRight" ? 80 : 0;
       const dy = e.key === "ArrowUp" ? -80 : e.key === "ArrowDown" ? 80 : 0;
@@ -151,20 +118,32 @@ export function ComparisonStage({
         ),
       );
   };
-  const saveCurrent = () => {
-    const name = viewName.trim();
-    if (!name) return;
-    setSaved(
-      saveView<ViewConfig>(name, {
-        profile,
-        mode,
-        zoom,
-        evictedOnly,
-        onionPct,
-      }),
-    );
-    setViewName("");
+  const exportPane = (
+    wrap: RefObject<HTMLDivElement | null>,
+    filename: string,
+  ) => {
+    const canvas = wrap.current?.querySelector("canvas");
+    if (canvas) exportCanvasAsPng(canvas, filename);
   };
+  /* The onion panes are two stacked canvases; the divider is a CSS clip, so the
+     composite has to be re-cut at the same reveal fraction on export. */
+  const exportOnionComposite = () => {
+    const canvases = onionWrap.current?.querySelectorAll("canvas");
+    if (canvases?.length === 2)
+      exportCanvasPairAsPng(
+        canvases[0],
+        canvases[1],
+        "onion-composite.png",
+        onionPct / 100,
+      );
+  };
+  /* Screenshots always render fit-to-pane. The canvas sets no explicit
+     width/height, so the browser scales it down under these max-* constraints
+     while keeping the capture's intrinsic aspect ratio. */
+  const paneCanvasClass =
+    "h-auto max-h-[62vh] w-auto max-w-full max-md:max-h-[55vh]";
+  const viewportClass =
+    "relative grid min-h-20 place-items-center overflow-auto rounded-md bg-[var(--panel-dark)]";
   return (
     <div onKeyDown={onKeyDown}>
       <SegmentedGroup
@@ -181,7 +160,7 @@ export function ComparisonStage({
           </SegmentedButton>
         ))}
       </SegmentedGroup>
-      <div className="flex items-center justify-between gap-3 border-b border-[var(--on-dark-border)] p-3">
+      <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] p-3">
         <SegmentedGroup id="stage-mode-picker" aria-label="Comparison mode">
           <SegmentedButton
             pressed={mode === "side-by-side"}
@@ -196,38 +175,6 @@ export function ComparisonStage({
             Onion-skin
           </SegmentedButton>
         </SegmentedGroup>
-        <SegmentedGroup id="stage-zoom" aria-label="Zoom">
-          {/* − and + are repeatable actions, not toggles: giving them
-              aria-pressed would report a state they never hold. */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => changeZoom("out")}
-            aria-label="Zoom out"
-          >
-            −
-          </Button>
-          <SegmentedButton
-            pressed={zoom === "fit"}
-            onClick={() => changeZoom("fit")}
-          >
-            Fit
-          </SegmentedButton>
-          <SegmentedButton
-            pressed={zoom === 1}
-            onClick={() => changeZoom("1:1")}
-          >
-            1:1
-          </SegmentedButton>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => changeZoom("in")}
-            aria-label="Zoom in"
-          >
-            +
-          </Button>
-        </SegmentedGroup>
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
@@ -236,58 +183,6 @@ export function ComparisonStage({
           />{" "}
           Evicted only
         </label>
-      </div>
-      <div className="mt-2 flex items-center justify-between gap-3 border-b border-[var(--on-dark-border)] p-3">
-        <select
-          id="stage-saved-views"
-          aria-label="Saved views"
-          value={chosenView}
-          onChange={(e) => {
-            setChosenView(e.target.value);
-            applyView(e.target.value);
-          }}
-        >
-          <option value="">Saved views…</option>
-          {saved.map((v) => (
-            <option value={v.name} key={v.name}>
-              {v.name}
-            </option>
-          ))}
-        </select>
-        <button
-          type="button"
-          className="shadow-none"
-          id="stage-view-delete"
-          disabled={!chosenView}
-          title="Delete saved view"
-          aria-label="Delete saved view"
-          onClick={() => {
-            if (chosenView) {
-              setSaved(deleteView(chosenView) as SavedView<ViewConfig>[]);
-              setChosenView("");
-            }
-          }}
-        >
-          <Icon name="trash" />
-        </button>
-        <input
-          type="text"
-          id="stage-view-name"
-          placeholder="Name this view"
-          style={{ maxWidth: "12rem" }}
-          value={viewName}
-          onChange={(e) => setViewName(e.target.value)}
-        />
-        <button
-          type="button"
-          className="shadow-none"
-          id="stage-view-save"
-          title="Save current view"
-          aria-label="Save current view"
-          onClick={saveCurrent}
-        >
-          <Icon name="bookmark" />
-        </button>
       </div>
       <div className="grid min-w-0 grid-cols-[13rem_minmax(0,1fr)] max-md:grid-cols-1">
         <div
@@ -394,7 +289,6 @@ export function ComparisonStage({
                     showBoxes={showBoxes}
                     showMissing={showMissing}
                     evictedOnly={evictedOnly}
-                    zoom={zoom}
                     onSelect={selectTarget}
                     id="baseline"
                     wrapperRef={onionWrap}
@@ -412,7 +306,6 @@ export function ComparisonStage({
                     showBoxes={showBoxes}
                     showMissing={showMissing}
                     evictedOnly={evictedOnly}
-                    zoom={zoom}
                     onSelect={selectTarget}
                     id="profile"
                     wrapperRef={onionWrap}
@@ -458,7 +351,7 @@ export function ComparisonStage({
                   </button>
                 </div>
                 <div
-                  className="relative grid min-h-20 place-items-center overflow-auto rounded-md bg-[var(--panel-dark)]"
+                  className={viewportClass}
                   id="viewport-baseline"
                   ref={baseWrap}
                 >
@@ -474,11 +367,10 @@ export function ComparisonStage({
                     showBoxes={showBoxes}
                     showMissing={showMissing}
                     evictedOnly={evictedOnly}
-                    zoom={zoom}
                     onSelect={selectTarget}
                     id="baseline"
                     wrapperRef={baseWrap}
-                    className="h-auto max-h-[62vh] w-auto max-w-full max-md:max-h-[55vh]"
+                    className={paneCanvasClass}
                   />
                 </div>
                 <p className="mt-2 text-center text-xs text-[var(--muted)]">
@@ -499,7 +391,7 @@ export function ComparisonStage({
                   </button>
                 </div>
                 <div
-                  className="relative grid min-h-20 place-items-center overflow-auto rounded-md bg-[var(--panel-dark)]"
+                  className={viewportClass}
                   id="viewport-profile"
                   ref={profileWrap}
                 >
@@ -515,11 +407,10 @@ export function ComparisonStage({
                     showBoxes={showBoxes}
                     showMissing={showMissing}
                     evictedOnly={evictedOnly}
-                    zoom={zoom}
                     onSelect={selectTarget}
                     id="profile"
                     wrapperRef={profileWrap}
-                    className="h-auto max-h-[62vh] w-auto max-w-full max-md:max-h-[55vh]"
+                    className={paneCanvasClass}
                   />
                 </div>
                 <p className="mt-2 text-center text-xs text-[var(--muted)]">

@@ -9,14 +9,14 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException
 
-from ..analysis_tables import ANALYSIS_MODES
-from ..dependencies import (
+from ..services.analysis_tables import ANALYSIS_MODES
+from .dependencies import (
     dataset_or_404,
     evaluations_root,
     validate_mode,
     validate_named_sample,
 )
-from ..stdout_capture import capture_stdout
+from ..services.stdout_capture import capture_stdout
 
 router = APIRouter()
 
@@ -43,7 +43,7 @@ def dataset_results(name: str) -> list[dict]:
             # Restricted to the baseline profile only -- a plain
             # proportion, not an inferential statistic, so computing it
             # here rather than in analysis.stats carries no drift risk
-            # the way McNemar/Holm would (see backend.compare's docstring).
+            # the way McNemar/Holm would (see backend.services.compare's docstring).
             # Lets Results show whether a model's blended accuracy is
             # hiding degradation under altered profiles at a glance.
             baseline_rows = [r for r in co_present if r.get("profile") == "baseline"]
@@ -71,10 +71,10 @@ def dataset_compare(
     Takes a model id and searches the dataset's own result files for it,
     rather than a single filename: the Holm-Bonferroni correction has to
     run across every model discovered for this dataset/mode (see
-    backend.compare's module docstring), which needs all of them loaded
+    backend.services.compare's module docstring), which needs all of them loaded
     regardless of which one is being displayed.
     """
-    from ..compare import CompareError, compare_model
+    from ..services.compare import CompareError, compare_model
 
     info = dataset_or_404(name)
     validate_mode(mode)

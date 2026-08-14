@@ -31,9 +31,9 @@ those foundation rules limited to the responsibilities listed above.
 ## 0. Source organization
 
 `src/webui/frontend/src/app/` contains application composition and shared hooks;
-shell components (`AppShell`, `TopBar`, `Sidebar`, `CommandPalette`, `PageOutlet`,
+shell components (`AppShell`, `TopBar`, `Sidebar`, `PageOutlet`,
 and `ErrorBoundary`) live in `src/components/shell/`. Route order, hashes,
-groups, and palette metadata are defined in `app/navigation.ts`; `main.tsx`
+and groups are defined in `app/navigation.ts`; `main.tsx`
 bootstraps React and exports the public app entry points. The seven workflow areas
 live in `src/features/{dataset,models,evaluate,collect,compare,results,analyze}/`,
 with cross-feature workflow support in `src/features/shared/`. Shared UI
@@ -83,19 +83,18 @@ intended chart.
 
 All shared controls used by the feature views and shell are owned in
 `src/components/ui/`: buttons, cards, alerts, badges, inputs, textareas, tables,
-progress, separators, skeletons, tooltips, collapsibles, dialogs, alert dialogs,
-scroll areas, checkboxes, the command palette, and the responsive `Sheet` used by
+progress, separators, spinners, tooltips, collapsibles, dialogs, alert dialogs,
+scroll areas, checkboxes, and the responsive `Sheet` used by
 the mobile workflow navigation. `SegmentedGroup`/`SegmentedButton` in
 `components/ui/segmented.tsx` own the segmented control described in §5 — every
-option group that selects one of a small fixed set (the comparison stage's profile,
-mode and zoom pickers, Analyze's sample and profile pickers, the Results prompt-mode
+option group that selects one of a small fixed set (the comparison stage's profile
+and mode pickers, Analyze's sample and profile pickers, the Results prompt-mode
 filter) uses it, so the pressed chip is drawn once rather than per feature. It takes
 a required `pressed` boolean and writes `aria-pressed` itself, keeping the visual and
-programmatic state impossible to desynchronise. Momentary actions that sit inside a
-segmented track — the stage's zoom −/+ — stay plain `Button`s: they hold no state to
-report. The command palette is a `Command` primitive
-with keyboard filtering and selection; the mobile menu opens a Radix Sheet and
-closes after a route link is chosen.
+programmatic state impossible to desynchronise. Momentary actions never belong in a
+segmented track: they hold no state to report, so `aria-pressed` would announce a
+state they never occupy. The mobile menu opens a Radix Sheet and closes after a route
+link is chosen.
 
 Some native elements are deliberate and should not be replaced for visual
 consistency alone. The comparison stage keeps its canvas-backed image controls,
@@ -112,7 +111,7 @@ border doing the separating instead of a heavy shadow, one typeface instead of t
 fighting each other. This is a second pass over the palette-only work in PR #29/#30; where
 this doc contradicts an earlier stated doctrine, this one is current.
 
-### Workflow hierarchy and readiness cue
+### Workflow hierarchy and stage header
 
 Every mounted workflow view follows the same reading order: page title and context,
 one primary action (when the view is actionable), secondary controls, then the data
@@ -121,13 +120,17 @@ does not change meaning while a request resolves. Results, Compare, and Analyze 
 the evidence surface the greatest visual weight; controls remain visible but do not
 compete with the reported numbers.
 
-The shell places a compact `#workflow-next-step` status cue above the active view.
-Its copy is derived only from the current client state (selected dataset, configured
-models, evaluation preflight, and available result counts); it does not create a new
-request, endpoint, or persisted setting. The cue uses `role="status"` and
-`aria-live="polite"`, and should remain concise enough to scan before the page title.
-It is guidance, not a gate: existing routes and actions stay available when the cue
-describes missing setup or results.
+Each stage opens with exactly one header block, `StageHeader` in
+`src/features/shared/StageHeader.tsx`: a phase eyebrow, the view title, and one lead
+paragraph. There is no second banner above it — the shell renders the active view
+directly, so the phase, the title, and the orienting sentence are read once rather
+than restated in a boxed cue. The eyebrow is not authored per view; it is derived
+from the sidebar's `ROUTE_GROUPS` in `src/app/navigation.ts` through
+`routeGroupLabel`, so the rail group and the stage header can never drift apart. The
+header root keeps the `view-head` class and stays the first child of `section.tab`,
+which is what the shared `.tab > div:first-child` rules and the stage screenshot
+targets address. Readiness state (dataset selection, configured models, evaluation
+preflight, result counts) surfaces in the workflow rail, not in the stage body.
 
 ---
 
@@ -331,7 +334,7 @@ Applied to every interactive element, not just `<button>`.
 | Checkbox | outline on the box | — | ring | dimmed | — | — |
 | Rail item | `surface-2` | — | ring | — | — | — |
 | Segmented / chip | 6% ink wash | `aria-pressed` raised chip | ring | dimmed | — | — |
-| Table row | `surface-2` | — | ring (actionable) | — | skeleton rows | — |
+| Table row | `surface-2` | — | ring (actionable) | — | spinner in place of the body | — |
 
 Loading keeps the label in place so the button does not resize and shift its neighbours;
 `aria-busy` carries the state to assistive tech. Errors are never the red border alone —
@@ -354,18 +357,21 @@ current colour rather than an icon font or CDN asset, matching the rest of the
 offline-first constraint. Keep icon colour inherited from the surrounding
 component so the design tokens remain the single source of truth.
 
-**Skeletons** (`.skeleton`) replace bare "Loading…" text wherever the result's shape is
-known, so the layout does not jump when data lands. It's the **only** looping animation in
-the UI (see Motion below) and stops the instant real content lands.
+**Spinner** (`components/ui/spinner.tsx`) is the single loading indicator: a rotating ring in
+`--primary` over a `--border` track. Its rotation is the **only** looping animation in the UI
+(see Motion below) and stops the instant real content lands. Shape-matched skeleton
+placeholders were tried first and read as visual noise — one honest spinner beats a grid of
+grey bars pretending to be content.
 
-Loading placeholders should match the content they reserve: compact rows for metadata and
-rail chips, card/row groups for provider and table data, and block or frame shapes for
-charts, screenshots, and the miss inspector. A skeleton describes a request that has not
-resolved yet; once a request resolves, render its real empty state or error instead of
-leaving a placeholder in place. Keep explanatory status text and determinate progress for
-long-running evaluation or analysis jobs—skeletons cover only the predictable content
-region. Each loading region has an accessible name (and may expose `aria-busy` on its
-container); shimmer is supplementary and never the only loading signal.
+Every unresolved request renders `LoadingState`, which pairs the ring with a short caption
+naming what is loading ("Loading dataset", "Loading evaluation results") on a `role="status"`
+`aria-busy` container. Small inline slots — the top bar's dataset meta, the rail chips — use a
+bare `Spinner` sized down with `label` supplying its accessible name. A spinner describes a
+request that has not resolved yet; once a request resolves, render its real empty state or
+error instead of leaving the indicator in place. Keep explanatory status text and determinate
+progress for long-running evaluation or analysis jobs — the spinner covers waiting, not
+progress. The caption, not the motion, is the loading signal, so the indicator still reads
+under `prefers-reduced-motion`.
 
 ### Motion
 
@@ -378,7 +384,7 @@ Four durations, each tied to a specific use, not to taste:
 | `--dur-slow` | 240ms | Panels, drawer, view changes |
 | `--dur-chart` | 400ms | Chart draw-in — **first render only** |
 
-Explicitly excluded: looping animation (besides the skeleton shimmer, the one deliberate
+Explicitly excluded: looping animation (besides the spinner rotation, the one deliberate
 exception), spring/bounce overshoot, parallax, decorative motion, staggered cascades.
 Chart draw-in (`.chart-mark` for bars, `.chart-row` for dumbbell's line-and-dots) is wired
 per-view with explicit result-set tracking in React component state/effects, so a filter
@@ -457,13 +463,13 @@ A benchmark measuring accessibility settings has no business failing these.
   significance is filled-vs-hollow, underpowered rows carry `†`, stacked segments are
   direct-labelled, and the Compare view's three-state significance badge
   (`.badge.sig-yes` / `.sig-no` / `.sig-underpowered`) is worded, not colour-only —
-  see `src/webui/backend/compare.py`'s docstring for why a plain significant/not-significant
+  see `src/webui/backend/services/compare.py`'s docstring for why a plain significant/not-significant
   binary would misrepresent the data.
 - `aria-current` (rail, filmstrip), `aria-live="polite"` (run status), `aria-busy`
   (loading buttons), `aria-invalid` (fields), `role="alert"` (errors).
 - Collapsed rail links retain their route names through `aria-label` and `title`; the
   collapse toggle announces whether it will expand or collapse the workflow sidebar.
-- Loading regions use shape-matched skeletons with an accessible name, while status text,
+- Loading regions use a named spinner (`role="status"` + `aria-busy`), while status text,
   progress bars, and errors remain available to assistive technology.
 - Usable at 200% zoom and 400px width.
 - `prefers-reduced-motion: reduce` collapses every animation and transition.

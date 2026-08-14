@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from paths import DATASET_DIR
+import paths
 from .reports.comparison import run_cross_comparison
 from .reports.reachability import DEFAULT_LABEL_CHANGED_MODE, LABEL_CHANGED_MODES
 from .data.samples import DEFAULT_SAMPLE, SAMPLE_NAMES
@@ -14,7 +14,8 @@ from .workflow import EXPERIMENTAL_PROFILES, run_analysis
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="AccessGroundBench -- statistical analysis")
     parser.add_argument("--data-dir", type=Path, default=None,
-                        help="Dataset directory to analyse (default: the active dataset)")
+                        help="Dataset directory to analyse (or set "
+                             f"${paths.DATASET_DIR_ENV_VAR}; no default)")
     parser.add_argument("--csv", type=Path, default=None,
                         help="Analyse a single evaluation CSV")
     parser.add_argument("--permutations", type=int, default=DEFAULT_PERMUTATIONS,
@@ -41,19 +42,34 @@ def resolve_data_dir(data_dir: Path | None, csv_path: Path | None) -> Path:
     against -- correcting one run's rows against another run's captures would
     silently mislabel them. An explicit --data-dir always wins. Otherwise a
     --csv sitting beside a `labels/` directory identifies its own dataset,
-    which is how the pre-reorganization archives are laid out; a CSV under
-    `outputs/` has no captures beside it and falls through to the active
-    dataset.
+    which is evidence from disk rather than a guess. A CSV under `outputs/` has
+    no captures beside it, so it identifies nothing, and the dataset must be
+    named explicitly -- there is no default to fall through to.
     """
     if data_dir is not None:
         return data_dir
     if csv_path is not None and (csv_path.parent / "labels").is_dir():
         return csv_path.parent
-    return DATASET_DIR
+    return paths.active_dataset_dir()
 
 
 def analyze_main(argv: list[str] | None = None) -> None:
-    """Run the analysis CLI with an explicit, testable argument vector."""
+    """Run the analysis CLI with an explicit, testable argument vector.
+
+    Catches NoDatasetSpecified here as well as in cli.main because
+    `mcnemar_analysis` is a console script pointing straight at this function,
+    bypassing the dispatcher. Analysis cannot make this an argparse error: a
+    --csv beside a labels/ directory names its own dataset, so the gap is only
+    discoverable after parsing.
+    """
+    try:
+        _analyze(argv)
+    except paths.NoDatasetSpecified as exc:
+        print(f"[ERROR] {exc}")
+        raise SystemExit(1) from exc
+
+
+def _analyze(argv: list[str] | None = None) -> None:
     args = build_parser().parse_args(argv)
     if bool(args.compare_a) != bool(args.compare_b):
         print("[ERROR] --compare-a and --compare-b must be given together.")

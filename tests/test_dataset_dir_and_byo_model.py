@@ -36,28 +36,52 @@ class OutputScopingTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name)
+        # Resolved: the path functions under test resolve their arguments, and
+        # on macOS the temp root is reached through a symlink (/var ->
+        # /private/var), so an unresolved fixture root makes every expected
+        # path disagree with the produced one by spelling alone.
+        self.root = Path(self.tmp.name).resolve()
+        # Every run lives under collections/; the shipped one is the reserved
+        # name `experiment`. Named here so the assertions below read as paths
+        # rather than as five chained segments.
+        self.shipped = self.root / "collections" / "experiment"
         patch = mock.patch.object(paths, "PROJECT_ROOT", self.root)
         patch.start()
         self.addCleanup(patch.stop)
 
     def test_each_dataset_gets_its_own_result_file(self):
-        default = paths.evaluation_results_path("openai/gpt-4o", dataset_dir=self.root / "experiment" / "dataset")
+        default = paths.evaluation_results_path(
+            "openai/gpt-4o", dataset_dir=self.shipped / "dataset")
         archive = paths.evaluation_results_path(
-            "openai/gpt-4o", dataset_dir=self.root / "experiment" / "archive" / "experiment_2")
+            "openai/gpt-4o", dataset_dir=self.shipped / "archive" / "experiment_2")
         collected = paths.evaluation_results_path(
-            "openai/gpt-4o", dataset_dir=self.root / "datasets" / "rerun")
+            "openai/gpt-4o", dataset_dir=self.root / "collections" / "rerun" / "dataset")
+        bare = paths.evaluation_results_path(
+            "openai/gpt-4o", dataset_dir=self.root / "elsewhere" / "some_dump")
 
-        # The active dataset's outputs are the repository's experiment/outputs/.
-        # Every other dataset owns an outputs/ directory inside itself, so a
-        # superseded run is one self-contained folder and no two datasets can
-        # collide regardless of what their directories are named.
-        self.assertEqual(3, len({default, archive, collected}))
-        self.assertEqual(self.root / "experiment" / "outputs" / "evaluations", default.parent)
+        # An output root is derived from where the dataset sits, so no two
+        # datasets can collide regardless of what their directories are named.
+        # A directory named `dataset` is one half of a run root and writes to
+        # its sibling outputs/; anything else owns an outputs/ inside itself,
+        # so a superseded run stays one self-contained folder.
+        self.assertEqual(4, len({default, archive, collected, bare}))
+        self.assertEqual(self.shipped / "outputs" / "evaluations", default.parent)
         self.assertEqual(
-            self.root / "experiment" / "archive" / "experiment_2" / "outputs" / "evaluations",
+            self.shipped / "archive" / "experiment_2" / "outputs" / "evaluations",
             archive.parent)
-        self.assertEqual(self.root / "datasets" / "rerun" / "outputs" / "evaluations", collected.parent)
+        self.assertEqual(
+            self.root / "collections" / "rerun" / "outputs" / "evaluations", collected.parent)
+        self.assertEqual(
+            self.root / "elsewhere" / "some_dump" / "outputs" / "evaluations", bare.parent)
+
+    def test_a_collection_is_named_after_its_run_not_its_dataset_dir(self):
+        """Otherwise every collection reports the shipped default's name."""
+        self.assertEqual("dataset", paths.dataset_name(self.shipped / "dataset"))
+        self.assertEqual(
+            "my-app", paths.dataset_name(self.root / "collections" / "my-app" / "dataset"))
+        self.assertEqual(
+            "experiment_2",
+            paths.dataset_name(self.shipped / "archive" / "experiment_2"))
 
     def test_vision_and_tree_are_separate_files_for_one_model(self):
         vision = paths.evaluation_results_path("openai/gpt-4o", False)
@@ -67,13 +91,14 @@ class OutputScopingTests(unittest.TestCase):
         self.assertEqual("openai_gpt-4o_tree.csv", tree.name)
 
     def test_analysis_output_is_scoped_by_dataset_mode_and_sample(self):
-        current = paths.analysis_output_path("vision", "all", self.root / "experiment" / "dataset")
+        current = paths.analysis_output_path("vision", "all", self.shipped / "dataset")
         archive = paths.analysis_output_path(
-            "vision", "all", self.root / "experiment" / "archive" / "experiment_2")
+            "vision", "all", self.shipped / "archive" / "experiment_2")
         self.assertNotEqual(current, archive)
-        self.assertNotEqual(current, paths.analysis_output_path("tree", "all", self.root / "experiment" / "dataset"))
         self.assertNotEqual(
-            current, paths.analysis_output_path("vision", "primary", self.root / "experiment" / "dataset"))
+            current, paths.analysis_output_path("tree", "all", self.shipped / "dataset"))
+        self.assertNotEqual(
+            current, paths.analysis_output_path("vision", "primary", self.shipped / "dataset"))
 
     def test_model_name_survives_a_round_trip_through_the_filename(self):
         from analysis.data.results import model_name_from_path
@@ -84,9 +109,11 @@ class OutputScopingTests(unittest.TestCase):
                 self.assertEqual(sanitize_model_filename(model), model_name_from_path(path))
 
     def test_env_override_moves_the_result_file_with_the_dataset(self):
-        with mock.patch.object(paths, "DATASET_DIR", self.root / "datasets" / "rerun"):
+        collection = self.root / "collections" / "rerun" / "dataset"
+        with mock.patch.object(paths, "DATASET_DIR", collection):
             self.assertEqual(
-                self.root / "datasets" / "rerun" / "outputs" / "evaluations" / "openai_gpt-4o_vision.csv",
+                self.root / "collections" / "rerun" / "outputs" / "evaluations"
+                / "openai_gpt-4o_vision.csv",
                 paths.evaluation_results_path("openai/gpt-4o"),
             )
 
@@ -94,7 +121,9 @@ class OutputScopingTests(unittest.TestCase):
 class DatasetDirOverrideTests(unittest.TestCase):
     def test_no_override_defaults_to_project_root_dataset(self):
         root = Path("C:/somewhere/accessgroundbench")
-        self.assertEqual(root / "experiment" / "dataset", paths._resolve_dataset_dir(root))
+        self.assertEqual(
+            root / "collections" / "experiment" / "dataset",
+            paths._resolve_dataset_dir(root))
 
     def test_override_env_var_wins_and_is_resolved(self):
         with mock.patch.dict(os.environ, {paths.DATASET_DIR_ENV_VAR: "some/relative/dir"}):
@@ -105,7 +134,9 @@ class DatasetDirOverrideTests(unittest.TestCase):
     def test_blank_override_falls_back_to_default(self):
         with mock.patch.dict(os.environ, {paths.DATASET_DIR_ENV_VAR: "   "}):
             root = Path("C:/somewhere/accessgroundbench")
-            self.assertEqual(root / "experiment" / "dataset", paths._resolve_dataset_dir(root))
+            self.assertEqual(
+            root / "collections" / "experiment" / "dataset",
+            paths._resolve_dataset_dir(root))
 
 
 class EvaluateMainDataDirTests(unittest.TestCase):
@@ -215,7 +246,7 @@ class RealSubprocessDataDirTests(unittest.TestCase):
         self.assertIn(str(target), result.stdout)
         # The bug this guards against prints the default dataset/ path
         # instead -- assert the default is NOT what appears.
-        default_images = str(paths.PROJECT_ROOT / "experiment" / "dataset" / "images")
+        default_images = str(paths.PROJECT_ROOT / "collections" / "experiment" / "dataset" / "images")
         self.assertNotIn(default_images, result.stdout)
 
     def test_evaluate_data_dir_is_honored_by_a_real_subprocess(self):

@@ -31,16 +31,15 @@ from ..runtime.device import (
 REMOTE_XML = "/sdcard/ui_layout.xml"
 REMOTE_PNG = "/sdcard/ui_screen.png"
 
-# Scratch output for the standalone `agb capture` command. Kept out of the
-# dataset output roots (and gitignored) because these are ad-hoc captures, not
-# results belonging to any dataset.
+# Scratch output for the standalone `agb capture` command lives under the active
+# dataset's output root (and is gitignored) because these are ad-hoc captures,
+# not results belonging to any dataset.
 #
-# Deliberately NOT created here. `agb collect` passes explicit image_dir/xml_dir
-# and never writes to this path, so creating it at import time left an empty
-# directory in every checkout that had merely imported the module. transfer_files
-# creates whichever directory it is actually given, so the folder now appears
-# only once a standalone capture has really been taken.
-OUTPUT_DIR = captures_dir()
+# Resolved on demand rather than at import: there is no default dataset, so
+# calling captures_dir() at module scope would make merely importing this module
+# fail whenever no dataset has been specified -- including in the web UI, which
+# imports the collection package but never captures. Callers that pass an
+# explicit image_dir/xml_dir short-circuit it and never resolve a dataset at all.
 
 
 # ---------------------------------------------------------------------------
@@ -114,13 +113,13 @@ def pull_files(
     Pull the captured XML and PNG from the emulator sdcard to local disk.
 
     Args:
-        image_dir: Directory to save the .png into. Defaults to OUTPUT_DIR.
-        xml_dir:   Directory to save the .xml into. Defaults to OUTPUT_DIR.
+        image_dir: Directory to save the .png into. Defaults to the active dataset's captures/ dir.
+        xml_dir:   Directory to save the .xml into. Defaults to the active dataset's captures/ dir.
 
     Returns the local (xml_path, png_path) as Path objects.
     """
-    png_dir = image_dir or OUTPUT_DIR
-    xdir = xml_dir or OUTPUT_DIR
+    png_dir = image_dir or captures_dir()
+    xdir = xml_dir or captures_dir()
     png_dir.mkdir(parents=True, exist_ok=True)
     xdir.mkdir(parents=True, exist_ok=True)
 
@@ -167,8 +166,8 @@ def run_pipeline(
     Args:
         output_name: File stem for saved assets. Defaults to a UTC timestamp
                      (e.g. 'capture_20260702_184055') for automatic uniqueness.
-        image_dir:   Directory to save the .png into. Defaults to OUTPUT_DIR.
-        xml_dir:     Directory to save the .xml into. Defaults to OUTPUT_DIR.
+        image_dir:   Directory to save the .png into. Defaults to the active dataset's captures/ dir.
+        xml_dir:     Directory to save the .xml into. Defaults to the active dataset's captures/ dir.
         color_mode:  Optional color-vision transform to apply to the captured
                      PNG (e.g. "deuteranomaly"). "off"/None leaves colors
                      unchanged. See COLOR_TRANSFORMS.
@@ -180,7 +179,7 @@ def run_pipeline(
     if output_name is None:
         output_name = "capture_" + datetime.utcnow().strftime("%Y%m%d_%H%M%S")
 
-    save_info = image_dir or OUTPUT_DIR
+    save_info = image_dir or captures_dir()
     print("=" * 60)
     print("  AccessGroundBench — Screenshot Pipeline")
     print(f"  Output stem : {output_name}")

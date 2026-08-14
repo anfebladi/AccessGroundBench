@@ -9,12 +9,6 @@ import {
 import { api, enc, type Dataset, imageUrl, ApiError } from "../../lib/api";
 import { imageIsDrawable, strokeWidthFor } from "../../lib/canvas";
 import { exportCanvasAsPng } from "../../lib/export";
-import {
-  deleteView,
-  listViews,
-  saveView,
-  type SavedView,
-} from "../../lib/storage";
 import type { TabViewProps } from "../../lib/types";
 import { CaptureHealth } from "./CaptureHealth";
 import { ScreenshotCanvas } from "./ScreenshotCanvas";
@@ -34,20 +28,18 @@ import {
   type Label,
   type Manifest,
   type Mode,
-  type ViewConfig,
 } from "./types";
 export { PROFILES } from "./types";
-import { Skeleton } from "../../components/ui/skeleton";
+import { LoadingState } from "../../components/ui/spinner";
+import { StageHeader } from "../shared/StageHeader";
 
 
 export function DatasetView({
   dataset,
-  screenToSelect,
   hidden,
 }: TabViewProps & {
   dataset: string;
   datasets?: Dataset[];
-  screenToSelect?: string;
 }) {
   const [screens, setScreens] = useState<string[]>([]);
   const [filter, setFilter] = useState("");
@@ -62,48 +54,52 @@ export function DatasetView({
   const [stageError, setStageError] = useState("");
   const [showBoxes, setShowBoxes] = useState(true);
   const [showMissing, setShowMissing] = useState(true);
-  let token = useRef(0);
+  // One counter per effect. A single shared counter let the screen/profile effect
+  // below invalidate this effect's in-flight responses, which pinned
+  // initialLoading at true and never mounted the comparison stage.
+  const datasetToken = useRef(0);
+  const stageToken = useRef(0);
   useEffect(() => {
     if (!dataset) {
       setScreens([]);
       setSelected(null);
       return;
     }
-    const t = ++token.current;
+    const t = ++datasetToken.current;
     setInitialLoading(true);
-    void api<{ screens: string[] }>(`/api/datasets/${enc(dataset)}/screens`)
-      .then((v) => {
-        if (t === token.current) {
-          setScreens(v.screens || []);
-          setSelected(v.screens?.[0] || null);
-        }
-      })
-      .catch(() => setScreens([]));
-    void api<{ available?: boolean; manifest?: Manifest }>(
-      `/api/datasets/${enc(dataset)}/manifest`,
-    )
-      .then((v) => {
-        if (t !== token.current) return;
-        setManifestAvailable(v.available !== false);
-        setManifest(v.manifest || null);
-      })
-      .catch(() => {
-        setManifestAvailable(true);
-        setManifest(null);
-      })
-      .finally(() => { if (t === token.current) setInitialLoading(false); });
+    void Promise.allSettled([
+      api<{ screens: string[] }>(`/api/datasets/${enc(dataset)}/screens`),
+      api<{ available?: boolean; manifest?: Manifest }>(
+        `/api/datasets/${enc(dataset)}/manifest`,
+      ),
+    ]).then(([screensResult, manifestResult]) => {
+      if (t !== datasetToken.current) return;
+      const list =
+        screensResult.status === "fulfilled"
+          ? screensResult.value.screens || []
+          : [];
+      setScreens(list);
+      setSelected(list[0] || null);
+      setManifestAvailable(
+        manifestResult.status === "fulfilled"
+          ? manifestResult.value.available !== false
+          : true,
+      );
+      setManifest(
+        manifestResult.status === "fulfilled"
+          ? manifestResult.value.manifest || null
+          : null,
+      );
+      setInitialLoading(false);
+    });
   }, [dataset]);
-  useEffect(() => {
-    if (screenToSelect && screens.includes(screenToSelect))
-      setSelected(screenToSelect);
-  }, [screenToSelect, screens]);
   useEffect(() => {
     if (!dataset || !selected) {
       setTargets([]);
       setLabels([]);
       return;
     }
-    const t = ++token.current;
+    const t = ++stageToken.current;
     setLoading(true);
     setStageError("");
     void Promise.all([
@@ -115,7 +111,7 @@ export function DatasetView({
       ).catch(() => []),
     ])
       .then(([tr, lb]) => {
-        if (t !== token.current) return;
+        if (t !== stageToken.current) return;
         setTargets(
           Array.isArray(tr.targets)
             ? tr.targets.flatMap((x) => {
@@ -140,7 +136,7 @@ export function DatasetView({
         setLoading(false);
       })
       .catch((e: unknown) => {
-        if (t !== token.current) return;
+        if (t !== stageToken.current) return;
         setLoading(false);
         setStageError(
           e instanceof ApiError
@@ -154,17 +150,13 @@ export function DatasetView({
   );
   return (
     <section id="tab-dataset" className="tab min-w-0" aria-labelledby="head-dataset" hidden={hidden}>
-      <div className="view-head mb-[var(--space-5)] max-w-[var(--prose-max)]">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--primary)]">Start here</p>
-        <h2 id="head-dataset" className="mb-[var(--space-2)] text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]">Dataset</h2>
-        <p className="font-[var(--font-ui)] text-[length:var(--text-lead)] leading-[var(--lh-lead)] text-[var(--text-2)]">
-          The screens this benchmark grounds against, captured under each
-          accessibility profile.
-          <br />
-          Check the capture warnings here before you read any number reported
-          against this dataset.
-        </p>
-      </div>
+      <StageHeader stage="dataset" title="Dataset">
+        The screens this benchmark grounds against, captured under each
+        accessibility profile.
+        <br />
+        Check the capture warnings here before you read any number reported
+        against this dataset.
+      </StageHeader>
       <div id="dataset-warnings">
         <CaptureHealth manifest={manifest} available={manifestAvailable} />
       </div>
@@ -203,11 +195,7 @@ export function DatasetView({
             id="screen-browser"
           >
             {initialLoading ? (
-              <div aria-label="Loading dataset">
-                <Skeleton className="h-24 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-              </div>
+              <LoadingState label="Loading dataset" />
             ) : stageError ? (
                 <Alert className="border-[var(--danger)]">
                 {stageError}

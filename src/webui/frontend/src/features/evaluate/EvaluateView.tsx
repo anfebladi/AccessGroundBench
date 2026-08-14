@@ -8,6 +8,7 @@ import { NativeSelect } from "../../components/ui/native-select";
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
 import { Alert } from "../../components/ui/alert";
+import { StageHeader } from "../shared/StageHeader";
 
 interface EvaluateViewProps extends TabViewProps {
   dataset: string;
@@ -132,15 +133,11 @@ export function EvaluateView({
     : 0;
   return (
     <section id="tab-evaluate" className="tab min-w-0" aria-labelledby="head-evaluate" hidden={hidden}>
-      <div className="view-head mb-[var(--space-5)] max-w-[var(--prose-max)]">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--primary)]">Run evidence</p>
-        <h2 id="head-evaluate" className="text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]">Evaluate</h2>
-        <p className="mt-2 font-[var(--font-ui)] text-[length:var(--text-lead)] leading-[var(--lh-lead)] text-[var(--text-2)]">
-          Query one model against every target on every profile. Runs append as
-          they go and resume where they stopped, so an interrupted run never
-          loses the calls it already paid for.
-        </p>
-      </div>
+      <StageHeader stage="evaluate" title="Evaluate">
+        Query one model against every target on every profile. Runs append as
+        they go and resume where they stopped, so an interrupted run never
+        loses the calls it already paid for.
+      </StageHeader>
       <Card className="mt-4 border-[var(--primary)] p-4">
         <form id="evaluate-form" onSubmit={submit}>
           <div className="flex flex-wrap items-end gap-4">
@@ -195,8 +192,10 @@ export function EvaluateView({
                     onChange={(e) => setTrials(Number(e.target.value) || 1)}
                   />
                   <p className="mt-1 text-xs text-[var(--muted)]">
-                    Above 1, answers are majority-voted and a flip rate is
-                    reported.
+                    Runs each query N times; above 1, answers are
+                    majority-voted and flip rate (% of trials disagreeing
+                    with the majority) is reported. Costs N&times; the API
+                    calls.
                   </p>
                 </div>
                 <div>

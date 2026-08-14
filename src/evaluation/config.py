@@ -3,10 +3,13 @@
 import os
 from pathlib import Path
 
-from paths import DATASET_DIR, evaluation_results_path
+from paths import evaluation_results_path
 
-IMAGES_DIR = DATASET_DIR / "images"
-LABELS_DIR = DATASET_DIR / "labels"
+# No IMAGES_DIR/LABELS_DIR here. They used to be re-derived from a module-level
+# paths.DATASET_DIR, which meant importing this module required a resolvable
+# dataset -- and the web UI imports it just to count a dataset's queries
+# (webui.backend.services.registry._describe), with no dataset in the
+# environment. Callers ask paths.images_dir()/paths.labels_dir() at use time.
 
 MODEL_ENV_VAR: str = "VLM_MODEL"
 PACE_ENV_VAR: str = "VLM_PACE_SECONDS"

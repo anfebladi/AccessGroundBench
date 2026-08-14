@@ -5,8 +5,9 @@ import type { TabViewProps } from "../../lib/types";
 import { Legend, PairedAccuracyChart } from "../shared/reporting/charts";
 import { NativeSelect } from "../../components/ui/native-select";
 import { Card } from "../../components/ui/card";
-import { Skeleton } from "../../components/ui/skeleton";
+import { LoadingState } from "../../components/ui/spinner";
 import { Badge as UiBadge } from "../../components/ui/badge";
+import { StageHeader } from "../shared/StageHeader";
 import {
   Table,
   TableHeader,
@@ -87,15 +88,6 @@ function ErrorState({ message }: { message: string }) {
     </p>
   );
 }
-function LoadingState({ message }: { message: string }) {
-  return (
-    <div aria-label={message}>
-      <p className="text-sm text-[var(--muted)]">{message}</p>
-      <Skeleton className="h-24 w-full" />
-    </div>
-  );
-}
-
 export function CompareView({
   dataset,
   onCountChange,
@@ -175,18 +167,9 @@ export function CompareView({
       aria-labelledby="head-compare"
       hidden={hidden}
     >
-      <div className="view-head mb-[var(--space-5)] max-w-[var(--prose-max)]">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--primary)]">Read evidence</p>
-        <h2
-          id="head-compare"
-          className="mb-[var(--space-2)] text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]"
-        >
-          Compare
-        </h2>
-        <p className="font-[var(--font-ui)] text-[length:var(--text-lead)] leading-[var(--lh-lead)] text-[var(--text-2)]">
-          Pick a model you've evaluated and compare accessibility profiles.
-        </p>
-      </div>
+      <StageHeader stage="compare" title="Compare">
+        Pick a model you've evaluated and compare accessibility profiles.
+      </StageHeader>
       <Card className="rounded-[var(--radius-lg)]">
         <div className="flex flex-wrap items-end gap-3">
           <label
@@ -229,7 +212,7 @@ export function CompareView({
       </Card>
       <div id="compare-body">
         {loading ? (
-          <LoadingState message="Comparing baseline against each profile..." />
+          <LoadingState label="Comparing baseline against each profile..." />
         ) : error ? (
           <ErrorState message={error} />
         ) : result ? (

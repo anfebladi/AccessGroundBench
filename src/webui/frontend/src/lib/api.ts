@@ -4,7 +4,7 @@ export interface Dataset {
   name: string;
   screen_count: number;
   image_count: number;
-  is_archived?: boolean;
+  query_count: number;
 }
 
 export interface Model {

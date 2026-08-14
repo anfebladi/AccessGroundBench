@@ -36,23 +36,25 @@ Node install command and exits; every other `agb` command is unaffected.
 
 ## Back end
 
-The API lives in `src/webui/backend/`, one module per responsibility:
+`src/webui/backend/` is organised in two layers, with the `agb ui` entry point
+at the top level:
 
 | Module | Responsibility |
 | --- | --- |
 | `server.py` | `create_app()` -- builds the FastAPI app and includes the routers. Nothing else. |
 | `launcher.py` | `agb ui` itself: the uvicorn thread, the Vite child process, the terminal menu. |
-| `routers/` | One module per route family -- `datasets`, `results`, `analysis`, `evaluate`, `models`, `collect`. |
-| `schemas.py` | Pydantic request bodies for the POST endpoints. |
-| `dependencies.py` | Shared per-request helpers: dataset lookup, the archived-dataset write guard, mode/sample validation, display paths. |
-| `providers.py` | The provider catalogue -- the single source of truth for provider env var names. |
-| `analysis_tables.py` | Analysis output locations and the four result-table CSVs. |
-| `datasets.py`, `runs.py`, `keys.py`, `compare.py`, `banner.py`, `stdout_capture.py` | Dataset discovery, the subprocess run supervisor, the session key store, the Compare statistics, the launcher banner, and stdout capture. |
+| `banner.py` | The launcher's interactive terminal menu. |
+| **`api/`** | **The HTTP layer.** One router module per route family (`datasets`, `results`, `analysis`, `evaluate`, `models`, `collect`), plus `schemas.py` (pydantic request bodies) and `dependencies.py` (dataset lookup, the archived-dataset write guard, mode/sample validation, display paths). |
+| **`services/`** | **Domain logic, no HTTP.** `registry.py` (dataset discovery), `runs.py` (subprocess run supervisor), `keys.py` (session key store), `providers.py` (provider catalogue -- the single source of truth for provider env var names), `compare.py` (Compare statistics), `analysis_tables.py` (analysis output paths and the four result-table CSVs), `stdout_capture.py`. |
 
-Two invariants to preserve when changing these:
+Three invariants to preserve when changing these:
 
+- **`services/` must not import `fastapi`.** It is the layer every other `agb`
+  subcommand loads, and it stays callable with the `ui` extra uninstalled.
+  Raising `HTTPException` belongs in `api/`. Enforced by
+  `tests/test_package_architecture.py`.
 - **`fastapi` and `uvicorn` are only imported inside functions**, except in
-  `routers/`, which is not imported until `create_app()` runs. Importing
+  `api/`, which is not imported until `create_app()` runs. Importing
   `webui.backend.*` must never require the optional `ui` extra.
 - **Error responses keep `detail` as a string.** The frontend renders it
   directly, so `create_app()` installs a handler that flattens FastAPI's
@@ -81,26 +83,24 @@ On desktop, the shell's workflow rail may be collapsed to an icon-only column an
 the preference persists in browser storage (`agb.sidebar.collapsed`). Collapsed
 links retain their route names through accessible labels and tooltips; the mobile
 Sheet menu remains independent and always shows the expanded labels. Shared data
-requests use shape-matched skeletons for predictable content (metadata, cards,
-tables, charts, and image frames), while long-running jobs keep their live status
-and progress indicators. Loading placeholders resolve to the normal empty or error
-state rather than masking a completed request.
+requests show a named spinner with a short caption, while long-running jobs keep
+their live status and progress indicators. Loading indicators resolve to the normal
+empty or error state rather than masking a completed request.
 
-Each workflow view also receives a compact readiness cue at the top of the content
-area (`#workflow-next-step`). It is a polite live status derived from data already
-loaded in the browser: for example, it can point to dataset or model setup, indicate
-that results are available to compare or analyze, or explain that an evaluation is
-still needed. The cue is contextual guidance only; it does not add an API call,
-change route availability, or block an existing action.
+Each workflow view opens with a single stage header — a phase eyebrow taken from the
+rail's route groups, the view title, and one orienting sentence — and nothing above
+it. Readiness state derived from data already loaded in the browser (dataset
+selection, configured models, evaluation preflight, result counts) surfaces in the
+workflow rail beside each route, so it stays visible from any stage without adding an
+API call, changing route availability, or blocking an existing action.
 
 ### Front-end architecture
 
 `src/webui/frontend/src/main.tsx` is the bootstrap and public export entry
 point. Composition lives in `app/App.tsx`, which connects shared data
 hooks to the keep-mounted page outlet. The shell is split into `AppShell`,
-`TopBar`, `Sidebar`, `CommandPalette`, `PageOutlet`, and `ErrorBoundary`;
-`app/navigation.ts` defines tab order, route hashes, route groups, and palette
-item types. The seven workflow areas live in
+`TopBar`, `Sidebar`, `PageOutlet`, and `ErrorBoundary`;
+`app/navigation.ts` defines tab order, route hashes, and route groups. The seven workflow areas live in
 `src/features/{dataset,models,evaluate,collect,compare,results,analyze}/`.
 Cross-feature workflow support is shared under `src/features/shared/`, while
 shell components, UI primitives, hooks, utilities, and global styles remain in
@@ -212,7 +212,7 @@ the fact. Progress is counted on the client from the run's own stdout, which
 prints one line per query; there is no second source of truth about how far
 along a run is. The raw log is one disclosure away, and stops auto-scrolling
 as soon as you scroll back through it. Results land in
-`experiment/outputs/evaluations/<model>_<vision|tree>.csv`
+`collections/experiment/outputs/evaluations/<model>_<vision|tree>.csv`
 exactly as `agb evaluate` would leave them, including the append/resume/lock
 semantics documented in the [evaluation runbook](runbooks/evaluation.md).
 
@@ -224,7 +224,7 @@ significant change / **Underpowered -- can't tell**). The third state
 exists because a plain yes/no would misrepresent most of this benchmark's own
 data: a model sitting near ceiling baseline accuracy with only a handful of
 discordant pairs is untestable, not resilient, and the UI must not imply
-otherwise (see [`docs/methods.md`](methods.md) and `src/webui/backend/compare.py`'s
+otherwise (see [`docs/methods.md`](methods.md) and `src/webui/backend/services/compare.py`'s
 module docstring). The Holm-Bonferroni correction runs across every model
 evaluated on the dataset, not just the one being displayed -- narrowing the
 family to one model's own profiles would let the same p-value read as
@@ -249,7 +249,7 @@ shown together -- driven by the arrow keys, `Escape`, or the filmstrip.
 **Analyze.** Shows whatever the current mode/sample combination already has
 on disk **on arrival**, with no run required -- if `agb analyze` (or an
 earlier browser run) already wrote tables to
-`experiment/outputs/analysis/<mode>_<sample>/`, they render immediately.
+`collections/experiment/outputs/analysis/<mode>_<sample>/`, they render immediately.
 Changing the Sample or Prompt mode selector reloads whatever exists for that
 combination the same way; the form below is "re-run with new parameters," not
 a gate you have to pass to see anything. Charts reachability (with Wilson
@@ -270,7 +270,7 @@ depends on colour alone. Vision and tree arms are analysed one at a time and
 are never pooled.
 
 **Analysis from the UI never writes into a dataset.** Results go to
-`experiment/outputs/analysis/<mode>_<sample>/`, and the path is shown above the
+`collections/experiment/outputs/analysis/<mode>_<sample>/`, and the path is shown above the
 charts. This is not cosmetic: `agb analyze` names its outputs after the
 analysis rather than the run, so running it twice with different `--sample`
 values overwrites the earlier tables in place. From a terminal that is a
@@ -284,21 +284,27 @@ dataset's results. Its captures -- images, labels, raw XML -- are only ever
 read.
 
 Analysis output for the active dataset is written under
-`experiment/outputs/analysis/<mode>_<sample>/`; prompt-arm comparisons use
-`experiment/outputs/analysis/comparisons/`. Every dataset owns exactly one output
-root: the active one is `experiment/outputs/`, and any other dataset owns an
-`outputs/` directory inside itself, so an archived run
-(`experiment/archive/experiment_N/`) keeps its captures and its tables together
-in one self-contained folder.
+`collections/experiment/outputs/analysis/<mode>_<sample>/`; prompt-arm comparisons use
+`collections/experiment/outputs/analysis/comparisons/`. Every dataset owns exactly one
+output root, derived from where the dataset itself sits. A directory named
+`dataset` is one half of a run root, so its outputs are its sibling: the
+shipped `collections/experiment/dataset/` writes to `collections/experiment/outputs/`, and a collected
+`collections/<name>/dataset/` writes to `collections/<name>/outputs/`. Anything
+else -- an archived run, or a bare directory passed to `--data-dir` -- owns an
+`outputs/` directory inside itself, so `collections/experiment/archive/experiment_N/` keeps
+its captures and its tables together in one self-contained folder.
 
 Analysis runs in the server process and blocks until it finishes; the form is
 locked for the duration. Unlike Evaluate it is not supervised as a subprocess,
 so it cannot be cancelled part-way.
 
-**Collect.** Wraps `agb collect`. Always writes to `datasets/<name>/`, never
-into the shipped `experiment/dataset/` or an archived
-`experiment/archive/experiment_N/` -- so a
-collection run from the UI can never overwrite committed results. An
+**Collect.** Wraps `agb collect`. Always writes to `collections/<name>/`, never
+into the shipped `collections/experiment/dataset/` or an archived
+`collections/experiment/archive/experiment_N/` -- so a
+collection run from the UI can never overwrite committed results. Each
+collection mirrors the shipped experiment's two directories: captures in
+`collections/<name>/dataset/`, and everything derived from them in
+`collections/<name>/outputs/`. An
 emulator preflight checks for `adb` and an authorized device; the manual
 prerequisites (Pixel 6 / API 34 / 1080x2400 @ 420 dpi, a signed-in Google
 account, Messages/Gmail/Maps opened once) are listed but not verifiable from
@@ -311,12 +317,16 @@ same portable unit `agb analyze --data-dir` already accepts. The dropdown
 shows:
 
 - `dataset` -- the shipped benchmark, writable.
-- `experiment/archive/experiment_1`, `experiment/archive/experiment_2` -- archived prior runs,
+- `collections/experiment/archive/experiment_1`, `collections/experiment/archive/experiment_2` -- archived prior runs,
   shown **read-only**: Evaluate and Collect refuse to target them (see the
   archive warning in [`README.md`](../README.md) and
-  `experiment/archive/experiment_2/README.md`).
-- `datasets/<name>/` -- anything you collect from the UI, or copy in
-  yourself, lives here rather than inside the shipped `dataset/`.
+  `collections/experiment/archive/experiment_2/README.md`).
+- `<name>` -- anything you collect from the UI, or copy in yourself, lives at
+  `collections/<name>/dataset/` rather than inside the shipped `dataset/`. The
+  dropdown lists it under the run's own folder name, not the `dataset`
+  directory inside it. A `collections/<name>/` with no `dataset/` yet -- a
+  cancelled collection, or a folder you made by hand -- is skipped rather than
+  offered as an empty dataset.
 
 ## Keys
 
@@ -369,7 +379,8 @@ something the bare CLI cannot currently do in a single invocation.
   calling `analysis.reports.grounding.report_per_model` and
   `report_reachability` directly -- the same functions `agb analyze` calls --
   never a JavaScript reimplementation.
-- **Modify a dataset's captures.** Collect writes only to `datasets/<name>/`,
+- **Modify a dataset's captures.** Collect writes only to
+  `collections/<name>/dataset/`,
   analysis writes only into the analysed dataset's own output root, and
   Evaluate appends to its own result CSV. Nothing in the UI rewrites a
   dataset's images, labels, or raw XML.
