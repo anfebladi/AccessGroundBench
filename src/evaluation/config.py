@@ -39,10 +39,10 @@ ALL_PROFILES = [
 def reject_colliding_models(models: list[str]) -> None:
     """Fail when two routed ids in one run reduce to the same result filename.
 
-    Stripping the routing prefix means ``9router/cx/gpt-5.5`` and
-    ``openai_compatible/vendor/gpt-5.5`` both want ``gpt-5.5_vision.csv``. Left
-    alone the second model would *resume* against the first one's rows, silently
-    blending two models' answers into one file that still looks well-formed.
+    Stripping the routing prefix means routed model ids can share a result
+    filename. Left alone the second model would *resume* against the first
+    one's rows, silently blending two models' answers into one file that still
+    looks well-formed.
     Refusing up front costs a rename; not refusing costs the run.
     """
     from collections import defaultdict
@@ -211,17 +211,16 @@ _MAX_CLEAN_MODEL_LENGTH = 150
 
 
 # Prefixes that name *how a request was routed*, not what model answered it.
-# 9router and OpenAI-compatible endpoints are shims: the same GPT or Gemini
-# model reachable through a different gateway is still that model, and the
-# gateway is a local deployment detail nobody else shares.
-_ROUTING_PREFIXES = ("9router/", "openai_compatible/")
+# 9router is a shim: the same GPT or Gemini model reachable through a
+# different gateway is still that model, and the gateway is a local
+# deployment detail nobody else shares.
+_ROUTING_PREFIXES = ("9router/",)
 
 
 def canonical_model_id(model: str) -> str:
     """Reduce a routed model id to the model it actually identifies.
 
-    ``9router/cx/gpt-5.6-sol`` -> ``gpt-5.6-sol``;
-    ``openai_compatible/z-ai/glm-5v-turbo`` -> ``glm-5v-turbo``.
+    ``9router/cx/gpt-5.6-sol`` -> ``gpt-5.6-sol``.
 
     Provider-prefixed ids (``anthropic/``, ``openai/``, ``gemini/``,
     ``local/``) are returned unchanged -- those name who serves the model,

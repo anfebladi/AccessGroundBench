@@ -60,7 +60,7 @@ class SmokeTestModelTests(unittest.TestCase):
         # exactly the failure mode the smoke test exists to catch before a
         # full paid run.
         result = smoke_test_model(
-            "openai_compatible/my-custom-vlm", "clock",
+            "openai/my-custom-vlm", "clock",
             images_dir=self.images_dir, labels_dir=self.labels_dir,
             coord_space="pixel",
         )

@@ -89,11 +89,11 @@ its own result file. The prefix selects the transport:
 | Prefix | Requires |
 |---|---|
 | `openai/` `gemini/` `anthropic/` | native LiteLLM plus the matching `*_API_KEY` |
-| `openai_compatible/<model>` | `OPENAI_COMPATIBLE_BASE_URL` + `OPENAI_COMPATIBLE_API_KEY` |
+| `9router/<model>` | `NINEROUTER_BASE_URL` + `NINEROUTER_API_KEY` |
 | `local/ferret-ui-llama8b` | a local Ferret-UI server ([`docs/ferret-ui.md`](docs/ferret-ui.md)) |
 
 ```dotenv
-VLM_MODEL=anthropic/claude-opus-5, openai_compatible/qwen/qwen3-vl-235b-a22b-instruct
+VLM_MODEL=anthropic/claude-opus-5, 9router/ag/qwen3-vl-235b-a22b-instruct
 USE_A11Y_TREE=false     # true injects a partial accessibility tree, writing *_tree.csv
 ```
 

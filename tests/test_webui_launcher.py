@@ -79,6 +79,12 @@ class WebuiLauncherTests(unittest.TestCase):
         process.poll.return_value = None
         process.wait.return_value = None
         seen = {}
+        stderr_state = {}
+
+        def launch_vite(*args, **kwargs):
+            stderr_state["stream"] = kwargs["stderr"]
+            stderr_state["writable"] = kwargs["stderr"].writable()
+            return process
 
         def menu(url, shutdown):
             seen["url"] = url
@@ -87,7 +93,7 @@ class WebuiLauncherTests(unittest.TestCase):
         with mock.patch.object(server, "FRONTEND_DIR", frontend), mock.patch.object(
             server.shutil, "which", return_value="/usr/bin/npm"
         ), mock.patch.dict(sys.modules, {"uvicorn": self._uvicorn(fake_server)}), mock.patch(
-            "webui.backend.server.subprocess.Popen", return_value=process
+            "webui.backend.server.subprocess.Popen", side_effect=launch_vite
         ) as popen, mock.patch("webui.backend.server.urllib.request.urlopen") as opener, mock.patch(
             "webui.backend.banner.run_interactive_menu", side_effect=menu
         ), mock.patch("webui.backend.server.create_app", return_value=object()):
@@ -98,6 +104,11 @@ class WebuiLauncherTests(unittest.TestCase):
         cmd = popen.call_args.args[0]
         expected_vite = str(frontend / "node_modules" / ".bin" / self.VITE_BIN)
         self.assertEqual([expected_vite, "--host", "127.0.0.1", "--port", "5173"], cmd)
+        popen_kwargs = popen.call_args.kwargs
+        self.assertIs(popen_kwargs["stdout"], server.subprocess.DEVNULL)
+        self.assertIsNot(popen_kwargs["stderr"], sys.stderr)
+        self.assertTrue(stderr_state["writable"])
+        self.assertTrue(hasattr(stderr_state["stream"], "write"))
         self.assertTrue(fake_server.should_exit)
         process.terminate.assert_called_once_with()
 
@@ -107,13 +118,23 @@ class WebuiLauncherTests(unittest.TestCase):
         fake_server = _FakeServer(None)
         process = mock.Mock()
         process.poll.return_value = 1
+        out = io.StringIO()
+
+        def launch_vite(*args, **kwargs):
+            kwargs["stderr"].write(b"error: port already in use")
+            return process
+
         with mock.patch.object(server, "FRONTEND_DIR", frontend), mock.patch.object(
             server.shutil, "which", return_value="/usr/bin/npm"
         ), mock.patch.dict(sys.modules, {"uvicorn": self._uvicorn(fake_server)}), mock.patch(
-            "webui.backend.server.subprocess.Popen", return_value=process
-        ), mock.patch("webui.backend.server.create_app", return_value=object()):
+            "webui.backend.server.subprocess.Popen", side_effect=launch_vite
+        ), mock.patch("webui.backend.server.create_app", return_value=object()), mock.patch(
+            "sys.stdout", out
+        ):
             with self.assertRaises(SystemExit):
                 server.ui_main([])
+        self.assertIn("[ERROR] Vite failed to start:", out.getvalue())
+        self.assertIn("error: port already in use", out.getvalue())
         self.assertTrue(fake_server.should_exit)
 
     def test_cleanup_kills_vite_when_terminate_does_not_finish(self):

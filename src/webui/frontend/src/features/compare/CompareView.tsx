@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { api, enc } from "../../lib/api";
 import { ExportButton } from "../shared/reporting/components/ExportButton";
 import type { TabViewProps } from "../../lib/types";
-import { DumbbellChart, Legend } from "../shared/reporting/charts";
+import { Legend, PairedAccuracyChart } from "../shared/reporting/charts";
 import { NativeSelect } from "../../components/ui/native-select";
 import { Card } from "../../components/ui/card";
 import { Skeleton } from "../../components/ui/skeleton";
@@ -175,7 +175,8 @@ export function CompareView({
       aria-labelledby="head-compare"
       hidden={hidden}
     >
-      <div className="mb-[var(--space-5)] max-w-[var(--prose-max)]">
+      <div className="view-head mb-[var(--space-5)] max-w-[var(--prose-max)]">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--primary)]">Read evidence</p>
         <h2
           id="head-compare"
           className="mb-[var(--space-2)] text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]"
@@ -251,8 +252,8 @@ function CompareResult({ result }: { result: Compare }) {
             <h3>Baseline versus each profile</h3>
             <p className="text-sm text-[var(--on-dark-muted)]">
               {result.model} -- {rows.length} profile
-              {rows.length === 1 ? "" : "s"} tested against baseline,{" "}
-              {result.mode} arm.
+              {rows.length === 1 ? "" : "s"} tested against baseline in the{" "}
+              {result.mode} arm. The chart uses a zoomed accuracy scale.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -267,10 +268,14 @@ function CompareResult({ result }: { result: Compare }) {
           items={[
             { color: "var(--viz-blue)", label: "Baseline accuracy" },
             { color: "var(--viz-orange)", label: "Profile accuracy" },
+            { color: "var(--on-dark-muted)", label: "† Underpowered" },
           ]}
         />
+        <p className="mb-4 text-xs text-[var(--on-dark-muted)]">
+          † Underpowered: too few informative paired comparisons to detect or rule out a real difference; ‘No change’ is inconclusive.
+        </p>
         <div className="overflow-x-auto text-[var(--on-dark-muted)]">
-          <DumbbellChart
+          <PairedAccuracyChart
             tone="dark"
             rows={rows.map((row) => ({
               label: profileName(row.profile),

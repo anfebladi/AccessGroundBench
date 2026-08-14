@@ -25,7 +25,7 @@ No baseline labels exist under `experiment/dataset/labels/`. Run `agb collect` f
 Set the key required by the `VLM_MODEL` prefix in `.env`. Placeholder values
 such as `your-...-here` are treated as unset. For `9router/`, confirm the local
 router is running and `NINEROUTER_BASE_URL` points to its OpenAI-compatible
-`/v1` endpoint. For `openai_compatible/`, set both the base URL and API key.
+`/v1` endpoint.
 
 ## `VLM_MODEL` is not set
 

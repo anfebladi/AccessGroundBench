@@ -242,20 +242,12 @@ class RealSubprocessDataDirTests(unittest.TestCase):
 
 class FilenameSanitizationTests(unittest.TestCase):
     def test_result_file_is_named_after_the_model_not_the_route(self):
-        """A gateway is a local deployment detail, not part of the result.
-
-        9router and OpenAI-compatible endpoints are shims; the same model
-        reached through a different one is still that model, so published
-        results must not be named after whichever gateway this machine used.
-        """
+        """A 9router gateway is a local deployment detail, not part of the result."""
         path = get_results_csv("9router/cx/gpt-5.5")
         self.assertEqual("gpt-5.5_vision.csv", path.name)
         self.assertEqual("evaluations", path.parent.name)
 
-        self.assertEqual(
-            "glm-5v-turbo_tree.csv",
-            get_results_csv("openai_compatible/z-ai/glm-5v-turbo", True).name,
-        )
+        self.assertEqual("openai_gpt-4o_tree.csv", get_results_csv("openai/gpt-4o", True).name)
 
     def test_provider_prefixes_are_kept(self):
         """anthropic/ and local/ name who served the model -- a real property."""
@@ -278,7 +270,7 @@ class FilenameSanitizationTests(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()) as out:
             with self.assertRaises(SystemExit):
                 reject_colliding_models(
-                    ["9router/cx/gpt-5.5", "openai_compatible/vendor/gpt-5.5"]
+                    ["9router/cx/gpt-5.5", "9router/vendor/gpt-5.5"]
                 )
         self.assertIn("same result filename", out.getvalue())
 

@@ -62,6 +62,13 @@ tables, charts, and image frames), while long-running jobs keep their live statu
 and progress indicators. Loading placeholders resolve to the normal empty or error
 state rather than masking a completed request.
 
+Each workflow view also receives a compact readiness cue at the top of the content
+area (`#workflow-next-step`). It is a polite live status derived from data already
+loaded in the browser: for example, it can point to dataset or model setup, indicate
+that results are available to compare or analyze, or explain that an evaluation is
+still needed. The cue is contextual guidance only; it does not add an API call,
+change route availability, or block an existing action.
+
 ### Front-end architecture
 
 `src/webui/frontend/src/main.tsx` is the bootstrap and public export entry
@@ -125,6 +132,14 @@ intentional design element on specific data surfaces, not a page-wide theme.
 The full token reference, measured contrast ratios, the component state matrix
 and the responsive rules are in
 [`docs/ui-design-system.md`](ui-design-system.md).
+
+The visual hierarchy is consistent across the seven views: context and title first,
+one filled primary action where work can be started, supporting controls second, and
+the evidence/form panel last. Results, Compare, and Analyze intentionally prioritize
+summary metrics, charts, and evidence drill-down over their selectors. The shell is
+desktop-first with a collapsible rail; below the desktop breakpoint it switches to
+the responsive Sheet workflow menu and compact stacked panels while retaining the
+same route hashes, DOM hooks, and keyboard behavior.
 
 One typeface family is bundled rather than loaded from a CDN, because the
 server binds localhost and must work offline: **Geist** for everything but
@@ -296,11 +311,11 @@ process.
 
 ## Bring your own model
 
-The underlying call path already accepts any LiteLLM-supported model string,
-including an arbitrary `openai_compatible/<model>` gateway -- no code change
-needed for most models. Three things commonly go wrong for an unregistered
-model, and the **Test model** button on the Models tab is built to catch all
-three in one query before a full run:
+The underlying call path accepts LiteLLM model strings for the supported native
+providers and the configured `9router/<model>` route -- no code change needed
+for most models. Three things commonly go wrong for an unregistered model, and
+the **Test model** button on the Models tab is built to catch all three in one
+query before a full run:
 
 1. **Wrong coordinate convention.** Only `gemini`, `qwen`, and `glm` are
    recognised as answering on a 0-1000 grid; anything else defaults to pixel

@@ -24,9 +24,14 @@ export function ConfiguredModelsCard({
   examples,
 }: ConfiguredModelsCardProps) {
   return (
-    <Card className="mt-4 p-4">
+    <Card className="mt-4 rounded-[var(--radius-lg)] p-4">
       <div className="flex items-center justify-between gap-3 pb-3">
-        <h3>Configured models</h3>
+        <div>
+          <h3>Configured models</h3>
+          <p className="mt-1 text-sm text-[var(--muted)]">
+            Use a smoke test to validate coordinates before a full evaluation.
+          </p>
+        </div>
       </div>
       <div id="model-list">
         {models.length ? (

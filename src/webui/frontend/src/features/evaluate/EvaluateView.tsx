@@ -132,9 +132,10 @@ export function EvaluateView({
     : 0;
   return (
     <section id="tab-evaluate" className="tab min-w-0" aria-labelledby="head-evaluate" hidden={hidden}>
-      <div className="mb-6">
-        <h2 id="head-evaluate">Evaluate</h2>
-        <p className="mt-2 max-w-3xl text-[var(--muted)]">
+      <div className="view-head mb-[var(--space-5)] max-w-[var(--prose-max)]">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--primary)]">Run evidence</p>
+        <h2 id="head-evaluate" className="text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]">Evaluate</h2>
+        <p className="mt-2 font-[var(--font-ui)] text-[length:var(--text-lead)] leading-[var(--lh-lead)] text-[var(--text-2)]">
           Query one model against every target on every profile. Runs append as
           they go and resume where they stopped, so an interrupted run never
           loses the calls it already paid for.

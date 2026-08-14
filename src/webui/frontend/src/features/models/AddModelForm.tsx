@@ -24,7 +24,13 @@ export function AddModelForm({
   submit: (event: FormEvent) => void;
 }) {
   return (
-    <Card className="mt-4 border-[var(--primary)] p-4"><div className="pb-3"><h3>Add a model</h3></div>
+    <Card className="mt-4 rounded-[var(--radius-lg)] border-[var(--primary)] p-4">
+      <div className="pb-3">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--primary)]">
+          Model roster
+        </p>
+        <h3>Add a model</h3>
+      </div>
       <form id="add-model-form" onSubmit={submit}>
         <div className="flex flex-wrap items-end gap-4">
           <div className="min-w-0 flex-1">
@@ -37,7 +43,7 @@ export function AddModelForm({
               placeholder="openai/gpt-4o-mini"
               required
             />
-            <p className="mt-1 text-xs text-[var(--muted)]">Any LiteLLM model string, or a <code>9router/</code> / <code>openai_compatible/</code> route.</p>
+            <p className="mt-1 text-xs text-[var(--muted)]">Any LiteLLM model string, or a <code>9router/</code> route.</p>
           </div>
           <div className="min-w-48">
             <label htmlFor="model-coord-space">Coordinate space</label>

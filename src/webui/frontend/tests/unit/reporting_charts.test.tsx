@@ -23,6 +23,7 @@ vi.mock("@nivo/scatterplot", () => ({
     const scale = (value: number | string) => typeof value === "number" ? value * 100 : 0;
     return <svg role={props.role} aria-label={props.ariaLabel} data-height={props.height}
       data-rows={JSON.stringify((props.data?.[0]?.data ?? []).map((row: any) => ({ id: row.id, label: row.y })))}
+      data-x-scale={JSON.stringify(props.xScale)}
       data-ticks={JSON.stringify(props.axisBottom?.tickValues)}
       data-theme-text={props.theme?.text?.fill}>
       {layers.map((layer: any, i: number) => <g key={i}>{layer({ xScale: scale, yScale: scale })}</g>)}</svg>;
@@ -30,7 +31,7 @@ vi.mock("@nivo/scatterplot", () => ({
 }));
 vi.mock("../../src/lib/export", () => ({ exportSvgAsPng: vi.fn() }));
 
-import { AccuracyChart, DirectionChart, DiscordantChart, DumbbellChart, ReachabilityChart } from "../../src/features/shared/reporting/charts";
+import { AccuracyChart, DirectionChart, DiscordantChart, DumbbellChart, PairedAccuracyChart, ReachabilityChart } from "../../src/features/shared/reporting/charts";
 import { ExportButton } from "../../src/features/shared/reporting/components/ExportButton";
 import { exportSvgAsPng } from "../../src/lib/export";
 import { CompareView } from "../../src/features/compare/CompareView";
@@ -106,8 +107,9 @@ describe("reporting charts", () => {
       return new Response(JSON.stringify([]), {headers: {"Content-Type": "application/json"}});
     }));
     render(<CompareView dataset="demo" />);
-    const card = await screen.findByText("Baseline versus each profile");
-    const frame = card.closest("[id='compare-model-a-vision']");
+    const charts = await screen.findAllByRole("img", { name: /Paired baseline and profile accuracies/ });
+    const chart = charts.find((element) => element.tagName.toLowerCase() === "svg") ?? charts[0];
+    const frame = chart.closest("[id='compare-model-a-vision']");
     expect(frame?.className).toContain("bg-[var(--panel-dark)]");
     expect(frame?.querySelector('[data-chart-tone="dark"]')).toBeTruthy();
   });
@@ -119,6 +121,37 @@ describe("reporting charts", () => {
     expect(container.querySelector(".chart-dumbbell-label")?.textContent).toContain("+50.0 pp † underpowered");
     expect(container.querySelector(".chart-dumbbell-label")?.textContent).not.toContain("reserved");
     expect(container.querySelector(".chart-dumbbell-label")?.getAttribute("text-decoration")).not.toBe("line-through");
+  });
+
+  it("renders paired endpoints/connectors on a zoomed scale with fixed annotations", () => {
+    const { container } = render(<PairedAccuracyChart rows={[
+      { id: "positive", label: "Improved", from: 0.5, to: 0.75 },
+      { id: "negative", label: "Declined", from: 0.8, to: 0.65, underpowered: true },
+      { id: "zero", label: "Unchanged", from: 0.7, to: 0.7, underpowered: true },
+    ]} />);
+    const chart = container.querySelector("svg");
+    expect(chart?.getAttribute("aria-label")).toContain("zoomed accuracy scale");
+    expect(container.querySelector("[data-chart-label]")?.getAttribute("aria-label")).toContain(
+      "† Underpowered: too few informative paired comparisons to detect or rule out a real difference; ‘No change’ is inconclusive.",
+    );
+    const domain = JSON.parse(chart?.getAttribute("data-x-scale") || "{}");
+    expect(domain.min).toBeCloseTo(0.44, 6);
+    expect(domain.max).toBeCloseTo(0.86, 6);
+    expect(container.querySelectorAll(".chart-paired-accuracy-connector")).toHaveLength(3);
+    expect(container.querySelectorAll(".chart-paired-accuracy-baseline")).toHaveLength(3);
+    expect(container.querySelectorAll(".chart-paired-accuracy-profile")).toHaveLength(3);
+    const labels = container.querySelectorAll(".chart-paired-accuracy-label");
+    expect(labels).toHaveLength(3);
+    expect(labels[0].textContent).toContain("50.0% → 75.0% (+25.0 pp)");
+    expect(labels[1].textContent).toContain("80.0% → 65.0% (-15.0 pp) † underpowered");
+    expect(labels[2].textContent).toBe("No change † underpowered");
+    expect(labels[0].getAttribute("x")).toBe(labels[1].getAttribute("x"));
+    expect(labels[1].getAttribute("x")).toBe(labels[2].getAttribute("x"));
+    expect(Number(labels[0].getAttribute("x"))).toBeGreaterThan(80);
+    expect(container.querySelectorAll(".chart-underpowered")).toHaveLength(2);
+    expect(container.querySelector(".chart-paired-accuracy-baseline")?.getAttribute("style")).toContain("fill: #2a78d6");
+    expect(container.querySelector(".chart-paired-accuracy-profile")?.getAttribute("style")).toContain("fill: #eb6834");
+    expect(container.querySelector(".chart-scale-note")?.textContent).toBe("Zoomed accuracy scale");
   });
 
   it("renders discordant significance annotations and direction labels/p values", () => {

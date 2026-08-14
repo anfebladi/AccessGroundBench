@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Bar } from "@nivo/bar";
 import { ScatterPlot } from "@nivo/scatterplot";
 import { ScrollArea } from "../../../components/ui/scroll-area";
@@ -38,6 +38,7 @@ export type ChartRow = {
 const WIDTH = 760;
 const MARGIN = { top: 18, right: 92, bottom: 38, left: 168 };
 const DUMBBELL_MARGIN = { ...MARGIN, right: 180 };
+const PAIRED_MARGIN = { ...MARGIN, right: 248 };
 const TICKS = [0, 0.25, 0.5, 0.75, 1];
 const COLORS = ["var(--viz-blue)", "var(--viz-orange)", "var(--viz-red)"];
 type ChartTone = "light" | "dark";
@@ -136,6 +137,8 @@ type LayerProps = {
   bars?: readonly { key?: string; data?: { indexValue?: string | number; value?: number }; x?: number; y?: number; width?: number; height?: number }[];
   xScale?: (value: number | string) => number | undefined;
   yScale?: (value: number | string) => number | undefined;
+  innerHeight?: number;
+  innerWidth?: number;
 };
 
 function scaleCoordinate(scale: NonNullable<LayerProps["xScale"]>, value: number | string) {
@@ -207,6 +210,39 @@ const dumbbellLayer = ({ xScale, yScale }: LayerProps) => {
         <text className="chart-dumbbell-label" style={{ fill: colors.label, fontSize: 12 }} x={scaleCoordinate(xScale, 1) + 16} y={y + 4}>
           {`${delta >= 0 ? "+" : ""}${delta.toFixed(1)} pp${underpowered ? " †" : ""}`}
           {underpowered && <tspan className="chart-underpowered-note" style={{ fill: colors.note }}> underpowered</tspan>}
+        </text>
+      </g>;
+    })}
+  </g>;
+};
+
+const pairedAccuracyLayer = ({ xScale, yScale, innerWidth = 0 }: LayerProps) => {
+  const rows = (pairedAccuracyLayer as unknown as { rows?: ChartRow[] }).rows ?? [];
+  const tone = (pairedAccuracyLayer as unknown as { tone?: ChartTone }).tone ?? "light";
+  const annotationX = (pairedAccuracyLayer as unknown as { annotationX?: number }).annotationX;
+  if (!xScale || !yScale) return null;
+  const colors = tone === "dark"
+    ? { connector: "rgba(255,255,255,.36)", baseline: "#2a78d6", profile: "#eb6834", outline: "#0a0a0c", label: "#f4f4f5", note: "#a1a1aa" }
+    : { connector: "#71717a", baseline: "#2a78d6", profile: "#eb6834", outline: "#ffffff", label: "#18181b", note: "#52525b" };
+  return <g className="chart-paired-accuracy-overlay" aria-label="Paired baseline and profile accuracies">
+    <text className="chart-scale-note" style={{ fill: colors.note, fontSize: 11 }} x={Math.max(0, innerWidth / 2 - 52)} y={-8}>
+      Zoomed accuracy scale
+    </text>
+    {rows.map((row) => {
+      const baseline = Math.max(0, Math.min(1, finiteNumber(row.from)));
+      const profile = Math.max(0, Math.min(1, finiteNumber(row.to)));
+      const delta = (profile - baseline) * 100;
+      const y = scaleCoordinate(yScale, row.id || row.label) + 0.5;
+      const underpowered = Boolean(row.underpowered);
+      const label = delta === 0
+        ? "No change"
+        : `${(baseline * 100).toFixed(1)}% → ${(profile * 100).toFixed(1)}% (${delta >= 0 ? "+" : ""}${delta.toFixed(1)} pp)`;
+      return <g key={row.id || row.label} className={underpowered ? "chart-underpowered" : undefined}>
+        <line className="chart-paired-accuracy-connector" style={{ stroke: colors.connector, strokeWidth: 2 }} x1={scaleCoordinate(xScale, baseline)} x2={scaleCoordinate(xScale, profile)} y1={y} y2={y} />
+        <circle className="chart-paired-accuracy-baseline" style={{ fill: colors.baseline, stroke: colors.outline, strokeWidth: 2 }} cx={scaleCoordinate(xScale, baseline)} cy={y} r={5} />
+        <circle className="chart-paired-accuracy-profile" style={{ fill: colors.profile, stroke: colors.outline, strokeWidth: 2 }} cx={scaleCoordinate(xScale, profile)} cy={y} r={5} />
+        <text className="chart-paired-accuracy-label" style={{ fill: colors.label, fontSize: 12 }} x={annotationX ?? innerWidth + 12} y={y + 4} textAnchor="start">
+          {`${label}${underpowered ? " † underpowered" : ""}`}
         </text>
       </g>;
     })}
@@ -332,6 +368,78 @@ export function DumbbellChart({ rows, tone = "light" }: { rows: ChartRow[]; tone
   );
 }
 
+export function PairedAccuracyChart({ rows, tone = "light" }: { rows: ChartRow[]; tone?: ChartTone }) {
+  const usable = validRows(rows);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [chartWidth, setChartWidth] = useState(WIDTH);
+  const values = usable.flatMap((row) => [
+    Math.max(0, Math.min(1, finiteNumber(row.from))),
+    Math.max(0, Math.min(1, finiteNumber(row.to))),
+  ]);
+  const minimum = values.length ? Math.min(...values) : 0;
+  const maximum = values.length ? Math.max(...values) : 1;
+  const padding = Math.max(0.01, (maximum - minimum) * 0.2);
+  let domainMin = Math.max(0, minimum - padding);
+  let domainMax = Math.min(1, maximum + padding);
+  if (domainMin === domainMax) {
+    domainMin = Math.max(0, domainMin - 0.01);
+    domainMax = Math.min(1, domainMax + 0.01);
+  }
+  const labels = new Map(usable.map((row) => [row.id!, row.label]));
+  (pairedAccuracyLayer as unknown as { rows?: ChartRow[] }).rows = usable;
+  (pairedAccuracyLayer as unknown as { tone?: ChartTone }).tone = tone;
+  const description = `Paired baseline and profile accuracies on a zoomed accuracy scale. ${usable.map((row) => {
+    const baseline = finiteNumber(row.from) * 100;
+    const profile = finiteNumber(row.to) * 100;
+    const delta = profile - baseline;
+    return `${row.label}: ${delta === 0 ? "No change" : `${baseline.toFixed(1)}% to ${profile.toFixed(1)}% (${delta >= 0 ? "+" : ""}${delta.toFixed(1)} percentage points)`}${row.underpowered ? ", underpowered" : ""}`;
+  }).join("; ")} † Underpowered: too few informative paired comparisons to detect or rule out a real difference; ‘No change’ is inconclusive.`;
+  const animate = useMotion();
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(([entry]) => {
+      const available = Math.floor(entry.contentRect.width);
+      if (available > 0) setChartWidth(Math.max(WIDTH, available));
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
+  if (!usable.length) {
+    return <div className="text-sm text-[var(--muted)]">No valid data available.</div>;
+  }
+  const height = Math.max(240, usable.length * 42 + MARGIN.top + MARGIN.bottom);
+  (pairedAccuracyLayer as unknown as { annotationX?: number }).annotationX =
+    chartWidth - PAIRED_MARGIN.left - PAIRED_MARGIN.right + 12;
+  return (
+    <div
+      ref={containerRef}
+      className={`w-full overflow-visible ${tone === "dark" ? "text-[var(--on-dark-muted)]" : "text-[var(--text-2)]"}`}
+      role="img"
+      aria-label={description}
+      data-chart-label={description}
+      data-chart-tone={tone}
+    >
+      <div className="max-h-[560px] overflow-auto">
+        <div style={{ width: chartWidth, height }} data-chart-target>
+          <ScatterPlot
+            data={[{ id: "paired-accuracy", data: usable.flatMap((row) => [
+              { id: `${row.id}-baseline`, x: finiteNumber(row.from), y: row.id! },
+              { id: `${row.id}-profile`, x: finiteNumber(row.to), y: row.id! },
+            ]) }]}
+            width={chartWidth} height={height} margin={PAIRED_MARGIN}
+            xScale={{ type: "linear", min: domainMin, max: domainMax }} yScale={{ type: "point" }}
+            axisBottom={{ format: (value) => `${(Number(value) * 100).toFixed(1)}%` }}
+            axisLeft={{ tickSize: 0, format: (value) => labels.get(String(value)) ?? String(value) }}
+            theme={tone === "dark" ? darkTheme : lightTheme} role="img" ariaLabel={description} animate={animate} isInteractive nodeSize={0}
+            layers={["grid", "axes", pairedAccuracyLayer as never]}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function DiscordantChart({ rows }: { rows: ChartRow[] }) {
   const usable = validRows(rows);
   const max = Math.max(1, ...usable.flatMap((row) => [finiteNumber(row.left), finiteNumber(row.right)]));
@@ -404,5 +512,6 @@ export const accuracyChart = AccuracyChart;
 export const reachabilityChart = ReachabilityChart;
 export const discordantChart = DiscordantChart;
 export const dumbbellChart = DumbbellChart;
+export const pairedAccuracyChart = PairedAccuracyChart;
 export const directionChart = DirectionChart;
 export const legend = Legend;

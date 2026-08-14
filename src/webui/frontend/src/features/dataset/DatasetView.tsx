@@ -155,6 +155,7 @@ export function DatasetView({
   return (
     <section id="tab-dataset" className="tab min-w-0" aria-labelledby="head-dataset" hidden={hidden}>
       <div className="view-head mb-[var(--space-5)] max-w-[var(--prose-max)]">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--primary)]">Start here</p>
         <h2 id="head-dataset" className="mb-[var(--space-2)] text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]">Dataset</h2>
         <p className="font-[var(--font-ui)] text-[length:var(--text-lead)] leading-[var(--lh-lead)] text-[var(--text-2)]">
           The screens this benchmark grounds against, captured under each
@@ -167,7 +168,7 @@ export function DatasetView({
       <div id="dataset-warnings">
         <CaptureHealth manifest={manifest} available={manifestAvailable} />
       </div>
-      <Card>
+      <Card className="rounded-[var(--radius-lg)] border-[var(--border)]">
         <div className="flex items-center justify-between gap-3 pb-3">
           <div>
             <h3>Screen comparison</h3>

@@ -16,6 +16,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 import urllib.error
@@ -28,6 +29,7 @@ import paths
 from . import datasets as datasets_mod
 from . import keys as keys_mod
 from . import runs as runs_mod
+from .stdout_capture import capture_stdout
 
 FRONTEND_DIR = Path(__file__).resolve().parents[1] / "frontend"
 
@@ -40,7 +42,6 @@ PROVIDER_ENV_VARS = {
     "gemini": ["GEMINI_API_KEY", "GOOGLE_API_KEY"],
     "anthropic": ["ANTHROPIC_API_KEY"],
     "9router": ["NINEROUTER_BASE_URL", "NINEROUTER_API_KEY"],
-    "openai_compatible": ["OPENAI_COMPATIBLE_BASE_URL", "OPENAI_COMPATIBLE_API_KEY"],
 }
 
 # Env mutation (for the smoke test's direct call into evaluation.providers)
@@ -159,7 +160,8 @@ def create_app():
         from evaluation.grounding.targets import harvest_targets
 
         info = _dataset_or_404(name)
-        targets = harvest_targets(screen, info.path / "labels")
+        with capture_stdout():
+            targets = harvest_targets(screen, info.path / "labels")
         return {"targets": targets}
 
     @app.get("/api/datasets/{name}/image/{screen}/{profile}")
@@ -201,7 +203,7 @@ def create_app():
         # return them together so no caller can pool them by accident.
         for mode in ANALYSIS_MODES:
             for csv_path in discover_result_csvs(info.path, mode):
-                with contextlib.redirect_stdout(io.StringIO()):
+                with capture_stdout():
                     rows = load_results(csv_path)
                 statuses = Counter(r["status"] for r in rows)
                 co_present = [r for r in rows if r["status"] == "co_present"]
@@ -240,7 +242,7 @@ def create_app():
         if (evaluations_root.resolve() not in csv_path.parents or
                 not csv_path.is_file() or not csv_path.name.endswith(".csv")):
             raise HTTPException(status_code=404, detail=f"No such results file: {filename}")
-        with contextlib.redirect_stdout(io.StringIO()):
+        with capture_stdout():
             rows = load_results(csv_path)
         # Trim to what the Results-tab miss inspector needs; the full CSV
         # (raw_response, trial_scores, coord_space, ...) stays on disk for
@@ -380,12 +382,13 @@ def create_app():
             previous = {k: os.environ.get(k) for k in overrides}
             os.environ.update(overrides)
             try:
-                result = smoke_test_model(
-                    model, screen,
-                    images_dir=info.path / "images",
-                    labels_dir=info.path / "labels",
-                    coord_space=coord_space,
-                )
+                with capture_stdout():
+                    result = smoke_test_model(
+                        model, screen,
+                        images_dir=info.path / "images",
+                        labels_dir=info.path / "labels",
+                        coord_space=coord_space,
+                    )
             finally:
                 for k, v in previous.items():
                     if v is None:
@@ -523,7 +526,7 @@ def create_app():
 
         buf = io.StringIO()
         try:
-            with contextlib.redirect_stdout(buf):
+            with capture_stdout(buf):
                 run_analysis(
                     info.path, None, permutations, seed, mode, sample, label_changed,
                     output_dir=output_dir,
@@ -695,6 +698,7 @@ def ui_main(argv: list[str] | None = None) -> None:
         raise SystemExit(1)  # uvicorn failed to start (e.g. port already in use)
 
     vite_process: subprocess.Popen[bytes] | None = None
+    vite_stderr = tempfile.TemporaryFile(mode="w+b")
 
     def cleanup() -> None:
         if vite_process is not None and vite_process.poll() is None:
@@ -706,16 +710,24 @@ def ui_main(argv: list[str] | None = None) -> None:
                 vite_process.wait()
         uv_server.should_exit = True
         server_thread.join(timeout=5)
+        if not vite_stderr.closed:
+            vite_stderr.close()
 
     try:
         vite_process = subprocess.Popen(
             [str(vite), "--host", "127.0.0.1", "--port", str(args.port)],
             cwd=FRONTEND_DIR,
             env={**os.environ, "AGB_API_PORT": str(args.api_port)},
+            stdout=subprocess.DEVNULL,
+            stderr=vite_stderr,
         )
         deadline = time.monotonic() + 10
         while time.monotonic() < deadline:
             if vite_process.poll() is not None:
+                vite_stderr.seek(0)
+                stderr = vite_stderr.read().decode(errors="replace")
+                if isinstance(stderr, str) and stderr.strip():
+                    print(f"[ERROR] Vite failed to start:\n{stderr.strip()}")
                 raise SystemExit(1)
             try:
                 with urllib.request.urlopen(f"http://127.0.0.1:{args.port}/", timeout=0.5):

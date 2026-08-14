@@ -119,11 +119,11 @@ class VlmProviderTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "NINEROUTER_BASE_URL"):
             vlm_provider.resolve_completion_config("9router/cx/gpt-5.3-codex")
 
-    def test_compatible_model_requires_route_name(self):
+    def test_9router_model_requires_route_name(self):
         with self.assertRaisesRegex(ValueError, "model route"):
             vlm_provider.resolve_completion_config("9router/")
 
-    def test_normalize_compatible_base_url_accepts_host_and_v1_forms(self):
+    def test_normalize_9router_base_url_accepts_host_and_v1_forms(self):
         for value in (
             "http://localhost:20128",
             "http://localhost:20128/",
@@ -136,46 +136,11 @@ class VlmProviderTests(unittest.TestCase):
                     vlm_provider._normalize_compatible_base_url(value),
                 )
 
-    @mock.patch.dict(
-        "evaluation.providers.hosted.os.environ",
-        {
-            "OPENAI_COMPATIBLE_BASE_URL": "https://provider.example.com/v1/",
-            "OPENAI_COMPATIBLE_API_KEY": "provider-key",
-        },
-        clear=True,
-    )
-    def test_resolve_generic_compatible_model_preserves_nested_model_id(self):
-        self.assertEqual(
-            {
-                "model": "vendor/model-with-slashes",
-                "custom_llm_provider": "openai",
-                "api_base": "https://provider.example.com/v1",
-                "api_key": "provider-key",
-            },
-            vlm_provider.resolve_completion_config(
-                "openai_compatible/vendor/model-with-slashes"
-            ),
-        )
-
     @mock.patch.dict("evaluation.providers.hosted.os.environ", {}, clear=True)
     def test_compatible_model_reports_missing_configuration(self):
         error = vlm_provider.model_configuration_error("9router/cx/gpt-5.3-codex")
         self.assertIn("NINEROUTER_BASE_URL", error)
         self.assertIn("NINEROUTER_API_KEY", error)
-
-    @mock.patch.dict(
-        "evaluation.providers.hosted.os.environ",
-        {
-            "OPENAI_COMPATIBLE_BASE_URL": "https://provider.example.com/v1",
-            "OPENAI_COMPATIBLE_API_KEY": "your-compatible-provider-key-here",
-        },
-        clear=True,
-    )
-    def test_generic_compatible_placeholder_key_is_missing(self):
-        error = vlm_provider.model_configuration_error(
-            "openai_compatible/my-provider-model"
-        )
-        self.assertIn("OPENAI_COMPATIBLE_API_KEY", error)
 
     @mock.patch.dict("evaluation.providers.hosted.os.environ", {}, clear=True)
     def test_native_model_configuration_is_unchanged(self):

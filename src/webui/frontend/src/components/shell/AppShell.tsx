@@ -45,6 +45,15 @@ export function AppShell({
     try { window.localStorage.setItem("agb.sidebar.collapsed", next ? "1" : "0"); } catch { /* storage unavailable */ }
     return next;
   });
+  const nextStep = {
+    dataset: { eyebrow: "Start here", text: dataset ? "Review your capture set before running a workflow." : "Choose a dataset to begin." },
+    models: { eyebrow: "Set up", text: models.length ? "Your model roster is ready for an evaluation." : "Configure a model before evaluating." },
+    evaluate: { eyebrow: "Run", text: evaluate.text || "Select a model and run an evaluation." },
+    collect: { eyebrow: "Run", text: "Capture a fresh dataset when you need new evidence." },
+    compare: { eyebrow: "Compare", text: compareCount ? "Compare selected model runs side by side." : "Collect results before comparing models." },
+    results: { eyebrow: "Read", text: resultsCount ? "Inspect accuracy and evidence from your latest runs." : "Run an evaluation to populate results." },
+    analyze: { eyebrow: "Read", text: resultsCount ? "Turn result files into statistical evidence." : "Results are needed before analysis can run." },
+  }[route];
   return (
     <>
       <TopBar
@@ -93,7 +102,13 @@ export function AppShell({
           loading={dataLoading}
           onToggleCollapsed={toggleCollapsed}
         />
-        <main className="min-w-0 max-w-[var(--content-max)] px-[var(--page-gutter)] pb-[var(--space-8)] pt-[var(--space-6)] min-[1280px]:px-[var(--space-6)] max-[767px]:px-[var(--space-4)] max-[767px]:pt-[var(--space-4)]">{children}</main>
+        <main className="workspace-main min-w-0 max-w-[var(--content-max)] px-[var(--page-gutter)] pb-[var(--space-8)] pt-[var(--space-6)] min-[1280px]:px-[var(--space-6)] max-[767px]:px-[var(--space-4)] max-[767px]:pt-[var(--space-4)]">
+          <div className="next-step" id="workflow-next-step" role="status" aria-live="polite">
+            <span className="next-step-mark" aria-hidden="true" />
+            <span className="next-step-copy"><span className="next-step-eyebrow">{nextStep.eyebrow}</span>{nextStep.text}</span>
+          </div>
+          {children}
+        </main>
       </div>
     </>
   );

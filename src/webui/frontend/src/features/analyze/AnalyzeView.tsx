@@ -168,7 +168,8 @@ export function AnalyzeView({
       aria-labelledby="head-analyze"
       hidden={hidden}
     >
-      <div className="mb-[var(--space-5)] max-w-[var(--prose-max)]">
+      <div className="view-head mb-[var(--space-5)] max-w-[var(--prose-max)]">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--primary)]">Read evidence</p>
         <h2 id="head-analyze" className="mb-[var(--space-2)] text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]">Analyze</h2>
         <p className="font-[var(--font-ui)] text-[length:var(--text-lead)] leading-[var(--lh-lead)] text-[var(--text-2)]">
           Reachability, pooled permutation tests, and per-model tests.

@@ -51,6 +51,17 @@ async function mockApi(page: Page) {
         significance_state: "underpowered",
         power_flag: "ceiling/floor",
       },
+      {
+        profile: "same_baseline",
+        baseline_accuracy: 99.0,
+        profile_accuracy: 99.0,
+        delta: 0.0,
+        b: 0,
+        c: 0,
+        reachability: 1,
+        significance_state: "underpowered",
+        power_flag: "ceiling/floor",
+      },
     ],
   };
   await page.route("**/api/**", async (route) => {
@@ -181,34 +192,29 @@ test.describe("legacy UI rendered parity", () => {
     });
   });
 
-  test("Compare renders dark dumbbell chart and underpowered row", async ({ page }) => {
+  test("Compare renders paired accuracy chart on a zoomed scale", async ({ page }) => {
     await page.goto("/#compare");
     await waitForFixture(page, "compare");
     await expect(page.locator("#compare-body .card-dark")).toBeVisible();
-    await expect(page.getByRole("img", { name: "Baseline versus profile accuracy", exact: true })).toBeVisible();
-    await expect(page.locator("#compare-body")).toContainText("Underpowered");
+    const chart = page.locator('#compare-body svg[role="img"][aria-label^="Paired baseline and profile accuracies"]');
+    await expect(chart).toBeVisible();
+    await expect(page.locator("#compare-body")).toContainText("Zoomed accuracy scale");
+    await expect(page.locator("#compare-body")).toContainText("† Underpowered: too few informative paired comparisons to detect or rule out a real difference; ‘No change’ is inconclusive.");
+    await expect(page.locator("#compare-body tbody tr").filter({ hasText: "High contrast" })).toContainText("Underpowered");
     await expect(page.locator("#compare-body")).toContainText("99.5%");
-    const chart = page.locator("#compare-body .chart-dumbbell-overlay");
-    const computedPalette = await chart.locator(".chart-dumbbell-baseline").first().evaluate((element) => {
-      const baseline = element as SVGCircleElement;
-      const overlay = baseline.parentElement?.parentElement;
-      const profile = overlay?.querySelector(".chart-dumbbell-profile") as SVGCircleElement | null;
-      const label = overlay?.querySelector(".chart-dumbbell-label") as SVGTextElement | null;
-      const connector = overlay?.querySelector(".chart-dumbbell-connector") as SVGLineElement | null;
-      return {
-        baselineFill: getComputedStyle(baseline).fill,
-        profileFill: profile ? getComputedStyle(profile).fill : "",
-        labelFill: label ? getComputedStyle(label).fill : "",
-        connectorStroke: connector ? getComputedStyle(connector).stroke : "",
-        connectorX1: connector?.getAttribute("x1"),
-        connectorX2: connector?.getAttribute("x2"),
-      };
-    });
-    expect(computedPalette.baselineFill).toBe("rgb(42, 120, 214)");
-    expect(computedPalette.profileFill).toBe("rgb(235, 104, 52)");
-    expect(computedPalette.labelFill).toBe("rgb(244, 244, 245)");
-    expect(computedPalette.connectorStroke).not.toMatch(/rgb\(0, 0, 0\)|rgba\(0, 0, 0/);
-    expect(computedPalette.connectorX1).not.toBe(computedPalette.connectorX2);
+    const paired = chart.locator(".chart-paired-accuracy-overlay");
+    await expect(paired.locator(".chart-paired-accuracy-connector")).toHaveCount(3);
+    await expect(paired.locator(".chart-paired-accuracy-baseline")).toHaveCount(3);
+    await expect(paired.locator(".chart-paired-accuracy-profile")).toHaveCount(3);
+    await expect(paired.locator(".chart-paired-accuracy-label").filter({ hasText: "98.0% → 97.0% (-1.0 pp)" })).toBeVisible();
+    await expect(paired.locator(".chart-paired-accuracy-label").filter({ hasText: "99.0% → 99.5% (+0.5 pp) † underpowered" })).toBeVisible();
+    await expect(paired.locator(".chart-paired-accuracy-label").filter({ hasText: "No change † underpowered" })).toBeVisible();
+    await expect(paired.locator(".chart-paired-accuracy-label")).not.toContainText("0.0 pp");
+    await expect(paired.locator(".chart-delta-zero")).toHaveCount(0);
+    await expect(paired.locator(".chart-underpowered")).toHaveCount(2);
+    const labels = paired.locator(".chart-paired-accuracy-label");
+    expect(await labels.nth(0).getAttribute("x")).toBe(await labels.nth(1).getAttribute("x"));
+    expect(await labels.nth(1).getAttribute("x")).toBe(await labels.nth(2).getAttribute("x"));
     await expect(page.locator("#compare-body")).toHaveScreenshot("compare-populated.png", {
       animations: "disabled",
       caret: "hide",

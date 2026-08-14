@@ -53,7 +53,7 @@ def _is_valid_key(key: str | None) -> bool:
 
 
 def api_key_exists(model_name: str) -> bool:
-    if model_name.startswith(("9router/", "openai_compatible/")):
+    if model_name.startswith("9router/"):
         return model_configuration_error(model_name) is None
     if model_name.startswith("openai/"):
         return _is_valid_key(os.environ.get("OPENAI_API_KEY"))

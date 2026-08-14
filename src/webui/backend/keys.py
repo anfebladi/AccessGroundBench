@@ -16,7 +16,6 @@ PROVIDER_ENV_VARS = {
     "gemini": "GEMINI_API_KEY",
     "anthropic": "ANTHROPIC_API_KEY",
     "9router": "NINEROUTER_API_KEY",
-    "openai_compatible": "OPENAI_COMPATIBLE_API_KEY",
 }
 
 _lock = threading.Lock()

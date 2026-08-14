@@ -95,8 +95,9 @@
      always carries dark-navy text, a dark surface always carries white or
      pale-blue text -- never the reverse. Every pair is contrast-checked
      (WCAG AA, 4.5:1 body text, 3:1 large text/non-text UI). */
-  --bg: #ffffff;
+  --bg: #fafaf9;
   --surface: #ffffff;
+  --surface-warm: #f6f7f8;
 
   /* True neutral ramp. Not all twelve stops are consumed by name below --
      the rest exist for chart neutrals, hover states and future components,
@@ -123,11 +124,11 @@
   --text-2: #03396c;    /* 11.6:1 */
   --muted: #005b96;     /*  7.1:1 */
 
-  --primary: #005b96;   /*  7.1:1 -- the one saturated fill: buttons, links, active state */
-  --primary-hover: #03396c;
+  --primary: #155e9b;   /* refined blue accent for actions and active state */
+  --primary-hover: #0d4f86;
   --primary-active: #011f4b;
   --primary-fg: #ffffff;
-  --primary-soft: color-mix(in srgb, #005b96 10%, transparent);
+  --primary-soft: color-mix(in srgb, #155e9b 10%, transparent);
 
   /* -- Dark data surfaces --------------------------------------------------
      A deep, near-black neutral -- not the brand navy (--forest is still

@@ -104,6 +104,23 @@ border doing the separating instead of a heavy shadow, one typeface instead of t
 fighting each other. This is a second pass over the palette-only work in PR #29/#30; where
 this doc contradicts an earlier stated doctrine, this one is current.
 
+### Workflow hierarchy and readiness cue
+
+Every mounted workflow view follows the same reading order: page title and context,
+one primary action (when the view is actionable), secondary controls, then the data
+panel or form. Empty, loading, and error states occupy that same panel so the layout
+does not change meaning while a request resolves. Results, Compare, and Analyze give
+the evidence surface the greatest visual weight; controls remain visible but do not
+compete with the reported numbers.
+
+The shell places a compact `#workflow-next-step` status cue above the active view.
+Its copy is derived only from the current client state (selected dataset, configured
+models, evaluation preflight, and available result counts); it does not create a new
+request, endpoint, or persisted setting. The cue uses `role="status"` and
+`aria-live="polite"`, and should remain concise enough to scan before the page title.
+It is guidance, not a gate: existing routes and actions stay available when the cue
+describes missing setup or results.
+
 ---
 
 ## 1. Typography

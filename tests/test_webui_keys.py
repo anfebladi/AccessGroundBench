@@ -35,14 +35,13 @@ class SessionKeyStoreTests(unittest.TestCase):
         self.assertEqual("sk-openai", overrides["OPENAI_API_KEY"])
         self.assertEqual("sk-anthropic", overrides["ANTHROPIC_API_KEY"])
 
-    def test_9router_and_openai_compatible_map_to_api_key_var_only(self):
-        # The base-URL half of these providers is configured via .env only --
-        # the session store just overrides the credential half.
+    def test_9router_maps_to_api_key_var_only(self):
+        # The base URL is configured via .env; the session store only
+        # overrides the credential half.
         keys.set_key("9router", "route-key")
-        keys.set_key("openai_compatible", "compat-key")
         overrides = keys.session_env_overrides()
         self.assertEqual("route-key", overrides["NINEROUTER_API_KEY"])
-        self.assertEqual("compat-key", overrides["OPENAI_COMPATIBLE_API_KEY"])
+        self.assertEqual({"NINEROUTER_API_KEY": "route-key"}, overrides)
 
 
 if __name__ == "__main__":

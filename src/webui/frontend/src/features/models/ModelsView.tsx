@@ -138,9 +138,10 @@ export function ModelsView({
       aria-labelledby="head-models"
       hidden={hidden}
     >
-      <div className="mb-6">
-        <h2 id="head-models">Models</h2>
-        <p className="mt-2 max-w-3xl text-[var(--muted)]">
+      <div className="view-head mb-[var(--space-5)] max-w-[var(--prose-max)]">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--primary)]">Workspace setup</p>
+        <h2 id="head-models" className="text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]">Models</h2>
+        <p className="mt-2 font-[var(--font-ui)] text-[length:var(--text-lead)] leading-[var(--lh-lead)] text-[var(--text-2)]">
           Configure the models to evaluate and check each one with a single real
           query before spending a full run. This catches a bad key, a wrong
           coordinate convention, or a malformed model id early.

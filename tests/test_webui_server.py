@@ -1,3 +1,5 @@
+import contextlib
+import io
 import json
 import struct
 import tempfile
@@ -94,11 +96,50 @@ class WebuiServerTests(unittest.TestCase):
         self.assertEqual(["clock"], resp.json()["screens"])
 
     def test_dataset_targets_returns_harvested_targets(self):
-        resp = self.client.get("/api/datasets/dataset/targets/clock")
+        terminal = io.StringIO()
+        with contextlib.redirect_stdout(terminal):
+            resp = self.client.get("/api/datasets/dataset/targets/clock")
         self.assertEqual(200, resp.status_code)
         targets = resp.json()["targets"]
         self.assertEqual(1, len(targets))
         self.assertEqual("8:30 AM", targets[0]["text"])
+        self.assertNotIn("[HARVEST]", terminal.getvalue())
+
+    def test_smoke_test_suppresses_backend_output(self):
+        from evaluation.smoke import SmokeTestResult
+
+        def noisy_smoke(*args, **kwargs):
+            print("SMOKE BACKEND OUTPUT")
+            return SmokeTestResult(
+                ok=True,
+                model=args[0],
+                screen=args[1],
+                target_text="8:30 AM",
+                raw_response="[200, 300]",
+                x_pred=200,
+                y_pred=300,
+                box=[84, 231, 429, 414],
+                hit=1,
+                coord_space_detected="pixel",
+                coord_space_used="pixel",
+            )
+
+        terminal = io.StringIO()
+        with mock.patch("evaluation.smoke.smoke_test_model", side_effect=noisy_smoke):
+            with contextlib.redirect_stdout(terminal):
+                resp = self.client.post("/api/smoke-test", json={
+                    "dataset": "dataset",
+                    "model": "test-model",
+                    "screen": "clock",
+                })
+
+        self.assertEqual(200, resp.status_code)
+        body = resp.json()
+        self.assertTrue(body["ok"])
+        self.assertEqual("test-model", body["model"])
+        self.assertEqual("clock", body["screen"])
+        self.assertEqual("8:30 AM", body["target_text"])
+        self.assertNotIn("SMOKE BACKEND OUTPUT", terminal.getvalue())
 
     def test_dataset_image_serves_png(self):
         resp = self.client.get("/api/datasets/dataset/image/clock/baseline")

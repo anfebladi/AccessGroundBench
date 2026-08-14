@@ -5,11 +5,8 @@ import os
 from ..config import COORD_SPACE_ENV_VAR, DEFAULT_COORD_SPACE
 
 NINEROUTER_PREFIX = "9router/"
-OPENAI_COMPATIBLE_PREFIX = "openai_compatible/"
 NINEROUTER_BASE_URL_ENV_VAR = "NINEROUTER_BASE_URL"
 NINEROUTER_API_KEY_ENV_VAR = "NINEROUTER_API_KEY"
-OPENAI_COMPATIBLE_BASE_URL_ENV_VAR = "OPENAI_COMPATIBLE_BASE_URL"
-OPENAI_COMPATIBLE_API_KEY_ENV_VAR = "OPENAI_COMPATIBLE_API_KEY"
 FERRET_MODEL_ID = "local/ferret-ui-llama8b"
 NORMALIZED_COORD_FAMILIES = ("gemini", "qwen", "glm")
 
@@ -94,12 +91,6 @@ def model_configuration_error(model: str) -> str | None:
         base_var = NINEROUTER_BASE_URL_ENV_VAR
         key_var = NINEROUTER_API_KEY_ENV_VAR
         example = "VLM_MODEL=9router/cx/gpt-5.3-codex"
-    elif model.startswith(OPENAI_COMPATIBLE_PREFIX):
-        if not model[len(OPENAI_COMPATIBLE_PREFIX):].strip():
-            return f"An OpenAI-compatible model is required after {OPENAI_COMPATIBLE_PREFIX}"
-        base_var = OPENAI_COMPATIBLE_BASE_URL_ENV_VAR
-        key_var = OPENAI_COMPATIBLE_API_KEY_ENV_VAR
-        example = "VLM_MODEL=openai_compatible/my-provider-model"
     else:
         return None
 
@@ -127,16 +118,6 @@ def resolve_completion_config(model: str) -> dict[str, str]:
                 os.environ[NINEROUTER_BASE_URL_ENV_VAR]
             ),
             "api_key": os.environ[NINEROUTER_API_KEY_ENV_VAR].strip(),
-        }
-
-    if model.startswith(OPENAI_COMPATIBLE_PREFIX):
-        return {
-            "model": model[len(OPENAI_COMPATIBLE_PREFIX):],
-            "custom_llm_provider": "openai",
-            "api_base": _normalize_compatible_base_url(
-                os.environ[OPENAI_COMPATIBLE_BASE_URL_ENV_VAR]
-            ),
-            "api_key": os.environ[OPENAI_COMPATIBLE_API_KEY_ENV_VAR].strip(),
         }
 
     return {"model": model}

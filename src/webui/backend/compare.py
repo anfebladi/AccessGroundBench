@@ -16,8 +16,6 @@ one requested for display -- the correction itself is never re-scoped.
 """
 from __future__ import annotations
 
-import contextlib
-import io
 from pathlib import Path
 
 from evaluation.config import ALL_PROFILES
@@ -29,6 +27,8 @@ from analysis.data.results import (
 from analysis.data.samples import DEFAULT_SAMPLE, compute_b2_targets
 from analysis.reports.grounding import report_per_model
 from analysis.reports.reachability import report_reachability
+
+from .stdout_capture import capture_stdout
 
 EXPERIMENTAL_PROFILES = [p for p in ALL_PROFILES if p != "baseline"]
 
@@ -58,7 +58,7 @@ def compare_model(
     # report_per_model and its dependencies print a verbose progress table
     # to stdout (the same output `agb analyze` shows in a terminal); the web
     # server has no terminal for it to usefully land in.
-    with contextlib.redirect_stdout(io.StringIO()):
+    with capture_stdout():
         indices = {model_name_from_path(p): index_rows(load_results(p)) for p in csv_files}
 
         if model_id not in indices:

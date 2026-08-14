@@ -11,7 +11,6 @@ from typing import Any
 from .config import (
     FERRET_MODEL_ID,
     NINEROUTER_PREFIX,
-    OPENAI_COMPATIBLE_PREFIX,
     image_send_scale,
     model_configuration_error,
     resolve_completion_config,
@@ -110,11 +109,11 @@ def _completion(**kwargs: Any) -> Any:
 
 
 def _is_compatibility_model(model: str) -> bool:
-    return model.startswith((NINEROUTER_PREFIX, OPENAI_COMPATIBLE_PREFIX))
+    return model.startswith(NINEROUTER_PREFIX)
 
 
 def _register_compatible_model(model: str) -> None:
-    """Register an arbitrary OpenAI-compatible route with LiteLLM once."""
+    """Register a 9Router route with LiteLLM once."""
     if not _is_compatibility_model(model):
         return
 

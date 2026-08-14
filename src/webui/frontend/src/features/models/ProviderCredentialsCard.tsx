@@ -23,7 +23,7 @@ export function ProviderCredentialsCard({
   clearKey: (provider: string) => void;
 }) {
   return (
-    <Card className="mt-4 p-4">
+    <Card className="mt-4 rounded-[var(--radius-lg)] p-4">
       <div className="flex items-center justify-between gap-3 pb-3">
         <div>
           <h3>Providers</h3>

@@ -85,9 +85,10 @@ export function CollectView({
       aria-labelledby="head-collect"
       hidden={hidden}
     >
-      <div className="mb-6">
-        <h2 id="head-collect">Collect</h2>
-        <p className="mt-2 max-w-3xl text-[var(--muted)]">
+      <div className="view-head mb-[var(--space-5)] max-w-[var(--prose-max)]">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--primary)]">Capture evidence</p>
+        <h2 id="head-collect" className="text-[length:var(--text-display)] leading-[var(--lh-display)] tracking-[var(--ls-display)] max-[767px]:text-[1.375rem]">Collect</h2>
+        <p className="mt-2 font-[var(--font-ui)] text-[length:var(--text-lead)] leading-[var(--lh-lead)] text-[var(--text-2)]">
           Capture a new dataset from a live Android emulator. Collection always
           writes to <code>datasets/&lt;name&gt;/</code>, so it can never
           overwrite the shipped dataset or an archived run.
