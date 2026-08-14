@@ -14,7 +14,6 @@ import { CaptureHealth } from "./CaptureHealth";
 import { ScreenshotCanvas } from "./ScreenshotCanvas";
 import { ComparisonStage } from "./ComparisonStage";
 import { ScreenPicker } from "./ScreenPicker";
-import { Input } from "../../components/ui/input";
 import { Card } from "../../components/ui/card";
 import { Alert } from "../../components/ui/alert";
 import {
@@ -161,32 +160,12 @@ export function DatasetView({
         <CaptureHealth manifest={manifest} available={manifestAvailable} />
       </div>
       <Card className="rounded-[var(--radius-lg)] border-[var(--border)]">
-        <div className="flex items-center justify-between gap-3 pb-3">
-          <div>
-            <h3>Screen comparison</h3>
-            <p className="text-sm text-[var(--muted)]">
-              Baseline against one accessibility profile, with ground-truth
-              boxes.
-            </p>
-          </div>
-          <div className="flex items-center gap-3" id="compare-overlay-toggles">
-            <label className="flex items-center gap-2 text-sm">
-              <Input
-                type="checkbox"
-                checked={showBoxes}
-                onChange={(e) => setShowBoxes(e.target.checked)}
-              />{" "}
-              Target boxes
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <Input
-                type="checkbox"
-                checked={showMissing}
-                onChange={(e) => setShowMissing(e.target.checked)}
-              />{" "}
-              Missing targets
-            </label>
-          </div>
+        <div className="pb-3">
+          <h3>Screen comparison</h3>
+          <p className="text-sm text-[var(--muted)]">
+            Baseline against one accessibility profile, with ground-truth
+            boxes.
+          </p>
         </div>
         <div className="flex min-w-0 flex-wrap gap-4">
           <ScreenPicker screens={screens} selected={selected} filter={filter} onFilter={setFilter} onSelect={setSelected} />
@@ -214,7 +193,7 @@ export function DatasetView({
                 setShowMissing={setShowMissing}
               />
             ) : (
-              <div className="rounded-md border border-dashed p-6 text-center">
+              <div className="rounded-[var(--radius-md)] border border-dashed p-6 text-center">
                 <p className="font-medium">No screen selected</p>
                 <p className="mt-1 text-sm text-[var(--muted)]">
                   Pick a screen from the list to compare its baseline capture

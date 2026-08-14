@@ -55,18 +55,6 @@ export function ScreenshotCanvas({
       ctx.strokeStyle = isSelected ? warn : color;
       ctx.lineWidth = isSelected ? sw * 2.4 : sw;
       ctx.strokeRect(b[0], b[1], b[2] - b[0], b[3] - b[1]);
-      if (isSelected && text) {
-        ctx.font = `${Math.max(12, sw * 5)}px sans-serif`;
-        const pad = Math.max(3, sw * 2);
-        const width = ctx.measureText(text).width + pad * 2;
-        const height = Math.max(18, sw * 8);
-        const x = Math.max(0, Math.min(img.width - width, b[0]));
-        const y = Math.max(height, b[1]);
-        ctx.fillStyle = warn;
-        ctx.fillRect(x, y - height, width, height);
-        ctx.fillStyle = "#ffffff";
-        ctx.fillText(text, x + pad, y - pad);
-      }
     };
     if (profile === "baseline") {
       if (!evictedOnly) {
@@ -95,7 +83,7 @@ export function ScreenshotCanvas({
       ref={canvasRef}
       hidden={hidden}
       className={className}
-      style={style}
+      style={{ cursor: "crosshair", ...style }}
       onClick={(event) => {
         if (!img || !imageIsDrawable(img)) return;
         const rect = event.currentTarget.getBoundingClientRect();

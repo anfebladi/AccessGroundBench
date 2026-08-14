@@ -7,7 +7,7 @@ export const Card = React.forwardRef<
   <div
     ref={r}
     className={cn(
-      "mb-[var(--space-4)] rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] p-[var(--card-pad)] text-[var(--text)] shadow-[var(--elev-card)]",
+      "mb-[var(--space-4)] rounded-[var(--radius-lg)] border border-[var(--border)]/60 bg-[var(--surface)] p-[var(--card-pad)] text-[var(--text)] shadow-[var(--elev-card)]",
       className,
     )}
     {...p}

@@ -16,6 +16,7 @@ import { AddModelForm } from "./AddModelForm";
 import { ConfiguredModelsCard } from "./ConfiguredModelsCard";
 import { Card } from "../../components/ui/card";
 import { LoadingState } from "../../components/ui/spinner";
+import { Alert, AlertDescription, AlertIcon, AlertTitle } from "../../components/ui/alert";
 import { StageHeader } from "../shared/StageHeader";
 
 const EXAMPLES: Array<[string, Model["coord_space"]]> = [
@@ -260,14 +261,19 @@ function SmokeSuccess({
         </div>
       </div>
       {result.coord_space_mismatch && (
-        <div className="mt-3 rounded-md border border-[var(--warn)]/40 bg-[var(--warn)]/10 p-3 text-sm">
-          <span className="font-semibold">Warning</span>{" "}
-          <b>Coordinate-space mismatch.</b> This reply looks like{" "}
-          <code>{result.coord_space_detected}</code> but the model is configured
-          as <code>{result.coord_space_used || model.coord_space}</code>. Switch
-          this model's coordinate space before a full run, or it will score near
-          zero while appearing to answer normally.
-        </div>
+        <Alert variant="warning" className="mt-3">
+          <AlertTitle>
+            <AlertIcon variant="warning" />
+            Coordinate-space mismatch
+          </AlertTitle>
+          <AlertDescription>
+            This reply looks like <code>{result.coord_space_detected}</code>{" "}
+            but the model is configured as{" "}
+            <code>{result.coord_space_used || model.coord_space}</code>. Switch
+            this model's coordinate space before a full run, or it will score
+            near zero while appearing to answer normally.
+          </AlertDescription>
+        </Alert>
       )}
       <div className="flex min-w-0 flex-wrap gap-4">
         <div className="min-w-0 flex-1">
@@ -289,7 +295,7 @@ function SmokeSuccess({
           </dl>
         </div>
         <div>
-          <div className="grid min-w-0 place-items-center rounded-lg bg-[var(--panel-dark)] p-3">
+          <div className="grid min-w-0 place-items-center rounded-[var(--radius-lg)] bg-[var(--panel-dark)] p-3">
             <canvas
               id="smoke-canvas"
               ref={canvas}

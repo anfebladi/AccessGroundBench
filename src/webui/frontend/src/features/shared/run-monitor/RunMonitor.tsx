@@ -5,6 +5,11 @@ import { Button } from "../../../components/ui/button";
 import { Badge } from "../../../components/ui/badge";
 import { Card } from "../../../components/ui/card";
 import { Progress } from "../../../components/ui/progress";
+import {
+  Collapsible,
+  CollapsibleContent,
+  DisclosureTrigger,
+} from "../../../components/ui/collapsible";
 const POLL_MS = 1200;
 const RESULT =
   /^ {4}\[(HIT|MISS|OFF-SCREEN|OFF-FRAME|LABEL-CHANGED|API-ERROR)\]/;
@@ -115,7 +120,7 @@ export function RunMonitor({
     status === "running" ? "warn" : status === "completed" ? "ok" : "err";
   return (
     <Card className="min-w-0 p-0">
-      <div className="sticky top-[calc(var(--header-height)+var(--space-2))] z-[5] rounded-t-[var(--radius-lg)] border-b border-[var(--border)] bg-[var(--surface)] p-4">
+      <div className="sticky top-[var(--space-2)] z-[5] rounded-t-[var(--radius-lg)] border-b border-[var(--border)] bg-[var(--surface)] p-4">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-3">
             <span id="run-badge">
@@ -182,44 +187,46 @@ export function RunMonitor({
           {expectedTotal ? ` of ${expectedTotal}` : ""} queries done.
         </p>
       </div>
-      <details className="p-4" id="run-log-details">
-        <summary className="flex min-h-8 w-fit cursor-pointer items-center text-sm font-medium text-[var(--text-2)] hover:text-[var(--primary)]">Show raw log</summary>
-        <pre
-          id="run-log"
-          ref={log}
-          tabIndex={0}
-          onScroll={(e) => {
-            const el = e.currentTarget;
-            setStick(el.scrollHeight - el.scrollTop - el.clientHeight < 12);
-          }}
-        >
-          {lines.join("\n")}
-          {lines.length ? "\n" : ""}
-        </pre>
-        <p
-          id="run-log-paused"
-          className={stick ? "hidden" : "mt-2 text-xs text-[var(--warn)]"}
-        >
-          Auto-scroll paused.{" "}
-          <Button
-            type="button"
-            className="text-sm"
-            id="run-log-resume"
-            onClick={() => {
-              setStick(true);
-              if (log.current) log.current.scrollTop = log.current.scrollHeight;
+      <Collapsible className="p-4" id="run-log-details">
+        <DisclosureTrigger className="min-h-8 w-fit">Show raw log</DisclosureTrigger>
+        <CollapsibleContent>
+          <pre
+            id="run-log"
+            ref={log}
+            tabIndex={0}
+            onScroll={(e) => {
+              const el = e.currentTarget;
+              setStick(el.scrollHeight - el.scrollTop - el.clientHeight < 12);
             }}
           >
-            Jump to latest
-          </Button>
-        </p>
-      </details>
+            {lines.join("\n")}
+            {lines.length ? "\n" : ""}
+          </pre>
+          <p
+            id="run-log-paused"
+            className={stick ? "hidden" : "mt-2 text-xs text-[var(--warn)]"}
+          >
+            Auto-scroll paused.{" "}
+            <Button
+              type="button"
+              className="text-sm"
+              id="run-log-resume"
+              onClick={() => {
+                setStick(true);
+                if (log.current) log.current.scrollTop = log.current.scrollHeight;
+              }}
+            >
+              Jump to latest
+            </Button>
+          </p>
+        </CollapsibleContent>
+      </Collapsible>
       {command && (
         <div style={{ paddingTop: 0 }}>
           <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
             Equivalent command
           </p>
-          <div className="flex items-center justify-between gap-3 rounded-md bg-[var(--surface-2)] p-3 font-mono text-xs">
+          <div className="flex items-center justify-between gap-3 rounded-[var(--radius-md)] bg-[var(--surface-2)] p-3 font-mono text-xs">
             <code>{command}</code>
             <Button
               type="button"

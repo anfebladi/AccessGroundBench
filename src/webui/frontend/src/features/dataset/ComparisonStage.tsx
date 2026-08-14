@@ -7,6 +7,7 @@ import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Checkbox } from "../../components/ui/checkbox";
 import { SegmentedButton, SegmentedGroup } from "../../components/ui/segmented";
+import { Alert, AlertDescription, AlertIcon, AlertTitle } from "../../components/ui/alert";
 
 export function ComparisonStage({
   dataset,
@@ -143,24 +144,10 @@ export function ComparisonStage({
   const paneCanvasClass =
     "h-auto max-h-[62vh] w-auto max-w-full max-md:max-h-[55vh]";
   const viewportClass =
-    "relative grid min-h-20 place-items-center overflow-auto rounded-md bg-[var(--panel-dark)]";
+    "relative grid min-h-20 place-items-center overflow-auto rounded-[var(--radius-md)] bg-[var(--panel-dark)]";
   return (
     <div onKeyDown={onKeyDown}>
-      <SegmentedGroup
-        id="profile-picker"
-        aria-label="Accessibility profile"
-      >
-        {PROFILES.map(([id, text]) => (
-          <SegmentedButton
-            key={id}
-            pressed={id === profile}
-            onClick={() => setProfile(id)}
-          >
-            {text}
-          </SegmentedButton>
-        ))}
-      </SegmentedGroup>
-      <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] p-3">
+      <div className="flex items-center gap-3 p-3">
         <SegmentedGroup id="stage-mode-picker" aria-label="Comparison mode">
           <SegmentedButton
             pressed={mode === "side-by-side"}
@@ -175,18 +162,49 @@ export function ComparisonStage({
             Onion-skin
           </SegmentedButton>
         </SegmentedGroup>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={evictedOnly}
-            onChange={(e) => setEvictedOnly(e.target.checked)}
-          />{" "}
-          Evicted only
-        </label>
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-2 text-sm">
+            <Checkbox
+              checked={showBoxes}
+              onCheckedChange={(v) => setShowBoxes(v === true)}
+            />
+            Target boxes
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <Checkbox
+              checked={showMissing}
+              onCheckedChange={(v) => setShowMissing(v === true)}
+            />
+            Missing targets
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <Checkbox
+              checked={evictedOnly}
+              onCheckedChange={(v) => setEvictedOnly(v === true)}
+            />
+            Evicted only
+          </label>
+        </div>
+      </div>
+      <div className="border-b border-[var(--border)] p-3 pt-0">
+        <SegmentedGroup
+          id="profile-picker"
+          aria-label="Accessibility profile"
+        >
+          {PROFILES.map(([id, text]) => (
+            <SegmentedButton
+              key={id}
+              pressed={id === profile}
+              onClick={() => setProfile(id)}
+            >
+              {text}
+            </SegmentedButton>
+          ))}
+        </SegmentedGroup>
       </div>
       <div className="grid min-w-0 grid-cols-[13rem_minmax(0,1fr)] max-md:grid-cols-1">
         <div
-          className="min-w-0 overflow-y-auto border-r border-[var(--on-dark-border)] p-2 max-md:max-h-56"
+          className="min-w-0 max-h-[62vh] overflow-y-auto border-r border-[var(--on-dark-border)] p-2 max-md:max-h-56"
           id="stage-target-list"
           role="listbox"
           aria-label="Groundable targets"
@@ -210,7 +228,7 @@ export function ComparisonStage({
           {selected ? (
             <button
               type="button"
-              className="mb-2 w-full rounded border-2 border-white bg-white px-2 py-1 text-left text-xs font-semibold text-black"
+              className="mb-2 w-full cursor-pointer rounded border-2 border-white bg-white px-2 py-1 text-left text-xs font-semibold text-black transition-colors duration-[var(--dur-fast)] hover:bg-[var(--gray-100)]"
               onClick={clearSelection}
             >
               Clear selection
@@ -220,7 +238,7 @@ export function ComparisonStage({
             list.map((t) => (
               <button
                 type="button"
-                className={`flex w-full items-center gap-2 rounded border border-transparent bg-transparent p-2 text-left text-sm text-[var(--on-dark-muted)] ${
+                className={`flex w-full cursor-pointer items-center gap-2 rounded border border-transparent bg-transparent p-2 text-left text-sm text-[var(--on-dark-muted)] transition-colors duration-[var(--dur-fast)] ${
                   selected === t.text
                     ? "border-2 border-white bg-white text-black"
                     : ""
@@ -256,12 +274,12 @@ export function ComparisonStage({
       >
           {mode === "onion" ? (
             <div className="flex min-w-0 flex-col gap-2">
-              <div className="flex items-baseline justify-between gap-2 rounded-t-md bg-[var(--panel-dark-2)] px-3 py-2 text-[var(--on-dark)]">
+              <div className="flex items-baseline justify-between gap-2 rounded-t-[var(--radius-md)] bg-[var(--panel-dark-2)] px-3 py-2 text-[var(--on-dark)]">
                 <span className="text-sm font-semibold">Baseline ↔ {label}</span>
                 <span className="text-xs text-[var(--on-dark-muted)]" id="dims-baseline" />
                 <button
                   type="button"
-                  className="flex size-8 items-center justify-center rounded-md border border-[var(--on-dark-border)] bg-transparent text-[var(--on-dark-muted)] shadow-none transition-colors duration-150 hover:border-[var(--on-dark-muted)] hover:bg-[var(--panel-dark)] hover:text-[var(--on-dark)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--on-dark)] active:bg-[var(--panel-dark)]"
+                  className="flex size-8 cursor-pointer items-center justify-center rounded-[var(--radius-md)] border border-[var(--on-dark-border)] bg-transparent text-[var(--on-dark-muted)] shadow-none transition-colors duration-150 hover:border-[var(--on-dark-muted)] hover:bg-[var(--panel-dark)] hover:text-[var(--on-dark)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--on-dark)] active:bg-[var(--panel-dark)]"
                   aria-label="Export composite as PNG"
                   onClick={exportOnionComposite}
                 >
@@ -269,7 +287,7 @@ export function ComparisonStage({
                 </button>
               </div>
               <div
-                className="relative grid min-h-20 place-items-center overflow-auto rounded-md bg-[var(--panel-dark)]"
+                className="relative grid min-h-20 place-items-center overflow-auto rounded-[var(--radius-md)] bg-[var(--panel-dark)]"
                 id="onion-viewport"
                 ref={onionWrap}
               >
@@ -349,12 +367,12 @@ export function ComparisonStage({
           ) : (
             <>
               <div className="flex min-w-0 flex-col gap-2">
-                <div className="flex items-baseline justify-between gap-2 rounded-t-md bg-[var(--panel-dark-2)] px-3 py-2 text-[var(--on-dark)]">
+                <div className="flex items-baseline justify-between gap-2 rounded-t-[var(--radius-md)] bg-[var(--panel-dark-2)] px-3 py-2 text-[var(--on-dark)]">
                   <span className="text-sm font-semibold">Baseline</span>
                   <span className="text-xs text-[var(--on-dark-muted)]" id="dims-baseline" />
                   <button
                     type="button"
-                    className="flex size-8 items-center justify-center rounded-md border border-[var(--on-dark-border)] bg-transparent text-[var(--on-dark-muted)] shadow-none transition-colors duration-150 hover:border-[var(--on-dark-muted)] hover:bg-[var(--panel-dark)] hover:text-[var(--on-dark)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--on-dark)] active:bg-[var(--panel-dark)]"
+                    className="flex size-8 cursor-pointer items-center justify-center rounded-[var(--radius-md)] border border-[var(--on-dark-border)] bg-transparent text-[var(--on-dark-muted)] shadow-none transition-colors duration-150 hover:border-[var(--on-dark-muted)] hover:bg-[var(--panel-dark)] hover:text-[var(--on-dark)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--on-dark)] active:bg-[var(--panel-dark)]"
                     aria-label="Export baseline pane as PNG"
                     onClick={() => exportPane(baseWrap, "baseline.png")}
                   >
@@ -390,12 +408,12 @@ export function ComparisonStage({
                 </p>
               </div>
               <div className="flex min-w-0 flex-col gap-2">
-                <div className="flex items-baseline justify-between gap-2 rounded-t-md bg-[var(--panel-dark-2)] px-3 py-2 text-[var(--on-dark)]">
+                <div className="flex items-baseline justify-between gap-2 rounded-t-[var(--radius-md)] bg-[var(--panel-dark-2)] px-3 py-2 text-[var(--on-dark)]">
                   <span className="text-sm font-semibold">{label}</span>
                   <span className="text-xs text-[var(--on-dark-muted)]" id="dims-profile" />
                   <button
                     type="button"
-                    className="flex size-8 items-center justify-center rounded-md border border-[var(--on-dark-border)] bg-transparent text-[var(--on-dark-muted)] shadow-none transition-colors duration-150 hover:border-[var(--on-dark-muted)] hover:bg-[var(--panel-dark)] hover:text-[var(--on-dark)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--on-dark)] active:bg-[var(--panel-dark)]"
+                    className="flex size-8 cursor-pointer items-center justify-center rounded-[var(--radius-md)] border border-[var(--on-dark-border)] bg-transparent text-[var(--on-dark-muted)] shadow-none transition-colors duration-150 hover:border-[var(--on-dark-muted)] hover:bg-[var(--panel-dark)] hover:text-[var(--on-dark)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--on-dark)] active:bg-[var(--panel-dark)]"
                     aria-label="Export profile pane as PNG"
                     onClick={() => exportPane(profileWrap, "profile.png")}
                   >
@@ -436,15 +454,20 @@ export function ComparisonStage({
         </div>
       </div>
       {!isBaseline && missing.length ? (
-        <div className="mt-4 rounded-md border border-[var(--viz-blue)]/40 bg-[var(--viz-blue)]/10 p-3 text-sm">
-          <span className="font-semibold">Note</span>
-          <b>
+        <Alert
+          variant="accent"
+          className="mt-4 border-l-[var(--viz-blue)] text-[var(--viz-blue)]"
+        >
+          <AlertTitle>
+            <AlertIcon variant="accent" />
             {missing.length} target{missing.length === 1 ? "" : "s"} evicted by
-            this profile.
-          </b>{" "}
-          A target that no longer renders cannot be grounded by any model, so it
-          is scored as <code>off_screen</code> rather than as a miss.
-        </div>
+            this profile
+          </AlertTitle>
+          <AlertDescription>
+            A target that no longer renders cannot be grounded by any model, so
+            it is scored as <code>off_screen</code> rather than as a miss.
+          </AlertDescription>
+        </Alert>
       ) : null}
       <div className="mt-4 flex flex-wrap gap-3 text-xs">
         <span className="flex items-center gap-1 text-[var(--viz-blue)]">

@@ -7,7 +7,12 @@ import { Input } from "../../components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
-import { Alert } from "../../components/ui/alert";
+import { Alert, AlertDescription, AlertIcon, AlertTitle } from "../../components/ui/alert";
+import {
+  Collapsible,
+  CollapsibleContent,
+  DisclosureTrigger,
+} from "../../components/ui/collapsible";
 import { StageHeader } from "../shared/StageHeader";
 
 interface EvaluateViewProps extends TabViewProps {
@@ -176,9 +181,9 @@ export function EvaluateView({
               {starting ? "Starting…" : "Start evaluation"}
             </Button>
           </div>
-          <details className="advanced">
-            <summary>Advanced options</summary>
-            <div className="mt-3 space-y-4">
+          <Collapsible className="advanced mt-4">
+            <DisclosureTrigger>Advanced options</DisclosureTrigger>
+            <CollapsibleContent className="mt-3 space-y-4">
               <div className="grid gap-4 md:grid-cols-3">
                 <div>
                   <label htmlFor="eval-trials">Trials per query</label>
@@ -267,16 +272,20 @@ export function EvaluateView({
                   )}
                 </div>
               </div>
-            </div>
-          </details>
+            </CollapsibleContent>
+          </Collapsible>
         </form>
         <div id="eval-preflight">
           <EvaluatePreflight preflight={preflight} />
         </div>
         <div id="eval-error">
           {error && (
-            <Alert className="rounded-md border border-[var(--err)]/40 bg-[var(--err)]/10 p-3 text-sm text-[var(--err)]">
-              {error}
+            <Alert variant="danger">
+              <AlertTitle>
+                <AlertIcon variant="danger" />
+                Evaluation failed
+              </AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
         </div>

@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { Provider } from "../../lib/api";
+import { cn } from "../../lib/utils";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
@@ -82,8 +83,16 @@ export function ProviderCredentialsCard({
                       )}
                     </TableCell>
                     <TableCell>
-                        <Badge className={configured ? "text-green-700" : "text-gray-500"}>
-                        {status}
+                        <Badge
+                          className={cn(
+                            status === "From .env"
+                              ? "text-green-700"
+                              : status === "Session key"
+                                ? "rounded-none bg-transparent px-0 py-0 text-green-700"
+                                : "rounded-none bg-transparent px-0 py-0 text-gray-500",
+                          )}
+                        >
+                          {status}
                         </Badge>
                     </TableCell>
                     <TableCell>

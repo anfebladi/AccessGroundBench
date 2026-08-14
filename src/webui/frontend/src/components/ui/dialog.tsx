@@ -13,13 +13,13 @@ export const DialogContent = ({
     <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/40" />
     <DialogPrimitive.Content
       className={cn(
-        "fixed left-1/2 top-1/2 z-50 w-[min(92vw,32rem)] -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-white p-6 shadow-lg",
+        "fixed left-1/2 top-1/2 z-50 w-[min(92vw,32rem)] -translate-x-1/2 -translate-y-1/2 rounded-[var(--radius-lg)] border bg-white p-6 shadow-lg",
         className,
       )}
       {...p}
     >
       {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4">
+      <DialogPrimitive.Close className="absolute right-4 top-4 cursor-pointer">
         <Cross2Icon />
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>

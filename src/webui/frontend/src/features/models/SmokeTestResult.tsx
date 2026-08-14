@@ -20,7 +20,7 @@ export function SmokeTestResult({
     </div>;
   if (smoke.result?.ok) return success;
   return (
-    <Alert className="rounded-md border border-[var(--err)]/40 bg-[var(--err)]/10 p-3 text-sm text-[var(--err)]">
+    <Alert className="rounded-[var(--radius-md)] border border-[var(--err)]/40 bg-[var(--err)]/10 p-3 text-sm text-[var(--err)]">
       {smoke.result?.error || "The model call failed."}
     </Alert>
   );

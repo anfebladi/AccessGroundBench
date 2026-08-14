@@ -3,10 +3,10 @@ import type { Dataset, Model, Provider } from "../../lib/api";
 import type { PreflightSummary } from "../../lib/types";
 import type { Tab } from "../../app/navigation";
 import { Sidebar } from "./Sidebar";
-import { TopBar } from "./TopBar";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
+import { DatasetHeaderProvider } from "../../features/shared/DatasetHeaderContext";
 
 export function AppShell({
   route,
@@ -47,13 +47,6 @@ export function AppShell({
   });
   return (
     <>
-      <TopBar
-        datasets={datasets}
-        datasetsError={datasetsError}
-        dataset={dataset}
-        onDatasetChange={onDatasetChange}
-        loading={dataLoading}
-      />
       <div
         className={`app-body grid items-start transition-[grid-template-columns] duration-[var(--dur-mid)] ease-[var(--ease)] max-[1023px]:grid-cols-1 ${collapsed ? "grid-cols-[64px_minmax(0,1fr)]" : "grid-cols-[var(--rail-width)_minmax(0,1fr)]"}`}
       >
@@ -93,8 +86,12 @@ export function AppShell({
           loading={dataLoading}
           onToggleCollapsed={toggleCollapsed}
         />
-        <main className="workspace-main min-w-0 max-w-[var(--content-max)] px-[var(--page-gutter)] pb-[var(--space-8)] pt-[var(--space-6)] min-[1280px]:px-[var(--space-6)] max-[767px]:px-[var(--space-4)] max-[767px]:pt-[var(--space-4)]">
-          {children}
+        <main className="workspace-main min-w-0 max-w-[var(--content-max)] px-[var(--page-gutter)] pb-[var(--space-8)] pt-[var(--space-7)] min-[1280px]:px-[var(--space-6)] max-[767px]:px-[var(--space-4)] max-[767px]:pt-[var(--space-4)]">
+          <DatasetHeaderProvider
+            value={{ datasets, dataset, datasetsError, onDatasetChange, loading: dataLoading }}
+          >
+            {children}
+          </DatasetHeaderProvider>
         </main>
       </div>
     </>

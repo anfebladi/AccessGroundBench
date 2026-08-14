@@ -6,14 +6,8 @@
   --color-primary: var(--primary);
 }
 
-/* Product chrome: quiet, warm surfaces and a single blue signal. */
-.app-header {
-  background: color-mix(in srgb, var(--surface) 94%, var(--bg));
-  backdrop-filter: blur(14px);
-}
-.app-header .brand > span:last-child { letter-spacing: -0.025em; }
 .app-body { background: var(--bg); }
-.workspace-main { min-height: calc(100vh - var(--header-height)); }
+.workspace-main { min-height: 100vh; }
 .tab > div:first-child { position: relative; margin-bottom: var(--space-6) !important; }
 .tab > div:first-child h2 {
   font-size: var(--text-display);
@@ -26,10 +20,7 @@
 .tab > .mt-6.rounded-\[var\(--radius-lg\)\] { margin-bottom: var(--space-5); }
 .tab label { color: var(--text); }
 .tab code {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface-2);
-  padding: 1px 4px;
+  padding: 2px 4px;
   font-family: var(--font-mono);
   font-size: .9em;
 }
@@ -39,6 +30,14 @@
 /* Keep native hidden content semantics available to views and assistive tech. */
 [hidden] {
   display: none !important;
+}
+
+@keyframes tab-enter {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.tab:not([hidden]) {
+  animation: tab-enter var(--dur-slow) var(--ease);
 }
 
 @media (prefers-reduced-motion: reduce) {

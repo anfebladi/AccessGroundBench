@@ -11,7 +11,7 @@ export const TooltipContent = ({
     <TooltipPrimitive.Content
       sideOffset={4}
       className={cn(
-        "z-50 rounded-md bg-[var(--gray-900)] px-3 py-1.5 text-xs text-white",
+        "z-50 rounded-[var(--radius-md)] bg-[var(--gray-900)] px-3 py-1.5 text-xs text-white",
         className,
       )}
       {...p}

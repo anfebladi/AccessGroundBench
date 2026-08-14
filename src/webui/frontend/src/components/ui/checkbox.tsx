@@ -7,7 +7,7 @@ export const Checkbox = ({
 }: CheckboxPrimitive.CheckboxProps) => (
   <CheckboxPrimitive.Root
     className={cn(
-      "peer !size-4 !min-h-0 !p-0 !shadow-none shrink-0 rounded-sm border border-[var(--border-strong)] bg-[var(--surface)] text-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] data-[state=unchecked]:bg-[var(--surface)] data-[state=unchecked]:text-transparent data-[state=checked]:border-[var(--primary)] data-[state=checked]:bg-[var(--primary)] data-[state=checked]:text-white hover:data-[state=unchecked]:!bg-[var(--surface)] hover:data-[state=unchecked]:!border-[var(--border-strong)] active:data-[state=unchecked]:!bg-[var(--surface)] hover:data-[state=checked]:!bg-[var(--primary)]",
+      "peer !size-4 !min-h-0 !p-0 !shadow-none shrink-0 rounded-[var(--radius-sm)] border border-[var(--border-strong)] bg-[var(--surface)] text-transparent cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] disabled:cursor-not-allowed disabled:opacity-45 data-[state=unchecked]:bg-[var(--surface)] data-[state=unchecked]:text-transparent data-[state=checked]:border-[var(--primary)] data-[state=checked]:bg-[var(--primary)] data-[state=checked]:text-white hover:data-[state=unchecked]:!bg-[var(--surface)] hover:data-[state=unchecked]:!border-[var(--border-strong)] active:data-[state=unchecked]:!bg-[var(--surface)] hover:data-[state=checked]:!bg-[var(--primary)]",
       className,
     )}
     {...p}

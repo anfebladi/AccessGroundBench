@@ -477,7 +477,7 @@ export function Legend({
       {items.map((item) => (
         <span className="flex items-center gap-1.5" style={{ color: item.color }} key={item.label}>
           <span
-            className={`inline-block size-2.5 shrink-0 rounded-sm border ${item.shape === "hollow" ? "bg-transparent" : "border-transparent"}`}
+            className={`inline-block size-2.5 shrink-0 rounded-[var(--radius-sm)] border ${item.shape === "hollow" ? "bg-transparent" : "border-transparent"}`}
             style={item.shape === "hollow" ? { borderColor: item.color } : { backgroundColor: item.color }}
             aria-hidden="true"
           />

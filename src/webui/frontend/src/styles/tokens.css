@@ -45,6 +45,10 @@
      for UI, stay relaxed for prose. Small negative tracking on display
      sizes is back (Geist isn't condensed, so it doesn't double up the way
      it did on Oswald); small caps keep positive tracking. */
+  /* Reserved for KPI/stat-tile numerals only (Results/Compare/Analyze
+     summary figures) -- a bolder, larger restatement of a value the chart
+     beside it already renders, not a new data element. */
+  --text-stat: 2rem;         --lh-stat: 1.1;      --ls-stat: -0.02em;
   --text-display: 1.625rem;  --lh-display: 1.2;   --ls-display: -0.02em;
   --text-h2: 1.25rem;        --lh-h2: 1.3;        --ls-h2: -0.015em;
   --text-h3: 1rem;           --lh-h3: 1.4;        --ls-h3: -0.005em;
@@ -63,17 +67,23 @@
   --space-7: 48px;
   --space-8: 64px;
 
-  --card-pad: var(--space-4);
-  --page-gutter: var(--space-5);
+  /* Bumped a tier: 16px -> 24px card padding, 24px -> 32px desktop page
+     gutter -- the "airy" read in the reference is mostly this, not a new
+     spacing scale. The raw --space-* primitives below are untouched. */
+  --card-pad: var(--space-5);
+  --page-gutter: var(--space-6);
 
   /* -- Radii -------------------------------------------------------------
      Three tiers, not two: --radius-lg for surfaces (cards, panels, drawer,
      image frames), --radius-md for controls (buttons, inputs, rail rows),
      --radius-sm for small marks (inline code, small chips). --radius-full
-     unchanged (pills, progress). */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
+     unchanged (pills, progress). Bumped across the board for the softer,
+     premium register -- --radius-lg in particular is the single biggest
+     lever on the "floating card" read: a hairline-bordered 10px card and
+     an 18px shadow-separated one do not read as the same register. */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
   --radius-full: 999px;
 
   /* -- Density -----------------------------------------------------------
@@ -87,21 +97,24 @@
   --tap: 44px;
 
   /* -- Colour --------------------------------------------------------------
-     Six-stop navy-to-white blue ramp is UNCHANGED -- it was never the
-     problem. What changes here is the neutral ramp underneath it: the old
-     --border/--surface-2/--surface-3 were blue-tinted color-mix()es, which
-     read as dated on their own regardless of the accent. They're true
-     greys now. One rule still drives every text pairing: a light surface
-     always carries dark-navy text, a dark surface always carries white or
-     pale-blue text -- never the reverse. Every pair is contrast-checked
-     (WCAG AA, 4.5:1 body text, 3:1 large text/non-text UI). */
-  --bg: #fafaf9;
+     Warm neutral ramp, replacing the previous cool blue-tinted one: the
+     page canvas (--bg) and rail (--surface-warm) carry a faint warm/stone
+     cast now, while cards stay pure white -- the warm-vs-white gap is what
+     makes a card read as a floating panel rather than a filled region.
+     Text drops its blue tint too, going to a near-black warm neutral, so
+     the single remaining hue in the UI is the primary accent, used
+     sparingly, not smeared across every text pairing. One rule still
+     drives every text pairing: a light surface always carries near-black
+     text, a dark surface always carries white or pale text -- never the
+     reverse. Every pair is contrast-checked (WCAG AA, 4.5:1 body text,
+     3:1 large text/non-text UI), not eyeballed. */
+  --bg: #faf9f6;
   --surface: #ffffff;
-  --surface-warm: #f6f7f8;
+  --surface-warm: #e2ddd2;
 
-  /* True neutral ramp. Not all twelve stops are consumed by name below --
-     the rest exist for chart neutrals, hover states and future components,
-     which is normal design-system practice rather than dead weight. */
+  /* True neutral ramp, still used for chart neutrals and a few fixed
+     dark-surface pairings below. Not all twelve stops are consumed by
+     name -- normal design-system practice, not dead weight. */
   --gray-50:  #fafafa;
   --gray-100: #f4f4f5;
   --gray-150: #ececee;
@@ -115,20 +128,42 @@
   --gray-900: #18181b;
   --gray-950: #09090b;
 
-  --surface-2: var(--gray-50);   /* quiet bands: table heads, hovers -- a hint, not a wash */
-  --surface-3: var(--gray-100);
-  --border: var(--gray-200);     /* hairline -- true grey now, not a blue tint */
-  --border-strong: var(--gray-300);
+  /* Warm ramp -- low-chroma stone/olive cast, kept separate from --gray-*
+     because --gray-* still backs chart neutrals and dark-surface-adjacent
+     uses that should stay true-neutral. --warm-300 is the functional
+     border colour now: --gray-400 (#a1a1aa) only reaches 2.56:1 on the new
+     warm --bg/--surface, below the 3:1 WCAG non-text floor, so it can no
+     longer be used where a border carries meaning (input/select/segmented
+     edges). --warm-300 clears 3.34:1 on white. */
+  --warm-50:  #f5f3ee;
+  --warm-100: #ece9e1;
+  --warm-150: #e2ddd2;
+  --warm-200: #d6cfc0;
+  --warm-300: #928c7f;
 
-  --text: #011f4b;      /* 16.5:1 on surface */
-  --text-2: #03396c;    /* 11.6:1 */
-  --muted: #005b96;     /*  7.1:1 */
+  --surface-2: var(--warm-50);   /* quiet bands: table heads, hovers -- a hint, not a wash */
+  --surface-3: var(--warm-100);
+  --border: var(--warm-150);     /* hairline -- decorative only, shadow is the real separator now */
+  --border-strong: var(--warm-300);
 
-  --primary: #155e9b;   /* refined blue accent for actions and active state */
-  --primary-hover: #0d4f86;
-  --primary-active: #011f4b;
+  --text: #0b1a2b;      /* 17.55:1 on surface, 16.66:1 on bg */
+  --text-2: #33404f;    /* ~11:1 */
+  --muted: #5b6472;     /* 5.98:1 on surface, 5.68:1 on bg */
+
+  --primary: #0f4a7d;   /* deepened blue accent -- was #155e9b, now 9.15:1 on surface */
+  --primary-hover: #0b3a63;
+  --primary-active: #072844;
   --primary-fg: #ffffff;
-  --primary-soft: color-mix(in srgb, #155e9b 10%, transparent);
+  --primary-soft: color-mix(in srgb, #0f4a7d 10%, transparent);
+
+  /* Sparing accent for delta/positive indicators only (e.g. "+12%" badges)
+     -- distinct from --primary so the app's action colour stays blue while
+     still nodding to the reference's "one accent used sparingly" green.
+     Never used as a chart mark without re-validating CVD-distinguishability
+     against --viz-red/--viz-orange first (see charts.js). */
+  --positive: #1c7a4d;         /* 5.33:1 on surface */
+  --positive-soft: color-mix(in srgb, #1c7a4d 12%, transparent);
+  --positive-fg: #0f5132;      /* ~8.25:1 on --positive-soft */
 
   /* -- Dark data surfaces --------------------------------------------------
      A deep, near-black neutral -- not the brand navy (--forest is still
@@ -167,15 +202,24 @@
   --danger-active: #712014;
 
   /* -- Elevation -----------------------------------------------------------
-     Border-first, shadow-minimal -- the reverse of the previous pass's
-     shadow-only cards, which was wrong for this register: Linear/Vercel/
-     Raycast all separate surfaces with a hairline border and use shadow
-     only as a faint lift, not as the primary separator. --elev-card is
-     that faint lift; --elev-overlay is for anything that floats over
-     scrolling content (sticky headers, the drawer) and needs a stronger
-     cue regardless of what's behind it. */
-  --elev-card: 0 1px 2px rgba(9, 9, 11, 0.04);
-  --elev-overlay: 0 8px 16px rgba(9, 9, 11, 0.10), 0 24px 48px rgba(9, 9, 11, 0.14);
+     Shadow-first, border-minimal -- the reverse of the previous pass:
+     Linear/Vercel/Raycast's hairline-border register reads as "tool";
+     the softer, warm-tinted diffuse shadow below (paired with the near-
+     invisible --border above) reads as the "floating card" register the
+     redesign asks for. --elev-card is the resting lift, --elev-card-hover
+     a slightly stronger one for hoverable cards/buttons, --elev-overlay
+     for anything that floats over scrolling content (sticky headers, the
+     drawer) and needs a stronger cue regardless of what's behind it. */
+  --elev-card: 0 1px 2px rgba(24, 20, 14, 0.03), 0 8px 24px rgba(24, 20, 14, 0.06);
+  --elev-card-hover: 0 2px 4px rgba(24, 20, 14, 0.04), 0 12px 32px rgba(24, 20, 14, 0.08);
+  --elev-overlay: 0 12px 24px rgba(24, 20, 14, 0.10), 0 32px 64px rgba(24, 20, 14, 0.16);
+
+  /* Neumorphic dual-tone shadow -- distinct from --elev-card: a single-direction
+     lift reads as "a card sitting on the bg," this reads as "raised out of the
+     same material," which needs the light-source-implied highlight+shadow pair.
+     Used for the sidebar's active-row pill, which stays close to the rail's own
+     fill colour rather than swapping to a visibly different surface. */
+  --elev-neumorph: 6px 6px 14px rgba(24, 20, 14, 0.10), -6px -6px 14px rgba(255, 255, 255, 0.85);
 
   /* -- Motion --------------------------------------------------------------
      Four durations, each tied to a specific use, not to taste. Nothing
@@ -189,8 +233,7 @@
   --ease: cubic-bezier(0.2, 0, 0.2, 1);
 
   /* -- Chrome ----------------------------------------------------------- */
-  --rail-width: 232px;
-  --header-height: 52px;
+  --rail-width: 264px;
   --content-max: 1360px;
   --prose-max: 68ch;
 

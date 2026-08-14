@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Card } from "../../components/ui/card";
 import { LoadingState } from "../../components/ui/spinner";
 import { Badge as UiBadge } from "../../components/ui/badge";
+import { Alert, AlertDescription, AlertIcon, AlertTitle } from "../../components/ui/alert";
 import { StageHeader } from "../shared/StageHeader";
 import {
   Table,
@@ -81,7 +82,7 @@ function Badge({
 function ErrorState({ message }: { message: string }) {
   return (
     <p
-      className="rounded-md border border-[var(--err)]/40 bg-[var(--err)]/10 p-3 text-sm text-[var(--err)]"
+      className="rounded-[var(--radius-md)] border border-[var(--err)]/40 bg-[var(--err)]/10 p-3 text-sm text-[var(--err)]"
       role="alert"
     >
       {message}
@@ -321,14 +322,19 @@ function CompareResult({ result }: { result: Compare }) {
           </TableBody>
         </Table>
       </div>
-      <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm">
-        <span className="mr-2 font-semibold">Note</span>Corrected across all{" "}
-        {result.models_in_family.length} model
-        {result.models_in_family.length === 1 ? "" : "s"} evaluated on this
-        dataset's {result.mode} arm (Holm-Bonferroni, α = 0.05) -- per-model
-        McNemar is secondary to the pooled permutation test on the Analyze view.
-        An underpowered result is not evidence the model is resilient.
-      </div>
+      <Alert className="mt-4" variant="neutral">
+        <AlertTitle>
+          <AlertIcon variant="neutral" />
+          Holm-Bonferroni corrected (α = 0.05)
+        </AlertTitle>
+        <AlertDescription>
+          Corrected across all {result.models_in_family.length} model
+          {result.models_in_family.length === 1 ? "" : "s"} evaluated on this
+          dataset's {result.mode} arm -- per-model McNemar is secondary to the
+          pooled permutation test on the Analyze view. An underpowered result
+          is not evidence the model is resilient.
+        </AlertDescription>
+      </Alert>
     </>
   );
 }

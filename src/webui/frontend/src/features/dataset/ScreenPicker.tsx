@@ -28,17 +28,25 @@ export function ScreenPicker({
         value={filter}
         onChange={(event) => onFilter(event.target.value)}
       />
-      <ul id="screen-list" className="m-0 max-h-[30rem] list-none overflow-y-auto p-0">
+      <ul
+        id="screen-list"
+        className="m-0 flex max-h-[30rem] flex-col gap-1 list-none overflow-y-auto rounded-[var(--radius-lg)] bg-[var(--surface-warm)] p-[var(--space-2)] shadow-[var(--elev-card)]"
+      >
         {visible.length ? (
           visible.map((screen) => (
             <li
               data-screen={screen}
-              className={`p-0 ${screen === selected ? "selected rounded-md bg-[var(--primary)] font-medium text-[var(--primary-fg)]" : ""}`}
+              className={screen === selected ? "selected p-0" : "p-0"}
               key={screen}
             >
               <Button
                 type="button"
-                className="w-full justify-start border-transparent bg-transparent px-2 py-1 text-left text-[var(--text)]"
+                variant="ghost"
+                className={`w-full justify-start rounded-[var(--radius-full)] px-3 py-1.5 text-left transition-[background-color,color,box-shadow] duration-[var(--dur-fast)] ease-[var(--ease)] ${
+                  screen === selected
+                    ? "bg-[var(--surface)] font-medium text-[var(--primary)] shadow-[var(--elev-neumorph)]! hover:bg-[var(--surface)] hover:shadow-[var(--elev-neumorph)]!"
+                    : "bg-transparent text-[var(--text-2)] shadow-none hover:bg-transparent active:bg-transparent hover:text-[var(--text)]"
+                }`}
                 aria-label={screen}
                 onClick={() => onSelect(screen)}
               >

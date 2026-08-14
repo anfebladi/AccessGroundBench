@@ -76,7 +76,7 @@ export function ConfiguredModelsCard({
             </p>
           </>
         ) : (
-          <div className="rounded-md border border-dashed border-[var(--border)] p-6 text-center">
+          <div className="rounded-[var(--radius-md)] border border-dashed border-[var(--border)] p-6 text-center">
             <p className="font-medium">No models configured yet</p>
             <p className="mt-1 text-sm text-[var(--muted)]">
               A model id is a LiteLLM model string. Add one above, or start from

@@ -11,6 +11,7 @@ import { LoadingState } from "../../components/ui/spinner";
 import { Badge as UiBadge } from "../../components/ui/badge";
 import { Checkbox } from "../../components/ui/checkbox";
 import { SegmentedButton, SegmentedGroup } from "../../components/ui/segmented";
+import { Alert, AlertDescription, AlertIcon, AlertTitle } from "../../components/ui/alert";
 import { StageHeader } from "../shared/StageHeader";
 import {
   Table,
@@ -57,9 +58,13 @@ function Badge({
 }
 function ErrorState({ message }: { message: string }) {
   return (
-    <p className="rounded-md border border-[var(--err)]/40 bg-[var(--err)]/10 p-3 text-sm text-[var(--err)]" role="alert">
-      {message}
-    </p>
+    <Alert variant="danger">
+      <AlertTitle>
+        <AlertIcon variant="danger" />
+        Couldn't load results
+      </AlertTitle>
+      <AlertDescription>{message}</AlertDescription>
+    </Alert>
   );
 }
 const STATUS_COLUMNS: [string, string, string][] = [
@@ -246,11 +251,16 @@ export function ResultsView({
           ) : (
             <>
               {modes.length > 1 && (
-                <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm">
-                  <span className="mr-2 font-semibold">Note</span>Vision and tree
-                  results answer different research questions and are never
-                  pooled. Analyze runs one arm at a time.
-                </div>
+                <Alert variant="neutral" className="mb-4">
+                  <AlertTitle>
+                    <AlertIcon variant="neutral" />
+                    Vision and tree are never pooled
+                  </AlertTitle>
+                  <AlertDescription>
+                    They answer different research questions. Analyze runs one
+                    arm at a time.
+                  </AlertDescription>
+                </Alert>
               )}
               {visible.some((row) => row.accuracy != null) && (
                 <Card id="results-overall-accuracy">
@@ -266,6 +276,24 @@ export function ResultsView({
                     <div className="flex items-center gap-2">
                       <ExportButton name="results-overall-accuracy" targetId="results-overall-accuracy" />
                     </div>
+                  </div>
+                  <div className="mb-4 flex items-baseline gap-2">
+                    <span
+                      className="font-display font-semibold tabular-nums text-[var(--text)]"
+                      style={{ fontSize: "var(--text-stat)", lineHeight: "var(--lh-stat)", letterSpacing: "var(--ls-stat)" }}
+                    >
+                      {(
+                        (visible
+                          .filter((row) => row.accuracy != null)
+                          .reduce((sum, row) => sum + (row.accuracy ?? 0), 0) /
+                          Math.max(1, visible.filter((row) => row.accuracy != null).length)) *
+                        100
+                      ).toFixed(1)}
+                      %
+                    </span>
+                    <span className="text-xs font-medium uppercase tracking-[var(--ls-xs)] text-[var(--muted)]">
+                      Average across evaluated models
+                    </span>
                   </div>
                   <div className="chart-draw-in">
                     <AccuracyChart
@@ -336,7 +364,7 @@ export function ResultsView({
                         ].map(([key, label]) => (
                           <TableHead
                             key={key}
-                            className="sortable"
+                            className="sortable cursor-pointer"
                             data-sort={key}
                             aria-sort={
                               sort.key === key
@@ -502,7 +530,7 @@ function MissInspector({
       onClick={(event) => event.currentTarget === event.target && close()}
     >
       <div
-        className="flex max-h-[min(88vh,100%)] w-full max-w-[1000px] flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] shadow-2xl"
+        className="flex max-h-[min(88vh,100%)] w-full max-w-[1000px] flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)]/60 bg-[var(--surface)] shadow-[var(--elev-overlay)]"
         role="dialog"
         aria-modal="true"
         aria-label="Miss inspector"
@@ -562,7 +590,7 @@ function MissInspector({
           ) : error ? (
             <ErrorState message={error} />
           ) : !current ? (
-            <div className="rounded-md border border-dashed border-[var(--border)] p-6 text-center">
+            <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--border)] p-6 text-center">
               <h3>No misses to inspect</h3>
               <p>This model scored every co-present target on this dataset.</p>
             </div>
@@ -598,7 +626,7 @@ function MissInspector({
                 </div>
               </div>
               <div>
-                <div className="overflow-hidden rounded-md border border-[var(--border)] bg-[var(--surface-2)]">
+                <div className="overflow-hidden rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-2)]">
                   <MissCanvas dataset={dataset} row={current} />
                 </div>
               </div>

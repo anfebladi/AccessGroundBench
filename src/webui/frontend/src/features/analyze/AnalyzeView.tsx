@@ -17,7 +17,14 @@ import { LoadingState } from "../../components/ui/spinner";
 import { Progress } from "../../components/ui/progress";
 import { Badge as UiBadge } from "../../components/ui/badge";
 import { SegmentedButton, SegmentedGroup } from "../../components/ui/segmented";
+import { DocDialog } from "../../components/ui/doc-dialog";
 import { StageHeader } from "../shared/StageHeader";
+import { Alert, AlertDescription, AlertIcon, AlertTitle } from "../../components/ui/alert";
+import {
+  Collapsible,
+  CollapsibleContent,
+  DisclosureTrigger,
+} from "../../components/ui/collapsible";
 import {
   Table as UiTable,
   TableHeader,
@@ -60,9 +67,13 @@ function Badge({
 }
 function ErrorState({ message }: { message: string }) {
   return (
-    <p className="rounded-md border border-[var(--err)]/40 bg-[var(--err)]/10 p-3 text-sm text-[var(--err)]" role="alert">
-      {message}
-    </p>
+    <Alert variant="danger">
+      <AlertTitle>
+        <AlertIcon variant="danger" />
+        Analysis failed
+      </AlertTitle>
+      <AlertDescription>{message}</AlertDescription>
+    </Alert>
   );
 }
 function Table({
@@ -73,29 +84,31 @@ function Table({
   rows: React.ReactNode[][];
 }) {
   return (
-    <details>
-      <summary>Show table</summary>
-      <div className="overflow-x-auto">
-        <UiTable>
-          <TableHeader>
-            <TableRow>
-              {headers.map((h, i) => (
-                <TableHead key={`${h}-${i}`}>{h}</TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.map((row, i) => (
-              <TableRow key={i}>
-                {row.map((cell, j) => (
-                  <TableCell key={j}>{cell}</TableCell>
+    <Collapsible>
+      <DisclosureTrigger>Show table</DisclosureTrigger>
+      <CollapsibleContent>
+        <div className="overflow-x-auto">
+          <UiTable>
+            <TableHeader>
+              <TableRow>
+                {headers.map((h, i) => (
+                  <TableHead key={`${h}-${i}`}>{h}</TableHead>
                 ))}
               </TableRow>
-            ))}
-          </TableBody>
-        </UiTable>
-      </div>
-    </details>
+            </TableHeader>
+            <TableBody>
+              {rows.map((row, i) => (
+                <TableRow key={i}>
+                  {row.map((cell, j) => (
+                    <TableCell key={j}>{cell}</TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </UiTable>
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
 
@@ -204,9 +217,9 @@ export function AnalyzeView({
               {loading ? "Running" : "Run analysis"}
             </Button>
           </div>
-          <details className="advanced mt-4">
-            <summary>Advanced options</summary>
-            <div className="advanced-body">
+          <Collapsible className="advanced mt-4">
+            <DisclosureTrigger>Advanced options</DisclosureTrigger>
+            <CollapsibleContent className="advanced-body">
               <label className="flex min-w-0 flex-col gap-[var(--space-1)] text-[length:var(--text-sm)] font-medium text-[var(--text)]">
                 Permutations
                 <Input
@@ -228,8 +241,8 @@ export function AnalyzeView({
                   onChange={(event) => setSeed(Number(event.target.value) || 0)}
                 />
               </label>
-            </div>
-          </details>
+            </CollapsibleContent>
+          </Collapsible>
         </form>
         <div id="analyze-error">{error && <ErrorState message={error} />}</div>
       </Card>
@@ -258,12 +271,17 @@ export function AnalyzeView({
             setActiveProfile={setActiveProfile}
           />
         ) : (
-          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm">
-            <span className="mr-2 font-semibold">Note</span>No analysis has been run yet
-            for <code>{mode}</code> / <code>{sample}</code>. Run one below --
-            results appear here immediately for any mode/sample combination that
-            already has tables, without waiting on a new run.
-          </div>
+          <Alert variant="neutral">
+            <AlertTitle>
+              <AlertIcon variant="neutral" />
+              No analysis run yet
+            </AlertTitle>
+            <AlertDescription>
+              Nothing has been run yet for <code>{mode}</code> / <code>{sample}</code>.
+              Run one below -- results appear here immediately for any mode/sample
+              combination that already has tables, without waiting on a new run.
+            </AlertDescription>
+          </Alert>
         )}
       </div>
     </section>
@@ -307,21 +325,32 @@ function AnalysisResult({
       : profiles[0];
   return (
     <>
-      {
-        <div className="rounded-md border border-[var(--primary)]/30 bg-[var(--primary-soft)] p-3 text-sm">
-          <span className="mr-2 font-semibold">Note</span>
-          <b>
-            Pooled permutation is the primary test; per-model McNemar is
-            secondary.
-          </b>{" "}
-          Rows flagged ceiling or floor are underpowered, and an underpowered
-          null is not evidence that a model is resilient. Reachability carries a
-          survivorship caveat on the heaviest profiles: the co-present set is
-          not profile-independent, so baseline accuracy measured only over the
-          targets that survived a hard profile reads higher than the model's
-          true baseline. See <code>docs/methods.md</code>.
-        </div>
-      }
+      <Alert variant="accent" className="mb-4">
+        <AlertTitle>
+          <AlertIcon variant="accent" />
+          Pooled permutation is the primary test
+        </AlertTitle>
+        <AlertDescription>
+          Per-model McNemar is secondary. Rows flagged ceiling or floor are
+          underpowered, and an underpowered null is not evidence that a model
+          is resilient. Reachability carries a survivorship caveat on the
+          heaviest profiles: the co-present set is not profile-independent, so
+          baseline accuracy measured only over the targets that survived a
+          hard profile reads higher than the model's true baseline. See{" "}
+          <DocDialog
+            doc="methods.md"
+            trigger={
+              <button
+                type="button"
+                className="cursor-pointer underline decoration-dotted underline-offset-2"
+              >
+                <code>docs/methods.md</code>
+              </button>
+            }
+          />
+          .
+        </AlertDescription>
+      </Alert>
       {result.output_dir && (
         <p className="mb-4 text-sm text-[var(--muted)]">
           Tables written to <code>{result.output_dir}/</code> -- the dataset's

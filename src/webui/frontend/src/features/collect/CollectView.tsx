@@ -6,7 +6,7 @@ import { Input } from "../../components/ui/input";
 import { NativeSelect } from "../../components/ui/native-select";
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
-import { Alert } from "../../components/ui/alert";
+import { Alert, AlertDescription, AlertIcon, AlertTitle } from "../../components/ui/alert";
 import { Spinner } from "../../components/ui/spinner";
 import { Badge } from "../../components/ui/badge";
 import { DocDialog } from "../../components/ui/doc-dialog";
@@ -115,7 +115,7 @@ export function CollectView({
           </div>
         </div>
         <div id="collect-preflight-result">
-          {checking && <Alert role="status" aria-busy="true" aria-label="Checking adb" className="flex items-center gap-3 text-sm text-[var(--muted)]"><Spinner className="size-4" />Checking adb...</Alert>}
+          {checking && <div role="status" aria-busy="true" aria-label="Checking adb" className="flex items-center gap-3 text-sm text-[var(--muted)]"><Spinner className="size-4" />Checking adb...</div>}
           {preflight &&
             !checking &&
             (!preflight.adb_available ? (
@@ -166,31 +166,36 @@ export function CollectView({
               </>
             ))}
         </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm">
-          <span className="mr-2 font-semibold">Prerequisites</span> Not verifiable from
-          here: Pixel 6 / API 34 / 1080x2400 at 420 dpi, a signed-in Google
-          account, and Messages, Gmail and Maps each opened once to clear their
-          first-run dialogs. See{" "}
-          <DocDialog
-            doc="collection.md"
-            trigger={
-              <button
-                type="button"
-                className="cursor-pointer underline decoration-dotted underline-offset-2"
-              >
-                <code>docs/collection.md</code>
-              </button>
-            }
-          />
-          .
-        </div>
+        <Alert variant="neutral">
+          <AlertTitle>
+            <AlertIcon variant="neutral" />
+            Not verifiable from here
+          </AlertTitle>
+          <AlertDescription>
+            Pixel 6 / API 34 / 1080x2400 at 420 dpi, a signed-in Google
+            account, and Messages, Gmail and Maps each opened once to clear their
+            first-run dialogs. See{" "}
+            <DocDialog
+              doc="collection.md"
+              trigger={
+                <button
+                  type="button"
+                  className="cursor-pointer underline decoration-dotted underline-offset-2"
+                >
+                  <code>docs/collection.md</code>
+                </button>
+              }
+            />
+            .
+          </AlertDescription>
+        </Alert>
       </Card>
       <Card className="mt-4 border-[var(--primary)] p-4">
         <div className="pb-3">
           <h3>New collection</h3>
         </div>
         <form id="collect-form" onSubmit={submit}>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 grid-cols-2">
             <div>
               <label htmlFor="collect-name">Dataset name</label>
               <Input
@@ -274,7 +279,15 @@ export function CollectView({
           </div>
         </form>
         <div id="collect-error">
-          {error && <Alert className="rounded-md border border-[var(--err)]/40 bg-[var(--err)]/10 p-3 text-sm text-[var(--err)]">{error}</Alert>}
+          {error && (
+            <Alert variant="danger">
+              <AlertTitle>
+                <AlertIcon variant="danger" />
+                Collection failed
+              </AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
         </div>
         <div id="collect-command" />
       </Card>

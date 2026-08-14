@@ -7,7 +7,7 @@ import { cn } from "../../lib/utils";
    for the active option. Built on cva rather than a Radix toggle group so it
    adds no dependency -- the UI resolves everything from the lockfile. */
 const groupVariants = cva(
-  "inline-flex flex-wrap items-center gap-1 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-2)] p-1",
+  "inline-flex flex-wrap items-center gap-1 rounded-[var(--radius-full)] border border-[var(--border)] bg-[var(--surface-2)] p-1",
 );
 
 export const SegmentedGroup = React.forwardRef<
@@ -19,7 +19,7 @@ export const SegmentedGroup = React.forwardRef<
 SegmentedGroup.displayName = "SegmentedGroup";
 
 const buttonVariants = cva(
-  "inline-flex min-h-[var(--control-h)] items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-sm)] border px-3 py-[6px] text-sm leading-none transition-[background-color,border-color,box-shadow] duration-[var(--dur-fast)] ease-[var(--ease)] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-45 max-[767px]:min-h-[var(--tap)] [@media(pointer:coarse)]:min-h-[var(--tap)]",
+  "inline-flex min-h-[var(--control-h)] items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-full)] border px-3 py-[6px] text-sm leading-none transition-[background-color,border-color,box-shadow] duration-[var(--dur-fast)] ease-[var(--ease)] cursor-pointer disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-45 max-[767px]:min-h-[var(--tap)] [@media(pointer:coarse)]:min-h-[var(--tap)]",
   {
     variants: {
       pressed: {

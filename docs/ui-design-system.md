@@ -177,6 +177,7 @@ in the previous pass.
 | `--text-body` | 0.875rem (14px) | 1.5 | — | Body, controls |
 | `--text-sm` | 0.8125rem (13px) | 1.45 | — | Table cells, hints |
 | `--text-xs` | 0.75rem (12px) | 1.35 | +0.03em | Labels, overlines |
+| `--text-stat` | 2rem (32px) | 1.1 | −0.02em | KPI/stat-tile numerals only (e.g. Results' "Overall accuracy" figure) — a bolder restatement of a value a chart already renders, never a new data element |
 
 **Before:** a 17px base with 40px view titles and Oswald headings — the previous pass's
 own "a little bigger across the board" doctrine, which read as a marketing page rather
@@ -188,28 +189,45 @@ Every numeral carries `font-variant-numeric: tabular-nums` so columns align.
 
 ## 2. Colour
 
-The six-stop navy-to-white blue ramp is **unchanged** from the previous pass — it was
-never the problem (`#011f4b · #03396c · #005b96 · #6497b1 · #b3cde0 · #ffffff`). What
-changed is the neutral ramp underneath it: the old `--border`/`--surface-2`/`--surface-3`
-were `color-mix()` blue tints, which read as dated regardless of the accent sitting on
-top. They're a true 12-step neutral ramp now (`--gray-50` … `--gray-950`), and only a
-handful of stops are consumed by name — the rest exist for future components, which is
-normal design-system practice, not dead weight.
+This pass moves the whole light-surface palette from a cool, blue-tinted neutral ramp to
+a **warm, low-chroma stone ramp** — the page canvas (`--bg`) now carries a faint warm cast,
+while cards stay pure white, so the warm-vs-white gap is what reads as a "floating card"
+rather than a filled region. Text drops its blue tint too, moving to a near-black warm
+neutral, so the single remaining hue in the interface is the primary accent — used for
+actions, not smeared across every text pairing. This is a deliberate, second full palette
+pass; where it contradicts the ramp described in earlier history, this one is current.
+
+The workflow rail is the one exception to this light, warm palette: it's a dark premium-
+blue panel (`--rail-*` tokens, below) sitting next to the light top bar and page content —
+a dark-nav/light-content split, not part of the warm-cast pairing. `--surface-warm` is
+still defined for continuity but is no longer consumed by the rail or anything else.
+
+A parallel `--warm-50…--warm-300` ramp backs `--surface-2/3`/`--border`/`--border-strong`,
+kept separate from the true-neutral `--gray-*` ramp because `--gray-*` still backs chart
+neutrals and the fixed dark-surface tokens below, which should stay true-neutral rather
+than pick up the page's warm cast.
 
 | Role | Value |
 |---|---|
-| `--bg` / `--surface` | `#ffffff` |
-| `--surface-2` | `--gray-50` (`#fafafa`) |
-| `--surface-3` | `--gray-100` (`#f4f4f5`) |
-| `--border` | `--gray-200` (`#e4e4e7`) — a true hairline now, not a blue tint |
-| `--border-strong` | `--gray-300` (`#d4d4d8`) |
-| `--text` | `#011f4b` |
-| `--text-2` | `#03396c` |
-| `--muted` / `--primary` | `#005b96` |
-| `--ok` / `--warn` / `--err` | `#3d6b1f` / `#755509` / `#a3301f` — status colour, kept outside the brand ramp |
+| `--bg` | `#faf9f6` |
+| `--surface` | `#ffffff` |
+| `--surface-warm` | `#f3f1ec` |
+| `--surface-2` | `--warm-50` (`#f5f3ee`) |
+| `--surface-3` | `--warm-100` (`#ece9e1`) |
+| `--border` | `--warm-150` (`#e2ddd2`) — decorative only now; shadow is the real separator (see §4) |
+| `--border-strong` | `--warm-300` (`#928c7f`) — the functional border colour: `--gray-400` (`#a1a1aa`) only reaches 2.56:1 on the new warm bg/surface, below the 3:1 WCAG non-text floor, so it can no longer carry a functional edge (inputs, selects, segmented controls) |
+| `--text` | `#0b1a2b` |
+| `--text-2` | `#33404f` |
+| `--muted` | `#5b6472` |
+| `--primary` | `#0f4a7d` — deepened from `#155e9b`; more ink, more room above AA (9.15:1 vs 6.76:1) |
+| `--positive` | `#1c7a4d` — new, supplementary; delta/positive indicators only (e.g. a "+X pts" badge), never the app's action colour |
+| `--ok` / `--warn` / `--err` | `#3d6b1f` / `#755509` / `#a3301f` — status colour, kept outside the brand ramp, unchanged |
 
-**One rule still drives every text pairing:** a light surface always carries dark-navy
-text, a dark surface always carries white or pale-blue text — never the reverse.
+**One rule still drives every text pairing:** a light surface always carries near-black
+text, a dark surface always carries white or pale text — never the reverse. `--primary`
+stays the one accent used for actions/links/active state; `--positive` is deliberately
+narrower in scope (badges only) rather than a second primary, so the interface still reads
+as "one accent, used sparingly" rather than two competing brand colours.
 
 ### Dark data surfaces
 
@@ -234,10 +252,16 @@ calculation, not an estimate.
 
 | Pair | Ratio |
 |---|---:|
-| `--text` on `--surface` | 16.17:1 |
-| `--text-2` on `--surface` | 11.63:1 |
-| `--muted`/`--primary` on `--surface` | 7.15:1 |
+| `--text` on `--surface` | 17.55:1 |
+| `--text` on `--bg` | 16.66:1 |
+| `--text-2` on `--surface` | ~11:1 |
+| `--muted` on `--surface` | 5.98:1 |
+| `--muted` on `--bg` | 5.68:1 |
+| `--primary` on `--surface` | 9.15:1 |
 | `--primary-fg` on `--primary` (button) | 7.15:1 |
+| `--positive` on `--surface` | 5.33:1 |
+| `--positive-fg` on `--positive-soft` (badge fill) | ~8.25:1 |
+| `--warm-300` (`--border-strong`) on `--surface` | 3.34:1 |
 | `--ok` on `--surface` | 6.32:1 |
 | `--warn` on `--surface` | 6.86:1 |
 | `--err` on `--surface` | 7.00:1 |
@@ -247,8 +271,11 @@ calculation, not an estimate.
 | `--on-dark-muted` on `--panel-dark-2` | 7.12:1 |
 | `--moss` on `--surface` (non-text fill only) | 3.18:1 |
 
-All text pairs clear 4.5:1; `--moss` clears the 3:1 floor that applies to non-text UI and
-data marks, and is deliberately never used for text.
+All text pairs clear 4.5:1; `--warm-300`/`--moss` clear the 3:1 floor that applies to
+non-text UI and data marks, and are deliberately never used for text. `--gray-400`
+(`#a1a1aa`, the previous border colour) only reaches 2.56:1 against the new warm
+`--bg`/`--surface` and was retired from every functional-border role for that reason —
+it remains in the `--gray-*` ramp for chart neutrals and dark-surface-adjacent uses only.
 
 ### 0. Why the page still has no dark *mode*
 
@@ -277,7 +304,9 @@ segment with its count rather than relying on hue alone.
 
 ## 3. Spacing
 
-`--space-1…8` = `4 · 8 · 12 · 16 · 24 · 32 · 48 · 64px` (unchanged).
+`--space-1…8` = `4 · 8 · 12 · 16 · 24 · 32 · 48 · 64px` (unchanged). The two semantic
+aliases built on top moved up a tier for the airier register — `--card-pad` 16px → 24px,
+`--page-gutter` 24px → 32px at desktop widths — while the raw scale itself is untouched.
 
 | Context | Value |
 |---|---|
@@ -289,30 +318,34 @@ segment with its count rather than relying on hue alone.
 
 ## 4. Radii, elevation and density
 
-**Three radius tiers, not two:** `--radius-sm: 6px` (inline code, small marks) ·
-`--radius-md: 8px` (buttons, inputs, rail rows) · `--radius-lg: 10px` (cards, panels,
+**Three radius tiers, not two:** `--radius-sm: 8px` (inline code, small marks) ·
+`--radius-md: 10px` (buttons, inputs, rail rows) · `--radius-lg: 18px` (cards, panels,
 drawer, image frames) · `--radius-full: 999px` (pills, progress) unchanged. **Before:**
-10/14px, and before that an inconsistent 5/6/9/10/14px — this pass tightens the geometry
-again to match the smaller control sizes below.
+6/8/10px — this pass bumps every tier up for the softer, "floating card" register; `--radius-lg`
+in particular is the single biggest lever on that read, since a hairline-bordered 10px
+card and a shadow-separated 18px one do not sit in the same visual register.
 
-**Border-first, shadow-minimal** — the reverse of the previous pass's shadow-only cards,
-which was a design error: this register (Linear/Vercel/Raycast) separates resting
-surfaces with a hairline border and uses shadow only as a faint lift, never as the primary
-separator. `.card` carries `border: 1px solid var(--border)` again, plus a much fainter
-`--elev-card` than before.
+**Shadow-first, border-minimal** — the reverse of the previous pass's border-first
+philosophy: that register (Linear/Vercel/Raycast) reads as "tool," while a softer,
+warm-tinted diffuse shadow (this pass) reads as the "floating card, premium product"
+register this redesign targets. `.card` drops its visible `border: 1px solid var(--border)`
+in favour of a near-invisible hairline plus a much more diffuse two-layer `--elev-card`.
 
 | Token | Use |
 |---|---|
-| `--elev-card` | Cards, panels, button/segmented hover feedback — a faint lift, not a separator |
-| `--elev-overlay` | The sticky run header (`.run-panel`), the drawer — anything that floats over scrolling content and needs a stronger cue regardless of what's behind it |
+| `--elev-card` | Cards, panels, button/segmented resting shadow — the primary separator now, not a faint accent on top of a border |
+| `--elev-card-hover` | Hoverable cards and filled buttons — a stronger lift on hover, paired with `--dur-mid` |
+| `--elev-overlay` | The sticky run header, the drawer, the miss-inspector modal — anything that floats over scrolling content and needs a stronger cue regardless of what's behind it |
 
-Exceptions: `.card-primary`'s tinted border marks the view's primary card (unchanged
-purpose, now redundant with the plain border everywhere — it reads as a colour difference
-on an already-bordered surface, not as the only border on the page); inputs/selects always
-keep a border, shadowed surface or not; `.app-header` keeps **both** border and shadow —
-sticky chrome with content scrolling underneath needs a reliable division line a shadow
-alone can't guarantee; the drawer keeps its border too, since it floats over a dimmed
-backdrop, not the plain page, so the card reasoning doesn't transfer.
+Exceptions: `.card-primary`'s tinted border still marks a view's primary card — now a real
+border where the rest of the card has none, so it reads clearly rather than as a colour
+shift on an already-bordered surface; inputs/selects/segmented controls always keep a
+visible border regardless of shadow, since form controls need a legible edge at rest;
+`Alert` keeps its border too — it's carrying the ok/warn/err semantic distinction alongside
+an icon and text, not standing in as a generic surface; `Table` row/cell separators stay
+hairline borders (a table's rows aren't floating cards, a border is the correct separator
+there); the drawer/miss-inspector modal keeps a faint border since it floats over a dimmed
+backdrop, not the plain page, so the card reasoning doesn't transfer cleanly.
 
 ### Density
 
@@ -409,6 +442,12 @@ The mobile table is not a horizontal scroller: `thead` is visually hidden and ea
 carries `data-label`, rendered as the field name beside its value.
 
 ### Desktop workflow rail
+
+The rail is a floating panel now, not a flush-left column: a small margin, `--radius-lg`
+corners and `--elev-card` separate it from the page, matching the card language rather
+than a bordered sidebar. The active route is a pill highlight (`--radius-full`) rather
+than a left-aligned flat fill. This is a visual change only — the grouped labels, status
+chips, `aria-current`, and collapse behaviour below are all unchanged.
 
 At desktop widths (`≥ lg`) the workflow rail can be collapsed to an icon-only `64px`
 column. The toggle is keyboard reachable and has an explicit accessible name; each icon

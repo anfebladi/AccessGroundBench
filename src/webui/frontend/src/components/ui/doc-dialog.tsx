@@ -58,7 +58,7 @@ export function DocDialog({
             <div
               className="pr-4 text-sm [&_h1]:mt-4 [&_h2]:mt-4 [&_h3]:mt-3
                 [&_li]:ml-5 [&_ol]:my-2 [&_ol]:list-decimal [&_p]:my-2
-                [&_pre]:my-2 [&_pre]:overflow-x-auto [&_pre]:rounded-md
+                [&_pre]:my-2 [&_pre]:overflow-x-auto [&_pre]:rounded-[var(--radius-md)]
                 [&_pre]:bg-[var(--surface-2)] [&_pre]:p-3
                 [&_ul]:my-2 [&_ul]:list-disc"
             >
