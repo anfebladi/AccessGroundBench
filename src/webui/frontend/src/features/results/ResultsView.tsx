@@ -10,6 +10,7 @@ import { Card } from "../../components/ui/card";
 import { Skeleton } from "../../components/ui/skeleton";
 import { Badge as UiBadge } from "../../components/ui/badge";
 import { Checkbox } from "../../components/ui/checkbox";
+import { SegmentedButton, SegmentedGroup } from "../../components/ui/segmented";
 import {
   Table,
   TableHeader,
@@ -213,31 +214,25 @@ export function ResultsView({
           <h3>Evaluated models</h3>
           <div id="results-mode-filter">
             {modes.length > 1 && (
-              <div
-                className="flex flex-wrap gap-1 rounded-md border border-[var(--border)] p-1"
-                role="group"
-                aria-label="Prompt mode filter"
-              >
-                <Button
-                  type="button"
+              <SegmentedGroup aria-label="Prompt mode filter">
+                <SegmentedButton
                   data-mode="all"
-                  aria-pressed={mode === "all"}
+                  pressed={mode === "all"}
                   onClick={() => setMode("all")}
                 >
                   All
-                </Button>
+                </SegmentedButton>
                 {modes.map((value) => (
-                  <Button
-                    type="button"
+                  <SegmentedButton
                     data-mode={value}
-                    aria-pressed={mode === value}
+                    pressed={mode === value}
                     onClick={() => setMode(value)}
                     key={value}
                   >
                     {value}
-                  </Button>
+                  </SegmentedButton>
                 ))}
-              </div>
+              </SegmentedGroup>
             )}
           </div>
         </div>

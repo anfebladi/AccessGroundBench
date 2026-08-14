@@ -85,7 +85,15 @@ All shared controls used by the feature views and shell are owned in
 `src/components/ui/`: buttons, cards, alerts, badges, inputs, textareas, tables,
 progress, separators, skeletons, tooltips, collapsibles, dialogs, alert dialogs,
 scroll areas, checkboxes, the command palette, and the responsive `Sheet` used by
-the mobile workflow navigation. The command palette is a `Command` primitive
+the mobile workflow navigation. `SegmentedGroup`/`SegmentedButton` in
+`components/ui/segmented.tsx` own the segmented control described in §5 — every
+option group that selects one of a small fixed set (the comparison stage's profile,
+mode and zoom pickers, Analyze's sample and profile pickers, the Results prompt-mode
+filter) uses it, so the pressed chip is drawn once rather than per feature. It takes
+a required `pressed` boolean and writes `aria-pressed` itself, keeping the visual and
+programmatic state impossible to desynchronise. Momentary actions that sit inside a
+segmented track — the stage's zoom −/+ — stay plain `Button`s: they hold no state to
+report. The command palette is a `Command` primitive
 with keyboard filtering and selection; the mobile menu opens a Radix Sheet and
 closes after a route link is chosen.
 

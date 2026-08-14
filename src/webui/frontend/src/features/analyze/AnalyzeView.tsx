@@ -16,6 +16,7 @@ import { Card } from "../../components/ui/card";
 import { Skeleton } from "../../components/ui/skeleton";
 import { Progress } from "../../components/ui/progress";
 import { Badge as UiBadge } from "../../components/ui/badge";
+import { SegmentedButton, SegmentedGroup } from "../../components/ui/segmented";
 import {
   Table as UiTable,
   TableHeader,
@@ -332,24 +333,18 @@ function AnalysisResult({
         </p>
       )}
       {samples.length > 1 && (
-        <div
-          className="mb-4 flex flex-wrap gap-1 rounded-md border border-[var(--border)] p-1"
-          role="group"
-          aria-label="Sample"
-          style={{ marginBottom: "var(--space-4)" }}
-        >
+        <SegmentedGroup className="mb-4" aria-label="Sample">
           {samples.map((value) => (
-            <button
-              type="button"
+            <SegmentedButton
               data-sample={value}
-              aria-pressed={value === sample}
+              pressed={value === sample}
               onClick={() => setActiveSample(value)}
               key={value}
             >
               {value}
-            </button>
+            </SegmentedButton>
           ))}
-        </div>
+        </SegmentedGroup>
       )}
       <AnalysisCard
         title="Reachability"
@@ -444,19 +439,18 @@ function AnalysisResult({
         empty="No per-model rows were produced."
         id="per-model-card"
       >
-        <div className="flex flex-wrap gap-1 rounded-md border border-[var(--border)] p-1" role="group" aria-label="Profile">
+        <SegmentedGroup aria-label="Profile">
           {profiles.map((value) => (
-            <button
-              type="button"
+            <SegmentedButton
               data-dumbbell-profile={value}
-              aria-pressed={value === profile}
+              pressed={value === profile}
               onClick={() => setActiveProfile(value)}
               key={value}
             >
               {value}
-            </button>
+            </SegmentedButton>
           ))}
-        </div>
+        </SegmentedGroup>
         <Legend
           items={[
             { color: "var(--viz-blue)", label: "Baseline accuracy" },

@@ -34,6 +34,30 @@ If `fastapi`/`uvicorn` are not installed, `agb ui` prints the install command
 above and exits. If frontend dependencies are missing, it prints the one-time
 Node install command and exits; every other `agb` command is unaffected.
 
+## Back end
+
+The API lives in `src/webui/backend/`, one module per responsibility:
+
+| Module | Responsibility |
+| --- | --- |
+| `server.py` | `create_app()` -- builds the FastAPI app and includes the routers. Nothing else. |
+| `launcher.py` | `agb ui` itself: the uvicorn thread, the Vite child process, the terminal menu. |
+| `routers/` | One module per route family -- `datasets`, `results`, `analysis`, `evaluate`, `models`, `collect`. |
+| `schemas.py` | Pydantic request bodies for the POST endpoints. |
+| `dependencies.py` | Shared per-request helpers: dataset lookup, the archived-dataset write guard, mode/sample validation, display paths. |
+| `providers.py` | The provider catalogue -- the single source of truth for provider env var names. |
+| `analysis_tables.py` | Analysis output locations and the four result-table CSVs. |
+| `datasets.py`, `runs.py`, `keys.py`, `compare.py`, `banner.py`, `stdout_capture.py` | Dataset discovery, the subprocess run supervisor, the session key store, the Compare statistics, the launcher banner, and stdout capture. |
+
+Two invariants to preserve when changing these:
+
+- **`fastapi` and `uvicorn` are only imported inside functions**, except in
+  `routers/`, which is not imported until `create_app()` runs. Importing
+  `webui.backend.*` must never require the optional `ui` extra.
+- **Error responses keep `detail` as a string.** The frontend renders it
+  directly, so `create_app()` installs a handler that flattens FastAPI's
+  list-shaped validation errors into one string.
+
 ## Front end
 
 The browser UI is a React + Vite application. Its source, package manifest and

@@ -5,6 +5,8 @@ import { Icon } from "./Icon";
 import { ScreenshotCanvas } from "./ScreenshotCanvas";
 import { PROFILES, asText, ordered, type Label, type Mode, type Profile, type Target, type ViewConfig } from "./types";
 import { Badge } from "../../components/ui/badge";
+import { Button } from "../../components/ui/button";
+import { SegmentedButton, SegmentedGroup } from "../../components/ui/segmented";
 
 export function ComparisonStage({
   dataset,
@@ -165,80 +167,67 @@ export function ComparisonStage({
   };
   return (
     <div onKeyDown={onKeyDown}>
-      <div
-        className="flex flex-wrap gap-1"
+      <SegmentedGroup
         id="profile-picker"
-        role="group"
         aria-label="Accessibility profile"
       >
         {PROFILES.map(([id, text]) => (
-          <button
-            type="button"
+          <SegmentedButton
             key={id}
-            aria-pressed={id === profile}
+            pressed={id === profile}
             onClick={() => setProfile(id)}
           >
             {text}
-          </button>
+          </SegmentedButton>
         ))}
-      </div>
+      </SegmentedGroup>
       <div className="flex items-center justify-between gap-3 border-b border-[var(--on-dark-border)] p-3">
-        <div
-          className="flex flex-wrap gap-1"
-          id="stage-mode-picker"
-          role="group"
-          aria-label="Comparison mode"
-        >
-          <button
-            type="button"
-            aria-pressed={mode === "side-by-side"}
+        <SegmentedGroup id="stage-mode-picker" aria-label="Comparison mode">
+          <SegmentedButton
+            pressed={mode === "side-by-side"}
             onClick={() => setMode("side-by-side")}
           >
             Side by side
-          </button>
-          <button
-            type="button"
-            aria-pressed={mode === "onion"}
+          </SegmentedButton>
+          <SegmentedButton
+            pressed={mode === "onion"}
             onClick={() => setMode("onion")}
           >
             Onion-skin
-          </button>
-        </div>
-        <div
-          className="flex flex-wrap gap-1"
-          id="stage-zoom"
-          role="group"
-          aria-label="Zoom"
-        >
-          <button
-            type="button"
+          </SegmentedButton>
+        </SegmentedGroup>
+        <SegmentedGroup id="stage-zoom" aria-label="Zoom">
+          {/* − and + are repeatable actions, not toggles: giving them
+              aria-pressed would report a state they never hold. */}
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => changeZoom("out")}
             aria-label="Zoom out"
           >
             −
-          </button>
-          <button
-            type="button"
+          </Button>
+          <SegmentedButton
+            pressed={zoom === "fit"}
             onClick={() => changeZoom("fit")}
-            aria-pressed={zoom === "fit"}
           >
             Fit
-          </button>
-          <button
-            type="button"
+          </SegmentedButton>
+          <SegmentedButton
+            pressed={zoom === 1}
             onClick={() => changeZoom("1:1")}
-            aria-pressed={zoom === 1}
           >
             1:1
-          </button>
-          <button
-            type="button"
+          </SegmentedButton>
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => changeZoom("in")}
             aria-label="Zoom in"
           >
             +
-          </button>
-        </div>
+          </Button>
+        </SegmentedGroup>
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"

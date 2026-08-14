@@ -11,12 +11,13 @@ from __future__ import annotations
 
 import threading
 
-PROVIDER_ENV_VARS = {
-    "openai": "OPENAI_API_KEY",
-    "gemini": "GEMINI_API_KEY",
-    "anthropic": "ANTHROPIC_API_KEY",
-    "9router": "NINEROUTER_API_KEY",
-}
+from .providers import PROVIDERS
+
+# provider -> the one env var a session key sets. Derived from the provider
+# catalogue rather than restated: this is not the same list as a provider's
+# status vars (see providers.py), and keeping a second literal copy here is
+# what let the two drift apart under the same name.
+PROVIDER_ENV_VARS = {name: spec.key_env for name, spec in PROVIDERS.items()}
 
 _lock = threading.Lock()
 _session_keys: dict[str, str] = {}

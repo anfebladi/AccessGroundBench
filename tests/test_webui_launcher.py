@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from webui.backend import server
+from webui.backend import launcher
 
 
 class _FakeConfig:
@@ -63,11 +63,11 @@ class WebuiLauncherTests(unittest.TestCase):
 
     def test_missing_frontend_dependency_reports_install_command(self):
         out = io.StringIO()
-        with mock.patch.object(server.shutil, "which", return_value=None), mock.patch(
+        with mock.patch.object(launcher.shutil, "which", return_value=None), mock.patch(
             "sys.stdout", out
         ):
             with self.assertRaises(SystemExit) as cm:
-                server.ui_main([])
+                launcher.ui_main([])
         self.assertEqual(1, cm.exception.code)
         self.assertIn("npm ci", out.getvalue())
 
@@ -90,22 +90,22 @@ class WebuiLauncherTests(unittest.TestCase):
             seen["url"] = url
             shutdown()
 
-        with mock.patch.object(server, "FRONTEND_DIR", frontend), mock.patch.object(
-            server.shutil, "which", return_value="/usr/bin/npm"
+        with mock.patch.object(launcher, "FRONTEND_DIR", frontend), mock.patch.object(
+            launcher.shutil, "which", return_value="/usr/bin/npm"
         ), mock.patch.dict(sys.modules, {"uvicorn": self._uvicorn(fake_server)}), mock.patch(
-            "webui.backend.server.subprocess.Popen", side_effect=launch_vite
-        ) as popen, mock.patch("webui.backend.server.urllib.request.urlopen") as opener, mock.patch(
+            "webui.backend.launcher.subprocess.Popen", side_effect=launch_vite
+        ) as popen, mock.patch("webui.backend.launcher.urllib.request.urlopen") as opener, mock.patch(
             "webui.backend.banner.run_interactive_menu", side_effect=menu
-        ), mock.patch("webui.backend.server.create_app", return_value=object()):
+        ), mock.patch("webui.backend.launcher.create_app", return_value=object()):
             opener.return_value.__enter__.return_value = object()
-            server.ui_main(["--port", "5173", "--api-port", "8081"])
+            launcher.ui_main(["--port", "5173", "--api-port", "8081"])
 
         self.assertEqual("http://127.0.0.1:5173", seen["url"])
         cmd = popen.call_args.args[0]
         expected_vite = str(frontend / "node_modules" / ".bin" / self.VITE_BIN)
         self.assertEqual([expected_vite, "--host", "127.0.0.1", "--port", "5173"], cmd)
         popen_kwargs = popen.call_args.kwargs
-        self.assertIs(popen_kwargs["stdout"], server.subprocess.DEVNULL)
+        self.assertIs(popen_kwargs["stdout"], launcher.subprocess.DEVNULL)
         self.assertIsNot(popen_kwargs["stderr"], sys.stderr)
         self.assertTrue(stderr_state["writable"])
         self.assertTrue(hasattr(stderr_state["stream"], "write"))
@@ -124,15 +124,15 @@ class WebuiLauncherTests(unittest.TestCase):
             kwargs["stderr"].write(b"error: port already in use")
             return process
 
-        with mock.patch.object(server, "FRONTEND_DIR", frontend), mock.patch.object(
-            server.shutil, "which", return_value="/usr/bin/npm"
+        with mock.patch.object(launcher, "FRONTEND_DIR", frontend), mock.patch.object(
+            launcher.shutil, "which", return_value="/usr/bin/npm"
         ), mock.patch.dict(sys.modules, {"uvicorn": self._uvicorn(fake_server)}), mock.patch(
-            "webui.backend.server.subprocess.Popen", side_effect=launch_vite
-        ), mock.patch("webui.backend.server.create_app", return_value=object()), mock.patch(
+            "webui.backend.launcher.subprocess.Popen", side_effect=launch_vite
+        ), mock.patch("webui.backend.launcher.create_app", return_value=object()), mock.patch(
             "sys.stdout", out
         ):
             with self.assertRaises(SystemExit):
-                server.ui_main([])
+                launcher.ui_main([])
         self.assertIn("[ERROR] Vite failed to start:", out.getvalue())
         self.assertIn("error: port already in use", out.getvalue())
         self.assertTrue(fake_server.should_exit)
@@ -143,20 +143,20 @@ class WebuiLauncherTests(unittest.TestCase):
         fake_server = _FakeServer(None)
         process = mock.Mock()
         process.poll.return_value = None
-        process.wait.side_effect = [server.subprocess.TimeoutExpired("vite", 5), None]
+        process.wait.side_effect = [launcher.subprocess.TimeoutExpired("vite", 5), None]
 
         def menu(_url, shutdown):
             shutdown()
 
-        with mock.patch.object(server, "FRONTEND_DIR", frontend), mock.patch.object(
-            server.shutil, "which", return_value="/usr/bin/npm"
+        with mock.patch.object(launcher, "FRONTEND_DIR", frontend), mock.patch.object(
+            launcher.shutil, "which", return_value="/usr/bin/npm"
         ), mock.patch.dict(sys.modules, {"uvicorn": self._uvicorn(fake_server)}), mock.patch(
-            "webui.backend.server.subprocess.Popen", return_value=process
-        ), mock.patch("webui.backend.server.urllib.request.urlopen") as opener, mock.patch(
+            "webui.backend.launcher.subprocess.Popen", return_value=process
+        ), mock.patch("webui.backend.launcher.urllib.request.urlopen") as opener, mock.patch(
             "webui.backend.banner.run_interactive_menu", side_effect=menu
-        ), mock.patch("webui.backend.server.create_app", return_value=object()):
+        ), mock.patch("webui.backend.launcher.create_app", return_value=object()):
             opener.return_value.__enter__.return_value = object()
-            server.ui_main([])
+            launcher.ui_main([])
         process.terminate.assert_called_once_with()
         process.kill.assert_called_once_with()
 

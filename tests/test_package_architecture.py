@@ -447,5 +447,91 @@ class EvaluationBoundaryTests(unittest.TestCase):
         self.assertEqual({"vision", "tree"}, {results.PROMPT_MODE_VISION, results.PROMPT_MODE_TREE})
 
 
+class WebuiBackendBoundaryTests(unittest.TestCase):
+    """The web UI's API layer and its process-launching layer stay separate.
+
+    server.py builds the FastAPI app; launcher.py supervises the uvicorn thread
+    and the Vite child process. Before these were split, one 748-line module was
+    both, and the route handlers sat as closures inside the app factory where
+    they could not be read or reused independently.
+    """
+
+    BACKEND_ROOT = SOURCE_ROOT / "webui" / "backend"
+
+    def _relative_imports(self, source_path: Path) -> set[str]:
+        tree = ast.parse(source_path.read_text(encoding="utf-8"))
+        modules = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and node.level and node.module:
+                modules.add(node.module.split(".")[0])
+            elif isinstance(node, ast.ImportFrom) and node.level and not node.module:
+                # `from . import x, y`
+                modules.update(alias.name for alias in node.names)
+        return modules
+
+    def test_routers_do_not_import_the_process_launcher(self):
+        """A route handler has no business starting or stopping processes."""
+        for source_path in sorted((self.BACKEND_ROOT / "routers").glob("*.py")):
+            with self.subTest(module=source_path.name):
+                self.assertNotIn(
+                    "launcher",
+                    self._relative_imports(source_path),
+                    f"{source_path.name} imports the process launcher",
+                )
+
+    def test_server_module_only_wires_routers_together(self):
+        """server.py holds no route definitions of its own."""
+        source = (self.BACKEND_ROOT / "server.py").read_text(encoding="utf-8")
+        for decorator in ("@app.get(", "@app.post(", "@app.delete(", "@app.put("):
+            self.assertNotIn(
+                decorator,
+                source,
+                f"server.py declares a route with {decorator} -- routes belong in routers/",
+            )
+
+    def test_launcher_owns_the_ui_entry_point(self):
+        """`agb ui` resolves to the launcher, not the app factory."""
+        module_path, attribute, _ = cli.COMMANDS["ui"]
+        self.assertEqual("webui.backend.launcher", module_path)
+        self.assertEqual("ui_main", attribute)
+
+    def test_provider_env_var_names_have_a_single_source(self):
+        """keys.py derives its map from the provider catalogue.
+
+        Two literal maps both named PROVIDER_ENV_VARS -- one of the single env
+        var a session key writes, one of every var that counts as configured --
+        is how they silently drifted apart.
+        """
+        source = (self.BACKEND_ROOT / "keys.py").read_text(encoding="utf-8")
+        self.assertIn("from .providers import PROVIDERS", source)
+
+        from webui.backend import keys as keys_mod
+        from webui.backend.providers import PROVIDERS
+
+        self.assertEqual(
+            {name: spec.key_env for name, spec in PROVIDERS.items()},
+            keys_mod.PROVIDER_ENV_VARS,
+        )
+
+    def test_backend_import_does_not_require_the_optional_ui_extra(self):
+        """Importing the backend must not pull in fastapi/uvicorn.
+
+        Everything except routers/ imports them inside functions, so that every
+        other `agb` subcommand works without `uv sync --extra ui`.
+        """
+        code = (
+            "import sys;"
+            "import webui.backend.launcher, webui.backend.server;"
+            "assert 'fastapi' not in sys.modules, 'fastapi';"
+            "assert 'uvicorn' not in sys.modules, 'uvicorn';"
+            "print('ok')"
+        )
+        result = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True, text=True, cwd=str(REPO_ROOT),
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()

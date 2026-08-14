@@ -175,8 +175,21 @@ def evaluate_command(
     return args
 
 
+def format_equivalent_command(env_summary: dict, subcommand: str, args: list[str]) -> str:
+    """Render the terminal command equivalent to a run started from the browser.
+
+    Shown in the UI so a run is reproducible outside it. AGB_DATASET_DIR is
+    dropped from the env prefix because the args already carry --data-dir;
+    printing both would suggest the two have to agree by hand.
+    """
+    env_prefix = " ".join(f'{k}={v}' for k, v in env_summary.items() if k != "AGB_DATASET_DIR")
+    quoted_args = " ".join(args)
+    return f"{env_prefix} agb {subcommand} {quoted_args}".strip()
+
+
 __all__ = [
     "Run",
     "STATUS_RUNNING", "STATUS_COMPLETED", "STATUS_FAILED", "STATUS_CANCELLED",
     "start_run", "get_run", "list_runs", "cancel_run", "evaluate_command",
+    "format_equivalent_command",
 ]
