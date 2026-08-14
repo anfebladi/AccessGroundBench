@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+import paths
 from collection import cli as collection_cli
 from collection.runtime import profiles as layout_modifier
 from collection.artifacts import manifest as collection_manifest
@@ -49,10 +50,10 @@ class OrchestratorPathsTestCase(unittest.TestCase):
             d.mkdir(parents=True)
 
         patches = [
-            mock.patch.object(collection_manifest, "IMAGES_DIR", self.images_dir),
-            mock.patch.object(collection_manifest, "RAW_XML_DIR", self.raw_xml_dir),
-            mock.patch.object(collection_manifest, "LABELS_DIR", self.labels_dir),
-            mock.patch.object(collection_manifest, "MANIFEST_PATH", self.manifest_path),
+            mock.patch.object(paths, "images_dir", return_value=self.images_dir),
+            mock.patch.object(paths, "raw_xml_dir", return_value=self.raw_xml_dir),
+            mock.patch.object(paths, "labels_dir", return_value=self.labels_dir),
+            mock.patch.object(paths, "manifest_path", return_value=self.manifest_path),
         ]
         for p in patches:
             p.start()
@@ -435,7 +436,8 @@ class RebuildScreenTests(OrchestratorPathsTestCase):
 
 class WorkflowDelegationTests(unittest.TestCase):
     def test_collect_cli_delegates_rebuild_work_through_workflow_to_manifest(self):
-        with mock.patch.object(workflow, "ensure_dirs"), \
+        with tempfile.TemporaryDirectory() as tmp, \
+             mock.patch.object(workflow, "ensure_dirs"), \
              mock.patch.object(
                  workflow.manifest, "rebuild_screen", return_value=([], None)
              ) as rebuild, \
@@ -444,7 +446,7 @@ class WorkflowDelegationTests(unittest.TestCase):
              ) as write, \
              contextlib.redirect_stdout(io.StringIO()):
             collection_cli.collect_main(
-                ["--rebuild-manifest", "--screens", "clock"]
+                ["--rebuild-manifest", "--screens", "clock", "--data-dir", tmp]
             )
 
         rebuild.assert_called_once_with("clock")

@@ -322,7 +322,7 @@ function CompareResult({ result }: { result: Compare }) {
           </TableBody>
         </Table>
       </div>
-      <Alert className="mt-4" variant="neutral">
+      <Alert variant="neutral">
         <AlertTitle>
           <AlertIcon variant="neutral" />
           Holm-Bonferroni corrected (α = 0.05)

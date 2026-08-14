@@ -12,7 +12,7 @@ import { exportCanvasAsPng } from "../../lib/export";
 import type { TabViewProps } from "../../lib/types";
 import { CaptureHealth } from "./CaptureHealth";
 import { ScreenshotCanvas } from "./ScreenshotCanvas";
-import { ComparisonStage } from "./ComparisonStage";
+import { ComparisonStage } from "./comparison/ComparisonStage";
 import { ScreenPicker } from "./ScreenPicker";
 import { Card } from "../../components/ui/card";
 import { Alert } from "../../components/ui/alert";

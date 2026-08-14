@@ -11,8 +11,11 @@ const iconPaths: Record<string, ReactNode> = {
   ),
   models: (
     <>
-      <circle cx="12" cy="12" r="3" />
-      <path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8" />
+      <rect x="5" y="7" width="14" height="14" rx="3" />
+      <path d="M12 7V4" />
+      <circle cx="12" cy="3" r="1" />
+      <circle cx="9" cy="13" r="1" />
+      <circle cx="15" cy="13" r="1" />
     </>
   ),
   evaluate: (
@@ -23,8 +26,7 @@ const iconPaths: Record<string, ReactNode> = {
   ),
   collect: (
     <>
-      <rect x="5" y="2" width="14" height="20" rx="2" />
-      <path d="M9 18h.01M9 6h6" />
+      <path d="M12 3v12M7 10l5 5 5-5M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
     </>
   ),
   results: (
@@ -43,9 +45,7 @@ const iconPaths: Record<string, ReactNode> = {
   ),
   compare: (
     <>
-      <rect x="3" y="4" width="8" height="16" rx="1.5" />
-      <rect x="13" y="4" width="8" height="16" rx="1.5" />
-      <path d="M7 9v6M17 9v6" />
+      <path d="M12 4v16M5 7h14M7 7l-3 7h6L7 7M17 7l-3 7h6l-3-7M8 20h8" />
     </>
   ),
   menu: (
