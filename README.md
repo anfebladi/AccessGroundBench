@@ -116,15 +116,17 @@ front of a model does not leak into published filenames.
 ```bash
 uv run agb evaluate                    # resumes by default; --fresh restarts
 uv run agb analyze                     # writes the full table set
-uv run agb rescore --csv experiment/outputs/dataset/evaluations/MODEL_vision.csv --check
+uv run agb rescore --csv experiment/outputs/evaluations/MODEL_vision.csv --check
 ```
 
 Evaluation appends one row per `(screen, target, profile)` and is **resumable** — an
 interrupted run does not lose paid API calls. Nothing that truncates or rewrites a
 result file does so without first copying it aside into a `.backups/` directory.
 
-Analysis writes to `experiment/outputs/<dataset>/analysis/`, one output root per dataset,
-so re-analysing an archive can never overwrite the current run's tables.
+Analysis writes to `experiment/outputs/analysis/`. Every dataset owns exactly one output
+root — the active one uses `experiment/outputs/`, and any other dataset (an archive, or a
+directory passed to `--data-dir`) owns an `outputs/` directory inside itself. That is what
+stops re-analysing an archive from overwriting the current run's tables.
 
 Collecting a *new* dataset needs a configured emulator and is documented separately —
 see [`docs/collection.md`](docs/collection.md) and the
@@ -160,8 +162,10 @@ docs/                    Reference documentation and runbooks
 tests/                   Unit tests
 experiment/
   dataset/               Input captures, labels, raw XML, and the manifest
-  outputs/dataset/       Results derived from it: evaluations/ and analysis/
+  outputs/               Results derived from it: evaluations/ and analysis/
   archive/               Superseded runs -- local only, gitignored, not citable
+    experiment_1/        Each archive is self-contained: its captures plus
+    experiment_2/          its own outputs/ holding that run's tables
 ```
 
 One experiment is a dataset plus everything derived from it, so both live under a single

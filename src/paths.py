@@ -62,7 +62,8 @@ def find_project_root(start: str | Path | None = None) -> Path:
 #
 #   experiment/dataset/  captures, labels, raw XML, manifest
 #   experiment/outputs/  evaluation results and analysis tables
-#   experiment/archive/  superseded runs (local only; gitignored)
+#   experiment/archive/  superseded runs (local only; gitignored), each one
+#                        self-contained: its captures plus its own outputs/
 EXPERIMENT_DIR_NAME = "experiment"
 
 
@@ -107,13 +108,12 @@ def dataset_name(dataset_dir: str | Path | None = None) -> str:
     """Return the registry name for *dataset_dir* (default: the active one).
 
     Matches the names webui.backend.datasets.discover_datasets assigns, so the UI's
-    dataset dropdown and the CLI's --data-dir agree on where a run's outputs
-    belong: `dataset` for the default, otherwise the directory's own name
+    dataset dropdown and the CLI's --data-dir agree on which run is being
+    referred to: `dataset` for the default, otherwise the directory's own name
     (`experiment_2`, or whatever archived run was pointed at).
 
-    Names are basenames, so two datasets sharing one directory name would share
-    an output root. That is why archives keep distinct names
-    (`experiment/archive/experiment_2`, not `.../archive/dataset`).
+    This names a dataset; it no longer chooses where its outputs go. See
+    outputs_root_for.
     """
     resolved = Path(dataset_dir or DATASET_DIR).expanduser().resolve()
     default = (PROJECT_ROOT / EXPERIMENT_DIR_NAME / "dataset").resolve()
@@ -130,13 +130,28 @@ def outputs_root_for(dataset_dir: str | Path | None = None) -> Path:
     be skipped against) the first dataset's rows, and re-analysing an archive
     cannot overwrite the current run's tables.
 
+    The active dataset's outputs are the repository's `experiment/outputs/`.
+    Any other dataset -- an archive, or a directory passed to --data-dir --
+    owns an `outputs/` directory *inside itself*, so a superseded run is one
+    self-contained folder holding both its captures and its tables rather than
+    being split across two places.
+
+    Locating an archive's outputs inside the archive also removes an old
+    hazard: output roots used to be keyed on the dataset directory's basename,
+    so two datasets with the same directory name would silently have shared one
+    root. Containment makes collisions impossible regardless of naming.
+
     These are functions rather than module constants because the dataset is
     not always known at import time: `agb analyze --data-dir` and the web UI
     both choose one per call, while `agb evaluate` and `agb collect` inherit
     theirs from AGB_DATASET_DIR before import. A constant would freeze
     whichever dataset happened to be active first.
     """
-    return outputs_dir() / dataset_name(dataset_dir)
+    resolved = Path(dataset_dir or DATASET_DIR).expanduser().resolve()
+    default = (PROJECT_ROOT / EXPERIMENT_DIR_NAME / "dataset").resolve()
+    if resolved == default:
+        return outputs_dir()
+    return resolved / "outputs"
 
 
 def evaluations_dir(dataset_dir: str | Path | None = None) -> Path:

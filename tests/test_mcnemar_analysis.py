@@ -645,7 +645,7 @@ class ResolveDataDirTests(unittest.TestCase):
         self.assertEqual(archive, self.resolve(None, csv_path))
 
     def test_a_csv_under_outputs_falls_back_to_the_active_dataset(self):
-        csv_path = self.root / "experiment" / "outputs" / "dataset" / "evaluations" / "m_vision.csv"
+        csv_path = self.root / "experiment" / "outputs" / "evaluations" / "m_vision.csv"
         csv_path.parent.mkdir(parents=True)
         self.assertEqual(paths.DATASET_DIR, self.resolve(None, csv_path))
 
@@ -670,7 +670,7 @@ class RunCrossComparisonTests(unittest.TestCase):
         self._root_patch = mock.patch.object(paths, "PROJECT_ROOT", self.root)
         self._root_patch.start()
         self.addCleanup(self._root_patch.stop)
-        self.analysis_dir = self.root / "experiment" / "outputs" / "dataset" / "analysis"
+        self.analysis_dir = self.root / "experiment" / "outputs" / "analysis"
 
     def write_csv(self, name: str, rows: list[str]) -> Path:
         path = self.dir / name

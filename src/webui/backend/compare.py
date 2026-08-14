@@ -3,8 +3,8 @@
 Reuses the exact same statistical pipeline `analysis.workflow.run_analysis`
 uses for the canonical per-dataset tables (`report_per_model`,
 `report_reachability`) rather than a separate on-the-fly computation, so a
-model's numbers here can never disagree with what `agb analyze` writes to
-`outputs/<dataset>/analysis/`.
+model's numbers here can never disagree with what `agb analyze` writes to the
+dataset's own `analysis/` directory.
 
 The Holm-Bonferroni correction specifically MUST run across the full
 model x profile family, not just the requested model's profiles: the same

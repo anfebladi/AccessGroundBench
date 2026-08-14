@@ -48,10 +48,16 @@ class OutputScopingTests(unittest.TestCase):
         collected = paths.evaluation_results_path(
             "openai/gpt-4o", dataset_dir=self.root / "datasets" / "rerun")
 
+        # The active dataset's outputs are the repository's experiment/outputs/.
+        # Every other dataset owns an outputs/ directory inside itself, so a
+        # superseded run is one self-contained folder and no two datasets can
+        # collide regardless of what their directories are named.
         self.assertEqual(3, len({default, archive, collected}))
-        self.assertEqual(self.root / "experiment" / "outputs" / "dataset" / "evaluations", default.parent)
-        self.assertEqual(self.root / "experiment" / "outputs" / "experiment_2" / "evaluations", archive.parent)
-        self.assertEqual(self.root / "experiment" / "outputs" / "rerun" / "evaluations", collected.parent)
+        self.assertEqual(self.root / "experiment" / "outputs" / "evaluations", default.parent)
+        self.assertEqual(
+            self.root / "experiment" / "archive" / "experiment_2" / "outputs" / "evaluations",
+            archive.parent)
+        self.assertEqual(self.root / "datasets" / "rerun" / "outputs" / "evaluations", collected.parent)
 
     def test_vision_and_tree_are_separate_files_for_one_model(self):
         vision = paths.evaluation_results_path("openai/gpt-4o", False)
@@ -80,7 +86,7 @@ class OutputScopingTests(unittest.TestCase):
     def test_env_override_moves_the_result_file_with_the_dataset(self):
         with mock.patch.object(paths, "DATASET_DIR", self.root / "datasets" / "rerun"):
             self.assertEqual(
-                self.root / "experiment" / "outputs" / "rerun" / "evaluations" / "openai_gpt-4o_vision.csv",
+                self.root / "datasets" / "rerun" / "outputs" / "evaluations" / "openai_gpt-4o_vision.csv",
                 paths.evaluation_results_path("openai/gpt-4o"),
             )
 

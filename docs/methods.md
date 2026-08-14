@@ -380,7 +380,7 @@ evidence of anything.
 `agb evaluate` → `evaluation.runner.evaluate_screen` with
 `use_a11y_tree=False`,
 prompting with `PROMPT_TEMPLATE` (image only). Results land in
-`experiment/outputs/<dataset>/evaluations/<model>_vision.csv`. Analysed with `agb analyze`.
+`experiment/outputs/evaluations/<model>_vision.csv`. Analysed with `agb analyze`.
 
 **Estimand:** does an accessibility profile change a vision-only VLM's grounding
 accuracy, relative to that same model's baseline?
@@ -477,7 +477,7 @@ targets, where per-model McNemar has almost nothing left to detect. The pooled t
 accessibility tree (`evaluation.grounding.task_prompting.build_tree_text`) to the
 prompt: each visible element's best label
 and pixel bounds, `[x1,y1][x2,y2]`, absolute screenshot pixels. Results land in
-`experiment/outputs/<dataset>/evaluations/<model>_tree.csv`
+`experiment/outputs/evaluations/<model>_tree.csv`
 (`evaluation.config.get_results_csv`). Analysed by pointing
 `agb analyze` at the tree result path via `--csv`, or via `--mode tree` when
 discovering from the evaluation output directory (see "Analysis file
@@ -761,10 +761,10 @@ data.
 
 | File | Written by | Contents |
 |---|---|---|
-| `experiment/outputs/<dataset>/evaluations/<model>_vision.csv` | mode 1 | raw per-query rows, `status` column |
-| `experiment/outputs/<dataset>/evaluations/<model>_tree.csv` | mode 2 | same schema, tree-injected |
-| `experiment/outputs/<dataset>/analysis/<mode>_<sample>/reachability_results.csv` | §1 (either mode) | Profile, Present, Total, Reachability, CI |
-| `experiment/outputs/<dataset>/analysis/<mode>_<sample>/pooled_permutation_results.csv` | §1.8 (either mode) | Profile, clusters, b, c, p, Holm threshold |
-| `experiment/outputs/<dataset>/analysis/<mode>_<sample>/mcnemar_results_per_model.csv` | §1.4+§1.5+§1.6+§1.7+§1.9 | one row per model × profile |
-| `experiment/outputs/<dataset>/analysis/<mode>_<sample>/direction_consistency.csv` | sign test | Profile, down, up, tied, p |
-| `experiment/outputs/<dataset>/analysis/comparisons/mcnemar_compare_{model}.csv` | mode 3 | one row per profile compared |
+| `experiment/outputs/evaluations/<model>_vision.csv` | mode 1 | raw per-query rows, `status` column |
+| `experiment/outputs/evaluations/<model>_tree.csv` | mode 2 | same schema, tree-injected |
+| `experiment/outputs/analysis/<mode>_<sample>/reachability_results.csv` | §1 (either mode) | Profile, Present, Total, Reachability, CI |
+| `experiment/outputs/analysis/<mode>_<sample>/pooled_permutation_results.csv` | §1.8 (either mode) | Profile, clusters, b, c, p, Holm threshold |
+| `experiment/outputs/analysis/<mode>_<sample>/mcnemar_results_per_model.csv` | §1.4+§1.5+§1.6+§1.7+§1.9 | one row per model × profile |
+| `experiment/outputs/analysis/<mode>_<sample>/direction_consistency.csv` | sign test | Profile, down, up, tied, p |
+| `experiment/outputs/analysis/comparisons/mcnemar_compare_{model}.csv` | mode 3 | one row per profile compared |

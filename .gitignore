@@ -44,10 +44,9 @@ experiment/outputs/captures/
 
 # Superseded collection runs. Kept locally as a record, never published: they
 # predate several scoring fixes (so they must not be cited) and their captures
-# contain personal data that the current dataset has had removed.
+# contain personal data that the current dataset has had removed. Each archive
+# holds its own outputs/ too, so this one rule covers their tables as well.
 experiment/archive/
-experiment/outputs/experiment_1/
-experiment/outputs/experiment_2/
 
 # Copies kept aside before a command replaces a result file (src/backups.py).
 # Local safety net, not a record: committing them would put stale evaluation
