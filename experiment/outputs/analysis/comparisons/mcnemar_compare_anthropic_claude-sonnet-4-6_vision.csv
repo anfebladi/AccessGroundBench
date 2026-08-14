@@ -1,0 +1,6 @@
+Sample,Profile,Total_Pairs,Both_Pass_a,Tree_Hurt_b,Tree_Helped_c,Both_Fail_d,Discordant_Pairs,VisionOnly_Acc,WithTree_Acc,Test_Used,Statistic,P_Value,Significant
+primary,elder_text_heavy,125,117,0,8,0,8,93.6%,100.0%,Exact Binomial (n=8),,0.007812,Yes
+primary,elder_zoom_heavy,128,115,0,9,4,9,89.8%,96.9%,Exact Binomial (n=9),,0.003906,Yes
+primary,elder_combo_max,104,66,2,29,7,31,65.4%,91.3%,"Asymptotic (Edwards' correction, n=31)",21.8065,0.000003,Yes
+primary,elder_combo_mid,111,83,0,23,5,23,74.8%,95.5%,Exact Binomial (n=23),,0.000000,Yes
+primary,colorblind_deuteranomaly,119,114,2,3,0,5,97.5%,98.3%,Exact Binomial (n=5),,1.000000,No

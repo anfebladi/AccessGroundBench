@@ -213,13 +213,23 @@ SCREEN_TARGETS: dict[str, ScreenTarget] = {
     ),
 }
 
+# Screens that stay fully supported but are not captured by default.
+#
+# Gmail renders the signed-in account's real inbox -- sender names, subject
+# lines, body previews, and receipt times -- so a capture of it is a capture of
+# whoever's account the emulator is signed into. The published dataset omits it
+# for that reason, not because the screen is unsupported: it is still in
+# SCREEN_TARGETS, and `agb collect --screens gmail` collects it normally. Anyone
+# reproducing the benchmark on their own account can opt back in.
+OPT_IN_SCREENS: frozenset[str] = frozenset({"gmail"})
+
 # Stable capture order for a full benchmark collection.
 SCREENS: list[str] = [
     "settings_main", "settings_display", "settings_network", "settings_accessibility",
     "contacts", "dialer", "messages",
     "clock",
     "maps", "play_store",
-    "gmail", "youtube", "photos",
+    "youtube", "photos",
 ]
 
 

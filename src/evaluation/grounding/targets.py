@@ -30,6 +30,20 @@ MIN_RELAXED_MATCH_CHARS = 20
 # anything actually visible as one string.
 MAX_TARGET_CHARS = 100
 
+# Targets withheld because they name a real person, not because they are
+# ungroundable. Kept separate from invalid_targets() since the reason differs:
+# these ARE valid rendered labels a model could be asked to tap, so the filter
+# is a disclosure decision and belongs where it can be read as one.
+#
+# The label node itself deliberately stays in the JSON. Deleting it would drop a
+# row from the accessibility tree that tree-mode builds for *every other* target
+# on the same screen, changing those prompts and making already-collected tree
+# results irreproducible from the shipped labels. Withholding it at harvest
+# removes it as a question without altering what any other question looks like.
+PRIVACY_WITHHELD_TARGETS: dict[str, frozenset[str]] = {
+    "contacts": frozenset({"Andres"}),
+}
+
 
 def normalize_label(text: str) -> str:
     """Collapse the whitespace differences reflow introduces into a label.
@@ -111,9 +125,19 @@ def harvest_targets(screen_name: str, labels_dir: Path) -> list[dict]:
                 candidates.append({"text": clean_text, "baseline_box": rec["box"]})
 
     excluded = invalid_targets(candidates)
-    targets = [cand for cand in candidates if cand["text"] not in excluded]
+    withheld = PRIVACY_WITHHELD_TARGETS.get(screen_name, frozenset())
+    targets = [
+        cand for cand in candidates
+        if cand["text"] not in excluded and cand["text"] not in withheld
+    ]
 
-    excluded_note = f" ({len(excluded)} excluded: not groundable text)" if excluded else ""
+    notes = []
+    if excluded:
+        notes.append(f"{len(excluded)} excluded: not groundable text")
+    withheld_here = sum(1 for cand in candidates if cand["text"] in withheld)
+    if withheld_here:
+        notes.append(f"{withheld_here} withheld: names a real person")
+    excluded_note = f" ({'; '.join(notes)})" if notes else ""
     print(f"  [HARVEST] {len(targets)} unambiguous text targets from "
           f"{baseline_path.name}{excluded_note}")
     return targets

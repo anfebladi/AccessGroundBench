@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use AccessGroundBench, please cite it as below."
+title: "AccessGroundBench: measuring VLM UI grounding under Android accessibility settings"
+abstract: >-
+  AccessGroundBench measures whether Android accessibility layout settings
+  (increased font scale, increased display density, and colour-vision filters)
+  degrade a vision-language model's ability to ground UI text — that is, to
+  return the pixel coordinates one would tap to hit a named on-screen element.
+  It uses a paired within-subject design: the same model answers the same target
+  query on a baseline screenshot and on each accessibility-modified screenshot of
+  the same screen, and the difference is tested with a pooled cluster permutation
+  test over targets, with per-model McNemar tests as a secondary analysis.
+type: software
+authors:
+  - family-names: Blanco
+    given-names: Andres
+version: 0.1.0
+date-released: "2026-08-13"
+license: MIT
+repository-code: "https://github.com/anfebladi/AccessGroundBench"
+keywords:
+  - accessibility
+  - benchmark
+  - vision-language model
+  - visual grounding
+  - Android
+  - GUI agents

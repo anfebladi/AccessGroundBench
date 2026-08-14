@@ -28,7 +28,7 @@ class WebuiServerTests(unittest.TestCase):
         self.root = Path(self.tmp_dir.name)
         self.addCleanup(self.tmp_dir.cleanup)
 
-        self.dataset_dir = self.root / "dataset"
+        self.dataset_dir = self.root / "experiment" / "dataset"
         (self.dataset_dir / "images").mkdir(parents=True)
         (self.dataset_dir / "labels").mkdir(parents=True)
 
@@ -42,7 +42,7 @@ class WebuiServerTests(unittest.TestCase):
             json.dumps(labels), encoding="utf-8",
         )
 
-        exp1 = self.dataset_dir / "experiment_1"
+        exp1 = self.root / "experiment" / "archive" / "experiment_1"
         (exp1 / "images").mkdir(parents=True)
         (exp1 / "labels").mkdir(parents=True)
         (exp1 / "labels" / "clock_baseline.json").write_text("[]", encoding="utf-8")
@@ -188,7 +188,7 @@ class WebuiServerTests(unittest.TestCase):
         self.assertEqual(200, resp.status_code)
         body = resp.json()
         self.assertTrue(body["available"])
-        self.assertEqual("outputs/dataset/analysis/vision_all", body["output_dir"])
+        self.assertEqual("experiment/outputs/analysis/vision_all", body["output_dir"])
         self.assertEqual(1, len(body["reachability"]))
         self.assertEqual("elder_text_heavy", body["reachability"][0]["Profile"])
         # The other three tables have no file on disk yet -- empty, not an error.
@@ -438,9 +438,9 @@ class WebuiServerTests(unittest.TestCase):
 
         resp = self.run_analysis_request()
         self.assertEqual(200, resp.status_code, resp.text)
-        self.assertEqual("outputs/dataset/analysis/vision_primary", resp.json()["output_dir"])
+        self.assertEqual("experiment/outputs/analysis/vision_primary", resp.json()["output_dir"])
 
-        out = self.root / "outputs" / "dataset" / "analysis" / "vision_primary"
+        out = self.root / "experiment" / "outputs" / "analysis" / "vision_primary"
         self.assertTrue((out / "reachability_results.csv").is_file())
         self.assertTrue(resp.json()["reachability"])
 
@@ -452,12 +452,12 @@ class WebuiServerTests(unittest.TestCase):
         self.assertEqual(200, self.run_analysis_request(mode="vision").status_code)
         self.assertEqual(200, self.run_analysis_request(mode="tree").status_code)
 
-        root = self.root / "outputs" / "dataset" / "analysis"
+        root = self.root / "experiment" / "outputs" / "analysis"
         self.assertTrue((root / "vision_primary" / "reachability_results.csv").is_file())
         self.assertTrue((root / "tree_primary" / "reachability_results.csv").is_file())
 
     def test_analyze_of_an_archived_dataset_writes_nothing_into_the_archive(self):
-        archive = self.dataset_dir / "experiment_1"
+        archive = self.root / "experiment" / "archive" / "experiment_1"
         (archive / "images").mkdir(exist_ok=True)
         write_png_header(archive / "images" / "clock_baseline.png", 1080, 2274)
         write_png_header(archive / "images" / "clock_elder_text_heavy.png", 1080, 2274)
@@ -468,20 +468,29 @@ class WebuiServerTests(unittest.TestCase):
 
         self.write_analyzable_results(dataset_dir=archive)
         # The current dataset's own tables must survive untouched: an archive
-        # analysis writes to the archive's output root, not the shared one.
+        # analysis writes to the archive's own output root, not the shared one.
         self.write_analyzable_results()
         self.assertEqual(200, self.run_analysis_request().status_code)
-        current_table = (self.root / "outputs" / "dataset" / "analysis"
+        current_table = (self.root / "experiment" / "outputs" / "analysis"
                          / "vision_primary" / "reachability_results.csv")
         current_before = current_table.read_text(encoding="utf-8")
 
-        before = sorted(p.name for p in archive.iterdir())
+        # An archive's outputs now live inside the archive, so the directory
+        # does gain an outputs/ child. What must not change is its *captures*:
+        # analysis reads images/labels/raw_xml and writes none of them.
+        captures_before = {
+            name: sorted(p.name for p in (archive / name).iterdir())
+            for name in ("images", "labels")
+        }
         resp = self.run_analysis_request(dataset="experiment_1")
         self.assertEqual(200, resp.status_code, resp.text)
 
-        self.assertEqual(before, sorted(p.name for p in archive.iterdir()))
+        self.assertEqual(captures_before, {
+            name: sorted(p.name for p in (archive / name).iterdir())
+            for name in ("images", "labels")
+        })
         self.assertTrue(
-            (self.root / "outputs" / "experiment_1" / "analysis" / "vision_primary"
+            (archive / "outputs" / "analysis" / "vision_primary"
              / "reachability_results.csv").is_file()
         )
         self.assertEqual(current_before, current_table.read_text(encoding="utf-8"))
@@ -490,7 +499,7 @@ class WebuiServerTests(unittest.TestCase):
         self.write_analyzable_results()
         self.assertEqual(400, self.run_analysis_request(sample="../escape").status_code)
         self.assertEqual(400, self.run_analysis_request(mode="../escape").status_code)
-        self.assertFalse((self.root / "outputs" / "dataset" / "analysis").exists())
+        self.assertFalse((self.root / "experiment" / "outputs" / "analysis").exists())
 
 
 if __name__ == "__main__":

@@ -57,8 +57,8 @@ _env_mutation_lock = threading.Lock()
 # is one click on the page you land on. Archived datasets in particular must
 # never be written to, and their outputs must never displace anyone else's.
 # Mode and sample, because a vision run and a tree run answer different
-# research questions and must never be mistaken for one another (CLAUDE.md 5),
-# and because two samples would otherwise overwrite each other.
+# research questions and must never be mistaken for one another, and because
+# two samples would otherwise overwrite each other.
 ANALYSIS_MODES = ("vision", "tree")
 ANALYSIS_SAMPLES = ("all", "primary", "full", "precautionary", "uniform")
 
@@ -128,8 +128,9 @@ def _writable_dataset_or_400(name: str):
     if info.is_archived:
         raise HTTPException(
             status_code=400,
-            detail=f"{name} is an archived dataset and is read-only "
-            "(see CLAUDE.md/repo memory: never write into dataset/experiment_N/).",
+            detail=f"{name} is an archived dataset and is read-only. "
+            "Archived runs are a fixed record of a past experiment; writing to "
+            "one would alter results that have already been reported.",
         )
     return info
 

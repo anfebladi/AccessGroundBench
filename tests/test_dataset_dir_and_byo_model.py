@@ -2,6 +2,8 @@
 sanitization, and the model smoke test -- the bring-your-own-model changes.
 """
 
+import contextlib
+import io
 import json
 import os
 import subprocess
@@ -14,7 +16,12 @@ from unittest import mock
 import paths
 from collection import cli as collection_cli
 from evaluation import cli as evaluation_cli
-from evaluation.config import get_results_csv, sanitize_model_filename
+from evaluation.config import (
+    canonical_model_id,
+    get_results_csv,
+    reject_colliding_models,
+    sanitize_model_filename,
+)
 
 
 class OutputScopingTests(unittest.TestCase):
@@ -35,16 +42,22 @@ class OutputScopingTests(unittest.TestCase):
         self.addCleanup(patch.stop)
 
     def test_each_dataset_gets_its_own_result_file(self):
-        default = paths.evaluation_results_path("openai/gpt-4o", dataset_dir=self.root / "dataset")
+        default = paths.evaluation_results_path("openai/gpt-4o", dataset_dir=self.root / "experiment" / "dataset")
         archive = paths.evaluation_results_path(
-            "openai/gpt-4o", dataset_dir=self.root / "dataset" / "experiment_2")
+            "openai/gpt-4o", dataset_dir=self.root / "experiment" / "archive" / "experiment_2")
         collected = paths.evaluation_results_path(
             "openai/gpt-4o", dataset_dir=self.root / "datasets" / "rerun")
 
+        # The active dataset's outputs are the repository's experiment/outputs/.
+        # Every other dataset owns an outputs/ directory inside itself, so a
+        # superseded run is one self-contained folder and no two datasets can
+        # collide regardless of what their directories are named.
         self.assertEqual(3, len({default, archive, collected}))
-        self.assertEqual(self.root / "outputs" / "dataset" / "evaluations", default.parent)
-        self.assertEqual(self.root / "outputs" / "experiment_2" / "evaluations", archive.parent)
-        self.assertEqual(self.root / "outputs" / "rerun" / "evaluations", collected.parent)
+        self.assertEqual(self.root / "experiment" / "outputs" / "evaluations", default.parent)
+        self.assertEqual(
+            self.root / "experiment" / "archive" / "experiment_2" / "outputs" / "evaluations",
+            archive.parent)
+        self.assertEqual(self.root / "datasets" / "rerun" / "outputs" / "evaluations", collected.parent)
 
     def test_vision_and_tree_are_separate_files_for_one_model(self):
         vision = paths.evaluation_results_path("openai/gpt-4o", False)
@@ -54,13 +67,13 @@ class OutputScopingTests(unittest.TestCase):
         self.assertEqual("openai_gpt-4o_tree.csv", tree.name)
 
     def test_analysis_output_is_scoped_by_dataset_mode_and_sample(self):
-        current = paths.analysis_output_path("vision", "all", self.root / "dataset")
+        current = paths.analysis_output_path("vision", "all", self.root / "experiment" / "dataset")
         archive = paths.analysis_output_path(
-            "vision", "all", self.root / "dataset" / "experiment_2")
+            "vision", "all", self.root / "experiment" / "archive" / "experiment_2")
         self.assertNotEqual(current, archive)
-        self.assertNotEqual(current, paths.analysis_output_path("tree", "all", self.root / "dataset"))
+        self.assertNotEqual(current, paths.analysis_output_path("tree", "all", self.root / "experiment" / "dataset"))
         self.assertNotEqual(
-            current, paths.analysis_output_path("vision", "primary", self.root / "dataset"))
+            current, paths.analysis_output_path("vision", "primary", self.root / "experiment" / "dataset"))
 
     def test_model_name_survives_a_round_trip_through_the_filename(self):
         from analysis.data.results import model_name_from_path
@@ -73,7 +86,7 @@ class OutputScopingTests(unittest.TestCase):
     def test_env_override_moves_the_result_file_with_the_dataset(self):
         with mock.patch.object(paths, "DATASET_DIR", self.root / "datasets" / "rerun"):
             self.assertEqual(
-                self.root / "outputs" / "rerun" / "evaluations" / "openai_gpt-4o_vision.csv",
+                self.root / "datasets" / "rerun" / "outputs" / "evaluations" / "openai_gpt-4o_vision.csv",
                 paths.evaluation_results_path("openai/gpt-4o"),
             )
 
@@ -81,7 +94,7 @@ class OutputScopingTests(unittest.TestCase):
 class DatasetDirOverrideTests(unittest.TestCase):
     def test_no_override_defaults_to_project_root_dataset(self):
         root = Path("C:/somewhere/accessgroundbench")
-        self.assertEqual(root / "dataset", paths._resolve_dataset_dir(root))
+        self.assertEqual(root / "experiment" / "dataset", paths._resolve_dataset_dir(root))
 
     def test_override_env_var_wins_and_is_resolved(self):
         with mock.patch.dict(os.environ, {paths.DATASET_DIR_ENV_VAR: "some/relative/dir"}):
@@ -92,7 +105,7 @@ class DatasetDirOverrideTests(unittest.TestCase):
     def test_blank_override_falls_back_to_default(self):
         with mock.patch.dict(os.environ, {paths.DATASET_DIR_ENV_VAR: "   "}):
             root = Path("C:/somewhere/accessgroundbench")
-            self.assertEqual(root / "dataset", paths._resolve_dataset_dir(root))
+            self.assertEqual(root / "experiment" / "dataset", paths._resolve_dataset_dir(root))
 
 
 class EvaluateMainDataDirTests(unittest.TestCase):
@@ -202,7 +215,7 @@ class RealSubprocessDataDirTests(unittest.TestCase):
         self.assertIn(str(target), result.stdout)
         # The bug this guards against prints the default dataset/ path
         # instead -- assert the default is NOT what appears.
-        default_images = str(paths.PROJECT_ROOT / "dataset" / "images")
+        default_images = str(paths.PROJECT_ROOT / "experiment" / "dataset" / "images")
         self.assertNotIn(default_images, result.stdout)
 
     def test_evaluate_data_dir_is_honored_by_a_real_subprocess(self):
@@ -228,10 +241,51 @@ class RealSubprocessDataDirTests(unittest.TestCase):
 
 
 class FilenameSanitizationTests(unittest.TestCase):
-    def test_slash_replacement_is_unchanged_from_original_behavior(self):
+    def test_result_file_is_named_after_the_model_not_the_route(self):
+        """A gateway is a local deployment detail, not part of the result.
+
+        9router and OpenAI-compatible endpoints are shims; the same model
+        reached through a different one is still that model, so published
+        results must not be named after whichever gateway this machine used.
+        """
         path = get_results_csv("9router/cx/gpt-5.5")
-        self.assertEqual("9router_cx_gpt-5.5_vision.csv", path.name)
+        self.assertEqual("gpt-5.5_vision.csv", path.name)
         self.assertEqual("evaluations", path.parent.name)
+
+        self.assertEqual(
+            "glm-5v-turbo_tree.csv",
+            get_results_csv("openai_compatible/z-ai/glm-5v-turbo", True).name,
+        )
+
+    def test_provider_prefixes_are_kept(self):
+        """anthropic/ and local/ name who served the model -- a real property."""
+        self.assertEqual(
+            "anthropic_claude-opus-5_vision.csv",
+            get_results_csv("anthropic/claude-opus-5").name,
+        )
+        self.assertEqual(
+            "local_ferret-ui-llama8b_vision.csv",
+            get_results_csv("local/ferret-ui-llama8b").name,
+        )
+
+    def test_a_routing_prefix_with_no_model_is_left_intact(self):
+        # Collapsing every malformed id to the same empty name would make two
+        # broken configs share one CSV; model_configuration_error reports them.
+        self.assertEqual("9router/", canonical_model_id("9router/"))
+
+    def test_two_routes_to_the_same_model_are_refused_in_one_run(self):
+        """Both would claim one resumable CSV and silently blend their rows."""
+        with contextlib.redirect_stdout(io.StringIO()) as out:
+            with self.assertRaises(SystemExit):
+                reject_colliding_models(
+                    ["9router/cx/gpt-5.5", "openai_compatible/vendor/gpt-5.5"]
+                )
+        self.assertIn("same result filename", out.getvalue())
+
+    def test_distinct_models_do_not_collide(self):
+        reject_colliding_models(
+            ["9router/cx/gpt-5.5", "anthropic/claude-opus-5", "openai/gpt-4o"]
+        )
 
     def test_colon_is_sanitized(self):
         # Ollama-style ids embed a tag after a colon, which is illegal in a

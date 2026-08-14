@@ -11,6 +11,21 @@ class AppNavigatorTests(unittest.TestCase):
         missing = [screen for screen in orchestrator.SCREENS if screen not in app_navigator.SCREEN_TARGETS]
         self.assertEqual([], missing)
 
+    def test_opt_in_screens_stay_launchable_but_out_of_the_default_run(self):
+        """An opt-in screen is withheld from the default capture, not unsupported.
+
+        Gmail renders whoever's inbox the emulator is signed into, so the
+        published dataset omits it -- but `--screens gmail` must keep working
+        for anyone reproducing the benchmark on their own account. Asserting
+        both halves is what stops a future edit from either quietly restoring
+        it to the default run or deleting the target and breaking opt-in.
+        """
+        self.assertTrue(app_navigator.OPT_IN_SCREENS)
+        for screen in app_navigator.OPT_IN_SCREENS:
+            self.assertIn(screen, app_navigator.SCREEN_TARGETS)
+            self.assertNotIn(screen, orchestrator.SCREENS)
+            self.assertIsNotNone(app_navigator.get_screen_target(screen))
+
     def test_unknown_screen_fails_clearly(self):
         with contextlib.redirect_stdout(io.StringIO()):
             with self.assertRaises(SystemExit):

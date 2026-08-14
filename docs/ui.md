@@ -173,7 +173,7 @@ the fact. Progress is counted on the client from the run's own stdout, which
 prints one line per query; there is no second source of truth about how far
 along a run is. The raw log is one disclosure away, and stops auto-scrolling
 as soon as you scroll back through it. Results land in
-`outputs/<dataset>/evaluations/<model>_<vision|tree>.csv`
+`experiment/outputs/evaluations/<model>_<vision|tree>.csv`
 exactly as `agb evaluate` would leave them, including the append/resume/lock
 semantics documented in the [evaluation runbook](runbooks/evaluation.md).
 
@@ -210,7 +210,7 @@ shown together -- driven by the arrow keys, `Escape`, or the filmstrip.
 **Analyze.** Shows whatever the current mode/sample combination already has
 on disk **on arrival**, with no run required -- if `agb analyze` (or an
 earlier browser run) already wrote tables to
-`outputs/<dataset>/analysis/<mode>_<sample>/`, they render immediately.
+`experiment/outputs/analysis/<mode>_<sample>/`, they render immediately.
 Changing the Sample or Prompt mode selector reloads whatever exists for that
 combination the same way; the form below is "re-run with new parameters," not
 a gate you have to pass to see anything. Charts reachability (with Wilson
@@ -231,7 +231,7 @@ depends on colour alone. Vision and tree arms are analysed one at a time and
 are never pooled.
 
 **Analysis from the UI never writes into a dataset.** Results go to
-`outputs/<dataset>/analysis/<mode>_<sample>/`, and the path is shown above the
+`experiment/outputs/analysis/<mode>_<sample>/`, and the path is shown above the
 charts. This is not cosmetic: `agb analyze` names its outputs after the
 analysis rather than the run, so running it twice with different `--sample`
 values overwrites the earlier tables in place. From a terminal that is a
@@ -239,19 +239,26 @@ deliberate act; from the browser it would be one click on the page you land
 on, quietly narrowing the tables committed alongside `dataset/` to whichever
 sample was selected. Mode and sample are part of the directory name so a
 vision run and a tree run cannot overwrite each other either. Archived
-datasets can be analysed freely, because nothing is written inside them.
+datasets can be analysed freely: an archive's tables are written to that
+archive's own `outputs/` directory, so the run never reaches the current
+dataset's results. Its captures -- images, labels, raw XML -- are only ever
+read.
 
-Analysis output is written under `outputs/<dataset>/analysis/<mode>_<sample>/`; prompt-arm
-comparisons use `outputs/<dataset>/analysis/comparisons/`. Historical generated outputs
-are kept under `outputs/<dataset>/`, one root per dataset; archived source captures remain in
-`dataset/experiment_N/`.
+Analysis output for the active dataset is written under
+`experiment/outputs/analysis/<mode>_<sample>/`; prompt-arm comparisons use
+`experiment/outputs/analysis/comparisons/`. Every dataset owns exactly one output
+root: the active one is `experiment/outputs/`, and any other dataset owns an
+`outputs/` directory inside itself, so an archived run
+(`experiment/archive/experiment_N/`) keeps its captures and its tables together
+in one self-contained folder.
 
 Analysis runs in the server process and blocks until it finishes; the form is
 locked for the duration. Unlike Evaluate it is not supervised as a subprocess,
 so it cannot be cancelled part-way.
 
 **Collect.** Wraps `agb collect`. Always writes to `datasets/<name>/`, never
-into the shipped `dataset/` or an archived `dataset/experiment_N/` -- so a
+into the shipped `experiment/dataset/` or an archived
+`experiment/archive/experiment_N/` -- so a
 collection run from the UI can never overwrite committed results. An
 emulator preflight checks for `adb` and an authorized device; the manual
 prerequisites (Pixel 6 / API 34 / 1080x2400 @ 420 dpi, a signed-in Google
@@ -265,10 +272,10 @@ same portable unit `agb analyze --data-dir` already accepts. The dropdown
 shows:
 
 - `dataset` -- the shipped benchmark, writable.
-- `dataset/experiment_1`, `dataset/experiment_2` -- archived prior runs,
+- `experiment/archive/experiment_1`, `experiment/archive/experiment_2` -- archived prior runs,
   shown **read-only**: Evaluate and Collect refuse to target them (see the
   archive warning in [`README.md`](../README.md) and
-  `dataset/experiment_2/README.md`).
+  `experiment/archive/experiment_2/README.md`).
 - `datasets/<name>/` -- anything you collect from the UI, or copy in
   yourself, lives here rather than inside the shipped `dataset/`.
 
@@ -323,10 +330,10 @@ something the bare CLI cannot currently do in a single invocation.
   calling `analysis.reports.grounding.report_per_model` and
   `report_reachability` directly -- the same functions `agb analyze` calls --
   never a JavaScript reimplementation.
-- **Modify a dataset it is reading.** Collect writes only to
-  `datasets/<name>/`, analysis writes only to `outputs/<dataset>/analysis/`, and Evaluate
-  appends to its own result CSV. Nothing in the UI rewrites a dataset's
-  captures, labels, or committed analysis tables.
+- **Modify a dataset's captures.** Collect writes only to `datasets/<name>/`,
+  analysis writes only into the analysed dataset's own output root, and
+  Evaluate appends to its own result CSV. Nothing in the UI rewrites a
+  dataset's images, labels, or raw XML.
 - **Run over a network.** Local-only, by design (see [Launch](#install-and-launch)).
 - **Require Node.** See [Front end](#front-end). Node and the frontend
   dependencies are required at runtime for the local Vite UI.

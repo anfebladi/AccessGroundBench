@@ -1,6 +1,0 @@
-Profile,Total_Pairs,Both_Pass_a,Broke_It_b,Fluke_Recovery_c,Both_Fail_d,Discordant_Pairs,Baseline_Acc,Exp_Acc,Test_Used,Statistic,P_Value,Significant,Floor_Limited
-elder_text_heavy,165,139,23,0,3,23,98.2%,84.2%,Exact Binomial (n=23),,2.384185791015625e-07,Yes,No
-elder_zoom_heavy,168,146,19,3,0,22,98.2%,88.7%,Exact Binomial (n=22),,0.0008554458618164062,Yes,No
-elder_combo_max,168,109,56,1,2,57,98.2%,65.5%,"Asymptotic (Edwards' correction, n=57)",51.1578947368421,8.523182160047327e-13,Yes,No
-elder_combo_rtl,168,121,44,1,2,45,98.2%,72.6%,"Asymptotic (Edwards' correction, n=45)",39.2,3.8254022172168334e-10,Yes,No
-colorblind_deuteranomaly,168,159,6,0,3,6,98.2%,94.6%,Exact Binomial (n=6),,0.03125,Yes,No

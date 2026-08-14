@@ -78,7 +78,7 @@ def evaluate(*, fresh: bool = False, force_unlock: bool = False) -> None:
 
     # Computed once so every model's prepare_csv/finalize_csv call agrees on
     # exactly the same key set -- the canonical row count this collection
-    # should produce (155 targets x 6 profiles as of this dataset).
+    # should produce (138 targets x 6 profiles as of this dataset).
     expected_key_order = build_expected_keys(screens, LABELS_DIR, ALL_PROFILES)
     expected_keys = set(expected_key_order)
 
@@ -122,10 +122,9 @@ def evaluate(*, fresh: bool = False, force_unlock: bool = False) -> None:
         if force_unlock:
             release_lock(results_csv)
         try:
-            # A second process against the same CSV used to snapshot
-            # `completed` before this one had written anything and both
-            # would append the same keys -- see CLAUDE.md's
-            # canonicalization notes for the duplicate rows that caused.
+            # Single-writer lock: two processes on one CSV would each
+            # snapshot `completed` before the other had written anything, then
+            # both append the same keys.
             acquire_lock(results_csv)
         except CsvLockError as e:
             print(f"\n[SKIP] {e}")

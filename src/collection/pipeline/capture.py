@@ -34,8 +34,13 @@ REMOTE_PNG = "/sdcard/ui_screen.png"
 # Scratch output for the standalone `agb capture` command. Kept out of the
 # dataset output roots (and gitignored) because these are ad-hoc captures, not
 # results belonging to any dataset.
+#
+# Deliberately NOT created here. `agb collect` passes explicit image_dir/xml_dir
+# and never writes to this path, so creating it at import time left an empty
+# directory in every checkout that had merely imported the module. transfer_files
+# creates whichever directory it is actually given, so the folder now appears
+# only once a standalone capture has really been taken.
 OUTPUT_DIR = captures_dir()
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 # ---------------------------------------------------------------------------

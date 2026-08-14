@@ -379,8 +379,9 @@ def evaluate_screen(
                 "coord_space": reported_coord_space,
                 # Blank when the screenshot went out at native size. Recorded
                 # rather than recomputed so a row stays re-scorable even if a
-                # provider later moves its cap and MAX_IMAGE_EDGE is updated
-                # -- the same lesson as raw_response in CLAUDE.md 4.
+                # provider later moves its cap and MAX_IMAGE_EDGE is updated:
+                # what the row needs is the size actually sent, which only this
+                # run knows.
                 "image_sent_size": (
                     f"{prompt_width}x{prompt_height}" if image_scale < 1.0 else ""
                 ),

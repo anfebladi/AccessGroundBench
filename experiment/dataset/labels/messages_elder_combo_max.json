@@ -1,0 +1,218 @@
+[
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "toolbarLayout",
+    "box": [
+      0,
+      -169,
+      1080,
+      208
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "toolbar",
+    "box": [
+      0,
+      0,
+      1080,
+      208
+    ]
+  },
+  {
+    "class": "ViewGroup",
+    "text": null,
+    "content_desc": "Google Messages",
+    "resource_id": "lockup_gm",
+    "box": [
+      52,
+      63,
+      549,
+      141
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "logo",
+    "box": [
+      52,
+      72,
+      263,
+      141
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Messages",
+    "content_desc": null,
+    "resource_id": "product_name",
+    "box": [
+      276,
+      63,
+      549,
+      138
+    ]
+  },
+  {
+    "class": "LinearLayoutCompat",
+    "text": null,
+    "content_desc": null,
+    "resource_id": null,
+    "box": [
+      741,
+      13,
+      1080,
+      195
+    ]
+  },
+  {
+    "class": "Button",
+    "text": null,
+    "content_desc": "Search messages",
+    "resource_id": "action_zero_state_search",
+    "box": [
+      741,
+      26,
+      897,
+      182
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": "Signed in as the collecting account.",
+    "resource_id": "selected_account_disc",
+    "box": [
+      897,
+      25,
+      1080,
+      182
+    ]
+  },
+  {
+    "class": "FrameLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "og_selected_account_disc_apd",
+    "box": [
+      897,
+      25,
+      1054,
+      182
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "og_apd_internal_image_view",
+    "box": [
+      904,
+      32,
+      1047,
+      175
+    ]
+  },
+  {
+    "class": "View",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "gk_tooltip_hack",
+    "box": [
+      1015,
+      124,
+      1018,
+      127
+    ]
+  },
+  {
+    "class": "RecyclerView",
+    "text": null,
+    "content_desc": "Conversation list",
+    "resource_id": "list",
+    "box": [
+      0,
+      208,
+      1080,
+      2255
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "list_empty_view",
+    "box": [
+      0,
+      342,
+      1080,
+      1646
+    ]
+  },
+  {
+    "class": "ImageView",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "empty_image_hint",
+    "box": [
+      223,
+      342,
+      857,
+      1220
+    ]
+  },
+  {
+    "class": "TextView",
+    "text": "Once you start a new conversation, you’ll see it listed here",
+    "content_desc": "Once you start a new conversation, you’ll see it listed here",
+    "resource_id": "empty_text_hint",
+    "box": [
+      195,
+      1259,
+      885,
+      1646
+    ]
+  },
+  {
+    "class": "LinearLayout",
+    "text": null,
+    "content_desc": null,
+    "resource_id": "fab_stub",
+    "box": [
+      425,
+      1692,
+      1002,
+      2099
+    ]
+  },
+  {
+    "class": "FloatingActionButton",
+    "text": null,
+    "content_desc": "Gemini",
+    "resource_id": "penpal_fab",
+    "box": [
+      820,
+      1692,
+      1002,
+      1874
+    ]
+  },
+  {
+    "class": "Button",
+    "text": "Start chat",
+    "content_desc": "Start chat",
+    "resource_id": "start_chat_fab",
+    "box": [
+      425,
+      1900,
+      1002,
+      2099
+    ]
+  }
+]

@@ -7,6 +7,7 @@ from evaluation.grounding.targets import (
     MATCH_EXACT,
     MATCH_RELAXED,
     MAX_TARGET_CHARS,
+    PRIVACY_WITHHELD_TARGETS,
     box_contains,
     build_expected_keys,
     find_element_in_profile,
@@ -41,6 +42,46 @@ class VlmEvalTargetsTests(unittest.TestCase):
             ],
             targets,
         )
+
+    def test_harvest_withholds_targets_that_name_a_real_person(self):
+        """A withheld target is dropped as a question but kept as a tree row.
+
+        The label node stays in the JSON on purpose: tree mode builds the
+        accessibility tree for every *other* target on the screen from these
+        same records, so deleting the node would change those prompts and make
+        already-collected tree results irreproducible. Withholding therefore
+        has to happen at harvest, and this pins that it does.
+        """
+        screen, withheld = next(iter(PRIVACY_WITHHELD_TARGETS.items()))
+        withheld_text = next(iter(withheld))
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            labels_dir = Path(tmp_dir)
+            records = [
+                {"text": withheld_text, "box": [1, 2, 3, 4]},
+                {"text": "Your info", "box": [5, 6, 7, 8]},
+            ]
+            (labels_dir / f"{screen}_baseline.json").write_text(
+                json.dumps(records), encoding="utf-8"
+            )
+
+            targets = harvest_targets(screen, labels_dir)
+
+        self.assertEqual([{"text": "Your info", "baseline_box": [5, 6, 7, 8]}], targets)
+
+    def test_harvest_withholding_is_scoped_to_its_own_screen(self):
+        screen, withheld = next(iter(PRIVACY_WITHHELD_TARGETS.items()))
+        withheld_text = next(iter(withheld))
+        other_screen = "clock" if screen != "clock" else "dialer"
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            labels_dir = Path(tmp_dir)
+            (labels_dir / f"{other_screen}_baseline.json").write_text(
+                json.dumps([{"text": withheld_text, "box": [1, 2, 3, 4]}]),
+                encoding="utf-8",
+            )
+
+            targets = harvest_targets(other_screen, labels_dir)
+
+        self.assertEqual([{"text": withheld_text, "baseline_box": [1, 2, 3, 4]}], targets)
 
     def test_harvest_targets_returns_empty_for_missing_baseline(self):
         with tempfile.TemporaryDirectory() as tmp_dir:

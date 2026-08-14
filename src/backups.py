@@ -4,7 +4,8 @@ Several commands legitimately replace files that took real time and money to
 produce: `agb evaluate` recreates a results CSV whose schema it cannot resume
 into, and `agb analyze` rewrites its result tables on every run. Both used to
 truncate in place, so a column rename or a stray `--permutations` was enough to
-lose ~930 rows of paid API calls, or the numbers behind a committed table.
+lose an entire run's worth of paid API calls (828 rows per model in the current
+dataset), or the numbers behind a committed table.
 
 The protection is deliberately passive. It never refuses, never prompts, and
 needs no flag, because the data most at risk belongs to someone who just

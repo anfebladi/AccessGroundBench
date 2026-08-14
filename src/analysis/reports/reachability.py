@@ -25,9 +25,8 @@ def compute_reachability(
     # label_changed_mode controls how STATUS_LABEL_CHANGED rows are counted
     # (see LABEL_CHANGED_MODES): "exclude" removes them from both present
     # and total (the target is dropped from the pool for this profile);
-    # "unreachable" counts them in total but not present (the
-    # pre-reclassification behaviour, since they used to be
-    # indistinguishable from off_screen); "reachable" counts them in both.
+    # "unreachable" counts them in total but not present, treating a
+    # relabelled target as lost; "reachable" counts them in both.
     # All three are free -- reachability only needs presence, never a score.
     #
     # sample/b2_targets apply the sample's exclusions (see

@@ -53,9 +53,9 @@ STATUS_LABEL_CHANGED = "label_changed"
 # and not a missing element, so it is neither co_present nor off_screen.
 STATUS_OFF_FRAME = "off_frame"
 
-# What prompt shape produced this row. The filename (evaluation_results_*.csv
-# vs *_with_tree.csv) used to be the only record of this; putting it in the
-# row itself lets a mixed file be detected instead of silently misread.
+# What prompt shape produced this row. Recorded per row, not just implied by
+# the filename, so a file that mixes both can be detected rather than silently
+# misread as one arm.
 PROMPT_MODE_VISION = "vision"
 PROMPT_MODE_TREE = "tree"
 
@@ -78,8 +78,8 @@ def canonicalize_rows(
         answer exists;
       - all but the FIRST real row, when a key has more than one -- kept
         deterministically by file order, never by score. Preferring a hit
-        over a miss would bias accuracy upward exactly the way CLAUDE.md's
-        remediation history warns against.
+        over a miss would bias accuracy upward -- the tie-break must not be
+        able to see the outcome it is choosing between.
 
     A key with only api_error rows (never yet answered) loses all of them --
     it simply has zero rows afterward, indistinguishable from never having
@@ -181,7 +181,7 @@ def prepare_csv(
     preserved under .backups/ first. Without this, a key whose only surviving
     copy (after whatever order retries happened to land in) is a stale
     api_error silently drops out of every downstream analysis that indexes by
-    key -- see CLAUDE.md's canonicalization notes for the case this caught.
+    key.
     """
     # expected_prompt_mode, when given, guards against resuming into a mixed
     # file: the resume key is (screen, target_text, profile) only, so a
@@ -189,8 +189,8 @@ def prepare_csv(
     # query (and vice versa) with nothing in the schema to reveal the
     # mismatch afterwards.
     if fresh or not results_csv.is_file():
-        # --fresh is explicit, but what it discards is still ~930 rows of paid
-        # API calls; keep a copy so a mistyped command is recoverable.
+        # --fresh is explicit, but what it discards is still a whole run's worth
+        # of paid API calls; keep a copy so a mistyped command is recoverable.
         preserve(results_csv, reason="--fresh discards the existing rows")
         init_csv(results_csv)
         return set()

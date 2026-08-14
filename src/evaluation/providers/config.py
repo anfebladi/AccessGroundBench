@@ -17,11 +17,14 @@ NORMALIZED_COORD_FAMILIES = ("gemini", "qwen", "glm")
 #
 # A provider that receives a larger image silently downscales it -- and the
 # model then answers in the space it was actually shown, not the space the
-# prompt states. Measured on clock_baseline: Haiku 4.5 and Sonnet 4.6 both
-# return coordinates multiplied by 1568/2219, scoring 17% instead of ~100%.
-# That is the same defect class as the gemini-pro-agent 8.4%-vs-96.8% error
-# (CLAUDE.md 6), and it is invisible in the CSV: the reply parses fine and
-# simply lands in the wrong place.
+# prompt states. Every prediction comes back multiplied by the downscale
+# factor, which reads as catastrophically bad grounding rather than as a unit
+# mismatch. It is invisible in the CSV: the reply parses fine and simply lands
+# in the wrong place, so nothing downstream can flag it.
+#
+# Before adding a model, check its documented image cap against the tallest
+# screenshot this pipeline produces. A low score from a capable model is this
+# bug until proven otherwise.
 #
 # Declaring the cap here lets the pipeline do the resize itself, so the
 # coordinate space is one we chose and recorded rather than one we inferred

@@ -1,0 +1,835 @@
+screen,target_text,profile,status,raw_response,x_pred,y_pred,x_min,y_min,x_max,y_max,score,trials,trial_scores,parse_method,prompt_mode,tree_rows_sent,coord_space
+clock,Mon-Fri,baseline,co_present,"[180.4, 250.7]",180,250,95,221,266,283,1,1,1,bracket,tree,62,normalized
+clock,8:30 AM,baseline,co_present,"[250.6, 381.7]",250,381,95,304,393,459,1,1,1,bracket,tree,62,normalized
+clock,Sun Sat,baseline,co_present,"[175.0, 601.3]",175,601,95,570,256,632,1,1,1,bracket,tree,62,normalized
+clock,9:00 AM,baseline,co_present,"[253.8, 732.3]",253,732,95,653,408,808,1,1,1,bracket,tree,62,normalized
+clock,World Clock,baseline,co_present,"[324.0, 2181.3]",324,2181,221,2162,426,2202,1,1,1,bracket,tree,59,normalized
+clock,Timers,baseline,co_present,"[540.0, 2181.3]",540,2181,482,2162,596,2202,1,1,1,bracket,tree,57,normalized
+clock,Stopwatch,baseline,co_present,"[756.0, 2181.3]",756,2181,666,2162,845,2202,1,1,1,bracket,tree,59,normalized
+clock,Bedtime,baseline,co_present,"[972.0, 2181.3]",972,2181,900,2162,1042,2202,1,1,1,bracket,tree,59,normalized
+clock,Mon-Fri,elder_text_heavy,co_present,"[194.4, 261.8]",194,261,95,221,319,304,1,1,1,bracket,tree,62,normalized
+clock,8:30 AM,elder_text_heavy,co_present,"[251.6, 401.6]",251,401,95,325,393,480,1,1,1,bracket,tree,62,normalized
+clock,Sun Sat,elder_text_heavy,co_present,"[185.8, 632.4]",185,632,95,591,309,674,1,1,1,bracket,tree,62,normalized
+clock,9:00 AM,elder_text_heavy,co_present,"[254.9, 772.2]",254,772,95,695,408,850,1,1,1,bracket,tree,62,normalized
+clock,World Clock,elder_text_heavy,co_present,"[324.0, 2176.8]",324,2176,216,2160,432,2203,1,1,1,bracket,tree,59,normalized
+clock,Timers,elder_text_heavy,co_present,"[540.0, 2181.3]",540,2181,478,2160,600,2203,1,1,1,bracket,tree,57,normalized
+clock,Stopwatch,elder_text_heavy,co_present,"[756.0, 2181.3]",756,2181,660,2160,851,2203,1,1,1,bracket,tree,59,normalized
+clock,Bedtime,elder_text_heavy,co_present,"[972.0, 2179.1]",972,2179,896,2160,1047,2203,1,1,1,bracket,tree,59,normalized
+clock,Mon-Fri,elder_zoom_heavy,co_present,"[190.1, 287.7]",190,287,108,252,303,322,1,1,1,bracket,tree,62,normalized
+clock,8:30 AM,elder_zoom_heavy,co_present,"[287.3, 434.8]",287,434,108,346,448,523,1,1,1,bracket,tree,62,normalized
+clock,Sun Sat,elder_zoom_heavy,co_present,"[195.5, 683.0]",195,683,108,649,293,719,1,1,1,bracket,tree,62,normalized
+clock,9:00 AM,elder_zoom_heavy,co_present,"[289.4, 832.3]",289,832,108,743,466,920,1,1,1,bracket,tree,62,normalized
+clock,World Clock,elder_zoom_heavy,co_present,"[324.0, 2152.1]",324,2152,221,2130,426,2170,1,1,1,bracket,tree,59,normalized
+clock,Timers,elder_zoom_heavy,co_present,"[540.0, 2149.9]",540,2149,483,2130,597,2170,1,1,1,bracket,tree,57,normalized
+clock,Stopwatch,elder_zoom_heavy,co_present,"[756.0, 2149.9]",756,2149,666,2130,845,2170,1,1,1,bracket,tree,59,normalized
+clock,Bedtime,elder_zoom_heavy,co_present,"[972.0, 2158.7]",972,2158,901,2130,1043,2170,1,1,1,bracket,tree,59,normalized
+clock,Mon-Fri,elder_combo_max,co_present,"[248.4, 330.9]",248,330,117,273,419,386,1,1,1,bracket,tree,62,normalized
+clock,8:30 AM,elder_combo_max,co_present,"[315.4, 511.6]",315,511,117,412,495,609,1,1,1,bracket,tree,62,normalized
+clock,Sun Sat,elder_combo_max,co_present,"[267.8, 803.3]",267,803,117,746,403,859,1,1,1,bracket,tree,62,normalized
+clock,9:00 AM,elder_combo_max,co_present,"[317.5, 981.8]",317,981,117,885,513,1082,1,1,1,bracket,tree,62,normalized
+clock,World Clock,elder_combo_max,co_present,"[324.0, 2129.1]",324,2129,216,2106,432,2151,1,1,1,bracket,tree,59,normalized
+clock,Timers,elder_combo_max,co_present,"[540.0, 2137.8]",540,2137,476,2106,604,2151,1,1,1,bracket,tree,58,normalized
+clock,Stopwatch,elder_combo_max,co_present,"[756.0, 2137.8]",756,2137,654,2106,857,2151,1,1,1,bracket,tree,59,normalized
+clock,Bedtime,elder_combo_max,co_present,"[972.0, 2129.1]",972,2129,892,2106,1052,2151,1,1,1,bracket,tree,59,normalized
+clock,Mon-Fri,elder_combo_mid,co_present,"[243.0, 303.0]",243,303,108,252,378,352,1,1,1,bracket,tree,62,normalized
+clock,8:30 AM,elder_combo_mid,co_present,"[287.3, 465.6]",287,465,108,376,448,553,1,1,1,bracket,tree,62,normalized
+clock,Sun Sat,elder_combo_mid,co_present,"[243.0, 729.1]",243,729,108,679,363,779,1,1,1,bracket,tree,62,normalized
+clock,9:00 AM,elder_combo_mid,co_present,"[289.4, 896.0]",289,896,108,803,466,980,1,1,1,bracket,tree,62,normalized
+clock,World Clock,elder_combo_mid,co_present,"[324.0, 2152.1]",324,2152,216,2130,432,2174,1,1,1,bracket,tree,59,normalized
+clock,Timers,elder_combo_mid,co_present,"[540.0, 2152.1]",540,2152,477,2130,603,2174,1,1,1,bracket,tree,58,normalized
+clock,Stopwatch,elder_combo_mid,co_present,"[756.0, 2152.1]",756,2152,658,2130,854,2174,1,1,1,bracket,tree,59,normalized
+clock,Bedtime,elder_combo_mid,co_present,"[972.0, 2152.1]",972,2152,894,2130,1049,2174,1,1,1,bracket,tree,59,normalized
+clock,Mon-Fri,colorblind_deuteranomaly,co_present,"[179.3, 253.0]",179,253,95,221,266,283,1,1,1,bracket,tree,62,normalized
+clock,8:30 AM,colorblind_deuteranomaly,co_present,"[248.4, 381.7]",248,381,95,304,393,459,1,1,1,bracket,tree,62,normalized
+clock,Sun Sat,colorblind_deuteranomaly,co_present,"[175.0, 601.3]",175,601,95,570,256,632,1,1,1,bracket,tree,62,normalized
+clock,9:00 AM,colorblind_deuteranomaly,co_present,"[254.9, 732.3]",254,732,95,653,408,808,1,1,1,bracket,tree,62,normalized
+clock,World Clock,colorblind_deuteranomaly,co_present,"[324.0, 2181.3]",324,2181,221,2162,426,2202,1,1,1,bracket,tree,59,normalized
+clock,Timers,colorblind_deuteranomaly,co_present,"[540.0, 2181.3]",540,2181,482,2162,596,2202,1,1,1,bracket,tree,57,normalized
+clock,Stopwatch,colorblind_deuteranomaly,co_present,"[756.0, 2181.3]",756,2181,666,2162,845,2202,1,1,1,bracket,tree,59,normalized
+clock,Bedtime,colorblind_deuteranomaly,co_present,"[972.0, 2181.3]",972,2181,900,2162,1042,2202,1,1,1,bracket,tree,59,normalized
+contacts,All contacts,baseline,co_present,"[222.5, 250.7]",222,250,142,226,342,279,1,1,1,bracket,tree,66,normalized
+contacts,Your info,baseline,co_present,"[281.9, 401.6]",281,401,221,389,346,431,1,1,1,bracket,tree,68,normalized
+contacts,No contacts yet,baseline,co_present,"[540.0, 1486.7]",540,1486,317,1446,763,1530,1,1,1,bracket,tree,68,normalized
+contacts,Contacts,baseline,co_present,"[180.4, 2179.1]",180,2179,110,2161,248,2203,1,1,1,bracket,tree,65,normalized
+contacts,Highlights,baseline,co_present,"[540.0, 2181.3]",540,2181,463,2161,616,2203,1,1,1,bracket,tree,63,normalized
+contacts,Organize,baseline,co_present,"[899.6, 2181.3]",899,2181,831,2161,968,2203,1,1,1,bracket,tree,65,normalized
+contacts,All contacts,elder_text_heavy,co_present,"[287.3, 253.0]",287,253,142,214,436,291,1,1,1,bracket,tree,66,normalized
+contacts,Your info,elder_text_heavy,co_present,"[308.9, 399.4]",308,399,221,389,400,448,1,1,1,bracket,tree,68,normalized
+contacts,No contacts yet,elder_text_heavy,co_present,"[540.0, 1500.0]",540,1500,289,1453,792,1549,1,1,1,bracket,tree,68,normalized
+contacts,Contacts,elder_text_heavy,co_present,"[179.3, 2174.6]",179,2174,84,2147,275,2203,1,1,1,bracket,tree,65,normalized
+contacts,Highlights,elder_text_heavy,co_present,"[540.0, 2174.6]",540,2174,434,2147,646,2203,1,1,1,bracket,tree,63,normalized
+contacts,Organize,elder_text_heavy,co_present,"[899.6, 2174.6]",899,2174,805,2147,994,2203,1,1,1,bracket,tree,65,normalized
+contacts,All contacts,elder_zoom_heavy,co_present,"[262.4, 287.7]",262,287,162,258,394,318,1,1,1,bracket,tree,66,normalized
+contacts,Your info,elder_zoom_heavy,co_present,"[324.0, 465.6]",324,465,252,444,396,492,1,1,1,bracket,tree,68,normalized
+contacts,No contacts yet,elder_zoom_heavy,co_present,"[540.0, 1530.6]",540,1530,284,1482,796,1578,1,1,1,bracket,tree,68,normalized
+contacts,Contacts,elder_zoom_heavy,co_present,"[180.4, 2154.3]",180,2154,101,2130,258,2178,1,1,1,bracket,tree,65,normalized
+contacts,Highlights,elder_zoom_heavy,co_present,"[540.0, 2154.3]",540,2154,452,2130,627,2178,1,1,1,bracket,tree,64,normalized
+contacts,Organize,elder_zoom_heavy,co_present,"[899.6, 2152.1]",899,2152,822,2130,977,2178,1,1,1,bracket,tree,65,normalized
+contacts,All contacts,elder_combo_max,co_present,"[352.1, 311.3]",352,311,176,260,584,366,1,1,1,bracket,tree,66,normalized
+contacts,Your info,elder_combo_max,co_present,"[368.3, 518.1]",368,518,273,483,523,567,1,1,1,bracket,tree,68,normalized
+contacts,No contacts yet,elder_combo_max,co_present,"[540.0, 1582.7]",540,1582,199,1516,881,1645,1,1,1,bracket,tree,68,normalized
+contacts,Contacts,elder_combo_max,co_present,"[180.4, 2118.2]",180,2118,46,2079,314,2157,1,1,1,bracket,tree,65,normalized
+contacts,Highlights,elder_combo_max,co_present,"[540.0, 2111.7]",540,2111,390,2079,690,2157,1,1,1,bracket,tree,64,normalized
+contacts,Organize,elder_combo_max,co_present,"[896.4, 2118.2]",896,2118,766,2079,1033,2157,1,1,1,bracket,tree,65,normalized
+contacts,All contacts,elder_combo_mid,co_present,"[324.0, 287.7]",324,287,162,241,527,336,1,1,1,bracket,tree,66,normalized
+contacts,Your info,elder_combo_mid,co_present,"[358.6, 478.7]",358,478,252,444,470,516,1,1,1,bracket,tree,68,normalized
+contacts,No contacts yet,elder_combo_mid,co_present,"[540.0, 1546.0]",540,1546,242,1493,839,1605,1,1,1,bracket,tree,68,normalized
+contacts,Contacts,elder_combo_mid,co_present,"[180.4, 2145.5]",180,2145,63,2111,297,2178,1,1,1,bracket,tree,65,normalized
+contacts,Highlights,elder_combo_mid,co_present,"[540.0, 2145.5]",540,2145,409,2111,671,2178,1,1,1,bracket,tree,64,normalized
+contacts,Organize,elder_combo_mid,co_present,"[899.6, 2143.3]",899,2143,784,2111,1016,2178,1,1,1,bracket,tree,65,normalized
+contacts,All contacts,colorblind_deuteranomaly,co_present,"[239.8, 253.0]",239,253,142,226,342,279,1,1,1,bracket,tree,66,normalized
+contacts,Your info,colorblind_deuteranomaly,co_present,"[281.9, 399.4]",281,399,221,389,346,431,1,1,1,bracket,tree,68,normalized
+contacts,No contacts yet,colorblind_deuteranomaly,co_present,"[540.0, 1486.7]",540,1486,317,1446,763,1530,1,1,1,bracket,tree,68,normalized
+contacts,Contacts,colorblind_deuteranomaly,co_present,"[179.3, 2181.3]",179,2181,110,2161,248,2203,1,1,1,bracket,tree,65,normalized
+contacts,Highlights,colorblind_deuteranomaly,co_present,"[540.0, 2181.3]",540,2181,463,2161,616,2203,1,1,1,bracket,tree,63,normalized
+contacts,Organize,colorblind_deuteranomaly,co_present,"[899.6, 2179.1]",899,2179,831,2161,968,2203,1,1,1,bracket,tree,65,normalized
+dialer,Phone Number,baseline,co_present,"[540.0, 971.9]",540,971,147,900,933,1044,1,1,1,bracket,tree,89,normalized
+dialer,1,baseline,co_present,"[186.8, 1149.4]",186,1149,169,1093,203,1197,1,1,1,bracket,tree,92,normalized
+dialer,2,baseline,co_present,"[540.0, 1147.2]",540,1147,518,1097,561,1201,1,1,1,bracket,tree,91,normalized
+dialer,ABC,baseline,co_present,"[540.0, 1222.7]",540,1222,505,1201,574,1245,1,1,1,bracket,tree,92,normalized
+dialer,3,baseline,co_present,"[893.2, 1149.4]",893,1149,870,1097,914,1201,1,1,1,bracket,tree,92,normalized
+dialer,DEF,baseline,co_present,"[892.1, 1222.7]",892,1222,861,1201,924,1245,1,1,1,bracket,tree,93,normalized
+dialer,4,baseline,co_present,"[186.8, 1340.3]",186,1340,163,1288,210,1392,1,1,1,bracket,tree,92,normalized
+dialer,GHI,baseline,co_present,"[185.8, 1413.5]",185,1413,157,1392,216,1436,1,1,1,bracket,tree,93,normalized
+dialer,5,baseline,co_present,"[540.0, 1340.3]",540,1340,516,1288,562,1392,1,1,1,bracket,tree,91,normalized
+dialer,JKL,baseline,co_present,"[540.0, 1413.5]",540,1413,510,1392,569,1436,1,1,1,bracket,tree,89,normalized
+dialer,6,baseline,co_present,"[892.1, 1340.3]",892,1340,869,1288,915,1392,1,1,1,bracket,tree,92,normalized
+dialer,MNO,baseline,co_present,"[892.1, 1411.3]",892,1411,852,1392,933,1436,1,1,1,bracket,tree,93,normalized
+dialer,7,baseline,co_present,"[185.8, 1531.1]",185,1531,166,1480,208,1584,1,1,1,bracket,tree,92,normalized
+dialer,PQRS,baseline,co_present,"[186.8, 1606.6]",186,1606,142,1584,232,1628,1,1,1,bracket,tree,93,normalized
+dialer,8,baseline,co_present,"[540.0, 1531.1]",540,1531,517,1480,562,1584,1,1,1,bracket,tree,83,normalized
+dialer,TUV,baseline,co_present,"[540.0, 1606.6]",540,1606,507,1584,573,1628,1,1,1,bracket,tree,92,normalized
+dialer,9,baseline,co_present,"[893.2, 1531.1]",893,1531,869,1480,915,1584,1,1,1,bracket,tree,92,normalized
+dialer,WXYZ,baseline,co_present,"[892.1, 1606.6]",892,1606,846,1584,939,1628,1,1,1,bracket,tree,93,normalized
+dialer,∗,baseline,co_present,"[186.8, 1746.4]",186,1746,168,1668,206,1780,1,1,1,bracket,tree,93,normalized
+dialer,0,baseline,co_present,"[540.0, 1724.2]",540,1724,512,1672,567,1776,1,1,1,bracket,tree,91,normalized
+dialer,+,baseline,co_present,"[540.0, 1804.0]",540,1804,529,1776,549,1820,1,1,1,bracket,tree,92,normalized
+dialer,#,baseline,co_present,"[893.2, 1746.4]",893,1746,865,1672,921,1776,1,1,1,bracket,tree,93,normalized
+dialer,Call,baseline,co_present,"[572.4, 1943.8]",572,1943,414,1871,666,2018,1,1,1,bracket,tree,94,normalized
+dialer,Home,baseline,co_present,"[180.4, 2181.3]",180,2181,135,2161,224,2203,1,1,1,bracket,tree,92,normalized
+dialer,Keypad,baseline,co_present,"[540.0, 2181.3]",540,2181,481,2161,597,2203,1,1,1,bracket,tree,90,normalized
+dialer,Voicemail,baseline,co_present,"[899.6, 2181.3]",899,2181,826,2161,972,2203,1,1,1,bracket,tree,92,normalized
+dialer,Phone Number,elder_text_heavy,co_present,"[465.5, 958.6]",465,958,147,886,933,1030,1,1,1,bracket,tree,89,normalized
+dialer,1,elder_text_heavy,co_present,"[186.8, 1133.9]",186,1133,169,1079,203,1183,1,1,1,bracket,tree,92,normalized
+dialer,2,elder_text_heavy,co_present,"[540.0, 1131.7]",540,1131,518,1083,561,1187,1,1,1,bracket,tree,91,normalized
+dialer,ABC,elder_text_heavy,co_present,"[540.0, 1209.4]",540,1209,505,1187,574,1231,1,1,1,bracket,tree,92,normalized
+dialer,3,elder_text_heavy,co_present,"[893.2, 1136.1]",893,1136,870,1083,914,1187,1,1,1,bracket,tree,92,normalized
+dialer,DEF,elder_text_heavy,co_present,"[893.2, 1202.7]",893,1202,861,1187,924,1231,1,1,1,bracket,tree,93,normalized
+dialer,4,elder_text_heavy,co_present,"[185.8, 1322.5]",185,1322,163,1274,210,1378,1,1,1,bracket,tree,92,normalized
+dialer,GHI,elder_text_heavy,co_present,"[185.8, 1398.0]",185,1398,157,1378,216,1422,1,1,1,bracket,tree,93,normalized
+dialer,5,elder_text_heavy,co_present,"[540.0, 1327.0]",540,1327,516,1274,562,1378,1,1,1,bracket,tree,91,normalized
+dialer,JKL,elder_text_heavy,co_present,"[540.0, 1400.2]",540,1400,510,1378,569,1422,1,1,1,bracket,tree,89,normalized
+dialer,6,elder_text_heavy,co_present,"[892.1, 1327.0]",892,1327,869,1274,915,1378,1,1,1,bracket,tree,92,normalized
+dialer,MNO,elder_text_heavy,co_present,"[893.2, 1400.2]",893,1400,852,1378,933,1422,1,1,1,bracket,tree,93,normalized
+dialer,7,elder_text_heavy,co_present,"[185.8, 1520.0]",185,1520,166,1466,208,1570,1,1,1,bracket,tree,92,normalized
+dialer,PQRS,elder_text_heavy,co_present,"[186.8, 1591.0]",186,1591,142,1570,232,1614,1,1,1,bracket,tree,93,normalized
+dialer,8,elder_text_heavy,co_present,"[540.0, 1517.8]",540,1517,517,1466,562,1570,1,1,1,bracket,tree,83,normalized
+dialer,TUV,elder_text_heavy,co_present,"[540.0, 1591.0]",540,1591,507,1570,573,1614,1,1,1,bracket,tree,92,normalized
+dialer,9,elder_text_heavy,co_present,"[893.2, 1517.8]",893,1517,869,1466,915,1570,1,1,1,bracket,tree,92,normalized
+dialer,WXYZ,elder_text_heavy,co_present,"[893.2, 1591.0]",893,1591,846,1570,939,1614,1,1,1,bracket,tree,93,normalized
+dialer,∗,elder_text_heavy,co_present,"[186.8, 1733.0]",186,1733,168,1654,206,1766,1,1,1,bracket,tree,93,normalized
+dialer,0,elder_text_heavy,co_present,"[540.0, 1710.8]",540,1710,512,1658,567,1762,1,1,1,bracket,tree,91,normalized
+dialer,+,elder_text_heavy,co_present,"[540.0, 1799.6]",540,1799,529,1762,549,1806,1,1,1,bracket,tree,92,normalized
+dialer,#,elder_text_heavy,co_present,"[892.1, 1733.0]",892,1733,865,1658,921,1762,1,1,1,bracket,tree,93,normalized
+dialer,Call,elder_text_heavy,co_present,"[540.0, 1926.1]",540,1926,400,1857,681,2004,1,1,1,bracket,tree,94,normalized
+dialer,Home,elder_text_heavy,co_present,"[175.0, 2170.2]",175,2170,118,2147,241,2203,1,1,1,bracket,tree,92,normalized
+dialer,Keypad,elder_text_heavy,co_present,"[540.0, 2174.6]",540,2174,461,2147,618,2203,1,1,1,bracket,tree,90,normalized
+dialer,Voicemail,elder_text_heavy,co_present,"[899.6, 2174.6]",899,2174,800,2147,1000,2203,1,1,1,bracket,tree,92,normalized
+dialer,Phone Number,elder_zoom_heavy,co_present,"[540.0, 360.1]",540,360,168,690,912,855,0,1,0,bracket,tree,93,normalized
+dialer,1,elder_zoom_heavy,co_present,"[187.9, 975.0]",187,975,168,911,207,1029,1,1,1,bracket,tree,93,normalized
+dialer,2,elder_zoom_heavy,co_present,"[540.0, 975.0]",540,975,514,916,564,1034,1,1,1,bracket,tree,88,normalized
+dialer,ABC,elder_zoom_heavy,co_present,"[540.0, 1060.7]",540,1060,500,1034,579,1085,1,1,1,bracket,tree,95,normalized
+dialer,3,elder_zoom_heavy,co_present,"[892.1, 975.0]",892,975,866,916,916,1034,1,1,1,bracket,tree,93,normalized
+dialer,DEF,elder_zoom_heavy,co_present,"[892.1, 1060.7]",892,1060,855,1034,928,1085,1,1,1,bracket,tree,95,normalized
+dialer,4,elder_zoom_heavy,co_present,"[187.9, 1194.6]",187,1194,160,1135,214,1253,1,1,1,bracket,tree,93,normalized
+dialer,GHI,elder_zoom_heavy,co_present,"[187.9, 1278.1]",187,1278,154,1253,221,1304,1,1,1,bracket,tree,95,normalized
+dialer,5,elder_zoom_heavy,co_present,"[540.0, 1194.6]",540,1194,514,1135,566,1253,1,1,1,bracket,tree,92,normalized
+dialer,JKL,elder_zoom_heavy,co_present,"[540.0, 1278.1]",540,1278,506,1253,574,1304,1,1,1,bracket,tree,92,normalized
+dialer,6,elder_zoom_heavy,co_present,"[891.0, 1194.6]",891,1194,865,1135,918,1253,1,1,1,bracket,tree,93,normalized
+dialer,MNO,elder_zoom_heavy,co_present,"[892.1, 1278.1]",892,1278,845,1253,938,1304,1,1,1,bracket,tree,95,normalized
+dialer,7,elder_zoom_heavy,co_present,"[186.8, 1412.0]",186,1412,163,1354,211,1472,1,1,1,bracket,tree,93,normalized
+dialer,PQRS,elder_zoom_heavy,co_present,"[187.9, 1495.5]",187,1495,136,1472,239,1523,1,1,1,bracket,tree,95,normalized
+dialer,8,elder_zoom_heavy,co_present,"[540.0, 1412.0]",540,1412,514,1354,565,1472,1,1,1,bracket,tree,87,normalized
+dialer,TUV,elder_zoom_heavy,co_present,"[540.0, 1497.7]",540,1497,502,1472,577,1523,1,1,1,bracket,tree,95,normalized
+dialer,9,elder_zoom_heavy,co_present,"[891.0, 1412.0]",891,1412,865,1354,918,1472,1,1,1,bracket,tree,93,normalized
+dialer,WXYZ,elder_zoom_heavy,co_present,"[892.1, 1497.7]",892,1497,839,1472,945,1523,1,1,1,bracket,tree,95,normalized
+dialer,∗,elder_zoom_heavy,co_present,"[187.9, 1658.0]",187,1658,166,1568,209,1696,1,1,1,bracket,tree,93,normalized
+dialer,0,elder_zoom_heavy,co_present,"[540.0, 1631.6]",540,1631,508,1573,571,1691,1,1,1,bracket,tree,92,normalized
+dialer,+,elder_zoom_heavy,co_present,"[540.0, 1723.9]",540,1723,528,1691,551,1742,1,1,1,bracket,tree,95,normalized
+dialer,#,elder_zoom_heavy,co_present,"[892.1, 1658.0]",892,1658,860,1573,924,1691,1,1,1,bracket,tree,93,normalized
+dialer,Call,elder_zoom_heavy,co_present,"[577.8, 1879.8]",577,1879,396,1800,684,1968,1,1,1,bracket,tree,94,normalized
+dialer,Home,elder_zoom_heavy,co_present,"[180.4, 2154.3]",180,2154,129,2130,230,2178,1,1,1,bracket,tree,92,normalized
+dialer,Keypad,elder_zoom_heavy,co_present,"[540.0, 2154.3]",540,2154,475,2130,605,2178,1,1,1,bracket,tree,91,normalized
+dialer,Voicemail,elder_zoom_heavy,co_present,"[899.6, 2154.3]",899,2154,817,2130,982,2178,1,1,1,bracket,tree,92,normalized
+dialer,Phone Number,elder_combo_max,co_present,"[486.0, 607.4]",486,607,182,518,898,697,1,1,1,bracket,tree,93,normalized
+dialer,1,elder_combo_max,co_present,"[187.9, 827.3]",187,827,167,758,209,885,1,1,1,bracket,tree,93,normalized
+dialer,2,elder_combo_max,co_present,"[540.0, 827.3]",540,827,513,764,566,891,1,1,1,bracket,tree,90,normalized
+dialer,ABC,elder_combo_max,co_present,"[540.0, 918.7]",540,918,497,891,582,945,1,1,1,bracket,tree,93,normalized
+dialer,3,elder_combo_max,co_present,"[889.9, 829.4]",889,829,863,764,917,891,1,1,1,bracket,tree,93,normalized
+dialer,DEF,elder_combo_max,co_present,"[891.0, 918.7]",891,918,851,891,930,945,1,1,1,bracket,tree,95,normalized
+dialer,4,elder_combo_max,co_present,"[187.9, 1064.6]",187,1064,159,1001,217,1128,1,1,1,bracket,tree,93,normalized
+dialer,GHI,elder_combo_max,co_present,"[187.9, 1156.0]",187,1156,152,1128,225,1182,1,1,1,bracket,tree,95,normalized
+dialer,5,elder_combo_max,co_present,"[540.0, 1062.4]",540,1062,511,1001,567,1128,1,1,1,bracket,tree,92,normalized
+dialer,JKL,elder_combo_max,co_present,"[540.0, 1156.0]",540,1156,503,1128,575,1182,1,1,1,bracket,tree,95,normalized
+dialer,6,elder_combo_max,co_present,"[889.9, 1064.6]",889,1064,862,1001,919,1128,1,1,1,bracket,tree,93,normalized
+dialer,MNO,elder_combo_max,co_present,"[891.0, 1156.0]",891,1156,841,1128,940,1182,1,1,1,bracket,tree,95,normalized
+dialer,7,elder_combo_max,co_present,"[187.9, 1301.8]",187,1301,162,1238,214,1365,1,1,1,bracket,tree,93,normalized
+dialer,PQRS,elder_combo_max,co_present,"[187.9, 1391.1]",187,1391,133,1365,244,1419,1,1,1,bracket,tree,95,normalized
+dialer,8,elder_combo_max,co_present,"[540.0, 1306.2]",540,1306,511,1238,566,1365,1,1,1,bracket,tree,87,normalized
+dialer,TUV,elder_combo_max,co_present,"[540.0, 1382.4]",540,1382,499,1365,579,1419,1,1,1,bracket,tree,95,normalized
+dialer,9,elder_combo_max,co_present,"[891.0, 1301.8]",891,1301,862,1238,919,1365,1,1,1,bracket,tree,93,normalized
+dialer,WXYZ,elder_combo_max,co_present,"[891.0, 1395.5]",891,1395,834,1365,947,1419,1,1,1,bracket,tree,95,normalized
+dialer,∗,elder_combo_max,co_present,"[189.0, 1565.3]",189,1565,165,1470,212,1608,1,1,1,bracket,tree,93,normalized
+dialer,0,elder_combo_max,co_present,"[540.0, 1534.8]",540,1534,506,1475,573,1602,1,1,1,bracket,tree,92,normalized
+dialer,+,elder_combo_max,co_present,"[540.0, 1634.9]",540,1634,527,1602,552,1656,1,1,1,bracket,tree,95,normalized
+dialer,#,elder_combo_max,co_present,"[889.9, 1565.3]",889,1565,856,1475,925,1602,1,1,1,bracket,tree,93,normalized
+dialer,Call,elder_combo_max,co_present,"[590.8, 1809.1]",590,1809,360,1721,720,1903,1,1,1,bracket,tree,94,normalized
+dialer,Home,elder_combo_max,co_present,"[180.4, 2118.2]",180,2118,93,2079,266,2157,1,1,1,bracket,tree,92,normalized
+dialer,Keypad,elder_combo_max,co_present,"[540.0, 2118.2]",540,2118,429,2079,651,2157,1,1,1,bracket,tree,91,normalized
+dialer,Voicemail,elder_combo_max,co_present,"[899.6, 2118.2]",899,2118,757,2079,1042,2157,1,1,1,bracket,tree,92,normalized
+dialer,Phone Number,elder_combo_mid,co_present,"[540.0, 753.2]",540,753,168,671,912,836,1,1,1,bracket,tree,93,normalized
+dialer,1,elder_combo_mid,co_present,"[186.8, 935.5]",186,935,168,892,207,1010,1,1,1,bracket,tree,93,normalized
+dialer,2,elder_combo_mid,co_present,"[540.0, 955.3]",540,955,514,897,564,1015,1,1,1,bracket,tree,88,normalized
+dialer,ABC,elder_combo_mid,co_present,"[540.0, 1038.7]",540,1038,500,1015,579,1066,1,1,1,bracket,tree,93,normalized
+dialer,3,elder_combo_mid,co_present,"[892.1, 955.3]",892,955,866,897,916,1015,1,1,1,bracket,tree,93,normalized
+dialer,DEF,elder_combo_mid,co_present,"[892.1, 1040.9]",892,1040,855,1015,928,1066,1,1,1,bracket,tree,95,normalized
+dialer,4,elder_combo_mid,co_present,"[187.9, 1174.9]",187,1174,160,1116,214,1234,1,1,1,bracket,tree,93,normalized
+dialer,GHI,elder_combo_mid,co_present,"[187.9, 1264.9]",187,1264,154,1234,221,1285,1,1,1,bracket,tree,95,normalized
+dialer,5,elder_combo_mid,co_present,"[540.0, 1174.9]",540,1174,514,1116,566,1234,1,1,1,bracket,tree,92,normalized
+dialer,JKL,elder_combo_mid,co_present,"[540.0, 1260.5]",540,1260,506,1234,574,1285,1,1,1,bracket,tree,92,normalized
+dialer,6,elder_combo_mid,co_present,"[891.0, 1174.9]",891,1174,865,1116,918,1234,1,1,1,bracket,tree,93,normalized
+dialer,MNO,elder_combo_mid,co_present,"[892.1, 1260.5]",892,1260,845,1234,938,1285,1,1,1,bracket,tree,95,normalized
+dialer,7,elder_combo_mid,co_present,"[186.8, 1394.5]",186,1394,163,1335,211,1453,1,1,1,bracket,tree,93,normalized
+dialer,PQRS,elder_combo_mid,co_present,"[187.9, 1471.3]",187,1471,136,1453,239,1504,1,1,1,bracket,tree,95,normalized
+dialer,8,elder_combo_mid,co_present,"[540.0, 1394.5]",540,1394,514,1335,565,1453,1,1,1,bracket,tree,87,normalized
+dialer,TUV,elder_combo_mid,co_present,"[540.0, 1477.9]",540,1477,502,1453,577,1504,1,1,1,bracket,tree,95,normalized
+dialer,9,elder_combo_mid,co_present,"[892.1, 1394.5]",892,1394,865,1335,918,1453,1,1,1,bracket,tree,93,normalized
+dialer,WXYZ,elder_combo_mid,co_present,"[892.1, 1477.9]",892,1477,839,1453,945,1504,1,1,1,bracket,tree,95,normalized
+dialer,∗,elder_combo_mid,co_present,"[187.9, 1638.2]",187,1638,166,1549,209,1677,1,1,1,bracket,tree,93,normalized
+dialer,0,elder_combo_mid,co_present,"[540.0, 1616.3]",540,1616,508,1554,571,1672,1,1,1,bracket,tree,92,normalized
+dialer,+,elder_combo_mid,co_present,"[540.0, 1715.1]",540,1715,528,1672,551,1723,1,1,1,bracket,tree,95,normalized
+dialer,#,elder_combo_mid,co_present,"[892.1, 1638.2]",892,1638,860,1554,924,1672,1,1,1,bracket,tree,93,normalized
+dialer,Call,elder_combo_mid,co_present,"[540.0, 1866.6]",540,1866,377,1781,704,1949,1,1,1,bracket,tree,94,normalized
+dialer,Home,elder_combo_mid,co_present,"[180.4, 2145.5]",180,2145,104,2111,255,2178,1,1,1,bracket,tree,92,normalized
+dialer,Keypad,elder_combo_mid,co_present,"[540.0, 2145.5]",540,2145,443,2111,637,2178,1,1,1,bracket,tree,91,normalized
+dialer,Voicemail,elder_combo_mid,co_present,"[899.6, 2145.5]",899,2145,776,2111,1024,2178,1,1,1,bracket,tree,92,normalized
+dialer,Phone Number,colorblind_deuteranomaly,co_present,"[540.0, 887.6]",540,887,147,900,933,1044,1,1,1,bracket,tree,89,normalized
+dialer,1,colorblind_deuteranomaly,co_present,"[186.8, 1140.6]",186,1140,169,1093,203,1197,1,1,1,bracket,tree,92,normalized
+dialer,2,colorblind_deuteranomaly,co_present,"[540.0, 1149.4]",540,1149,518,1097,561,1201,1,1,1,bracket,tree,91,normalized
+dialer,ABC,colorblind_deuteranomaly,co_present,"[540.0, 1224.9]",540,1224,505,1201,574,1245,1,1,1,bracket,tree,92,normalized
+dialer,3,colorblind_deuteranomaly,co_present,"[893.2, 1149.4]",893,1149,870,1097,914,1201,1,1,1,bracket,tree,92,normalized
+dialer,DEF,colorblind_deuteranomaly,co_present,"[892.1, 1222.7]",892,1222,861,1201,924,1245,1,1,1,bracket,tree,93,normalized
+dialer,4,colorblind_deuteranomaly,co_present,"[186.8, 1340.3]",186,1340,163,1288,210,1392,1,1,1,bracket,tree,92,normalized
+dialer,GHI,colorblind_deuteranomaly,co_present,"[186.8, 1413.5]",186,1413,157,1392,216,1436,1,1,1,bracket,tree,93,normalized
+dialer,5,colorblind_deuteranomaly,co_present,"[540.0, 1340.3]",540,1340,516,1288,562,1392,1,1,1,bracket,tree,91,normalized
+dialer,JKL,colorblind_deuteranomaly,co_present,"[540.0, 1415.7]",540,1415,510,1392,569,1436,1,1,1,bracket,tree,89,normalized
+dialer,6,colorblind_deuteranomaly,co_present,"[893.2, 1340.3]",893,1340,869,1288,915,1392,1,1,1,bracket,tree,92,normalized
+dialer,MNO,colorblind_deuteranomaly,co_present,"[892.1, 1413.5]",892,1413,852,1392,933,1436,1,1,1,bracket,tree,93,normalized
+dialer,7,colorblind_deuteranomaly,co_present,"[186.8, 1531.1]",186,1531,166,1480,208,1584,1,1,1,bracket,tree,92,normalized
+dialer,PQRS,colorblind_deuteranomaly,co_present,"[186.8, 1608.8]",186,1608,142,1584,232,1628,1,1,1,bracket,tree,93,normalized
+dialer,8,colorblind_deuteranomaly,co_present,"[540.0, 1531.1]",540,1531,517,1480,562,1584,1,1,1,bracket,tree,83,normalized
+dialer,TUV,colorblind_deuteranomaly,co_present,"[540.0, 1606.6]",540,1606,507,1584,573,1628,1,1,1,bracket,tree,92,normalized
+dialer,9,colorblind_deuteranomaly,co_present,"[892.1, 1531.1]",892,1531,869,1480,915,1584,1,1,1,bracket,tree,92,normalized
+dialer,WXYZ,colorblind_deuteranomaly,co_present,"[893.2, 1606.6]",893,1606,846,1584,939,1628,1,1,1,bracket,tree,93,normalized
+dialer,∗,colorblind_deuteranomaly,co_present,"[186.8, 1746.4]",186,1746,168,1668,206,1780,1,1,1,bracket,tree,93,normalized
+dialer,0,colorblind_deuteranomaly,co_present,"[540.0, 1724.2]",540,1724,512,1672,567,1776,1,1,1,bracket,tree,91,normalized
+dialer,+,colorblind_deuteranomaly,co_present,"[540.0, 1806.3]",540,1806,529,1776,549,1820,1,1,1,bracket,tree,92,normalized
+dialer,#,colorblind_deuteranomaly,co_present,"[892.1, 1746.4]",892,1746,865,1672,921,1776,1,1,1,bracket,tree,93,normalized
+dialer,Call,colorblind_deuteranomaly,co_present,"[581.0, 1941.6]",581,1941,414,1871,666,2018,1,1,1,bracket,tree,94,normalized
+dialer,Home,colorblind_deuteranomaly,co_present,"[179.3, 2181.3]",179,2181,135,2161,224,2203,1,1,1,bracket,tree,92,normalized
+dialer,Keypad,colorblind_deuteranomaly,co_present,"[540.0, 2174.6]",540,2174,481,2161,597,2203,1,1,1,bracket,tree,90,normalized
+dialer,Voicemail,colorblind_deuteranomaly,co_present,"[899.6, 2179.1]",899,2179,826,2161,972,2203,1,1,1,bracket,tree,92,normalized
+maps,Search here,baseline,co_present,"[303.5, 84.3]",303,84,162,45,661,122,1,1,1,bracket,tree,109,normalized
+maps,Explore,baseline,co_present,"[180.4, 2176.8]",180,2176,122,2156,238,2198,1,1,1,bracket,tree,112,normalized
+maps,You,baseline,co_present,"[540.0, 2176.8]",540,2176,512,2156,568,2198,1,1,1,bracket,tree,108,normalized
+maps,Contribute,baseline,co_present,"[899.6, 2176.8]",899,2176,816,2156,983,2198,1,1,1,bracket,tree,112,normalized
+maps,Search here,elder_text_heavy,co_present,"[334.8, 84.3]",334,84,162,37,661,131,1,1,1,bracket,tree,109,normalized
+maps,Explore,elder_text_heavy,co_present,"[180.4, 2176.8]",180,2176,122,2156,238,2198,1,1,1,bracket,tree,112,normalized
+maps,You,elder_text_heavy,co_present,"[540.0, 2176.8]",540,2176,512,2156,568,2198,1,1,1,bracket,tree,108,normalized
+maps,Contribute,elder_text_heavy,co_present,"[899.6, 2176.8]",899,2176,816,2156,983,2198,1,1,1,bracket,tree,112,normalized
+maps,Search here,elder_zoom_heavy,co_present,"[345.6, 96.6]",345,96,186,52,600,139,1,1,1,bracket,tree,108,normalized
+maps,Explore,elder_zoom_heavy,co_present,"[179.3, 2147.7]",179,2147,114,2124,245,2172,1,1,1,bracket,tree,112,normalized
+maps,You,elder_zoom_heavy,co_present,"[540.0, 2147.7]",540,2147,508,2124,571,2172,1,1,1,bracket,tree,108,normalized
+maps,Contribute,elder_zoom_heavy,co_present,"[899.6, 2147.7]",899,2147,806,2124,994,2172,1,1,1,bracket,tree,112,normalized
+maps,Search here,elder_combo_max,co_present,"[370.4, 104.5]",370,104,201,38,559,169,1,1,1,bracket,tree,104,normalized
+maps,Explore,elder_combo_max,co_present,"[180.4, 2124.8]",180,2124,109,2099,250,2151,1,1,1,bracket,tree,112,normalized
+maps,You,elder_combo_max,co_present,"[540.0, 2124.8]",540,2124,506,2099,573,2151,1,1,1,bracket,tree,109,normalized
+maps,Contribute,elder_combo_max,co_present,"[899.6, 2124.8]",899,2124,799,2099,1001,2151,1,1,1,bracket,tree,112,normalized
+maps,Search here,elder_combo_mid,co_present,"[690.1, 96.6]",690,96,480,39,894,152,1,1,1,bracket,tree,108,normalized
+maps,Explore,elder_combo_mid,co_present,"[899.6, 2149.9]",899,2149,834,2124,965,2172,1,1,1,bracket,tree,112,normalized
+maps,You,elder_combo_mid,co_present,"[540.0, 2147.7]",540,2147,508,2124,571,2172,1,1,1,bracket,tree,108,normalized
+maps,Contribute,elder_combo_mid,co_present,"[180.4, 2147.7]",180,2147,86,2124,274,2172,1,1,1,bracket,tree,112,normalized
+maps,Search here,colorblind_deuteranomaly,co_present,"[303.5, 84.3]",303,84,162,45,661,122,1,1,1,bracket,tree,109,normalized
+maps,Explore,colorblind_deuteranomaly,co_present,"[180.4, 2176.8]",180,2176,122,2156,238,2198,1,1,1,bracket,tree,112,normalized
+maps,You,colorblind_deuteranomaly,co_present,"[540.0, 2174.6]",540,2174,512,2156,568,2198,1,1,1,bracket,tree,108,normalized
+maps,Contribute,colorblind_deuteranomaly,co_present,"[899.6, 2176.8]",899,2176,816,2156,983,2198,1,1,1,bracket,tree,112,normalized
+messages,Messages,baseline,co_present,"[335.9, 86.5]",335,86,222,51,450,114,1,1,1,bracket,tree,16,normalized
+messages,"Once you start a new conversation, you’ll see it listed here",baseline,co_present,"[540.0, 1400.2]",540,1400,158,1349,922,1452,1,1,1,bracket,tree,17,normalized
+messages,Start chat,baseline,co_present,"[832.7, 2081.4]",832,2081,650,2009,1017,2156,1,1,1,bracket,tree,16,normalized
+messages,Messages,elder_text_heavy,co_present,"[332.6, 86.5]",332,86,222,51,442,111,1,1,1,bracket,tree,16,normalized
+messages,"Once you start a new conversation, you’ll see it listed here",elder_text_heavy,co_present,"[540.0, 1384.7]",540,1384,158,1293,922,1508,1,1,1,bracket,tree,17,normalized
+messages,Start chat,elder_text_heavy,co_present,"[820.8, 2081.4]",820,2081,578,2003,1017,2156,1,1,1,bracket,tree,16,normalized
+messages,Messages,elder_zoom_heavy,co_present,"[378.0, 98.8]",378,98,254,58,506,128,1,1,1,bracket,tree,16,normalized
+messages,"Once you start a new conversation, you’ll see it listed here",elder_zoom_heavy,co_present,"[540.0, 1434.0]",540,1434,180,1375,900,1492,1,1,1,bracket,tree,17,normalized
+messages,Start chat,elder_zoom_heavy,co_present,"[842.4, 2031.3]",842,2031,590,1956,1008,2124,1,1,1,bracket,tree,16,normalized
+messages,Messages,elder_combo_max,co_present,"[410.4, 108.9]",410,108,276,63,549,138,1,1,1,bracket,tree,15,normalized
+messages,"Once you start a new conversation, you’ll see it listed here",elder_combo_max,co_present,"[540.0, 1454.2]",540,1454,195,1259,885,1646,1,1,1,bracket,tree,17,normalized
+messages,Start chat,elder_combo_max,co_present,"[766.8, 1989.8]",766,1989,425,1900,1002,2099,1,1,1,bracket,tree,17,normalized
+messages,Messages,elder_combo_mid,co_present,"[356.4, 98.8]",356,98,254,58,506,128,1,1,1,bracket,tree,16,normalized
+messages,"Once you start a new conversation, you’ll see it listed here",elder_combo_mid,co_present,"[540.0, 1429.6]",540,1429,180,1301,900,1566,1,1,1,bracket,tree,17,normalized
+messages,Start chat,elder_combo_mid,co_present,"[756.0, 2033.5]",756,2033,490,1945,1008,2124,1,1,1,bracket,tree,16,normalized
+messages,Messages,colorblind_deuteranomaly,co_present,"[307.8, 84.3]",307,84,222,51,442,111,1,1,1,bracket,tree,16,normalized
+messages,"Once you start a new conversation, you’ll see it listed here",colorblind_deuteranomaly,co_present,"[540.0, 1400.2]",540,1400,158,1349,922,1452,1,1,1,bracket,tree,17,normalized
+messages,Start chat,colorblind_deuteranomaly,co_present,"[832.7, 2081.4]",832,2081,650,2009,1017,2156,1,1,1,bracket,tree,16,normalized
+photos,"Take a picture.
+Photos & videos appear here.",baseline,co_present,"[540.0, 1082.9]",540,1082,172,1021,907,1192,1,1,1,bracket,tree,22,normalized
+photos,No Photos,baseline,co_present,"[540.0, 1231.5]",540,1231,172,1192,907,1324,1,1,1,bracket,tree,23,normalized
+photos,Search,baseline,co_present,"[810.0, 2150.2]",810,2150,540,2009,1080,2219,1,1,1,bracket,tree,20,normalized
+photos,"Take a picture.
+Photos & videos appear here.",elder_text_heavy,co_present,"[540.0, 1080.7]",540,1080,172,992,907,1208,1,1,1,bracket,tree,22,normalized
+photos,No Photos,elder_text_heavy,co_present,"[540.0, 1256.0]",540,1256,172,1208,907,1353,1,1,1,bracket,tree,23,normalized
+photos,Search,elder_text_heavy,co_present,"[810.0, 2108.0]",810,2108,540,2009,1080,2219,1,1,1,bracket,tree,20,normalized
+photos,"Take a picture.
+Photos & videos appear here.",elder_zoom_heavy,co_present,"[540.0, 1067.3]",540,1067,120,997,960,1192,1,1,1,bracket,tree,22,normalized
+photos,No Photos,elder_zoom_heavy,co_present,"[540.0, 1240.7]",540,1240,120,1192,960,1342,1,1,1,bracket,tree,24,normalized
+photos,Search,elder_zoom_heavy,co_present,"[810.0, 2110.4]",810,2110,540,1956,1080,2196,1,1,1,bracket,tree,20,normalized
+photos,"Take a picture.
+Photos & videos appear here.",elder_combo_max,co_present,"[540.0, 1040.6]",540,1040,85,867,995,1273,1,1,1,bracket,tree,22,normalized
+photos,No Photos,elder_combo_max,co_present,"[540.0, 1338.9]",540,1338,85,1273,995,1467,1,1,1,bracket,tree,24,normalized
+photos,Search,elder_combo_max,co_present,"[810.0, 2089.9]",810,2089,540,1917,1080,2177,1,1,1,bracket,tree,20,normalized
+photos,"Take a picture.
+Photos & videos appear here.",elder_combo_mid,co_present,"[540.0, 1054.1]",540,1054,120,901,960,1268,1,1,1,bracket,tree,22,normalized
+photos,No Photos,elder_combo_mid,co_present,"[540.0, 1319.8]",540,1319,120,1268,960,1439,1,1,1,bracket,tree,24,normalized
+photos,Search,elder_combo_mid,co_present,"[810.0, 2108.2]",810,2108,540,1956,1080,2196,1,1,1,bracket,tree,20,normalized
+photos,"Take a picture.
+Photos & videos appear here.",colorblind_deuteranomaly,co_present,"[540.0, 1085.1]",540,1085,172,1021,907,1192,1,1,1,bracket,tree,22,normalized
+photos,No Photos,colorblind_deuteranomaly,co_present,"[540.0, 1238.2]",540,1238,172,1192,907,1324,1,1,1,bracket,tree,23,normalized
+photos,Search,colorblind_deuteranomaly,co_present,"[810.0, 2145.8]",810,2145,540,2009,1080,2219,1,1,1,bracket,tree,20,normalized
+play_store,Sponsored,baseline,co_present,"[133.9, 1140.6]",133,1140,63,1119,208,1161,1,1,1,bracket,tree,95,normalized
+play_store,Suggested for you,baseline,co_present,"[442.8, 1140.6]",442,1140,244,1108,644,1171,1,1,1,bracket,tree,95,normalized
+play_store,New and noteworthy,baseline,co_present,"[291.6, 1997.1]",291,1997,63,1966,519,2029,1,1,1,bracket,tree,95,normalized
+play_store,"Meet a smarter, more natural ChatGPT Voice",baseline,co_present,"[486.0, 645.7]",486,645,63,565,1017,733,1,1,1,bracket,tree,94,normalized
+play_store,Install,baseline,co_present,"[923.4, 852.1]",923,852,873,808,975,861,1,1,1,bracket,tree,91,normalized
+play_store,In-app purchases,baseline,co_present,"[923.4, 898.7]",923,898,834,871,1014,908,1,1,1,bracket,tree,95,normalized
+play_store,Games,baseline,co_present,"[109.1, 2181.3]",109,2181,56,2162,160,2204,1,1,1,bracket,tree,93,normalized
+play_store,Apps,baseline,co_present,"[324.0, 2183.5]",324,2183,286,2162,363,2204,1,1,1,bracket,tree,93,normalized
+play_store,Search,baseline,co_present,"[540.0, 2183.5]",540,2183,488,2162,593,2204,1,1,1,bracket,tree,90,normalized
+play_store,Books,baseline,co_present,"[756.0, 2183.5]",756,2183,710,2162,803,2204,1,1,1,bracket,tree,93,normalized
+play_store,You,baseline,co_present,"[972.0, 2183.5]",972,2183,945,2162,1000,2204,1,1,1,bracket,tree,93,normalized
+play_store,Sponsored,elder_text_heavy,co_present,"[153.4, 1147.2]",153,1147,63,1119,271,1178,1,1,1,bracket,tree,94,normalized
+play_store,Suggested for you,elder_text_heavy,co_present,"[572.4, 1147.2]",572,1147,321,1108,824,1188,1,1,1,bracket,tree,94,normalized
+play_store,New and noteworthy,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0,
+play_store,"Meet a smarter, more natural ChatGPT Voice",elder_text_heavy,co_present,"[435.2, 594.7]",435,594,63,498,1017,690,1,1,1,bracket,tree,93,normalized
+play_store,Install,elder_text_heavy,co_present,"[825.1, 359.5]",825,359,819,754,967,828,0,1,0,bracket,tree,91,normalized
+play_store,In-app purchases,elder_text_heavy,co_present,"[893.2, 856.5]",893,856,769,828,1017,880,1,1,1,bracket,tree,94,normalized
+play_store,Games,elder_text_heavy,co_present,"[108.0, 2181.3]",108,2181,35,2153,181,2212,1,1,1,bracket,tree,92,normalized
+play_store,Apps,elder_text_heavy,co_present,"[324.0, 2181.3]",324,2181,270,2153,379,2212,1,1,1,bracket,tree,92,normalized
+play_store,Search,elder_text_heavy,co_present,"[540.0, 2183.5]",540,2183,467,2153,614,2212,1,1,1,bracket,tree,89,normalized
+play_store,Books,elder_text_heavy,co_present,"[757.1, 2183.5]",757,2183,692,2153,821,2212,1,1,1,bracket,tree,92,normalized
+play_store,You,elder_text_heavy,co_present,"[972.0, 2181.3]",972,2181,934,2153,1010,2212,1,1,1,bracket,tree,92,normalized
+play_store,Sponsored,elder_zoom_heavy,co_present,"[121.0, 1308.8]",121,1308,36,1284,207,1332,1,1,1,bracket,tree,94,normalized
+play_store,Suggested for you,elder_zoom_heavy,co_present,"[477.4, 1308.8]",477,1308,249,1272,708,1344,1,1,1,bracket,tree,94,normalized
+play_store,New and noteworthy,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0,
+play_store,"Meet a smarter, more natural ChatGPT Voice",elder_zoom_heavy,co_present,"[516.2, 746.6]",516,746,36,654,1044,846,1,1,1,bracket,tree,93,normalized
+play_store,Install,elder_zoom_heavy,co_present,"[935.3, 955.3]",935,955,876,930,996,990,1,1,1,bracket,tree,91,normalized
+play_store,In-app purchases,elder_zoom_heavy,co_present,"[935.3, 1025.5]",935,1025,834,1002,1039,1044,1,1,1,bracket,tree,94,normalized
+play_store,Games,elder_zoom_heavy,co_present,"[108.0, 2154.3]",108,2154,48,2130,169,2178,1,1,1,bracket,tree,94,normalized
+play_store,Apps,elder_zoom_heavy,co_present,"[324.0, 2152.1]",324,2152,280,2130,368,2178,1,1,1,bracket,tree,94,normalized
+play_store,Search,elder_zoom_heavy,co_present,"[540.0, 2154.3]",540,2154,479,2130,601,2178,1,1,1,bracket,tree,93,normalized
+play_store,Books,elder_zoom_heavy,co_present,"[756.0, 2154.3]",756,2154,703,2130,810,2178,1,1,1,bracket,tree,94,normalized
+play_store,You,elder_zoom_heavy,co_present,"[972.0, 2154.3]",972,2154,940,2130,1004,2178,1,1,1,bracket,tree,94,normalized
+play_store,Sponsored,elder_combo_max,co_present,"[183.6, 1480.4]",183,1480,39,1446,334,1530,1,1,1,bracket,tree,84,normalized
+play_store,Suggested for you,elder_combo_max,co_present,"[608.0, 1541.3]",608,1541,406,1378,885,1598,1,1,1,bracket,tree,84,normalized
+play_store,New and noteworthy,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+play_store,"Meet a smarter, more natural ChatGPT Voice",elder_combo_max,co_present,"[540.0, 709.7]",540,709,39,580,1041,838,1,1,1,bracket,tree,83,normalized
+play_store,Install,elder_combo_max,co_present,"[866.2, 962.2]",866,962,763,916,971,1007,1,1,1,bracket,tree,81,normalized
+play_store,In-app purchases,elder_combo_max,co_present,"[867.2, 1042.8]",867,1042,693,1007,1041,1080,1,1,1,bracket,tree,84,normalized
+play_store,Games,elder_combo_max,co_present,"[108.0, 2131.3]",108,2131,13,2090,203,2174,1,1,1,bracket,tree,84,normalized
+play_store,Apps,elder_combo_max,co_present,"[324.0, 2133.5]",324,2133,248,2090,400,2174,1,1,1,bracket,tree,84,normalized
+play_store,Search,elder_combo_max,co_present,"[540.0, 2131.3]",540,2131,445,2090,635,2174,1,1,1,bracket,tree,83,normalized
+play_store,Books,elder_combo_max,co_present,"[756.0, 2131.3]",756,2131,665,2090,847,2174,1,1,1,bracket,tree,84,normalized
+play_store,You,elder_combo_max,co_present,"[972.0, 2133.5]",972,2133,919,2090,1026,2174,1,1,1,bracket,tree,84,normalized
+play_store,Sponsored,elder_combo_mid,co_present,"[148.0, 1221.0]",148,1221,36,1332,289,1404,0,1,0,bracket,tree,89,normalized
+play_store,Suggested for you,elder_combo_mid,co_present,"[585.4, 1365.9]",585,1365,351,1272,900,1464,1,1,1,bracket,tree,89,normalized
+play_store,New and noteworthy,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+play_store,"Meet a smarter, more natural ChatGPT Voice",elder_combo_mid,co_present,"[476.3, 669.8]",476,669,36,558,1044,782,1,1,1,bracket,tree,88,normalized
+play_store,Install,elder_combo_mid,co_present,"[889.9, 900.4]",889,900,798,854,984,938,1,1,1,bracket,tree,86,normalized
+play_store,In-app purchases,elder_combo_mid,co_present,"[889.9, 970.6]",889,970,737,938,1044,1001,1,1,1,bracket,tree,89,normalized
+play_store,Games,elder_combo_mid,co_present,"[108.0, 2154.3]",108,2154,18,2118,198,2190,1,1,1,bracket,tree,89,normalized
+play_store,Apps,elder_combo_mid,co_present,"[324.0, 2154.3]",324,2154,258,2118,390,2190,1,1,1,bracket,tree,89,normalized
+play_store,Search,elder_combo_mid,co_present,"[540.0, 2152.1]",540,2152,450,2118,631,2190,1,1,1,bracket,tree,88,normalized
+play_store,Books,elder_combo_mid,co_present,"[756.0, 2152.1]",756,2152,677,2118,835,2190,1,1,1,bracket,tree,89,normalized
+play_store,You,elder_combo_mid,co_present,"[972.0, 2154.3]",972,2154,925,2118,1019,2190,1,1,1,bracket,tree,89,normalized
+play_store,Sponsored,colorblind_deuteranomaly,co_present,"[135.0, 1127.3]",135,1127,63,1105,208,1147,1,1,1,bracket,tree,95,normalized
+play_store,Suggested for you,colorblind_deuteranomaly,co_present,"[442.8, 1127.3]",442,1127,244,1094,644,1157,1,1,1,bracket,tree,95,normalized
+play_store,New and noteworthy,colorblind_deuteranomaly,co_present,"[291.6, 1981.6]",291,1981,63,1952,519,2015,1,1,1,bracket,tree,95,normalized
+play_store,"Meet a smarter, more natural ChatGPT Voice",colorblind_deuteranomaly,co_present,"[448.2, 650.2]",448,650,63,565,1017,733,1,1,1,bracket,tree,94,normalized
+play_store,Install,colorblind_deuteranomaly,co_present,"[923.4, 836.6]",923,836,873,808,975,861,1,1,1,bracket,tree,91,normalized
+play_store,In-app purchases,colorblind_deuteranomaly,co_present,"[924.5, 889.8]",924,889,834,871,1014,908,1,1,1,bracket,tree,95,normalized
+play_store,Games,colorblind_deuteranomaly,co_present,"[108.0, 2183.5]",108,2183,56,2162,160,2204,1,1,1,bracket,tree,93,normalized
+play_store,Apps,colorblind_deuteranomaly,co_present,"[324.0, 2183.5]",324,2183,286,2162,363,2204,1,1,1,bracket,tree,93,normalized
+play_store,Search,colorblind_deuteranomaly,co_present,"[540.0, 2183.5]",540,2183,488,2162,593,2204,1,1,1,bracket,tree,90,normalized
+play_store,Books,colorblind_deuteranomaly,co_present,"[756.0, 2183.5]",756,2183,710,2162,803,2204,1,1,1,bracket,tree,93,normalized
+play_store,You,colorblind_deuteranomaly,co_present,"[972.0, 2181.3]",972,2181,945,2162,1000,2204,1,1,1,bracket,tree,93,normalized
+settings_accessibility,Screen reader,baseline,co_present,"[177.1, 235.2]",177,235,63,210,1038,261,1,1,1,bracket,tree,74,normalized
+settings_accessibility,TalkBack,baseline,co_present,"[306.7, 352.8]",306,352,221,329,391,386,1,1,1,bracket,tree,76,normalized
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,baseline,co_present,"[509.8, 421.6]",509,421,221,386,954,480,1,1,1,bracket,tree,72,normalized
+settings_accessibility,Display,baseline,co_present,"[122.0, 614.7]",122,614,63,590,1038,641,1,1,1,bracket,tree,74,normalized
+settings_accessibility,Display size & text,baseline,co_present,"[388.8, 743.4]",388,743,221,709,560,766,1,1,1,bracket,tree,73,normalized
+settings_accessibility,"Font size, display size, bold text, outline text",baseline,co_present,"[576.7, 794.4]",576,794,221,766,933,817,1,1,1,bracket,tree,72,normalized
+settings_accessibility,Color & motion,baseline,co_present,"[361.8, 925.3]",361,925,221,906,498,963,1,1,1,bracket,tree,76,normalized
+settings_accessibility,"Dark theme, color correction, remove animations",baseline,co_present,"[522.7, 1016.3]",522,1016,221,963,954,1057,1,1,1,bracket,tree,72,normalized
+settings_accessibility,Magnification,baseline,co_present,"[330.5, 1176.1]",330,1176,221,1146,477,1203,1,1,1,bracket,tree,76,normalized
+settings_accessibility,Off / Zoom in to make content larger on your screen,baseline,co_present,"[550.8, 1260.4]",550,1260,221,1203,954,1297,1,1,1,bracket,tree,66,normalized
+settings_accessibility,Select to Speak,baseline,co_present,"[410.4, 1409.1]",410,1409,221,1386,510,1443,1,1,1,bracket,tree,73,normalized
+settings_accessibility,Off / Hear selected text,baseline,co_present,"[410.4, 1464.5]",410,1464,221,1443,604,1494,1,1,1,bracket,tree,72,normalized
+settings_accessibility,Interaction controls,baseline,co_present,"[221.4, 1631.0]",221,1631,63,1604,1038,1655,1,1,1,bracket,tree,74,normalized
+settings_accessibility,Accessibility Menu,baseline,co_present,"[395.3, 1748.6]",395,1748,221,1723,571,1780,1,1,1,bracket,tree,74,normalized
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",baseline,co_present,"[570.2, 1830.7]",570,1830,221,1780,954,1874,1,1,1,bracket,tree,72,normalized
+settings_accessibility,Voice Access,baseline,co_present,"[345.6, 1979.3]",345,1979,221,1963,473,2020,1,1,1,bracket,tree,76,normalized
+settings_accessibility,Off / Control device with voice commands,baseline,co_present,"[562.7, 2041.5]",562,2041,221,2020,908,2071,1,1,1,bracket,tree,72,normalized
+settings_accessibility,Vibration & haptics,baseline,co_present,"[395.3, 2187.9]",395,2187,221,2160,574,2217,1,1,1,bracket,tree,73,normalized
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",baseline,co_present,"[635.0, 2219.0]",635,2219,221,2217,954,2219,1,1,1,bracket,tree,75,normalized
+settings_accessibility,Screen reader,elder_text_heavy,co_present,"[210.6, 250.7]",210,250,63,210,1038,283,1,1,1,bracket,tree,60,normalized
+settings_accessibility,TalkBack,elder_text_heavy,co_present,"[335.9, 395.0]",335,395,221,351,452,428,1,1,1,bracket,tree,62,normalized
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,elder_text_heavy,co_present,"[548.6, 499.3]",548,499,221,428,954,564,1,1,1,bracket,tree,59,normalized
+settings_accessibility,Display,elder_text_heavy,co_present,"[149.0, 710.1]",149,710,63,674,1038,747,1,1,1,bracket,tree,60,normalized
+settings_accessibility,Display size & text,elder_text_heavy,co_present,"[449.3, 854.3]",449,854,221,815,679,892,1,1,1,bracket,tree,62,normalized
+settings_accessibility,"Font size, display size, bold text, outline text",elder_text_heavy,co_present,"[513.0, 932.0]",513,932,221,892,954,1028,1,1,1,bracket,tree,59,normalized
+settings_accessibility,Color & motion,elder_text_heavy,co_present,"[405.0, 1156.1]",405,1156,221,1117,600,1194,1,1,1,bracket,tree,55,normalized
+settings_accessibility,"Dark theme, color correction, remove animations",elder_text_heavy,co_present,"[563.8, 1262.6]",563,1262,221,1194,954,1330,1,1,1,bracket,tree,59,normalized
+settings_accessibility,Magnification,elder_text_heavy,co_present,"[395.3, 1457.9]",395,1457,221,1419,569,1496,1,1,1,bracket,tree,62,normalized
+settings_accessibility,Off / Zoom in to make content larger on your screen,elder_text_heavy,co_present,"[587.5, 1564.4]",587,1564,221,1496,954,1632,1,1,1,bracket,tree,59,normalized
+settings_accessibility,Select to Speak,elder_text_heavy,co_present,"[416.9, 1759.7]",416,1759,221,1721,614,1798,1,1,1,bracket,tree,60,normalized
+settings_accessibility,Off / Hear selected text,elder_text_heavy,co_present,"[473.0, 1828.5]",473,1828,221,1798,781,1871,1,1,1,bracket,tree,59,normalized
+settings_accessibility,Interaction controls,elder_text_heavy,co_present,"[295.9, 2012.6]",295,2012,63,1981,1038,2054,1,1,1,bracket,tree,60,normalized
+settings_accessibility,Accessibility Menu,elder_text_heavy,co_present,"[459.0, 2163.5]",459,2163,221,2122,696,2199,1,1,1,bracket,tree,58,normalized
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",elder_text_heavy,co_present,"[635.0, 2210.1]",635,2210,221,2199,954,2219,1,1,1,bracket,tree,58,normalized
+settings_accessibility,Voice Access,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Off / Control device with voice commands,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Vibration & haptics,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Screen reader,elder_zoom_heavy,co_present,"[199.8, 265.7]",199,265,72,240,1032,297,1,1,1,bracket,tree,60,normalized
+settings_accessibility,TalkBack,elder_zoom_heavy,co_present,"[347.8, 410.7]",347,410,252,375,447,440,1,1,1,bracket,tree,62,normalized
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,elder_zoom_heavy,co_present,"[554.0, 483.1]",554,483,252,440,936,546,1,1,1,bracket,tree,59,normalized
+settings_accessibility,Display,elder_zoom_heavy,co_present,"[140.4, 700.5]",140,700,72,672,1032,729,1,1,1,bracket,tree,60,normalized
+settings_accessibility,Display size & text,elder_zoom_heavy,co_present,"[447.1, 836.7]",447,836,252,807,642,872,1,1,1,bracket,tree,59,normalized
+settings_accessibility,"Font size, display size, bold text, outline text",elder_zoom_heavy,co_present,"[594.0, 911.3]",594,911,252,872,936,978,1,1,1,bracket,tree,59,normalized
+settings_accessibility,Color & motion,elder_zoom_heavy,co_present,"[410.4, 1120.0]",410,1120,252,1080,570,1145,1,1,1,bracket,tree,59,normalized
+settings_accessibility,"Dark theme, color correction, remove animations",elder_zoom_heavy,co_present,"[594.0, 1199.0]",594,1199,252,1145,936,1251,1,1,1,bracket,tree,53,normalized
+settings_accessibility,Magnification,elder_zoom_heavy,co_present,"[397.4, 1379.1]",397,1379,252,1353,546,1418,1,1,1,bracket,tree,60,normalized
+settings_accessibility,Off / Zoom in to make content larger on your screen,elder_zoom_heavy,co_present,"[594.0, 1471.3]",594,1471,252,1418,936,1524,1,1,1,bracket,tree,59,normalized
+settings_accessibility,Select to Speak,elder_zoom_heavy,co_present,"[395.3, 1649.2]",395,1649,252,1626,583,1691,1,1,1,bracket,tree,60,normalized
+settings_accessibility,Off / Hear selected text,elder_zoom_heavy,co_present,"[443.9, 1719.5]",443,1719,252,1691,686,1748,1,1,1,bracket,tree,59,normalized
+settings_accessibility,Interaction controls,elder_zoom_heavy,co_present,"[254.9, 1901.7]",254,1901,72,1874,1032,1931,1,1,1,bracket,tree,60,normalized
+settings_accessibility,Accessibility Menu,elder_zoom_heavy,co_present,"[452.5, 2046.7]",452,2046,252,2009,654,2074,1,1,1,bracket,tree,59,normalized
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",elder_zoom_heavy,co_present,"[594.0, 2127.9]",594,2127,252,2074,936,2180,1,1,1,bracket,tree,59,normalized
+settings_accessibility,Voice Access,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Off / Control device with voice commands,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Vibration & haptics,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Screen reader,elder_combo_max,co_present,"[302.4, 293.9]",302,293,78,260,1028,360,1,1,1,bracket,tree,40,normalized
+settings_accessibility,TalkBack,elder_combo_max,co_present,"[430.9, 502.9]",430,502,273,445,589,550,1,1,1,bracket,tree,42,normalized
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,elder_combo_max,co_present,"[604.8, 670.5]",604,670,273,550,924,824,1,1,1,bracket,tree,39,normalized
+settings_accessibility,Display,elder_combo_max,co_present,"[197.6, 1010.1]",197,1010,78,961,1028,1061,1,1,1,bracket,tree,40,normalized
+settings_accessibility,Display size & text,elder_combo_max,co_present,"[585.4, 1175.6]",585,1175,273,1146,901,1251,1,1,1,bracket,tree,36,normalized
+settings_accessibility,"Font size, display size, bold text, outline text",elder_combo_max,co_present,"[591.8, 1388.9]",591,1388,273,1251,924,1525,1,1,1,bracket,tree,39,normalized
+settings_accessibility,Color & motion,elder_combo_max,co_present,"[530.3, 1687.2]",530,1687,273,1636,788,1741,1,1,1,bracket,tree,42,normalized
+settings_accessibility,"Dark theme, color correction, remove animations",elder_combo_max,co_present,"[598.3, 1878.8]",598,1878,273,1741,924,2015,1,1,1,bracket,tree,39,normalized
+settings_accessibility,Magnification,elder_combo_max,co_present,"[540.0, 2150.9]",540,2150,273,2126,747,2177,1,1,1,bracket,tree,39,normalized
+settings_accessibility,Off / Zoom in to make content larger on your screen,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Select to Speak,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Off / Hear selected text,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Interaction controls,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Accessibility Menu,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Voice Access,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Off / Control device with voice commands,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Vibration & haptics,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Screen reader,elder_combo_mid,co_present,"[274.3, 287.7]",274,287,72,240,1032,328,1,1,1,bracket,tree,43,normalized
+settings_accessibility,TalkBack,elder_combo_mid,co_present,"[392.0, 456.8]",392,456,252,406,532,498,1,1,1,bracket,tree,45,normalized
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,elder_combo_mid,co_present,"[540.0, 592.9]",540,592,252,498,936,740,1,1,1,bracket,tree,42,normalized
+settings_accessibility,Display,elder_combo_mid,co_present,"[178.2, 911.3]",178,911,72,866,1032,954,1,1,1,bracket,tree,43,normalized
+settings_accessibility,Display size & text,elder_combo_mid,co_present,"[530.3, 1060.7]",530,1060,252,1032,811,1124,1,1,1,bracket,tree,44,normalized
+settings_accessibility,"Font size, display size, bold text, outline text",elder_combo_mid,co_present,"[574.6, 1207.8]",574,1207,252,1124,936,1289,1,1,1,bracket,tree,36,normalized
+settings_accessibility,Color & motion,elder_combo_mid,co_present,"[473.0, 1436.2]",473,1436,252,1391,709,1483,1,1,1,bracket,tree,45,normalized
+settings_accessibility,"Dark theme, color correction, remove animations",elder_combo_mid,co_present,"[594.0, 1616.3]",594,1616,252,1483,936,1725,1,1,1,bracket,tree,42,normalized
+settings_accessibility,Magnification,elder_combo_mid,co_present,"[460.1, 1873.2]",460,1873,252,1827,673,1919,1,1,1,bracket,tree,45,normalized
+settings_accessibility,Off / Zoom in to make content larger on your screen,elder_combo_mid,co_present,"[594.0, 2040.1]",594,2040,252,1919,936,2161,1,1,1,bracket,tree,42,normalized
+settings_accessibility,Select to Speak,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Off / Hear selected text,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Interaction controls,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Accessibility Menu,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Voice Access,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Off / Control device with voice commands,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Vibration & haptics,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_accessibility,Screen reader,colorblind_deuteranomaly,co_present,"[164.2, 239.7]",164,239,63,210,1038,261,1,1,1,bracket,tree,74,normalized
+settings_accessibility,TalkBack,colorblind_deuteranomaly,co_present,"[306.7, 361.7]",306,361,221,329,391,386,1,1,1,bracket,tree,76,normalized
+settings_accessibility,Off / Use a screen reader to hear items spoken aloud,colorblind_deuteranomaly,co_present,"[540.0, 399.4]",540,399,221,386,954,480,1,1,1,bracket,tree,72,normalized
+settings_accessibility,Display,colorblind_deuteranomaly,co_present,"[123.1, 612.4]",123,612,63,590,1038,641,1,1,1,bracket,tree,74,normalized
+settings_accessibility,Display size & text,colorblind_deuteranomaly,co_present,"[388.8, 750.0]",388,750,221,709,560,766,1,1,1,bracket,tree,73,normalized
+settings_accessibility,"Font size, display size, bold text, outline text",colorblind_deuteranomaly,co_present,"[576.7, 790.0]",576,790,221,766,933,817,1,1,1,bracket,tree,72,normalized
+settings_accessibility,Color & motion,colorblind_deuteranomaly,co_present,"[352.1, 934.2]",352,934,221,906,498,963,1,1,1,bracket,tree,76,normalized
+settings_accessibility,"Dark theme, color correction, remove animations",colorblind_deuteranomaly,co_present,"[522.7, 1016.3]",522,1016,221,963,954,1057,1,1,1,bracket,tree,72,normalized
+settings_accessibility,Magnification,colorblind_deuteranomaly,co_present,"[359.6, 1173.9]",359,1173,221,1146,477,1203,1,1,1,bracket,tree,76,normalized
+settings_accessibility,Off / Zoom in to make content larger on your screen,colorblind_deuteranomaly,co_present,"[583.2, 1269.3]",583,1269,221,1203,954,1297,1,1,1,bracket,tree,66,normalized
+settings_accessibility,Select to Speak,colorblind_deuteranomaly,co_present,"[362.9, 1415.7]",362,1415,221,1386,510,1443,1,1,1,bracket,tree,73,normalized
+settings_accessibility,Off / Hear selected text,colorblind_deuteranomaly,co_present,"[410.4, 1464.5]",410,1464,221,1443,604,1494,1,1,1,bracket,tree,72,normalized
+settings_accessibility,Interaction controls,colorblind_deuteranomaly,co_present,"[220.3, 1631.0]",220,1631,63,1604,1038,1655,1,1,1,bracket,tree,74,normalized
+settings_accessibility,Accessibility Menu,colorblind_deuteranomaly,co_present,"[396.4, 1748.6]",396,1748,221,1723,571,1780,1,1,1,bracket,tree,74,normalized
+settings_accessibility,"Off / Control volume, brightness, and more with a large menu",colorblind_deuteranomaly,co_present,"[572.4, 1839.6]",572,1839,221,1780,954,1874,1,1,1,bracket,tree,72,normalized
+settings_accessibility,Voice Access,colorblind_deuteranomaly,co_present,"[345.6, 1990.4]",345,1990,221,1963,473,2020,1,1,1,bracket,tree,76,normalized
+settings_accessibility,Off / Control device with voice commands,colorblind_deuteranomaly,co_present,"[563.8, 2041.5]",563,2041,221,2020,908,2071,1,1,1,bracket,tree,72,normalized
+settings_accessibility,Vibration & haptics,colorblind_deuteranomaly,co_present,"[397.4, 2185.7]",397,2185,221,2160,574,2217,1,1,1,bracket,tree,73,normalized
+settings_accessibility,"On / Control vibration levels for calls, notifications, and alarms",colorblind_deuteranomaly,co_present,"[615.6, 2174.6]",615,2174,221,2217,954,2219,0,1,0,bracket,tree,75,normalized
+settings_display,Brightness,baseline,co_present,"[150.1, 239.7]",150,239,63,210,1038,261,1,1,1,bracket,tree,65,normalized
+settings_display,Brightness level,baseline,co_present,"[230.0, 343.9]",230,343,84,329,378,386,1,1,1,bracket,tree,66,normalized
+settings_display,83%,baseline,co_present,"[118.8, 410.5]",118,410,84,386,153,437,1,1,1,bracket,tree,67,normalized
+settings_display,Lock display,baseline,co_present,"[165.2, 576.9]",165,576,63,547,1038,598,1,1,1,bracket,tree,65,normalized
+settings_display,Lock screen,baseline,co_present,"[194.4, 699.0]",194,699,84,666,309,723,1,1,1,bracket,tree,66,normalized
+settings_display,Show all notification content,baseline,co_present,"[316.4, 741.1]",316,741,84,723,548,774,1,1,1,bracket,tree,63,normalized
+settings_display,Screen timeout,baseline,co_present,"[224.6, 909.8]",224,909,84,863,366,920,1,1,1,bracket,tree,66,normalized
+settings_display,Not set,baseline,co_present,"[135.0, 945.3]",135,945,84,920,203,971,1,1,1,bracket,tree,66,normalized
+settings_display,Appearance,baseline,co_present,"[159.8, 1105.1]",159,1105,63,1081,1038,1132,1,1,1,bracket,tree,64,normalized
+settings_display,Dark theme,baseline,co_present,"[192.2, 1224.9]",192,1224,84,1200,298,1257,1,1,1,bracket,tree,66,normalized
+settings_display,Will turn on when Bedtime starts,baseline,co_present,"[324.0, 1271.5]",324,1271,84,1257,616,1308,1,1,1,bracket,tree,63,normalized
+settings_display,Display size & text,baseline,co_present,"[252.7, 1426.8]",252,1426,84,1397,423,1454,1,1,1,bracket,tree,66,normalized
+settings_display,"Font size, display size, bold text, outline text",baseline,co_present,"[439.6, 1480.1]",439,1480,84,1454,796,1505,1,1,1,bracket,tree,63,normalized
+settings_display,Navigation mode,baseline,co_present,"[243.0, 1622.1]",243,1622,84,1594,402,1651,1,1,1,bracket,tree,66,normalized
+settings_display,Gesture navigation,baseline,co_present,"[237.6, 1675.3]",237,1675,84,1651,392,1702,1,1,1,bracket,tree,66,normalized
+settings_display,Screen saver,baseline,co_present,"[203.0, 1819.6]",203,1819,84,1791,323,1848,1,1,1,bracket,tree,66,normalized
+settings_display,On / Clock,baseline,co_present,"[168.5, 1870.6]",168,1870,84,1848,254,1899,1,1,1,bracket,tree,66,normalized
+settings_display,Color,baseline,co_present,"[108.0, 2030.4]",108,2030,63,2009,1038,2060,1,1,1,bracket,tree,65,normalized
+settings_display,Colors,baseline,co_present,"[144.7, 2179.1]",144,2179,84,2152,205,2209,1,1,1,bracket,tree,67,normalized
+settings_display,Brightness,elder_text_heavy,co_present,"[190.1, 250.7]",190,250,63,210,1038,283,1,1,1,bracket,tree,56,normalized
+settings_display,Brightness level,elder_text_heavy,co_present,"[283.0, 379.4]",283,379,84,351,484,428,1,1,1,bracket,tree,58,normalized
+settings_display,83%,elder_text_heavy,co_present,"[133.9, 466.0]",133,466,84,428,184,501,1,1,1,bracket,tree,58,normalized
+settings_display,Lock display,elder_text_heavy,co_present,"[210.6, 650.2]",210,650,63,611,1038,684,1,1,1,bracket,tree,56,normalized
+settings_display,Lock screen,elder_text_heavy,co_present,"[218.2, 787.7]",218,787,84,752,390,829,1,1,1,bracket,tree,58,normalized
+settings_display,Show all notification content,elder_text_heavy,co_present,"[393.1, 867.6]",393,867,84,829,767,902,1,1,1,bracket,tree,55,normalized
+settings_display,Screen timeout,elder_text_heavy,co_present,"[274.3, 1027.4]",274,1027,84,991,468,1068,1,1,1,bracket,tree,58,normalized
+settings_display,Not set,elder_text_heavy,co_present,"[172.8, 1105.1]",172,1105,84,1068,260,1141,1,1,1,bracket,tree,58,normalized
+settings_display,Appearance,elder_text_heavy,co_present,"[190.1, 1269.3]",190,1269,63,1251,1038,1324,1,1,1,bracket,tree,56,normalized
+settings_display,Dark theme,elder_text_heavy,co_present,"[230.0, 1424.6]",230,1424,84,1392,374,1469,1,1,1,bracket,tree,57,normalized
+settings_display,Will turn on when Bedtime starts,elder_text_heavy,co_present,"[290.5, 1540.0]",290,1540,84,1469,672,1605,1,1,1,bracket,tree,55,normalized
+settings_display,Display size & text,elder_text_heavy,co_present,"[313.2, 1730.8]",313,1730,84,1694,542,1771,1,1,1,bracket,tree,58,normalized
+settings_display,"Font size, display size, bold text, outline text",elder_text_heavy,co_present,"[432.0, 1839.6]",432,1839,84,1771,954,1907,1,1,1,bracket,tree,55,normalized
+settings_display,Navigation mode,elder_text_heavy,co_present,"[301.3, 2019.3]",301,2019,84,1996,517,2073,1,1,1,bracket,tree,58,normalized
+settings_display,Gesture navigation,elder_text_heavy,co_present,"[310.0, 2110.3]",310,2110,84,2073,535,2146,1,1,1,bracket,tree,58,normalized
+settings_display,Screen saver,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,On / Clock,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Color,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Colors,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Brightness,elder_zoom_heavy,co_present,"[170.6, 263.5]",170,263,72,240,1032,297,1,1,1,bracket,tree,58,normalized
+settings_display,Brightness level,elder_zoom_heavy,co_present,"[263.5, 399.7]",263,399,96,375,434,440,1,1,1,bracket,tree,60,normalized
+settings_display,83%,elder_zoom_heavy,co_present,"[136.1, 472.1]",136,472,96,440,175,497,1,1,1,bracket,tree,60,normalized
+settings_display,Lock display,elder_zoom_heavy,co_present,"[190.1, 650.0]",190,650,72,623,1032,680,1,1,1,bracket,tree,58,normalized
+settings_display,Lock screen,elder_zoom_heavy,co_present,"[222.5, 790.6]",222,790,96,758,353,823,1,1,1,bracket,tree,60,normalized
+settings_display,Show all notification content,elder_zoom_heavy,co_present,"[359.6, 860.8]",359,860,96,823,625,880,1,1,1,bracket,tree,57,normalized
+settings_display,Screen timeout,elder_zoom_heavy,co_present,"[259.2, 1001.4]",259,1001,96,982,419,1047,1,1,1,bracket,tree,60,normalized
+settings_display,Not set,elder_zoom_heavy,co_present,"[162.0, 1076.0]",162,1076,96,1047,232,1104,1,1,1,bracket,tree,60,normalized
+settings_display,Appearance,elder_zoom_heavy,co_present,"[183.6, 1260.5]",183,1260,72,1230,1032,1287,1,1,1,bracket,tree,58,normalized
+settings_display,Dark theme,elder_zoom_heavy,co_present,"[220.3, 1392.3]",220,1392,96,1365,340,1430,1,1,1,bracket,tree,59,normalized
+settings_display,Will turn on when Bedtime starts,elder_zoom_heavy,co_present,"[338.0, 1486.7]",338,1486,96,1430,615,1536,1,1,1,bracket,tree,57,normalized
+settings_display,Display size & text,elder_zoom_heavy,co_present,"[289.4, 1673.4]",289,1673,96,1638,486,1703,1,1,1,bracket,tree,60,normalized
+settings_display,"Font size, display size, bold text, outline text",elder_zoom_heavy,co_present,"[502.2, 1734.8]",502,1734,96,1703,906,1760,1,1,1,bracket,tree,57,normalized
+settings_display,Navigation mode,elder_zoom_heavy,co_present,"[276.5, 1888.6]",276,1888,96,1862,459,1927,1,1,1,bracket,tree,60,normalized
+settings_display,Gesture navigation,elder_zoom_heavy,co_present,"[270.0, 1956.6]",270,1956,96,1927,446,1984,1,1,1,bracket,tree,60,normalized
+settings_display,Screen saver,elder_zoom_heavy,co_present,"[232.2, 2081.8]",232,2081,96,2086,369,2151,1,1,1,bracket,tree,59,normalized
+settings_display,On / Clock,elder_zoom_heavy,co_present,"[192.2, 2169.6]",192,2169,96,2151,290,2196,1,1,1,bracket,tree,59,normalized
+settings_display,Color,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Colors,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Brightness,elder_combo_max,co_present,"[237.6, 309.1]",237,309,78,260,1028,360,1,1,1,bracket,tree,43,normalized
+settings_display,Brightness level,elder_combo_max,co_present,"[375.8, 489.8]",375,489,104,445,652,550,1,1,1,bracket,tree,42,normalized
+settings_display,83%,elder_combo_max,co_present,"[162.0, 587.8]",162,587,104,550,242,650,1,1,1,bracket,tree,45,normalized
+settings_display,Lock display,elder_combo_max,co_present,"[280.8, 840.3]",280,840,78,787,1028,887,1,1,1,bracket,tree,43,normalized
+settings_display,Lock screen,elder_combo_max,co_present,"[313.2, 1001.4]",313,1001,104,972,522,1077,1,1,1,bracket,tree,45,normalized
+settings_display,Show all notification content,elder_combo_max,co_present,"[407.2, 1177.8]",407,1177,104,1077,924,1264,1,1,1,bracket,tree,36,normalized
+settings_display,Screen timeout,elder_combo_max,co_present,"[364.0, 1428.1]",364,1428,104,1375,628,1480,1,1,1,bracket,tree,45,normalized
+settings_display,Not set,elder_combo_max,co_present,"[224.6, 1530.4]",224,1530,104,1480,342,1580,1,1,1,bracket,tree,45,normalized
+settings_display,Appearance,elder_combo_max,co_present,"[274.3, 1774.3]",274,1774,78,1717,1028,1817,1,1,1,bracket,tree,43,normalized
+settings_display,Dark theme,elder_combo_max,co_present,"[302.4, 1915.8]",302,1915,104,1902,501,2007,1,1,1,bracket,tree,43,normalized
+settings_display,Will turn on when Bedtime starts,elder_combo_max,co_present,"[338.0, 2098.6]",338,2098,104,2007,576,2177,1,1,1,bracket,tree,45,normalized
+settings_display,Display size & text,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,"Font size, display size, bold text, outline text",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Navigation mode,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Gesture navigation,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Screen saver,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,On / Clock,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Color,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Colors,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Brightness,elder_combo_mid,co_present,"[214.9, 289.9]",214,289,72,240,1032,328,1,1,1,bracket,tree,48,normalized
+settings_display,Brightness level,elder_combo_mid,co_present,"[339.1, 459.0]",339,459,96,406,584,498,1,1,1,bracket,tree,50,normalized
+settings_display,83%,elder_combo_mid,co_present,"[172.8, 540.2]",172,540,96,498,218,586,1,1,1,bracket,tree,50,normalized
+settings_display,Lock display,elder_combo_mid,co_present,"[254.9, 757.6]",254,757,72,712,1032,800,1,1,1,bracket,tree,48,normalized
+settings_display,Lock screen,elder_combo_mid,co_present,"[279.7, 909.1]",279,909,96,878,467,970,1,1,1,bracket,tree,50,normalized
+settings_display,Show all notification content,elder_combo_mid,co_present,"[513.0, 1014.6]",513,1014,96,970,931,1058,1,1,1,bracket,tree,47,normalized
+settings_display,Screen timeout,elder_combo_mid,co_present,"[328.3, 1207.8]",328,1207,96,1160,563,1252,1,1,1,bracket,tree,50,normalized
+settings_display,Not set,elder_combo_mid,co_present,"[203.0, 1295.6]",203,1295,96,1252,310,1340,1,1,1,bracket,tree,50,normalized
+settings_display,Appearance,elder_combo_mid,co_present,"[248.4, 1513.0]",248,1513,72,1466,1032,1554,1,1,1,bracket,tree,48,normalized
+settings_display,Dark theme,elder_combo_mid,co_present,"[272.2, 1660.2]",272,1660,96,1632,450,1724,1,1,1,bracket,tree,49,normalized
+settings_display,Will turn on when Bedtime starts,elder_combo_mid,co_present,"[345.6, 1800.7]",345,1800,96,1724,615,1889,1,1,1,bracket,tree,47,normalized
+settings_display,Display size & text,elder_combo_mid,co_present,"[375.8, 2029.1]",375,2029,96,1991,655,2083,1,1,1,bracket,tree,47,normalized
+settings_display,"Font size, display size, bold text, outline text",elder_combo_mid,co_present,"[529.2, 2143.3]",529,2143,96,2083,936,2196,1,1,1,bracket,tree,50,normalized
+settings_display,Navigation mode,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Gesture navigation,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Screen saver,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,On / Clock,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Color,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Colors,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Brightness,colorblind_deuteranomaly,co_present,"[150.1, 559.2]",150,559,63,533,1038,584,1,1,1,bracket,tree,58,normalized
+settings_display,Brightness level,colorblind_deuteranomaly,co_present,"[216.0, 679.0]",216,679,84,652,378,709,1,1,1,bracket,tree,59,normalized
+settings_display,83%,colorblind_deuteranomaly,co_present,"[119.9, 734.5]",119,734,84,709,153,760,1,1,1,bracket,tree,60,normalized
+settings_display,Lock display,colorblind_deuteranomaly,co_present,"[166.3, 896.5]",166,896,63,870,1038,921,1,1,1,bracket,tree,58,normalized
+settings_display,Lock screen,colorblind_deuteranomaly,co_present,"[207.4, 1018.5]",207,1018,84,989,309,1046,1,1,1,bracket,tree,59,normalized
+settings_display,Show all notification content,colorblind_deuteranomaly,co_present,"[291.6, 1065.1]",291,1065,84,1046,548,1097,1,1,1,bracket,tree,55,normalized
+settings_display,Screen timeout,colorblind_deuteranomaly,co_present,"[226.8, 1213.8]",226,1213,84,1186,366,1243,1,1,1,bracket,tree,59,normalized
+settings_display,Not set,colorblind_deuteranomaly,co_present,"[132.8, 1264.8]",132,1264,84,1243,203,1294,1,1,1,bracket,tree,59,normalized
+settings_display,Appearance,colorblind_deuteranomaly,co_present,"[160.9, 1424.6]",160,1424,63,1404,1038,1455,1,1,1,bracket,tree,58,normalized
+settings_display,Dark theme,colorblind_deuteranomaly,co_present,"[192.2, 1548.9]",192,1548,84,1523,298,1580,1,1,1,bracket,tree,59,normalized
+settings_display,Will turn on when Bedtime starts,colorblind_deuteranomaly,co_present,"[349.9, 1584.4]",349,1584,84,1580,616,1631,1,1,1,bracket,tree,56,normalized
+settings_display,Display size & text,colorblind_deuteranomaly,co_present,"[254.9, 1748.6]",254,1748,84,1720,423,1777,1,1,1,bracket,tree,59,normalized
+settings_display,"Font size, display size, bold text, outline text",colorblind_deuteranomaly,co_present,"[440.6, 1797.4]",440,1797,84,1777,796,1828,1,1,1,bracket,tree,56,normalized
+settings_display,Navigation mode,colorblind_deuteranomaly,co_present,"[243.0, 1948.3]",243,1948,84,1917,402,1974,1,1,1,bracket,tree,59,normalized
+settings_display,Gesture navigation,colorblind_deuteranomaly,co_present,"[237.6, 1999.3]",237,1999,84,1974,392,2025,1,1,1,bracket,tree,59,normalized
+settings_display,Screen saver,colorblind_deuteranomaly,co_present,"[210.6, 2141.3]",210,2141,84,2114,323,2171,1,1,1,bracket,tree,59,normalized
+settings_display,On / Clock,colorblind_deuteranomaly,co_present,"[167.4, 2190.2]",167,2190,84,2171,254,2219,1,1,1,bracket,tree,59,normalized
+settings_display,Color,colorblind_deuteranomaly,off_screen,,,,,,,,,0,,,tree,0,
+settings_display,Colors,colorblind_deuteranomaly,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,Search Settings,baseline,co_present,"[372.6, 115.4]",372,115,189,80,578,151,1,1,1,bracket,tree,69,normalized
+settings_main,Google,baseline,co_present,"[287.3, 315.1]",287,315,221,289,354,346,1,1,1,bracket,tree,71,normalized
+settings_main,Services & preferences,baseline,co_present,"[410.4, 370.6]",410,370,221,346,600,397,1,1,1,bracket,tree,68,normalized
+settings_main,Network & internet,baseline,co_present,"[395.3, 554.8]",395,554,221,523,566,580,1,1,1,bracket,tree,69,normalized
+settings_main,"Mobile, Wi‑Fi, hotspot",baseline,co_present,"[395.3, 605.8]",395,605,221,580,572,631,1,1,1,bracket,tree,69,normalized
+settings_main,Connected devices,baseline,co_present,"[397.4, 750.0]",397,750,221,720,574,777,1,1,1,bracket,tree,69,normalized
+settings_main,"Bluetooth, pairing",baseline,co_present,"[365.0, 803.3]",365,803,221,777,508,828,1,1,1,bracket,tree,70,normalized
+settings_main,Apps,baseline,co_present,"[270.0, 980.8]",270,980,221,954,318,1011,1,1,1,bracket,tree,71,normalized
+settings_main,"Assistant, recent apps, default apps",baseline,co_present,"[513.0, 1040.7]",513,1040,221,1011,806,1062,1,1,1,bracket,tree,67,normalized
+settings_main,Notifications,baseline,co_present,"[349.9, 1180.5]",349,1180,221,1151,460,1208,1,1,1,bracket,tree,71,normalized
+settings_main,"Notification history, conversations",baseline,co_present,"[499.0, 1269.3]",499,1269,221,1208,777,1259,1,1,1,bracket,tree,62,normalized
+settings_main,Sound & vibration,baseline,co_present,"[383.4, 1380.2]",383,1380,221,1348,548,1405,1,1,1,bracket,tree,69,normalized
+settings_main,Volume and haptics,baseline,co_present,"[383.4, 1431.3]",383,1431,221,1405,546,1456,1,1,1,bracket,tree,69,normalized
+settings_main,Modes,baseline,co_present,"[285.1, 1571.1]",285,1571,221,1545,350,1602,1,1,1,bracket,tree,71,normalized
+settings_main,"Do Not Disturb, Bedtime, Driving",baseline,co_present,"[481.7, 1619.9]",481,1619,221,1602,744,1653,1,1,1,bracket,tree,68,normalized
+settings_main,Display & touch,baseline,co_present,"[365.0, 1764.1]",365,1764,221,1742,510,1799,1,1,1,bracket,tree,69,normalized
+settings_main,"Dark theme, font size, touch",baseline,co_present,"[448.2, 1821.8]",448,1821,221,1799,675,1850,1,1,1,bracket,tree,68,normalized
+settings_main,Wallpaper & style,baseline,co_present,"[381.2, 1968.3]",381,1968,221,1939,542,1996,1,1,1,bracket,tree,69,normalized
+settings_main,"Colors, themed icons, app grid",baseline,co_present,"[468.7, 2021.5]",468,2021,221,1996,717,2047,1,1,1,bracket,tree,68,normalized
+settings_main,Storage,baseline,co_present,"[300.2, 2185.7]",300,2185,221,2173,366,2219,1,1,1,bracket,tree,71,normalized
+settings_main,Search Settings,elder_text_heavy,co_present,"[414.7, 115.4]",414,115,189,72,664,159,1,1,1,bracket,tree,57,normalized
+settings_main,Google,elder_text_heavy,co_present,"[311.0, 315.1]",311,315,221,289,402,366,1,1,1,bracket,tree,59,normalized
+settings_main,Services & preferences,elder_text_heavy,co_present,"[495.7, 395.0]",495,395,221,366,770,439,1,1,1,bracket,tree,57,normalized
+settings_main,Network & internet,elder_text_heavy,co_present,"[457.9, 599.1]",457,599,221,565,691,642,1,1,1,bracket,tree,57,normalized
+settings_main,"Mobile, Wi‑Fi, hotspot",elder_text_heavy,co_present,"[477.4, 679.0]",477,679,221,642,737,715,1,1,1,bracket,tree,57,normalized
+settings_main,Connected devices,elder_text_heavy,co_present,"[461.2, 845.4]",461,845,221,804,701,881,1,1,1,bracket,tree,57,normalized
+settings_main,"Bluetooth, pairing",elder_text_heavy,co_present,"[399.6, 920.9]",399,920,221,881,642,954,1,1,1,bracket,tree,58,normalized
+settings_main,Apps,elder_text_heavy,co_present,"[285.1, 1118.4]",285,1118,221,1080,351,1157,1,1,1,bracket,tree,59,normalized
+settings_main,"Assistant, recent apps, default apps",elder_text_heavy,co_present,"[583.2, 1242.6]",583,1242,221,1157,996,1293,1,1,1,bracket,tree,51,normalized
+settings_main,Notifications,elder_text_heavy,co_present,"[384.5, 1420.2]",384,1420,221,1382,547,1459,1,1,1,bracket,tree,59,normalized
+settings_main,"Notification history, conversations",elder_text_heavy,co_present,"[452.5, 1531.1]",452,1531,221,1459,996,1595,1,1,1,bracket,tree,57,normalized
+settings_main,Sound & vibration,elder_text_heavy,co_present,"[442.8, 1717.5]",442,1717,221,1684,665,1761,1,1,1,bracket,tree,57,normalized
+settings_main,Volume and haptics,elder_text_heavy,co_present,"[429.8, 1799.6]",429,1799,221,1761,695,1834,1,1,1,bracket,tree,57,normalized
+settings_main,Modes,elder_text_heavy,co_present,"[308.9, 1952.7]",308,1952,221,1923,395,2000,1,1,1,bracket,tree,59,normalized
+settings_main,"Do Not Disturb, Bedtime, Driving",elder_text_heavy,co_present,"[613.4, 2034.8]",613,2034,221,2000,986,2073,1,1,1,bracket,tree,57,normalized
+settings_main,Display & touch,elder_text_heavy,co_present,"[410.4, 2185.7]",410,2185,221,2162,612,2219,1,1,1,bracket,tree,58,normalized
+settings_main,"Dark theme, font size, touch",elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,Wallpaper & style,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,"Colors, themed icons, app grid",elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,Storage,elder_text_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,Search Settings,elder_zoom_heavy,co_present,"[424.4, 131.8]",424,131,216,91,661,172,1,1,1,bracket,tree,60,normalized
+settings_main,Google,elder_zoom_heavy,co_present,"[327.2, 360.1]",327,360,252,330,403,395,1,1,1,bracket,tree,62,normalized
+settings_main,Services & preferences,elder_zoom_heavy,co_present,"[463.3, 423.8]",463,423,252,395,677,452,1,1,1,bracket,tree,60,normalized
+settings_main,Network & internet,elder_zoom_heavy,co_present,"[450.4, 628.1]",450,628,252,596,648,661,1,1,1,bracket,tree,60,normalized
+settings_main,"Mobile, Wi‑Fi, hotspot",elder_zoom_heavy,co_present,"[450.4, 689.5]",450,689,252,661,652,718,1,1,1,bracket,tree,60,normalized
+settings_main,Connected devices,elder_zoom_heavy,co_present,"[432.0, 856.4]",432,856,252,820,656,885,1,1,1,bracket,tree,60,normalized
+settings_main,"Bluetooth, pairing",elder_zoom_heavy,co_present,"[410.4, 920.1]",410,920,252,885,578,942,1,1,1,bracket,tree,61,normalized
+settings_main,Apps,elder_zoom_heavy,co_present,"[304.6, 1115.6]",304,1115,252,1086,362,1151,1,1,1,bracket,tree,62,normalized
+settings_main,"Assistant, recent apps, default apps",elder_zoom_heavy,co_present,"[541.1, 1181.4]",541,1181,252,1151,919,1208,1,1,1,bracket,tree,54,normalized
+settings_main,Notifications,elder_zoom_heavy,co_present,"[387.7, 1341.8]",387,1341,252,1310,526,1375,1,1,1,bracket,tree,62,normalized
+settings_main,"Notification history, conversations",elder_zoom_heavy,co_present,"[568.1, 1403.2]",568,1403,252,1375,885,1432,1,1,1,bracket,tree,60,normalized
+settings_main,Sound & vibration,elder_zoom_heavy,co_present,"[438.5, 1563.6]",438,1563,252,1534,628,1599,1,1,1,bracket,tree,60,normalized
+settings_main,Volume and haptics,elder_zoom_heavy,co_present,"[435.2, 1629.4]",435,1629,252,1599,623,1656,1,1,1,bracket,tree,60,normalized
+settings_main,Modes,elder_zoom_heavy,co_present,"[324.0, 1789.7]",324,1789,252,1758,398,1823,1,1,1,bracket,tree,62,normalized
+settings_main,"Do Not Disturb, Bedtime, Driving",elder_zoom_heavy,co_present,"[548.6, 1851.2]",548,1851,252,1823,847,1880,1,1,1,bracket,tree,60,normalized
+settings_main,Display & touch,elder_zoom_heavy,co_present,"[416.9, 2009.3]",416,2009,252,1982,583,2047,1,1,1,bracket,tree,61,normalized
+settings_main,"Dark theme, font size, touch",elder_zoom_heavy,co_present,"[509.8, 2075.2]",509,2075,252,2047,769,2104,1,1,1,bracket,tree,60,normalized
+settings_main,Wallpaper & style,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,"Colors, themed icons, app grid",elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,Storage,elder_zoom_heavy,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,Search Settings,elder_combo_max,co_present,"[506.5, 143.7]",506,143,234,82,888,203,1,1,1,bracket,tree,40,normalized
+settings_main,Google,elder_combo_max,co_present,"[395.3, 391.9]",395,391,273,358,518,463,1,1,1,bracket,tree,42,normalized
+settings_main,Services & preferences,elder_combo_max,co_present,"[465.5, 557.3]",465,557,273,463,976,650,1,1,1,bracket,tree,40,normalized
+settings_main,Network & internet,elder_combo_max,co_present,"[594.0, 859.9]",594,859,273,807,917,912,1,1,1,bracket,tree,42,normalized
+settings_main,"Mobile, Wi‑Fi, hotspot",elder_combo_max,co_present,"[490.3, 1010.1]",490,1010,273,912,976,1099,1,1,1,bracket,tree,39,normalized
+settings_main,Connected devices,elder_combo_max,co_present,"[600.5, 1262.7]",600,1262,273,1210,930,1315,1,1,1,bracket,tree,34,normalized
+settings_main,"Bluetooth, pairing",elder_combo_max,co_present,"[559.4, 1369.3]",559,1369,273,1315,849,1415,1,1,1,bracket,tree,40,normalized
+settings_main,Apps,elder_combo_max,co_present,"[362.9, 1626.2]",362,1626,273,1572,452,1677,1,1,1,bracket,tree,42,normalized
+settings_main,"Assistant, recent apps, default apps",elder_combo_max,co_present,"[585.4, 1774.3]",585,1774,273,1677,976,1864,1,1,1,bracket,tree,40,normalized
+settings_main,Notifications,elder_combo_max,co_present,"[494.6, 2026.8]",494,2026,273,1975,716,2080,1,1,1,bracket,tree,40,normalized
+settings_main,"Notification history, conversations",elder_combo_max,co_present,"[624.2, 2129.1]",624,2129,273,2080,976,2177,1,1,1,bracket,tree,42,normalized
+settings_main,Sound & vibration,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,Volume and haptics,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,Modes,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,"Do Not Disturb, Bedtime, Driving",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,Display & touch,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,"Dark theme, font size, touch",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,Wallpaper & style,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,"Colors, themed icons, app grid",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,Storage,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,Search Settings,elder_combo_mid,co_present,"[486.0, 131.8]",486,131,216,79,783,184,1,1,1,bracket,tree,46,normalized
+settings_main,Google,elder_combo_mid,co_present,"[359.6, 375.5]",359,375,252,330,470,422,1,1,1,bracket,tree,48,normalized
+settings_main,Services & preferences,elder_combo_mid,co_present,"[585.4, 469.9]",585,469,252,422,921,510,1,1,1,bracket,tree,46,normalized
+settings_main,Network & internet,elder_combo_mid,co_present,"[540.0, 702.7]",540,702,252,654,823,746,1,1,1,bracket,tree,46,normalized
+settings_main,"Mobile, Wi‑Fi, hotspot",elder_combo_mid,co_present,"[565.9, 795.0]",565,795,252,746,882,834,1,1,1,bracket,tree,46,normalized
+settings_main,Connected devices,elder_combo_mid,co_present,"[540.0, 981.6]",540,981,252,936,836,1028,1,1,1,bracket,tree,45,normalized
+settings_main,"Bluetooth, pairing",elder_combo_mid,co_present,"[506.5, 1076.0]",506,1076,252,1028,765,1116,1,1,1,bracket,tree,45,normalized
+settings_main,Apps,elder_combo_mid,co_present,"[330.5, 1308.8]",330,1308,252,1260,411,1352,1,1,1,bracket,tree,48,normalized
+settings_main,"Assistant, recent apps, default apps",elder_combo_mid,co_present,"[581.0, 1440.6]",581,1440,252,1352,984,1517,1,1,1,bracket,tree,46,normalized
+settings_main,Notifications,elder_combo_mid,co_present,"[447.1, 1664.6]",447,1664,252,1619,645,1711,1,1,1,bracket,tree,48,normalized
+settings_main,"Notification history, conversations",elder_combo_mid,co_present,"[540.0, 1800.7]",540,1800,252,1711,984,1876,1,1,1,bracket,tree,46,normalized
+settings_main,Sound & vibration,elder_combo_mid,co_present,"[520.6, 2020.3]",520,2020,252,1978,790,2070,1,1,1,bracket,tree,46,normalized
+settings_main,Volume and haptics,elder_combo_mid,co_present,"[540.0, 2114.7]",540,2114,252,2070,833,2158,1,1,1,bracket,tree,46,normalized
+settings_main,Modes,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,"Do Not Disturb, Bedtime, Driving",elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,Display & touch,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,"Dark theme, font size, touch",elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,Wallpaper & style,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,"Colors, themed icons, app grid",elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,Storage,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_main,Search Settings,colorblind_deuteranomaly,co_present,"[372.6, 115.4]",372,115,189,80,578,151,1,1,1,bracket,tree,69,normalized
+settings_main,Google,colorblind_deuteranomaly,co_present,"[290.5, 317.3]",290,317,221,289,354,346,1,1,1,bracket,tree,71,normalized
+settings_main,Services & preferences,colorblind_deuteranomaly,co_present,"[409.3, 379.4]",409,379,221,346,600,397,1,1,1,bracket,tree,68,normalized
+settings_main,Network & internet,colorblind_deuteranomaly,co_present,"[395.3, 557.0]",395,557,221,523,566,580,1,1,1,bracket,tree,69,normalized
+settings_main,"Mobile, Wi‑Fi, hotspot",colorblind_deuteranomaly,co_present,"[397.4, 605.8]",397,605,221,580,572,631,1,1,1,bracket,tree,69,normalized
+settings_main,Connected devices,colorblind_deuteranomaly,co_present,"[388.8, 750.0]",388,750,221,720,574,777,1,1,1,bracket,tree,69,normalized
+settings_main,"Bluetooth, pairing",colorblind_deuteranomaly,co_present,"[365.0, 803.3]",365,803,221,777,508,828,1,1,1,bracket,tree,70,normalized
+settings_main,Apps,colorblind_deuteranomaly,co_present,"[275.4, 983.0]",275,983,221,954,318,1011,1,1,1,bracket,tree,71,normalized
+settings_main,"Assistant, recent apps, default apps",colorblind_deuteranomaly,co_present,"[513.0, 1040.7]",513,1040,221,1011,806,1062,1,1,1,bracket,tree,67,normalized
+settings_main,Notifications,colorblind_deuteranomaly,co_present,"[357.5, 1178.3]",357,1178,221,1151,460,1208,1,1,1,bracket,tree,71,normalized
+settings_main,"Notification history, conversations",colorblind_deuteranomaly,co_present,"[499.0, 1231.5]",499,1231,221,1208,777,1259,1,1,1,bracket,tree,62,normalized
+settings_main,Sound & vibration,colorblind_deuteranomaly,co_present,"[383.4, 1375.8]",383,1375,221,1348,548,1405,1,1,1,bracket,tree,69,normalized
+settings_main,Volume and haptics,colorblind_deuteranomaly,co_present,"[382.3, 1431.3]",382,1431,221,1405,546,1456,1,1,1,bracket,tree,69,normalized
+settings_main,Modes,colorblind_deuteranomaly,co_present,"[284.0, 1573.3]",284,1573,221,1545,350,1602,1,1,1,bracket,tree,71,normalized
+settings_main,"Do Not Disturb, Bedtime, Driving",colorblind_deuteranomaly,co_present,"[481.7, 1626.5]",481,1626,221,1602,744,1653,1,1,1,bracket,tree,68,normalized
+settings_main,Display & touch,colorblind_deuteranomaly,co_present,"[367.2, 1766.3]",367,1766,221,1742,510,1799,1,1,1,bracket,tree,69,normalized
+settings_main,"Dark theme, font size, touch",colorblind_deuteranomaly,co_present,"[446.0, 1821.8]",446,1821,221,1799,675,1850,1,1,1,bracket,tree,68,normalized
+settings_main,Wallpaper & style,colorblind_deuteranomaly,co_present,"[384.5, 1968.3]",384,1968,221,1939,542,1996,1,1,1,bracket,tree,69,normalized
+settings_main,"Colors, themed icons, app grid",colorblind_deuteranomaly,co_present,"[468.7, 2023.7]",468,2023,221,1996,717,2047,1,1,1,bracket,tree,68,normalized
+settings_main,Storage,colorblind_deuteranomaly,co_present,"[313.2, 2196.8]",313,2196,221,2173,366,2219,1,1,1,bracket,tree,71,normalized
+settings_network,Internet,baseline,co_present,"[291.6, 217.5]",291,217,221,189,364,246,1,1,1,bracket,tree,69,normalized
+settings_network,AndroidWifi,baseline,co_present,"[315.4, 259.6]",315,259,221,246,413,297,1,1,1,bracket,tree,69,normalized
+settings_network,SIMs,baseline,co_present,"[270.0, 415.0]",270,415,221,386,316,443,1,1,1,bracket,tree,69,normalized
+settings_network,T-Mobile,baseline,co_present,"[290.5, 468.2]",290,468,221,443,361,494,1,1,1,bracket,tree,69,normalized
+settings_network,Airplane mode,baseline,co_present,"[334.8, 634.6]",334,634,221,607,491,664,1,1,1,bracket,tree,70,normalized
+settings_network,Hotspot & tethering,baseline,co_present,"[401.8, 807.7]",401,807,221,777,585,834,1,1,1,bracket,tree,66,normalized
+settings_network,Data Saver,baseline,co_present,"[321.8, 1003.0]",321,1003,221,974,423,1031,1,1,1,bracket,tree,69,normalized
+settings_network,VPN,baseline,co_present,"[262.4, 1200.5]",262,1200,221,1171,305,1228,1,1,1,bracket,tree,69,normalized
+settings_network,None,baseline,co_present,"[264.6, 1242.6]",264,1242,221,1228,308,1279,1,1,1,bracket,tree,69,normalized
+settings_network,Private DNS,baseline,co_present,"[195.5, 1398.0]",195,1398,84,1368,307,1425,1,1,1,bracket,tree,69,normalized
+settings_network,Automatic,baseline,co_present,"[165.2, 1451.2]",165,1451,84,1425,253,1476,1,1,1,bracket,tree,69,normalized
+settings_network,Adaptive connectivity,baseline,co_present,"[283.0, 1593.2]",283,1593,84,1565,482,1622,1,1,1,bracket,tree,69,normalized
+settings_network,On,baseline,co_present,"[108.0, 1650.9]",108,1650,84,1622,129,1673,1,1,1,bracket,tree,70,normalized
+settings_network,Mobile network security,baseline,co_present,"[306.7, 1793.0]",306,1793,84,1762,528,1819,1,1,1,bracket,tree,66,normalized
+settings_network,"Network type, encryption, notification controls",baseline,co_present,"[459.0, 1844.0]",459,1844,84,1819,835,1870,1,1,1,bracket,tree,66,normalized
+settings_network,Internet,elder_text_heavy,co_present,"[321.8, 224.1]",321,224,221,189,416,266,1,1,1,bracket,tree,70,normalized
+settings_network,AndroidWifi,elder_text_heavy,co_present,"[335.9, 301.8]",335,301,221,266,499,339,1,1,1,bracket,tree,70,normalized
+settings_network,SIMs,elder_text_heavy,co_present,"[284.0, 468.2]",284,468,221,428,350,505,1,1,1,bracket,tree,70,normalized
+settings_network,T-Mobile,elder_text_heavy,co_present,"[321.8, 539.2]",321,539,221,505,425,578,1,1,1,bracket,tree,70,normalized
+settings_network,Airplane mode,elder_text_heavy,co_present,"[403.9, 719.0]",403,719,221,681,588,758,1,1,1,bracket,tree,67,normalized
+settings_network,Hotspot & tethering,elder_text_heavy,co_present,"[432.0, 909.8]",432,909,221,861,715,938,1,1,1,bracket,tree,67,normalized
+settings_network,Data Saver,elder_text_heavy,co_present,"[359.6, 1136.1]",359,1136,221,1100,495,1177,1,1,1,bracket,tree,70,normalized
+settings_network,VPN,elder_text_heavy,co_present,"[275.4, 1375.8]",275,1375,221,1339,334,1416,1,1,1,bracket,tree,70,normalized
+settings_network,None,elder_text_heavy,co_present,"[285.1, 1455.7]",285,1455,221,1416,350,1489,1,1,1,bracket,tree,70,normalized
+settings_network,Private DNS,elder_text_heavy,co_present,"[237.6, 1619.9]",237,1619,84,1578,387,1655,1,1,1,bracket,tree,70,normalized
+settings_network,Automatic,elder_text_heavy,co_present,"[194.4, 1693.1]",194,1693,84,1655,333,1728,1,1,1,bracket,tree,70,normalized
+settings_network,Adaptive connectivity,elder_text_heavy,co_present,"[356.4, 1855.1]",356,1855,84,1817,627,1894,1,1,1,bracket,tree,67,normalized
+settings_network,On,elder_text_heavy,co_present,"[118.8, 1928.3]",118,1928,84,1894,151,1967,1,1,1,bracket,tree,70,normalized
+settings_network,Mobile network security,elder_text_heavy,co_present,"[357.5, 2094.7]",357,2094,84,2056,688,2133,1,1,1,bracket,tree,67,normalized
+settings_network,"Network type, encryption, notification controls",elder_text_heavy,co_present,"[391.0, 2174.6]",391,2174,84,2133,954,2219,1,1,1,bracket,tree,70,normalized
+settings_network,Internet,elder_zoom_heavy,co_present,"[334.8, 237.2]",334,237,252,216,417,281,1,1,1,bracket,tree,70,normalized
+settings_network,AndroidWifi,elder_zoom_heavy,co_present,"[358.6, 311.8]",358,311,252,281,468,338,1,1,1,bracket,tree,70,normalized
+settings_network,SIMs,elder_zoom_heavy,co_present,"[303.5, 472.1]",303,472,252,440,361,505,1,1,1,bracket,tree,70,normalized
+settings_network,T-Mobile,elder_zoom_heavy,co_present,"[330.5, 535.8]",330,535,252,505,412,562,1,1,1,bracket,tree,70,normalized
+settings_network,Airplane mode,elder_zoom_heavy,co_present,"[406.1, 724.7]",406,724,252,691,561,756,1,1,1,bracket,tree,67,normalized
+settings_network,Hotspot & tethering,elder_zoom_heavy,co_present,"[459.0, 922.3]",459,922,252,886,668,951,1,1,1,bracket,tree,67,normalized
+settings_network,Data Saver,elder_zoom_heavy,co_present,"[366.1, 1137.5]",366,1137,252,1110,483,1175,1,1,1,bracket,tree,70,normalized
+settings_network,VPN,elder_zoom_heavy,co_present,"[298.1, 1363.7]",298,1363,252,1334,347,1399,1,1,1,bracket,tree,70,normalized
+settings_network,None,elder_zoom_heavy,co_present,"[300.2, 1429.6]",300,1429,252,1399,351,1456,1,1,1,bracket,tree,70,normalized
+settings_network,Private DNS,elder_zoom_heavy,co_present,"[222.5, 1589.9]",222,1589,96,1558,351,1623,1,1,1,bracket,tree,70,normalized
+settings_network,Automatic,elder_zoom_heavy,co_present,"[192.2, 1658.0]",192,1658,96,1623,290,1680,1,1,1,bracket,tree,70,normalized
+settings_network,Adaptive connectivity,elder_zoom_heavy,co_present,"[302.4, 1813.9]",302,1813,96,1782,553,1847,1,1,1,bracket,tree,67,normalized
+settings_network,On,elder_zoom_heavy,co_present,"[122.0, 1875.4]",122,1875,96,1847,148,1904,1,1,1,bracket,tree,70,normalized
+settings_network,Mobile network security,elder_zoom_heavy,co_present,"[345.6, 2037.9]",345,2037,96,2006,604,2071,1,1,1,bracket,tree,67,normalized
+settings_network,"Network type, encryption, notification controls",elder_zoom_heavy,co_present,"[442.8, 2119.1]",442,2119,96,2071,936,2177,1,1,1,bracket,tree,67,normalized
+settings_network,Internet,elder_combo_max,co_present,"[410.4, 269.9]",410,269,273,234,540,339,1,1,1,bracket,tree,58,normalized
+settings_network,AndroidWifi,elder_combo_max,co_present,"[463.3, 391.9]",463,391,273,339,656,439,1,1,1,bracket,tree,56,normalized
+settings_network,SIMs,elder_combo_max,co_present,"[360.7, 590.0]",360,590,273,550,448,655,1,1,1,bracket,tree,58,normalized
+settings_network,T-Mobile,elder_combo_max,co_present,"[412.6, 709.7]",412,709,273,655,553,755,1,1,1,bracket,tree,58,normalized
+settings_network,Airplane mode,elder_combo_max,co_present,"[414.7, 962.2]",414,962,273,866,755,1062,1,1,1,bracket,tree,55,normalized
+settings_network,Hotspot & tethering,elder_combo_max,co_present,"[481.7, 1273.5]",481,1273,273,1173,924,1369,1,1,1,bracket,tree,55,normalized
+settings_network,Data Saver,elder_combo_max,co_present,"[425.5, 1630.6]",425,1630,273,1580,645,1685,1,1,1,bracket,tree,56,normalized
+settings_network,VPN,elder_combo_max,co_present,"[349.9, 1948.4]",349,1948,273,1896,428,2001,1,1,1,bracket,tree,58,normalized
+settings_network,None,elder_combo_max,co_present,"[362.9, 2050.7]",362,2050,273,2001,448,2101,1,1,1,bracket,tree,58,normalized
+settings_network,Private DNS,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_network,Automatic,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_network,Adaptive connectivity,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_network,On,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_network,Mobile network security,elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_network,"Network type, encryption, notification controls",elder_combo_max,off_screen,,,,,,,,,0,,,tree,0,
+settings_network,Internet,elder_combo_mid,co_present,"[369.4, 250.3]",369,250,252,216,490,308,1,1,1,bracket,tree,64,normalized
+settings_network,AndroidWifi,elder_combo_mid,co_present,"[419.0, 353.6]",419,353,252,308,593,396,1,1,1,bracket,tree,62,normalized
+settings_network,SIMs,elder_combo_mid,co_present,"[328.3, 544.6]",328,544,252,498,408,590,1,1,1,bracket,tree,64,normalized
+settings_network,T-Mobile,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_network,Airplane mode,elder_combo_mid,co_present,"[452.5, 841.1]",452,841,252,794,699,886,1,1,1,bracket,tree,61,normalized
+settings_network,Hotspot & tethering,elder_combo_mid,co_present,"[550.8, 1047.5]",550,1047,252,1002,852,1094,1,1,1,bracket,tree,60,normalized
+settings_network,Data Saver,elder_combo_mid,co_present,"[419.0, 1330.8]",419,1330,252,1284,585,1376,1,1,1,bracket,tree,62,normalized
+settings_network,VPN,elder_combo_mid,co_present,"[319.7, 1609.7]",319,1609,252,1566,389,1658,1,1,1,bracket,tree,64,normalized
+settings_network,None,elder_combo_mid,co_present,"[329.4, 1701.9]",329,1701,252,1658,408,1746,1,1,1,bracket,tree,64,normalized
+settings_network,Private DNS,elder_combo_mid,co_present,"[278.6, 1893.0]",278,1893,96,1848,463,1940,1,1,1,bracket,tree,64,normalized
+settings_network,Automatic,elder_combo_mid,co_present,"[248.4, 1987.4]",248,1987,96,1940,401,2028,1,1,1,bracket,tree,64,normalized
+settings_network,Adaptive connectivity,elder_combo_mid,co_present,"[424.4, 2152.1]",424,2152,96,2130,754,2196,1,1,1,bracket,tree,61,normalized
+settings_network,On,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_network,Mobile network security,elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_network,"Network type, encryption, notification controls",elder_combo_mid,off_screen,,,,,,,,,0,,,tree,0,
+settings_network,Internet,colorblind_deuteranomaly,co_present,"[292.7, 217.5]",292,217,221,189,364,246,1,1,1,bracket,tree,69,normalized
+settings_network,AndroidWifi,colorblind_deuteranomaly,co_present,"[315.4, 270.7]",315,270,221,246,413,297,1,1,1,bracket,tree,69,normalized
+settings_network,SIMs,colorblind_deuteranomaly,co_present,"[267.8, 410.5]",267,410,221,386,316,443,1,1,1,bracket,tree,69,normalized
+settings_network,T-Mobile,colorblind_deuteranomaly,co_present,"[291.6, 470.4]",291,470,221,443,361,494,1,1,1,bracket,tree,69,normalized
+settings_network,Airplane mode,colorblind_deuteranomaly,co_present,"[356.4, 634.6]",356,634,221,607,491,664,1,1,1,bracket,tree,70,normalized
+settings_network,Hotspot & tethering,colorblind_deuteranomaly,co_present,"[401.8, 809.9]",401,809,221,777,585,834,1,1,1,bracket,tree,66,normalized
+settings_network,Data Saver,colorblind_deuteranomaly,co_present,"[320.8, 1003.0]",320,1003,221,974,423,1031,1,1,1,bracket,tree,69,normalized
+settings_network,VPN,colorblind_deuteranomaly,co_present,"[262.4, 1200.5]",262,1200,221,1171,305,1228,1,1,1,bracket,tree,69,normalized
+settings_network,None,colorblind_deuteranomaly,co_present,"[260.3, 1253.7]",260,1253,221,1228,308,1279,1,1,1,bracket,tree,69,normalized
+settings_network,Private DNS,colorblind_deuteranomaly,co_present,"[195.5, 1400.2]",195,1400,84,1368,307,1425,1,1,1,bracket,tree,69,normalized
+settings_network,Automatic,colorblind_deuteranomaly,co_present,"[166.3, 1455.7]",166,1455,84,1425,253,1476,1,1,1,bracket,tree,69,normalized
+settings_network,Adaptive connectivity,colorblind_deuteranomaly,co_present,"[284.0, 1597.7]",284,1597,84,1565,482,1622,1,1,1,bracket,tree,69,normalized
+settings_network,On,colorblind_deuteranomaly,co_present,"[108.0, 1646.5]",108,1646,84,1622,129,1673,1,1,1,bracket,tree,70,normalized
+settings_network,Mobile network security,colorblind_deuteranomaly,co_present,"[305.6, 1797.4]",305,1797,84,1762,528,1819,1,1,1,bracket,tree,66,normalized
+settings_network,"Network type, encryption, notification controls",colorblind_deuteranomaly,co_present,"[426.6, 1844.0]",426,1844,84,1819,835,1870,1,1,1,bracket,tree,66,normalized
+youtube,Home,baseline,co_present,"[108.0, 2185.7]",108,2185,70,2175,147,2205,1,1,1,bracket,tree,72,normalized
+youtube,Shorts,baseline,co_present,"[324.0, 2190.2]",324,2190,283,2175,365,2205,1,1,1,bracket,tree,72,normalized
+youtube,Subscriptions,baseline,co_present,"[756.0, 2185.7]",756,2185,674,2175,838,2205,1,1,1,bracket,tree,72,normalized
+youtube,You,baseline,co_present,"[972.0, 2190.2]",972,2190,947,2175,998,2205,1,1,1,bracket,tree,72,normalized
+youtube,Home,elder_text_heavy,co_present,"[108.0, 2156.9]",108,2156,70,2175,147,2205,1,1,1,bracket,tree,72,normalized
+youtube,Shorts,elder_text_heavy,co_present,"[324.0, 2190.2]",324,2190,283,2175,365,2205,1,1,1,bracket,tree,72,normalized
+youtube,Subscriptions,elder_text_heavy,co_present,"[756.0, 2190.2]",756,2190,674,2175,838,2205,1,1,1,bracket,tree,72,normalized
+youtube,You,elder_text_heavy,co_present,"[972.0, 2190.2]",972,2190,947,2175,998,2205,1,1,1,bracket,tree,72,normalized
+youtube,Home,elder_zoom_heavy,co_present,"[108.0, 2171.8]",108,2171,65,2155,151,2190,1,1,1,bracket,tree,72,normalized
+youtube,Shorts,elder_zoom_heavy,co_present,"[324.0, 2171.8]",324,2171,277,2155,371,2190,1,1,1,bracket,tree,72,normalized
+youtube,Subscriptions,elder_zoom_heavy,co_present,"[756.0, 2174.0]",756,2174,662,2155,851,2190,1,1,1,bracket,tree,72,normalized
+youtube,You,elder_zoom_heavy,co_present,"[972.0, 2169.6]",972,2169,943,2155,1001,2190,1,1,1,bracket,tree,72,normalized
+youtube,Home,elder_combo_max,co_present,"[108.0, 2133.5]",108,2133,60,2128,156,2167,1,1,1,bracket,tree,65,normalized
+youtube,Shorts,elder_combo_max,co_present,"[324.0, 2146.5]",324,2146,273,2128,376,2167,1,1,1,bracket,tree,65,normalized
+youtube,Subscriptions,elder_combo_max,co_present,"[756.0, 2144.3]",756,2144,652,2128,860,2167,1,1,1,bracket,tree,65,normalized
+youtube,You,elder_combo_max,co_present,"[972.0, 2146.5]",972,2146,941,2128,1003,2167,1,1,1,bracket,tree,65,normalized
+youtube,Home,elder_combo_mid,co_present,"[108.0, 2156.5]",108,2156,65,2140,151,2175,1,1,1,bracket,tree,65,normalized
+youtube,Shorts,elder_combo_mid,co_present,"[324.0, 2156.5]",324,2156,277,2140,371,2175,1,1,1,bracket,tree,65,normalized
+youtube,Subscriptions,elder_combo_mid,co_present,"[756.0, 2152.1]",756,2152,662,2140,851,2175,1,1,1,bracket,tree,65,normalized
+youtube,You,elder_combo_mid,co_present,"[972.0, 2156.5]",972,2156,943,2140,1001,2175,1,1,1,bracket,tree,65,normalized
+youtube,Home,colorblind_deuteranomaly,co_present,"[108.0, 2181.3]",108,2181,70,2166,147,2196,1,1,1,bracket,tree,72,normalized
+youtube,Shorts,colorblind_deuteranomaly,co_present,"[324.0, 2181.3]",324,2181,283,2166,365,2196,1,1,1,bracket,tree,72,normalized
+youtube,Subscriptions,colorblind_deuteranomaly,co_present,"[756.0, 2181.3]",756,2181,674,2166,838,2196,1,1,1,bracket,tree,72,normalized
+youtube,You,colorblind_deuteranomaly,co_present,"[972.0, 2176.8]",972,2176,947,2166,998,2196,1,1,1,bracket,tree,72,normalized

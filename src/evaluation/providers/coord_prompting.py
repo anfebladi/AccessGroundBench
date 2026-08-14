@@ -107,14 +107,14 @@ def classify_normalized_reply(raw_text: str) -> str:
 
     Classification only. The reply text is returned to the caller verbatim and
     the pixel conversion happens in the runner (evaluation.grounding.scoring.to_pixel_space),
-    driven by the space this returns. Converting here instead would discard the
-    model's original answer, which is what made the already-collected Gemini
-    rows impossible to re-score offline.
+    driven by the space this returns. Converting here instead would overwrite
+    the model's original answer with a derived one, leaving nothing to re-score
+    from if the conversion later turns out to be wrong.
 
     A pixel-space reply whose values also happen to fall inside 0-1000 (the
     top-left ~45% of these screens) is indistinguishable from a genuinely
-    normalized reply from the text alone -- this is a stated limitation, not
-    a bug: see CLAUDE.md and the plan's "Compliance check and retry" section.
+    normalized reply from the text alone. The compliance retry narrows this but
+    cannot close it -- a stated limitation of the measurement, not a defect.
     """
     match = _GEMINI_COORD_RE.search(raw_text)
     if not match:
