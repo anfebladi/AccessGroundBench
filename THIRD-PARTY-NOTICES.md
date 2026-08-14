@@ -110,18 +110,29 @@ Everything else under `ferret_ui/` — `ferret_server.py`, `cli_runner.py`,
 project's own code and is MIT.
 
 **Weights and provenance chain.** The model derives from
-**Apple Ferret-UI → Meta Llama 3 → LLaVA**, with a CLIP vision encoder. The weights are
-governed by the **Meta Llama 3 Community License**, which is *not* a standard
-open-source licence: it carries an acceptable-use policy, an attribution requirement
-("Built with Meta Llama 3"), and a 700M-monthly-active-user threshold above which a
-separate licence must be obtained from Meta. We redistribute no weights, so running
-Ferret-UI means accepting those terms directly with the upstream provider at download
-time. See [`docs/ferret-ui.md`](docs/ferret-ui.md).
+**Apple Ferret-UI → Meta Llama 3 → LLaVA**, with a CLIP vision encoder. We redistribute
+no weights, so running Ferret-UI means accepting the upstream terms directly at download
+time. Those terms were checked against the sources rather than assumed:
 
-> **Before publishing Ferret-UI results**, read the licence on the
-> `jadechoghari/Ferret-UI-Llama8b` Hugging Face repository. Some links in this chain are
-> research/non-commercial-only, and that governs whether results obtained with it may be
-> published without further condition. This could not be verified offline.
+| Layer | Terms |
+|---|---|
+| `jadechoghari/Ferret-UI-Llama8b` | **No licence declared** — no licence tag, no LICENSE file, no license metadata field. A community redistribution, not an official Apple release. |
+| Apple `ml-ferret` (upstream Ferret) | **CC BY-NC 4.0**, *"intended and licensed for research use only"*; *"models trained using the dataset should not be used outside of research purposes"* |
+| Base weights | **Meta Llama 3 Community License** — acceptable-use policy, "Built with Meta Llama 3" attribution, and a 700M-monthly-active-user threshold above which a separate Meta licence is required |
+
+**The operative restriction is research-only use**, inherited from Apple's CC BY-NC 4.0.
+The Hugging Face repository grants nothing explicitly, and an absent licence is not a
+permissive one — so the upstream terms continue to govern, and the most restrictive of
+them binds.
+
+For this project that is not a problem: running the benchmark and publishing the
+resulting numbers is research use, which is exactly what CC BY-NC 4.0 permits, subject to
+attribution (cite arXiv:2404.05719). Commercial use of Ferret-UI is not permitted at any
+point in the chain.
+
+This constrains only the optional Ferret-UI component. Every other model in the roster
+runs over a hosted API and carries no comparable restriction, so no other result in the
+benchmark is affected. See [`docs/ferret-ui.md`](docs/ferret-ui.md).
 
 ## 5. Screenshots of Android and Google applications (the dataset)
 

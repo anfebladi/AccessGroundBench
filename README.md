@@ -233,8 +233,14 @@ The screen remains fully supported for anyone collecting on their own account:
 silently drift back. **Its absence is a privacy decision, not a missing feature** — and
 anyone who re-enables it inherits the same caveat.
 
-Third-party dependencies, redistributed fonts, and the Ferret-UI / Llama 3 licence chain
-are documented in [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md).
+**One model carries a usage restriction.** The optional local Ferret-UI baseline inherits
+**CC BY-NC 4.0, research use only**, from Apple's upstream Ferret, plus the Meta Llama 3
+Community License on its base weights. Running the benchmark and publishing the numbers
+is research use and therefore permitted, with attribution (arXiv:2404.05719); commercial
+use is not. No other model in the roster is affected — the rest run over hosted APIs.
+
+Third-party dependencies, redistributed fonts, and the full Ferret-UI / Llama 3 licence
+chain are documented in [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md).
 
 ## Citing
 

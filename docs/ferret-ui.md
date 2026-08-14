@@ -48,17 +48,34 @@ VLM_MODEL=local/ferret-ui-llama8b
 Ferret-UI is optional and is governed by terms that are **not** this project's MIT
 licence. You accept them directly with the upstream providers when you download.
 
-- **Model code** (the seven modules above) is third-party — Apple Ferret-UI, built on
-  LLaVA — and is fetched from Hugging Face rather than redistributed here.
-- **Weights** derive from **Meta Llama 3** and are governed by the **Meta Llama 3
-  Community License**, which is not a standard open-source licence. It carries an
-  acceptable-use policy, an attribution requirement ("Built with Meta Llama 3"), and a
-  700-million-monthly-active-user threshold above which a separate licence must be
-  obtained from Meta.
-- **Before publishing results obtained with Ferret-UI**, read the licence stated on the
-  `jadechoghari/Ferret-UI-Llama8b` Hugging Face repository. Parts of this provenance
-  chain are research/non-commercial-only, and that determines whether such results may
-  be published without further condition.
+**Research use only.** This is the operative restriction, and it is inherited rather
+than chosen:
+
+| Layer | Terms |
+|---|---|
+| `jadechoghari/Ferret-UI-Llama8b` (the weights this server loads) | **No licence declared** — the repository states no licence tag, ships no LICENSE file, and sets no license field |
+| Apple `ml-ferret` (upstream Ferret) | **CC BY-NC 4.0**, stated as *"intended and licensed for research use only"*, adding that *"models trained using the dataset should not be used outside of research purposes"* |
+| Base weights | **Meta Llama 3 Community License** |
+
+Read that first row carefully: the Hugging Face repository grants nothing explicitly,
+and silence is not permission. The upstream terms therefore continue to govern, and the
+most restrictive of them — CC BY-NC 4.0, research-only — is the one that binds. That
+repository is also a community redistribution, not an official Apple release.
+
+Practical consequences:
+
+- **Benchmark and academic research use is within scope.** Running AccessGroundBench and
+  publishing the resulting numbers is research use; that is what the restriction permits.
+- **Commercial use is not**, at any point in the chain. Do not build a product on this.
+- **Attribution is required** by CC BY-NC 4.0. Cite Ferret-UI (arXiv:2404.05719) in any
+  work reporting its results.
+- The Meta Llama 3 Community License adds its own acceptable-use policy, a "Built with
+  Meta Llama 3" attribution requirement, and a 700-million-monthly-active-user threshold
+  above which a separate licence must be obtained from Meta.
+
+None of this touches the rest of the benchmark: every other model runs over a hosted API
+and carries no such restriction. Ferret-UI is the only component that constrains how
+results may be used, which is worth remembering if a venue asks.
 
 See [`THIRD-PARTY-NOTICES.md`](../THIRD-PARTY-NOTICES.md) §4.
 
