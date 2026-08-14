@@ -32,16 +32,19 @@ export function exportCanvasPairAsPng(
   ctx.beginPath();
   ctx.rect(0, 0, bottom.width * revealFraction, bottom.height);
   ctx.clip();
+  const scale = Math.min(bottom.width / top.width, bottom.height / top.height);
+  const drawWidth = top.width * scale;
+  const drawHeight = top.height * scale;
   ctx.drawImage(
     top,
     0,
     0,
     top.width,
     top.height,
-    0,
-    0,
-    bottom.width,
-    bottom.height,
+    (bottom.width - drawWidth) / 2,
+    (bottom.height - drawHeight) / 2,
+    drawWidth,
+    drawHeight,
   );
   ctx.restore();
   exportCanvasAsPng(canvas, filename);

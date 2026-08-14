@@ -274,7 +274,7 @@ export function ComparisonStage({
                 ref={onionWrap}
               >
                 <div
-                  className="relative grid min-h-20 max-w-full"
+                  className="relative inline-block max-w-full"
                   id="onion-stack"
                 >
                   <ScreenshotCanvas
@@ -292,7 +292,7 @@ export function ComparisonStage({
                     onSelect={selectTarget}
                     id="baseline"
                     wrapperRef={onionWrap}
-                    className={`col-start-1 row-start-1 block ${paneCanvasClass}`}
+                    className={`block ${paneCanvasClass}`}
                   />
                   <ScreenshotCanvas
                     dataset={dataset}
@@ -309,11 +309,11 @@ export function ComparisonStage({
                     onSelect={selectTarget}
                     id="profile"
                     wrapperRef={onionWrap}
-                    className="col-start-1 row-start-1 block h-full w-full"
+                    className="absolute inset-0 block h-full w-full object-contain"
                     style={{ clipPath: `inset(0 ${100 - onionPct}% 0 0)` }}
                   />
                   <div
-                    className="absolute inset-y-0 left-1/2 col-start-1 row-start-1 w-1 -translate-x-1/2 cursor-ew-resize bg-[var(--on-dark)]"
+                    className="absolute inset-y-0 left-1/2 w-1 -translate-x-1/2 cursor-ew-resize bg-[var(--on-dark)]"
                     id="onion-divider"
                     role="slider"
                     tabIndex={0}
@@ -328,6 +328,9 @@ export function ComparisonStage({
                     }}
                     onPointerMove={onDividerMove}
                     onPointerUp={() => {
+                      dragging.current = false;
+                    }}
+                    onPointerCancel={() => {
                       dragging.current = false;
                     }}
                     onKeyDown={(e) => {
