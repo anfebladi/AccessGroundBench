@@ -1,7 +1,7 @@
 import type { FormEvent, RefObject } from "react";
 import type { Model } from "../../lib/api";
 import { Input } from "../../components/ui/input";
-import { NativeSelect } from "../../components/ui/native-select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
 import { Alert } from "../../components/ui/alert";
@@ -43,14 +43,22 @@ export function AddModelForm({
               placeholder="openai/gpt-4o-mini"
               required
             />
-            <p className="mt-1 text-xs text-[var(--muted)]">Any LiteLLM model string, or a <code>9router/</code> route.</p>
+            <p className="mt-1 text-xs text-[var(--muted)]">
+              Any LiteLLM model string. To route through 9router, prefix the model id yourself, e.g.{" "}
+              <code>9router/openai/gpt-4o-mini</code>.
+            </p>
           </div>
           <div className="min-w-48">
             <label htmlFor="model-coord-space">Coordinate space</label>
-            <NativeSelect id="model-coord-space" value={space} onChange={(e) => setSpace(e.target.value as Model["coord_space"]) }>
-              <option value="pixel">Pixel</option>
-              <option value="norm1000">Normalized (0-1000 grid)</option>
-            </NativeSelect>
+            <Select value={space} onValueChange={(v) => setSpace(v as Model["coord_space"])}>
+              <SelectTrigger id="model-coord-space">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pixel">Pixel</SelectItem>
+                <SelectItem value="norm1000">Normalized (0-1000 grid)</SelectItem>
+              </SelectContent>
+            </Select>
             <p className="mt-1 text-xs text-[var(--muted)]">Gemini, Qwen and GLM answer normalized.</p>
           </div>
           <Button type="submit">Add model</Button>

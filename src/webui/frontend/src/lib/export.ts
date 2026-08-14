@@ -19,6 +19,7 @@ export function exportCanvasPairAsPng(
   bottom: HTMLCanvasElement,
   top: HTMLCanvasElement,
   filename: string,
+  revealFraction = 1,
 ) {
   const canvas = document.createElement("canvas");
   canvas.width = bottom.width;
@@ -27,6 +28,10 @@ export function exportCanvasPairAsPng(
   if (!ctx) return;
 
   ctx.drawImage(bottom, 0, 0);
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, 0, bottom.width * revealFraction, bottom.height);
+  ctx.clip();
   ctx.drawImage(
     top,
     0,
@@ -38,6 +43,7 @@ export function exportCanvasPairAsPng(
     bottom.width,
     bottom.height,
   );
+  ctx.restore();
   exportCanvasAsPng(canvas, filename);
 }
 

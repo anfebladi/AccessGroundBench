@@ -6,6 +6,7 @@ import { Badge } from "../../components/ui/badge";
 import { Card } from "../../components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "../../components/ui/table";
 import { Alert } from "../../components/ui/alert";
+import { DocDialog } from "../../components/ui/doc-dialog";
 
 export function ProviderCredentialsCard({
   providers,
@@ -58,7 +59,28 @@ export function ProviderCredentialsCard({
                 return (
                   <TableRow key={name}>
                     <TableCell><b>{name}</b></TableCell>
-                    <TableCell><code>{p.env_vars?.join(", ") || p.env_var}</code></TableCell>
+                    <TableCell>
+                      <code>{p.env_vars?.join(", ") || p.env_var}</code>
+                      {name === "9router" && (
+                        <p className="mt-1 text-xs text-[var(--muted)]">
+                          <code>NINEROUTER_BASE_URL</code> must be set in{" "}
+                          <code>.env</code> — it can't be set as a session key
+                          below. See{" "}
+                          <DocDialog
+                            doc="9router.md"
+                            trigger={
+                              <button
+                                type="button"
+                                className="cursor-pointer underline decoration-dotted underline-offset-2"
+                              >
+                                <code>docs/9router.md</code>
+                              </button>
+                            }
+                          />{" "}
+                          for how to run 9router and get an API key.
+                        </p>
+                      )}
+                    </TableCell>
                     <TableCell>
                         <Badge className={configured ? "text-green-700" : "text-gray-500"}>
                         {status}

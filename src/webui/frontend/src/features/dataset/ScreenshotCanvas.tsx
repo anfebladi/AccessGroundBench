@@ -7,13 +7,13 @@ import { asText } from "./types";
 export function ScreenshotCanvas({
   dataset, screen, profile, targets, present, missing, labels, selected,
   showBoxes, showMissing, evictedOnly, onSelect, id, wrapperRef,
-  hidden, className, onDimensions, onCanvasReady,
+  hidden, className, style, onDimensions, onCanvasReady,
 }: {
   dataset: string; screen: string; profile: string; targets: Target[];
   present: Set<string>; missing: Target[]; labels: Label[]; selected: string | null;
   showBoxes: boolean; showMissing: boolean; evictedOnly: boolean;
   onSelect: (text: string) => void; id: string; wrapperRef: React.RefObject<HTMLDivElement | null>;
-  hidden?: boolean; className?: string; onDimensions?: (value: string) => void;
+  hidden?: boolean; className?: string; style?: React.CSSProperties; onDimensions?: (value: string) => void;
   onCanvasReady?: (canvas: HTMLCanvasElement) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -95,6 +95,7 @@ export function ScreenshotCanvas({
       ref={canvasRef}
       hidden={hidden}
       className={className}
+      style={style}
       onClick={(event) => {
         if (!img || !imageIsDrawable(img)) return;
         const rect = event.currentTarget.getBoundingClientRect();

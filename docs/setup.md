@@ -31,9 +31,9 @@ use these variables:
 | Model prefix | Required variable |
 |---|---|
 | `openai/` | `OPENAI_API_KEY` |
-| `gemini/` | `GEMINI_API_KEY` or `GOOGLE_API_KEY` |
+| `gemini/` | `GEMINI_API_KEY` |
 | `anthropic/` | `ANTHROPIC_API_KEY` |
-| `9router/` | `NINEROUTER_BASE_URL` and `NINEROUTER_API_KEY` |
+| `9router/` | `NINEROUTER_BASE_URL` and `NINEROUTER_API_KEY` (see [9router.md](9router.md)) |
 | `local/ferret-ui-llama8b` | running Ferret-UI server (see [ferret-ui.md](ferret-ui.md)) |
 
 Optional provider controls include `VLM_PACE_SECONDS`, `VLM_MAX_RETRIES`,

@@ -50,7 +50,7 @@ async function renderApp() {
   installCanvasAndImageStubs();
   const {App} = await import('../../src/main');
   render(<App />);
-  await waitFor(() => expect(screen.getByDisplayValue('demo')).toBeTruthy());
+  await waitFor(() => expect(screen.getByText('demo')).toBeTruthy());
 }
 
 function assertVisibleRoute(selected: typeof tabs[number]) {

@@ -89,7 +89,7 @@ its own result file. The prefix selects the transport:
 | Prefix | Requires |
 |---|---|
 | `openai/` `gemini/` `anthropic/` | native LiteLLM plus the matching `*_API_KEY` |
-| `9router/<model>` | `NINEROUTER_BASE_URL` + `NINEROUTER_API_KEY` |
+| `9router/<model>` | `NINEROUTER_BASE_URL` + `NINEROUTER_API_KEY` ([`docs/9router.md`](docs/9router.md)) |
 | `local/ferret-ui-llama8b` | a local Ferret-UI server ([`docs/ferret-ui.md`](docs/ferret-ui.md)) |
 
 ```dotenv
@@ -275,4 +275,6 @@ See [`CITATION.cff`](CITATION.cff), or use GitHub's "Cite this repository" contr
   captures, prompt modes, coordinate checks, and reporting
 - [`docs/ferret-ui.md`](docs/ferret-ui.md) — optional local Ferret-UI server, and its
   licence terms
+- [`docs/9router.md`](docs/9router.md) — optional local 9router gateway: install,
+  dashboard, and `.env` wiring
 - [`docs/troubleshooting.md`](docs/troubleshooting.md) — common failures and remedies

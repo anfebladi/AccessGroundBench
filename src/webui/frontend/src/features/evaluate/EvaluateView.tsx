@@ -4,7 +4,7 @@ import { RunMonitor } from "../shared/run-monitor/RunMonitor";
 import type { PreflightSummary, TabViewProps } from "../../lib/types";
 import { EvaluatePreflight } from "./EvaluatePreflight";
 import { Input } from "../../components/ui/input";
-import { NativeSelect } from "../../components/ui/native-select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
 import { Alert } from "../../components/ui/alert";
@@ -143,32 +143,30 @@ export function EvaluateView({
           <div className="flex flex-wrap items-end gap-4">
             <div className="min-w-0 flex-1">
               <label htmlFor="eval-model-select">Model</label>
-              <NativeSelect
-                id="eval-model-select"
-                value={model}
-                disabled={!models.length}
-                onChange={(e) => setModel(e.target.value)}
-              >
-                <option value="">
-                  {models.length ? "Select model" : "No models configured"}
-                </option>
-                {models.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.id}
-                  </option>
-                ))}
-              </NativeSelect>
+              <Select value={model} disabled={!models.length} onValueChange={setModel}>
+                <SelectTrigger id="eval-model-select">
+                  <SelectValue placeholder={models.length ? "Select model" : "No models configured"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {models.map((m) => (
+                    <SelectItem key={m.id} value={m.id}>
+                      {m.id}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="min-w-48">
               <label htmlFor="eval-mode-select">Prompt mode</label>
-              <NativeSelect
-                id="eval-mode-select"
-                value={mode}
-                onChange={(e) => setMode(e.target.value)}
-              >
-                <option value="vision">Vision only</option>
-                <option value="tree">Vision + a11y tree</option>
-              </NativeSelect>
+              <Select value={mode} onValueChange={setMode}>
+                <SelectTrigger id="eval-mode-select">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="vision">Vision only</SelectItem>
+                  <SelectItem value="tree">Vision + a11y tree</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <Button
               type="submit"
@@ -214,16 +212,18 @@ export function EvaluateView({
                 </div>
                 <div>
                   <label htmlFor="eval-coord-space">Coordinate space</label>
-                  <NativeSelect
-                    id="eval-coord-space"
+                  <Select
                     value={coord}
-                    onChange={(e) =>
-                      setCoord(e.target.value as Model["coord_space"])
-                    }
+                    onValueChange={(v) => setCoord(v as Model["coord_space"])}
                   >
-                    <option value="pixel">Pixel</option>
-                    <option value="norm1000">Normalized (0-1000)</option>
-                  </NativeSelect>
+                    <SelectTrigger id="eval-coord-space">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pixel">Pixel</SelectItem>
+                      <SelectItem value="norm1000">Normalized (0-1000)</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <p className="mt-1 text-xs text-[var(--muted)]">
                     Set per run, from the model's configuration.
                   </p>

@@ -3,7 +3,7 @@ import { api, enc } from "../../lib/api";
 import { ExportButton } from "../shared/reporting/components/ExportButton";
 import type { TabViewProps } from "../../lib/types";
 import { Legend, PairedAccuracyChart } from "../shared/reporting/charts";
-import { NativeSelect } from "../../components/ui/native-select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { Card } from "../../components/ui/card";
 import { LoadingState } from "../../components/ui/spinner";
 import { Badge as UiBadge } from "../../components/ui/badge";
@@ -176,37 +176,37 @@ export function CompareView({
             className="flex min-w-0 flex-col gap-[var(--space-1)] text-[length:var(--text-sm)] font-medium text-[var(--text)]"
           >
             Prompt mode
-            <NativeSelect
-              id="compare-mode-select"
-              value={mode}
-              onChange={(event) => setMode(event.target.value)}
-            >
-              <option value="vision">Vision</option>
-              <option value="tree">Tree</option>
-            </NativeSelect>
+            <Select value={mode} onValueChange={setMode}>
+              <SelectTrigger id="compare-mode-select">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="vision">Vision</SelectItem>
+                <SelectItem value="tree">Tree</SelectItem>
+              </SelectContent>
+            </Select>
           </label>
           <label
             className="flex min-w-0 flex-[1_1_22rem] flex-col gap-[var(--space-1)] text-[length:var(--text-sm)] font-medium text-[var(--text)]"
           >
             Model
-            <NativeSelect
-              id="compare-model-select"
-              disabled={!choices.length}
-              value={model}
-              onChange={(event) => setModel(event.target.value)}
-            >
-              <option value="">
-                {modelsLoading ? "Loading results…" : choices.length ? "Select model" : `No ${mode} results yet`}
-              </option>
-              {choices.map((row) => (
-                <option value={row.model} key={row.filename}>
-                  {row.model}
-                  {row.accuracy == null
-                    ? ""
-                    : ` -- ${(row.accuracy * 100).toFixed(1)}% baseline overall`}
-                </option>
-              ))}
-            </NativeSelect>
+            <Select disabled={!choices.length} value={model} onValueChange={setModel}>
+              <SelectTrigger id="compare-model-select">
+                <SelectValue
+                  placeholder={modelsLoading ? "Loading results…" : choices.length ? "Select model" : `No ${mode} results yet`}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {choices.map((row) => (
+                  <SelectItem value={row.model} key={row.filename}>
+                    {row.model}
+                    {row.accuracy == null
+                      ? ""
+                      : ` -- ${(row.accuracy * 100).toFixed(1)}% baseline overall`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </label>
         </div>
       </Card>

@@ -261,8 +261,9 @@ export function ComparisonStage({
                 <span className="text-xs text-[var(--on-dark-muted)]" id="dims-baseline" />
                 <button
                   type="button"
-                  className="size-8 border border-[var(--on-dark-border)] bg-transparent text-[var(--on-dark-muted)] shadow-none"
+                  className="flex size-8 items-center justify-center rounded-md border border-[var(--on-dark-border)] bg-transparent text-[var(--on-dark-muted)] shadow-none transition-colors duration-150 hover:border-[var(--on-dark-muted)] hover:bg-[var(--panel-dark)] hover:text-[var(--on-dark)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--on-dark)] active:bg-[var(--panel-dark)]"
                   aria-label="Export composite as PNG"
+                  onClick={exportOnionComposite}
                 >
                   <Icon name="download" />
                 </button>
@@ -273,9 +274,8 @@ export function ComparisonStage({
                 ref={onionWrap}
               >
                 <div
-                  className="relative min-h-20 max-w-full"
+                  className="relative grid min-h-20 max-w-full"
                   id="onion-stack"
-                  style={{ clipPath: `inset(0 ${100 - onionPct}% 0 0)` }}
                 >
                   <ScreenshotCanvas
                     dataset={dataset}
@@ -292,7 +292,7 @@ export function ComparisonStage({
                     onSelect={selectTarget}
                     id="baseline"
                     wrapperRef={onionWrap}
-                    className="absolute inset-0 block h-full w-full"
+                    className={`col-start-1 row-start-1 block ${paneCanvasClass}`}
                   />
                   <ScreenshotCanvas
                     dataset={dataset}
@@ -309,10 +309,11 @@ export function ComparisonStage({
                     onSelect={selectTarget}
                     id="profile"
                     wrapperRef={onionWrap}
-                    className="absolute inset-0 block h-full w-full [clip-path:inset(0_50%_0_0)]"
+                    className="col-start-1 row-start-1 block h-full w-full"
+                    style={{ clipPath: `inset(0 ${100 - onionPct}% 0 0)` }}
                   />
                   <div
-                    className="absolute inset-y-0 left-1/2 w-1 -translate-x-1/2 cursor-ew-resize bg-[var(--on-dark)]"
+                    className="absolute inset-y-0 left-1/2 col-start-1 row-start-1 w-1 -translate-x-1/2 cursor-ew-resize bg-[var(--on-dark)]"
                     id="onion-divider"
                     role="slider"
                     tabIndex={0}
@@ -329,6 +330,12 @@ export function ComparisonStage({
                     onPointerUp={() => {
                       dragging.current = false;
                     }}
+                    onKeyDown={(e) => {
+                      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+                      e.preventDefault();
+                      const dir = e.key === "ArrowLeft" ? -2 : 2;
+                      setOnionPct((pct) => Math.max(0, Math.min(100, pct + dir)));
+                    }}
                   />
                 </div>
               </div>
@@ -344,8 +351,9 @@ export function ComparisonStage({
                   <span className="text-xs text-[var(--on-dark-muted)]" id="dims-baseline" />
                   <button
                     type="button"
-                    className="size-8 border border-[var(--on-dark-border)] bg-transparent text-[var(--on-dark-muted)] shadow-none"
+                    className="flex size-8 items-center justify-center rounded-md border border-[var(--on-dark-border)] bg-transparent text-[var(--on-dark-muted)] shadow-none transition-colors duration-150 hover:border-[var(--on-dark-muted)] hover:bg-[var(--panel-dark)] hover:text-[var(--on-dark)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--on-dark)] active:bg-[var(--panel-dark)]"
                     aria-label="Export baseline pane as PNG"
+                    onClick={() => exportPane(baseWrap, "baseline.png")}
                   >
                     <Icon name="download" />
                   </button>
@@ -384,8 +392,9 @@ export function ComparisonStage({
                   <span className="text-xs text-[var(--on-dark-muted)]" id="dims-profile" />
                   <button
                     type="button"
-                    className="size-8 border border-[var(--on-dark-border)] bg-transparent text-[var(--on-dark-muted)] shadow-none"
+                    className="flex size-8 items-center justify-center rounded-md border border-[var(--on-dark-border)] bg-transparent text-[var(--on-dark-muted)] shadow-none transition-colors duration-150 hover:border-[var(--on-dark-muted)] hover:bg-[var(--panel-dark)] hover:text-[var(--on-dark)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--on-dark)] active:bg-[var(--panel-dark)]"
                     aria-label="Export profile pane as PNG"
+                    onClick={() => exportPane(profileWrap, "profile.png")}
                   >
                     <Icon name="download" />
                   </button>
@@ -453,28 +462,6 @@ export function ComparisonStage({
       </div>
       <div className="sr-only" aria-live="polite" role="status">
         {selected ? `Selected target: ${selected}` : "No target selected"}
-      </div>
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm hover:bg-[var(--surface-2)]"
-          onClick={() => {
-            const canvas = baseWrap.current?.querySelector("canvas");
-            if (canvas) exportCanvasAsPng(canvas, "baseline.png");
-          }}
-        >
-          Export baseline
-        </button>
-        <button
-          type="button"
-          className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm hover:bg-[var(--surface-2)]"
-          onClick={() => {
-            const canvas = profileWrap.current?.querySelector("canvas");
-            if (canvas) exportCanvasAsPng(canvas, "profile.png");
-          }}
-        >
-          Export profile
-        </button>
       </div>
     </div>
   );

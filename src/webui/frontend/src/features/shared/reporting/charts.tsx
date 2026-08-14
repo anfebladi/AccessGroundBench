@@ -286,22 +286,8 @@ const directionLayer = ({ xScale, yScale }: LayerProps) => {
         Math.max(0, finiteNumber(row.up)),
       ];
       const y = scaleCoordinate(yScale, row.id || row.label) + 0.5;
-      let offset = 0;
+      const offset = values.reduce((total, value) => total + Math.max(0, value), 0);
       return <g key={row.id || row.label}>
-        {values.map((value, index) => {
-          const start = offset;
-          offset += Math.max(0, value);
-          return value > 0 ? (
-            <text
-              key={`${row.label}-${index}`}
-              className="chart-direct-label"
-              x={scaleCoordinate(xScale, start + value / 2) + 4}
-              y={y + 4}
-            >
-              {value}
-            </text>
-          ) : null;
-        })}
         {(row.p || row.annotation) && (
           <text
             className="chart-significance"

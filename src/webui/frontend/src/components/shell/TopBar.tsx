@@ -1,5 +1,5 @@
 import type { Dataset } from "../../lib/api";
-import { NativeSelect } from "../ui/native-select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Spinner } from "../ui/spinner";
 
 export function TopBar({
@@ -24,23 +24,18 @@ export function TopBar({
       </div>
       <div className="header-controls flex min-w-0 items-center gap-[var(--space-3)]">
         <label className="text-xs text-[var(--muted)]" htmlFor="dataset-select">DATASET</label>
-        <NativeSelect
-          id="dataset-select"
-          value={dataset}
-          onChange={(e) => onDatasetChange(e.target.value)}
-          title={datasetsError ?? undefined}
-        >
-          {!datasets.length && (
-            <option value="">
-              {datasetsError ? "Failed to load datasets" : "Select dataset"}
-            </option>
-          )}
-          {datasets.map((x) => (
-            <option key={x.name} value={x.name}>
-              {x.name}
-            </option>
-          ))}
-        </NativeSelect>
+        <Select value={dataset} onValueChange={onDatasetChange}>
+          <SelectTrigger id="dataset-select" className="min-w-[160px]" title={datasetsError ?? undefined}>
+            <SelectValue placeholder={datasetsError ? "Failed to load datasets" : "Select dataset"} />
+          </SelectTrigger>
+          <SelectContent>
+            {datasets.map((x) => (
+              <SelectItem key={x.name} value={x.name}>
+                {x.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
           <span id="dataset-meta" className="whitespace-nowrap text-sm text-[var(--muted)] max-[479px]:hidden">
           {loading ? <Spinner label="Loading dataset" className="size-4 align-middle" /> : selected
             ? `${selected.screen_count} screens, ${selected.image_count} images, ${selected.query_count} queries`

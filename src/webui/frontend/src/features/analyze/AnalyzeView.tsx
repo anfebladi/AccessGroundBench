@@ -11,7 +11,7 @@ import {
 } from "../shared/reporting/charts";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
-import { NativeSelect } from "../../components/ui/native-select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { Card } from "../../components/ui/card";
 import { LoadingState } from "../../components/ui/spinner";
 import { Progress } from "../../components/ui/progress";
@@ -175,28 +175,30 @@ export function AnalyzeView({
           <div className="flex flex-wrap items-end gap-3">
             <label className="flex min-w-0 flex-[1_1_22rem] flex-col gap-[var(--space-1)] text-[length:var(--text-sm)] font-medium text-[var(--text)]">
               Sample
-              <NativeSelect
-                id="analyze-sample"
-                value={sample}
-                onChange={(event) => setSample(event.target.value)}
-              >
-                <option value="all">All samples</option>
-                <option value="primary">Primary</option>
-                <option value="full">Full</option>
-                <option value="precautionary">Precautionary</option>
-                <option value="uniform">Uniform</option>
-              </NativeSelect>
+              <Select value={sample} onValueChange={setSample}>
+                <SelectTrigger id="analyze-sample">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All samples</SelectItem>
+                  <SelectItem value="primary">Primary</SelectItem>
+                  <SelectItem value="full">Full</SelectItem>
+                  <SelectItem value="precautionary">Precautionary</SelectItem>
+                  <SelectItem value="uniform">Uniform</SelectItem>
+                </SelectContent>
+              </Select>
             </label>
             <label className="flex min-w-0 flex-col gap-[var(--space-1)] text-[length:var(--text-sm)] font-medium text-[var(--text)]">
               Prompt mode
-              <NativeSelect
-                id="analyze-mode"
-                value={mode}
-                onChange={(event) => setMode(event.target.value)}
-              >
-                <option value="vision">Vision only</option>
-                <option value="tree">Vision + a11y tree</option>
-              </NativeSelect>
+              <Select value={mode} onValueChange={setMode}>
+                <SelectTrigger id="analyze-mode">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="vision">Vision only</SelectItem>
+                  <SelectItem value="tree">Vision + a11y tree</SelectItem>
+                </SelectContent>
+              </Select>
             </label>
             <Button type="submit" id="analyze-submit" disabled={loading}>
               {loading ? "Running" : "Run analysis"}
@@ -383,17 +385,19 @@ function AnalysisResult({
           items={[
             { color: "var(--viz-red)", label: "Broke it (b)" },
             { color: "var(--viz-blue)", label: "Recovered (c)" },
-            {
-              color: "var(--text)",
-              label: "Filled square: significant after Holm",
-            },
-            {
-              color: "var(--text-2)",
-              label: "Hollow square: not significant",
-              shape: "hollow",
-            },
           ]}
         />
+        <p className="mb-1 text-xs text-[var(--muted)]">
+          "Broke it" (b, red) = targets the model reached at baseline but
+          failed under this profile. "Recovered" (c, blue) = targets the
+          model failed at baseline but reached under this profile.
+        </p>
+        <p className="mb-4 text-xs text-[var(--muted)]">
+          Number at the end of each bar is the total discordant pairs (b + c)
+          for that profile, pooled across models. * before p = significant
+          after Holm-Bonferroni correction (α = 0.05); no * = not
+          significant.
+        </p>
         <DiscordantChart
           rows={pooled.map((row) => ({
             label: text(row.Profile),

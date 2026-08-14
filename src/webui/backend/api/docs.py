@@ -24,6 +24,7 @@ ALLOWED_DOCS = {
     "ui.md",
     "ui-design-system.md",
     "ferret-ui.md",
+    "9router.md",
 }
 
 

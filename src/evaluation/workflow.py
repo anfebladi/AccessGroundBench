@@ -60,7 +60,7 @@ def api_key_exists(model_name: str) -> bool:
     if model_name.startswith("openai/"):
         return _is_valid_key(os.environ.get("OPENAI_API_KEY"))
     elif model_name.startswith("gemini/"):
-        return _is_valid_key(os.environ.get("GEMINI_API_KEY")) or _is_valid_key(os.environ.get("GOOGLE_API_KEY"))
+        return _is_valid_key(os.environ.get("GEMINI_API_KEY"))
     elif model_name.startswith("anthropic/"):
         return _is_valid_key(os.environ.get("ANTHROPIC_API_KEY"))
     return True

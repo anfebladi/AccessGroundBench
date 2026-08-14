@@ -45,7 +45,7 @@ describe('rendered legacy contract', () => {
   it('contains every required historical ID, data hook, and control in the React DOM', async () => {
     const {App} = await import('../../src/main');
     render(<App />);
-    await waitFor(() => expect(screen.getByDisplayValue('demo')).toBeTruthy());
+    await waitFor(() => expect(screen.getByText('demo')).toBeTruthy());
 
     for (const id of contract.dom_ids) expect(document.getElementById(id), `missing #${id}`).not.toBeNull();
     for (const selector of contract.data_hooks) expect(document.querySelector(`[${selector}]`), `missing [${selector}]`).not.toBeNull();
@@ -63,7 +63,7 @@ describe('rendered legacy contract', () => {
   it('keeps rail chips wired to the shell', async () => {
     const {App} = await import('../../src/main');
     render(<App />);
-    await waitFor(() => expect(screen.getByDisplayValue('demo')).toBeTruthy());
+    await waitFor(() => expect(screen.getByText('demo')).toBeTruthy());
     expect(screen.getByText('2 screens')).toBeTruthy();
     expect(screen.getByText('none configured')).toBeTruthy();
   });
@@ -71,7 +71,7 @@ describe('rendered legacy contract', () => {
   it('does not let contenteditable fields trigger global numeric shortcuts', async () => {
     const {App} = await import('../../src/main');
     render(<App />);
-    await waitFor(() => expect(screen.getByDisplayValue('demo')).toBeTruthy());
+    await waitFor(() => expect(screen.getByText('demo')).toBeTruthy());
     const editable = document.createElement('div');
     editable.contentEditable = 'true';
     document.body.appendChild(editable);

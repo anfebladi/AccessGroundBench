@@ -6,9 +6,8 @@ have different answers:
 * *Which variable does a session key write?* Exactly one per provider. A key
   typed into the UI has to land somewhere specific, and `NINEROUTER_BASE_URL`
   is a base URL, not a credential -- setting a key into it would be wrong.
-* *Which variables count as "configured"?* Possibly several. Gemini accepts
-  either `GEMINI_API_KEY` or `GOOGLE_API_KEY`, and 9router needs its base URL
-  as well as its key before a run will work.
+* *Which variables count as "configured"?* Possibly several. 9router needs
+  its base URL as well as its key before a run will work.
 
 Both lists used to exist, under the same name `PROVIDER_ENV_VARS`, in
 keys.py and server.py -- so the obvious-looking import was a coin flip
@@ -44,7 +43,7 @@ PROVIDERS: dict[str, ProviderSpec] = {
     ),
     "gemini": ProviderSpec(
         key_env="GEMINI_API_KEY",
-        status_env=("GEMINI_API_KEY", "GOOGLE_API_KEY"),
+        status_env=("GEMINI_API_KEY",),
     ),
     "anthropic": ProviderSpec(
         key_env="ANTHROPIC_API_KEY",
