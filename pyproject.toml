@@ -8,7 +8,11 @@ requires-python = ">=3.11"
 # with --no-build-isolation, so it uses whatever setuptools the venv has (65.x),
 # which predates PEP 639. The string form fails there.
 license = { text = "MIT" }
-authors = [{ name = "Andres Blanco" }]
+authors = [
+    { name = "Andres Blanco" },
+    { name = "Minh Le" },
+    { name = "Thy Tang" },
+]
 keywords = [
     "accessibility",
     "benchmark",

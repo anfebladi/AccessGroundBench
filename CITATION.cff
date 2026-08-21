@@ -14,6 +14,10 @@ type: software
 authors:
   - family-names: Blanco
     given-names: Andres
+  - family-names: Le
+    given-names: Minh
+  - family-names: Tang
+    given-names: Thy
 version: 0.1.0
 date-released: "2026-08-13"
 license: MIT
