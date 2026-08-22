@@ -319,7 +319,7 @@ of that result is the interval's finite *lower* bound.
 ### 1.8 The cluster permutation test
 
 `analysis.stats.cluster_permutation_test` is the primary grounding test in
-mode 1 (and, once tree data exists, mode 2). It pools every model's paired outcome for a
+mode 1 and mode 2. It pools every model's paired outcome for a
 given profile into one test.
 
 **Statistic.** For each target (a `(screen, target_text)` cluster), sum
@@ -695,8 +695,9 @@ are compared.
 
 ### Illustrative worked example
 
-Cross-file mode has not yet been run against the collected tree data. A small
-**synthetic illustration** of the mechanics:
+The repository now has tree-arm CSVs and cross-file comparison outputs. The
+following archived-style example remains a **synthetic illustration** of the
+mechanics, not a claim about any particular current model:
 
 ```
 Illustrative only -- elder_text_heavy, file A (vision) vs file B (tree), 20 co-present pairs
@@ -735,8 +736,8 @@ then run the §1.8 cluster permutation machinery on the paired difference
 result there — not a difference between two separately-reported p-values — is what would
 license the claim "the tree changes how much this profile degrades grounding." The
 existing `cluster_permutation_test` function (§1.8) needs no modification to run this;
-only the input construction differs — a straightforward addition once mode 2 has real
-data.
+only the input construction differs — a straightforward addition once paired mode-1
+and mode-2 inputs are wired into the comparison workflow.
 
 ---
 
@@ -747,13 +748,13 @@ data.
 | | Mode 1: vision-only | Mode 2: tree-injected | Mode 3: cross-file |
 |---|---|---|---|
 | Pairs | baseline vs. profile, same model | baseline vs. profile, same model, tree given | file A vs. file B, same profile |
-| Primary test | pooled cluster permutation | pooled cluster permutation (unrun) | plain McNemar |
-| Multiple-comparison correction | Holm, 28-test family | Holm, 28-test family (unrun) | **none** |
-| Floor/ceiling flags | yes | yes (unrun) | **no** |
-| Effect sizes (risk diff, OR) | yes | yes (unrun) | **no** |
+| Primary test | pooled cluster permutation | pooled cluster permutation | plain McNemar |
+| Multiple-comparison correction | Holm, 28-test family | Holm, 28-test family | **none** |
+| Floor/ceiling flags | yes | yes | **no** |
+| Effect sizes (risk diff, OR) | yes | yes | **no** |
 | Reachability | computed | identical to mode 1 — do not double-count | not applicable |
 | Tests "does context help"? | no | no | **no — see §4's missing interaction test** |
-| Data currently on disk | `collections/experiment/archive/experiment_2/` (archived) | none | none |
+| Data currently on disk | current `*_vision.csv` outputs | current `*_tree.csv` outputs | current comparison outputs |
 
 ---
 

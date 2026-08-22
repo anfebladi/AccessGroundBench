@@ -1,11 +1,9 @@
 """CSV result writing for VLM evaluation."""
 
 import csv
-from collections import Counter
 from pathlib import Path
 
 from backups import preserve
-from .locking import CsvLockError, acquire_lock, release_lock
 
 CSV_COLUMNS = [
     "screen", "target_text", "profile",

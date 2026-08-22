@@ -3,8 +3,6 @@
 import re
 from pathlib import Path
 
-from .config import uses_normalized_coords
-
 GEMINI_VOCAB_SIZE = 1000
 GEMINI_SPACE_NORMALIZED = "normalized"
 GEMINI_SPACE_PIXEL = "pixel"

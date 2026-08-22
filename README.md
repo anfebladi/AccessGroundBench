@@ -61,8 +61,8 @@ Full statistical treatment, including every formula and a worked example, is in
 uv sync
 cp .env.example .env
 # edit .env: set VLM_MODEL and the matching provider API key
-uv run agb evaluate          # score a model against the shipped dataset
-uv run agb analyze           # produce the statistical tables
+uv run agb evaluate --data-dir collections/experiment/dataset
+uv run agb analyze --data-dir collections/experiment/dataset
 ```
 
 That is the whole loop for an existing dataset — no emulator, no collection step. Prefix
@@ -109,14 +109,14 @@ front of a model does not leak into published filenames.
 >    undeclared, two models scored **17% instead of ~100%**.
 > 2. **Does it answer in normalised 0–1000 coordinates** rather than pixels? Several do.
 >    A low score is far more often a coordinate-space mismatch than a grounding failure —
->    run `agb rescore --csv <result.csv> --check` before believing one.
+>    run `agb rescore --data-dir <dataset-dir> --csv <result.csv> --check` before believing one.
 
 ## Reproducing the results
 
 ```bash
-uv run agb evaluate                    # resumes by default; --fresh restarts
-uv run agb analyze                     # writes the full table set
-uv run agb rescore --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --check
+uv run agb evaluate --data-dir collections/experiment/dataset  # resumes by default; --fresh restarts
+uv run agb analyze --data-dir collections/experiment/dataset
+uv run agb rescore --data-dir collections/experiment/dataset --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --check
 ```
 
 Evaluation appends one row per `(screen, target, profile)` and is **resumable** — an
@@ -133,8 +133,8 @@ tables.
 
 Collecting a *new* dataset needs a configured emulator and is documented separately —
 see [`docs/collection.md`](docs/collection.md) and the
-[live collection runbook](docs/runbooks/collection.md). `uv run agb collect --dry-run`
-checks the logic without one.
+[live collection runbook](docs/runbooks/collection.md). `uv run agb collect --data-dir
+collections/experiment/dataset --dry-run` checks the logic without one.
 
 ## Web UI
 
@@ -177,13 +177,14 @@ collections/             Every run, shipped or collected, in one shape
 
 One run is a dataset plus everything derived from it, so both live under a single root —
 and every run lives under `collections/`, whether it shipped with the benchmark or you
-captured it. The shipped run has no privileged location, only a reserved name: `agb
-collect` and the UI refuse `experiment` (and the archived names) so a new run cannot
-overwrite it.
+captured it. The shipped run has no privileged location or reserved name. `agb collect`
+and the UI can target any existing run, including `experiment`, when that destination
+is explicit.
 
 Captures under `collections/experiment/dataset/` **are** committed;
 `collections/experiment/archive/` is not — those runs predate several scoring fixes and
-must not be cited.
+must not be cited as current evidence. The archive location does not itself make a run
+read-only.
 
 ## The profiles
 
@@ -242,7 +243,7 @@ disclosure problem and a reproducibility one, since that text cannot reproduce a
 collections the way a static app's UI text can.
 
 The screen remains fully supported for anyone collecting on their own account:
-`agb collect --screens gmail` works, and the exclusion is enforced by a test so it cannot
+`agb collect --data-dir collections/experiment/dataset --screens gmail` works, and the exclusion is enforced by a test so it cannot
 silently drift back. **Its absence is a privacy decision, not a missing feature** — and
 anyone who re-enables it inherits the same caveat.
 

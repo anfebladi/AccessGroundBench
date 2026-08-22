@@ -4,20 +4,16 @@ import base64
 import io
 import os
 import time
-import urllib
 from pathlib import Path
 from typing import Any
 
 from .config import (
     FERRET_MODEL_ID,
     NINEROUTER_PREFIX,
-    image_send_scale,
-    model_configuration_error,
     resolve_completion_config,
-    validate_coord_space,
-    _normalize_compatible_base_url,
+    uses_normalized_coords,
 )
-from .ferret import build_ferret_prompt, call_ferret, parse_ferret_bbox
+from .ferret import call_ferret
 from .coord_prompting import (
     GEMINI_SPACE_NORMALIZED,
     GEMINI_SPACE_PIXEL,
@@ -26,7 +22,6 @@ from .coord_prompting import (
     classify_normalized_reply,
     extract_target_from_prompt,
     resolve_image_dims,
-    uses_normalized_coords,
 )
 from .retry import (
     DEFAULT_RATE_LIMIT_BACKOFF_SECONDS,
@@ -49,24 +44,6 @@ from .retry import (
 _THINKING_PREFIXES = ("anthropic/", "claude-")
 
 _TEMPERATURE_UNSUPPORTED: set[str] = set()
-
-# Private aliases retained for focused compatibility and tests.
-_resolve_request_timeout = resolve_request_timeout
-_resolve_temperature = resolve_temperature
-_resolve_max_tokens = resolve_max_tokens
-_resolve_thinking = resolve_thinking
-_resolve_structured_coords = resolve_structured_coords
-_is_temperature_rejection = is_temperature_rejection
-_resolve_max_retries = resolve_max_retries
-_is_rate_limit_error = is_rate_limit_error
-_is_retryable_error = is_retryable_error
-_retry_delay_seconds = retry_delay_seconds
-_uses_normalized_coords = uses_normalized_coords
-_extract_target_from_prompt = extract_target_from_prompt
-_resolve_image_dims = resolve_image_dims
-_classify_normalized_reply = classify_normalized_reply
-_call_ferret = call_ferret
-_parse_ferret_bbox = parse_ferret_bbox
 
 def image_to_data_url(image_path: Path, scale: float = 1.0) -> str:
     """Convert a local PNG screenshot to a base64 data URL.
@@ -242,7 +219,7 @@ def call_vlm(
 
     coord_space_out, when given a dict, receives {"value": GEMINI_SPACE_*}
     for Gemini models once the reply is resolved, so a caller can log
-    per-row format compliance (see build_gemini_prompt / _resolve_gemini_reply).
+    per-row format compliance.
     It is left untouched for every other model family.
 
     image_scale downsizes the screenshot before sending, for models whose
@@ -252,7 +229,7 @@ def call_vlm(
     the scaled dimensions. The default 1.0 sends the image untouched.
     """
     if model == FERRET_MODEL_ID:
-        return _call_ferret(
+        return call_ferret(
             image_path,
             prompt,
             target_text,
@@ -263,24 +240,24 @@ def call_vlm(
             request_timeout,
         )
 
-    is_normalized = _uses_normalized_coords(model)
+    is_normalized = uses_normalized_coords(model)
     norm_target = None
     norm_w = norm_h = None
     if is_normalized:
         norm_target = (
-            target_text if target_text is not None else _extract_target_from_prompt(prompt)
+            target_text if target_text is not None else extract_target_from_prompt(prompt)
         )
         if norm_target is not None:
-            norm_w, norm_h = _resolve_image_dims(image_path, img_width, img_height)
+            norm_w, norm_h = resolve_image_dims(image_path, img_width, img_height)
 
     data_url = image_to_data_url(image_path, image_scale)
-    retries = _resolve_max_retries(max_retries)
-    timeout = _resolve_request_timeout(request_timeout)
-    resolved_temperature = _resolve_temperature(temperature)
-    resolved_max_tokens = _resolve_max_tokens(max_tokens)
+    retries = resolve_max_retries(max_retries)
+    timeout = resolve_request_timeout(request_timeout)
+    resolved_temperature = resolve_temperature(temperature)
+    resolved_max_tokens = resolve_max_tokens(max_tokens)
     is_anthropic = any(model.startswith(p) for p in _THINKING_PREFIXES)
-    resolved_thinking = _resolve_thinking() if is_anthropic else None
-    resolved_format = _resolve_structured_coords() if is_anthropic else None
+    resolved_thinking = resolve_thinking() if is_anthropic else None
+    resolved_format = resolve_structured_coords() if is_anthropic else None
     _register_compatible_model(model)
     delay = DEFAULT_RATE_LIMIT_BACKOFF_SECONDS
 
@@ -325,7 +302,7 @@ def call_vlm(
             # Some reasoning models reject an explicit temperature. Drop it for
             # this model and retry rather than failing the whole run.
             if (
-                _is_temperature_rejection(exc)
+                is_temperature_rejection(exc)
                 and model not in _TEMPERATURE_UNSUPPORTED
             ):
                 _TEMPERATURE_UNSUPPORTED.add(model)
@@ -338,14 +315,14 @@ def call_vlm(
                 # retries == 0).
                 continue
 
-            if not _is_retryable_error(exc) or attempt >= retries:
+            if not is_retryable_error(exc) or attempt >= retries:
                 raise
 
-            sleep_seconds = _retry_delay_seconds(exc, delay)
+            sleep_seconds = retry_delay_seconds(exc, delay)
             # Name the exception class for non-rate-limit failures: retries now
             # cover timeouts, 5xx, and dropped connections, and "Request failed"
             # alone makes those indistinguishable in a run log.
-            reason = "Rate limited" if _is_rate_limit_error(exc) else exc.__class__.__name__
+            reason = "Rate limited" if is_rate_limit_error(exc) else exc.__class__.__name__
             print(
                 f"    [RETRY] {reason}; sleeping {sleep_seconds:.2f}s "
                 f"before retry {attempt + 1}/{retries}"
@@ -356,10 +333,10 @@ def call_vlm(
             continue
 
         if is_normalized and norm_target is not None:
-            space = _classify_normalized_reply(raw_text)
+            space = classify_normalized_reply(raw_text)
             if space == GEMINI_SPACE_PIXEL and attempt < retries:
                 # Out-of-range on either axis is unambiguous pixel-space
-                # non-compliance (see _classify_normalized_reply); retry with a
+                # non-compliance (see classify_normalized_reply); retry with a
                 # stricter restatement rather than silently coercing it.
                 print(
                     f"    [RETRY] {model} answered in pixel space instead of "

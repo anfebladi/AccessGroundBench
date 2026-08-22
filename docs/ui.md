@@ -18,7 +18,7 @@ The UI is an optional extra so the core benchmark stays dependency-light:
 ```bash
 uv sync --extra ui
 agb ui
-# agb ui --port 8081   # if 8080 is taken
+# agb ui --port 8082   # if 8080 is taken
 ```
 
 Opens `http://127.0.0.1:8080`. The server binds `127.0.0.1` only -- this is
@@ -44,7 +44,7 @@ at the top level:
 | `server.py` | `create_app()` -- builds the FastAPI app and includes the routers. Nothing else. |
 | `launcher.py` | `agb ui` itself: the uvicorn thread, the Vite child process, the terminal menu. |
 | `banner.py` | The launcher's interactive terminal menu. |
-| **`api/`** | **The HTTP layer.** One router module per route family (`datasets`, `results`, `analysis`, `evaluate`, `models`, `collect`), plus `schemas.py` (pydantic request bodies) and `dependencies.py` (dataset lookup, the archived-dataset write guard, mode/sample validation, display paths). |
+| **`api/`** | **The HTTP layer.** One router module per route family (`datasets`, `results`, `analysis`, `evaluate`, `models`, `collect`), plus `schemas.py` (pydantic request bodies) and `dependencies.py` (dataset lookup, mode/sample validation, display paths). |
 | **`services/`** | **Domain logic, no HTTP.** `registry.py` (dataset discovery), `runs.py` (subprocess run supervisor), `keys.py` (session key store), `providers.py` (provider catalogue -- the single source of truth for provider env var names), `compare.py` (Compare statistics), `analysis_tables.py` (analysis output paths and the four result-table CSVs), `stdout_capture.py`. |
 
 Three invariants to preserve when changing these:
@@ -298,11 +298,9 @@ Analysis runs in the server process and blocks until it finishes; the form is
 locked for the duration. Unlike Evaluate it is not supervised as a subprocess,
 so it cannot be cancelled part-way.
 
-**Collect.** Wraps `agb collect`. Always writes to `collections/<name>/`, never
-into the shipped `collections/experiment/dataset/` or an archived
-`collections/experiment/archive/experiment_N/` -- so a
-collection run from the UI can never overwrite committed results. Each
-collection mirrors the shipped experiment's two directories: captures in
+**Collect.** Wraps `agb collect`. Writes to the explicitly selected
+`collections/<name>/` destination, including an existing run when its name is
+supplied. Each collection mirrors the shipped experiment's two directories: captures in
 `collections/<name>/dataset/`, and everything derived from them in
 `collections/<name>/outputs/`. An
 emulator preflight checks for `adb` and an authorized device; the manual
@@ -316,11 +314,10 @@ A dataset is any directory with `images/` and `labels/` subdirectories -- the
 same portable unit `agb analyze --data-dir` already accepts. The dropdown
 shows:
 
-- `dataset` -- the shipped benchmark, writable.
-- `collections/experiment/archive/experiment_1`, `collections/experiment/archive/experiment_2` -- archived prior runs,
-  shown **read-only**: Evaluate and Collect refuse to target them (see the
-  archive warning in [`README.md`](../README.md) and
-  `collections/experiment/archive/experiment_2/README.md`).
+- `experiment` -- the shipped benchmark, writable when selected explicitly.
+- any direct `collections/<name>/dataset/` run -- discovered uniformly when its
+  `dataset/` contains `images/` and `labels/`. Archive placement is historical
+  guidance, not a UI-enforced read-only state.
 - `<name>` -- anything you collect from the UI, or copy in yourself, lives at
   `collections/<name>/dataset/` rather than inside the shipped `dataset/`. The
   dropdown lists it under the run's own folder name, not the `dataset`

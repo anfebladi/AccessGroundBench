@@ -24,19 +24,19 @@ is the reference for workflow details, artifacts, validation, and recovery; the
    may create required dataset directories:
 
    ```bash
-   agb collect --dry-run
+   agb collect --data-dir collections/experiment/dataset --dry-run
    ```
 
 2. Run a one-screen smoke capture:
 
    ```bash
-   agb collect --screens settings_main
+   agb collect --data-dir collections/experiment/dataset --screens settings_main
    ```
 
 3. If the smoke capture succeeds, run the full collection:
 
    ```bash
-   agb collect
+   agb collect --data-dir collections/experiment/dataset
    ```
 
 The configured run has 12 screens and six profiles: `baseline` plus five
@@ -68,8 +68,8 @@ artifact and validation details.
   existing unrelated records:
 
   ```bash
-  agb collect --rebuild-manifest
-  agb collect --rebuild-manifest --screens settings_main
+  agb collect --data-dir collections/experiment/dataset --rebuild-manifest
+  agb collect --data-dir collections/experiment/dataset --rebuild-manifest --screens settings_main
   ```
 
 See the [collection guide](../collection.md) and [CLI reference](../cli-reference.md#agb-collect)

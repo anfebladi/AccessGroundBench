@@ -18,7 +18,11 @@ means the app has not finished rendering; the workflow retries automatically.
 
 ## Evaluator reports no screens
 
-No baseline labels exist under `collections/experiment/dataset/labels/`. Run `agb collect` first.
+No baseline labels exist under `collections/experiment/dataset/labels/`. Run:
+
+```bash
+agb collect --data-dir collections/experiment/dataset
+```
 
 ## A provider key is missing
 
@@ -32,14 +36,15 @@ router is running and `NINEROUTER_BASE_URL` points to its OpenAI-compatible
 Set it for a single run:
 
 ```bash
-VLM_MODEL=openai/gpt-4o-mini agb evaluate
+VLM_MODEL=openai/gpt-4o-mini agb evaluate --data-dir collections/experiment/dataset
 ```
 
 ## Evaluation resumes unexpectedly or is locked
 
-Evaluation resumes completed rows by default. Use `agb evaluate --fresh` to
-discard rows and restart, or `agb evaluate --force-unlock` to remove a stale
-lock left by a killed process. See the [CLI reference](cli-reference.md#agb-evaluate).
+Evaluation resumes completed rows by default. Use `agb evaluate --data-dir
+collections/experiment/dataset --fresh` to discard rows and restart, or
+`agb evaluate --data-dir collections/experiment/dataset --force-unlock` to
+remove a stale lock left by a killed process. See the [CLI reference](cli-reference.md#agb-evaluate).
 
 ## Analysis reports `floor` or `ceiling`
 

@@ -339,10 +339,13 @@ class PackageBoundaryTests(unittest.TestCase):
 class EvaluationBoundaryTests(unittest.TestCase):
     def test_provider_facade_routes_ferret_to_its_concrete_owner(self):
         expected = "[10.0, 20.0]"
-        self.assertIs(hosted._call_ferret, ferret.call_ferret)
-        with mock.patch.object(hosted, "_call_ferret", return_value=expected) as local:
+        self.assertIs(hosted.call_ferret, ferret.call_ferret)
+        with mock.patch.object(hosted, "call_ferret", return_value=expected) as local:
             actual = hosted.call_vlm(
-                hosted.FERRET_MODEL_ID, Path("unused.png"), "prompt", target_text="Alarm"
+                provider_config.FERRET_MODEL_ID,
+                Path("unused.png"),
+                "prompt",
+                target_text="Alarm",
             )
 
         self.assertEqual(expected, actual)
@@ -352,15 +355,13 @@ class EvaluationBoundaryTests(unittest.TestCase):
         class ReadTimeout(Exception):
             pass
 
-        self.assertIs(hosted._is_retryable_error, retry.is_retryable_error)
         self.assertTrue(retry.is_retryable_error(ReadTimeout("timed out")))
         self.assertFalse(retry.is_retryable_error(ValueError("invalid model")))
 
     def test_provider_configuration_and_prompting_have_concrete_owners(self):
         self.assertIs(hosted.resolve_completion_config, provider_config.resolve_completion_config)
-        self.assertIs(hosted.validate_coord_space, provider_config.validate_coord_space)
         self.assertIs(hosted.build_normalized_prompt, prompting.build_normalized_prompt)
-        self.assertIs(hosted._uses_normalized_coords, prompting.uses_normalized_coords)
+        self.assertIs(hosted.uses_normalized_coords, provider_config.uses_normalized_coords)
 
     def test_provider_config_has_no_sibling_imports_and_provider_graph_is_acyclic(self):
         providers_dir = SOURCE_ROOT / "evaluation" / "providers"
@@ -421,9 +422,9 @@ class EvaluationBoundaryTests(unittest.TestCase):
         self.assertIn("from .storage", evaluation_workflow)
         self.assertIn("from .grounding", evaluation_workflow)
 
-    def test_locking_is_separate_but_results_reuses_it(self):
-        self.assertIs(results.acquire_lock, locking.acquire_lock)
-        self.assertIs(results.release_lock, locking.release_lock)
+    def test_locking_is_separate_from_results(self):
+        self.assertFalse(hasattr(results, "acquire_lock"))
+        self.assertFalse(hasattr(results, "release_lock"))
 
         with tempfile.TemporaryDirectory() as tmp:
             csv_path = Path(tmp) / "results.csv"

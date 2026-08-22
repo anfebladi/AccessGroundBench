@@ -9,8 +9,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest import mock
 
-from evaluation.providers import hosted as vlm_provider
-from evaluation.providers import retry as vlm_retry
+from evaluation.providers import config, coord_prompting, ferret, hosted, retry
 
 
 class FakeRateLimitError(Exception):
@@ -31,10 +30,10 @@ class SamplingEnvIsolation:
     """
 
     SAMPLING_ENV_VARS = (
-        vlm_retry.TEMPERATURE_ENV_VAR,
-        vlm_retry.MAX_TOKENS_ENV_VAR,
-        vlm_retry.THINKING_ENV_VAR,
-        vlm_retry.STRUCTURED_COORDS_ENV_VAR,
+        retry.TEMPERATURE_ENV_VAR,
+        retry.MAX_TOKENS_ENV_VAR,
+        retry.THINKING_ENV_VAR,
+        retry.STRUCTURED_COORDS_ENV_VAR,
     )
 
     def setUp(self):
@@ -49,7 +48,7 @@ class SamplingEnvIsolation:
 
 class VlmProviderTests(unittest.TestCase):
     @mock.patch.dict(
-        "evaluation.providers.hosted.os.environ",
+        "evaluation.providers.config.os.environ",
         {
             "NINEROUTER_BASE_URL": "http://localhost:20128/v1",
             "NINEROUTER_API_KEY": "router-key",
@@ -64,8 +63,8 @@ class VlmProviderTests(unittest.TestCase):
 
         route = "cx/test-registration-route"
         litellm.open_ai_chat_completion_models.discard(route)
-        vlm_provider._register_compatible_model(f"9router/{route}")
-        vlm_provider._register_compatible_model(f"9router/{route}")
+        hosted._register_compatible_model(f"9router/{route}")
+        hosted._register_compatible_model(f"9router/{route}")
         self.assertIn(route, litellm.open_ai_chat_completion_models)
 
     def test_register_native_model_does_nothing(self):
@@ -75,28 +74,28 @@ class VlmProviderTests(unittest.TestCase):
             self.skipTest("LiteLLM is unavailable in this test environment")
 
         before = set(litellm.open_ai_chat_completion_models)
-        vlm_provider._register_compatible_model("openai/gpt-4o-mini")
+        hosted._register_compatible_model("openai/gpt-4o-mini")
         self.assertEqual(before, set(litellm.open_ai_chat_completion_models))
 
-    @mock.patch.dict("evaluation.providers.hosted.os.environ", {}, clear=True)
+    @mock.patch.dict("evaluation.providers.retry.os.environ", {}, clear=True)
     def test_request_timeout_defaults_to_120_seconds(self):
-        self.assertEqual(120.0, vlm_provider._resolve_request_timeout())
+        self.assertEqual(120.0, retry.resolve_request_timeout())
 
     @mock.patch.dict(
-        "evaluation.providers.hosted.os.environ", {"VLM_REQUEST_TIMEOUT_SECONDS": "30"}, clear=True
+        "evaluation.providers.retry.os.environ", {"VLM_REQUEST_TIMEOUT_SECONDS": "30"}, clear=True
     )
     def test_request_timeout_uses_environment(self):
-        self.assertEqual(30.0, vlm_provider._resolve_request_timeout())
+        self.assertEqual(30.0, retry.resolve_request_timeout())
 
     def test_request_timeout_rejects_non_positive_values(self):
         with self.assertRaises(ValueError):
-            vlm_provider._resolve_request_timeout(0)
+            retry.resolve_request_timeout(0)
 
     def test_connection_errors_are_retryable(self):
-        self.assertTrue(vlm_provider._is_retryable_error(Exception("Connection error.")))
+        self.assertTrue(retry.is_retryable_error(Exception("Connection error.")))
 
     @mock.patch.dict(
-        "evaluation.providers.hosted.os.environ",
+        "evaluation.providers.config.os.environ",
         {
             "NINEROUTER_BASE_URL": "http://localhost:20128",
             "NINEROUTER_API_KEY": "router-key",
@@ -111,17 +110,17 @@ class VlmProviderTests(unittest.TestCase):
                 "api_base": "http://localhost:20128/v1",
                 "api_key": "router-key",
             },
-            vlm_provider.resolve_completion_config("9router/cx/gpt-5.3-codex"),
+            config.resolve_completion_config("9router/cx/gpt-5.3-codex"),
         )
 
-    @mock.patch.dict("evaluation.providers.hosted.os.environ", {"NINEROUTER_API_KEY": "key"}, clear=True)
+    @mock.patch.dict("evaluation.providers.config.os.environ", {"NINEROUTER_API_KEY": "key"}, clear=True)
     def test_resolve_9router_requires_base_url(self):
         with self.assertRaisesRegex(ValueError, "NINEROUTER_BASE_URL"):
-            vlm_provider.resolve_completion_config("9router/cx/gpt-5.3-codex")
+            config.resolve_completion_config("9router/cx/gpt-5.3-codex")
 
     def test_9router_model_requires_route_name(self):
         with self.assertRaisesRegex(ValueError, "model route"):
-            vlm_provider.resolve_completion_config("9router/")
+            config.resolve_completion_config("9router/")
 
     def test_normalize_9router_base_url_accepts_host_and_v1_forms(self):
         for value in (
@@ -133,21 +132,21 @@ class VlmProviderTests(unittest.TestCase):
             with self.subTest(value=value):
                 self.assertEqual(
                     "http://localhost:20128/v1",
-                    vlm_provider._normalize_compatible_base_url(value),
+                    config._normalize_compatible_base_url(value),
                 )
 
-    @mock.patch.dict("evaluation.providers.hosted.os.environ", {}, clear=True)
+    @mock.patch.dict("evaluation.providers.config.os.environ", {}, clear=True)
     def test_compatible_model_reports_missing_configuration(self):
-        error = vlm_provider.model_configuration_error("9router/cx/gpt-5.3-codex")
+        error = config.model_configuration_error("9router/cx/gpt-5.3-codex")
         self.assertIn("NINEROUTER_BASE_URL", error)
         self.assertIn("NINEROUTER_API_KEY", error)
 
-    @mock.patch.dict("evaluation.providers.hosted.os.environ", {}, clear=True)
+    @mock.patch.dict("evaluation.providers.config.os.environ", {}, clear=True)
     def test_native_model_configuration_is_unchanged(self):
-        self.assertIsNone(vlm_provider.model_configuration_error("openai/gpt-4o-mini"))
+        self.assertIsNone(config.model_configuration_error("openai/gpt-4o-mini"))
         self.assertEqual(
             {"model": "anthropic/claude-sonnet"},
-            vlm_provider.resolve_completion_config("anthropic/claude-sonnet"),
+            config.resolve_completion_config("anthropic/claude-sonnet"),
         )
 
     def test_image_to_data_url_encodes_png_bytes(self):
@@ -157,7 +156,7 @@ class VlmProviderTests(unittest.TestCase):
             image_path = Path(tmp_dir) / "screen.png"
             image_path.write_bytes(png_bytes)
 
-            data_url = vlm_provider.image_to_data_url(image_path)
+            data_url = hosted.image_to_data_url(image_path)
 
         expected = base64.b64encode(png_bytes).decode("ascii")
         self.assertEqual(f"data:image/png;base64,{expected}", data_url)
@@ -172,7 +171,7 @@ class VlmProviderTests(unittest.TestCase):
             image_path = Path(tmp_dir) / "screen.png"
             image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
 
-            response_text = vlm_provider.call_vlm(
+            response_text = hosted.call_vlm(
                 "openai/gpt-4o-mini",
                 image_path,
                 "Find Settings",
@@ -207,7 +206,7 @@ class VlmProviderTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             image_path = Path(tmp_dir) / "screen.png"
             image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
-            vlm_provider.call_vlm("9router/cx/gpt-5.3-codex", image_path, "Find it")
+            hosted.call_vlm("9router/cx/gpt-5.3-codex", image_path, "Find it")
 
         call_kwargs = completion_mock.call_args.kwargs
         self.assertEqual("cx/gpt-5.3-codex", call_kwargs["model"])
@@ -235,7 +234,7 @@ class VlmProviderTests(unittest.TestCase):
 
         output = StringIO()
         with redirect_stdout(output):
-            vlm_provider._register_compatible_model(f"9router/{route}")
+            hosted._register_compatible_model(f"9router/{route}")
             response = litellm.completion(
                 model=route,
                 custom_llm_provider="openai",
@@ -262,7 +261,7 @@ class VlmProviderTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             image_path = Path(tmp_dir) / "screen.png"
             image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
-            response_text = vlm_provider.call_vlm(
+            response_text = hosted.call_vlm(
                 "openai/gpt-4o-mini", image_path, "Find it", max_retries=1
             )
 
@@ -279,7 +278,7 @@ class VlmProviderTests(unittest.TestCase):
             ]
         )
 
-        self.assertEqual("[10, 20]", vlm_provider._extract_response_text(response))
+        self.assertEqual("[10, 20]", hosted._extract_response_text(response))
 
     def test_extract_response_text_supports_text_part_list(self):
         response = {
@@ -295,7 +294,7 @@ class VlmProviderTests(unittest.TestCase):
             ]
         }
 
-        self.assertEqual("[7, 8]", vlm_provider._extract_response_text(response))
+        self.assertEqual("[7, 8]", hosted._extract_response_text(response))
 
     @mock.patch("evaluation.providers.hosted.time.sleep")
     @mock.patch("evaluation.providers.hosted._completion")
@@ -309,7 +308,7 @@ class VlmProviderTests(unittest.TestCase):
             image_path = Path(tmp_dir) / "screen.png"
             image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
 
-            response_text = vlm_provider.call_vlm(
+            response_text = hosted.call_vlm(
                 "openai/gpt-4o-mini",
                 image_path,
                 "Find Timer",
@@ -325,16 +324,16 @@ class VlmProviderTests(unittest.TestCase):
         # on, and must be byte-identical whether or not tree mode exists.
         self.assertEqual(
             "Provide the bounding box of the text 'Bluetooth'.",
-            vlm_provider.build_ferret_prompt("Bluetooth", None, 1080, 2219),
+            ferret.build_ferret_prompt("Bluetooth", None, 1080, 2219),
         )
         self.assertEqual(
             "Provide the bounding box of the text 'Bluetooth'.",
-            vlm_provider.build_ferret_prompt("Bluetooth", [], 1080, 2219),
+            ferret.build_ferret_prompt("Bluetooth", [], 1080, 2219),
         )
 
     def test_build_ferret_prompt_tree_mode_ends_with_vision_line(self):
         rows = [("Wi-Fi", [0, 0, 100, 50])]
-        prompt = vlm_provider.build_ferret_prompt("Bluetooth", rows, 1080, 2219)
+        prompt = ferret.build_ferret_prompt("Bluetooth", rows, 1080, 2219)
 
         self.assertTrue(
             prompt.endswith("Provide the bounding box of the text 'Bluetooth'.")
@@ -346,7 +345,7 @@ class VlmProviderTests(unittest.TestCase):
         # VOCAB_IMAGE_W/img_w (and H analogously), then int()-truncate --
         # not round.
         rows = [("Wi-Fi", [10, 20, 1070, 2200])]
-        prompt = vlm_provider.build_ferret_prompt("Bluetooth", rows, 1080, 2219)
+        prompt = ferret.build_ferret_prompt("Bluetooth", rows, 1080, 2219)
 
         ratio_w = 1000 / 1080
         ratio_h = 1000 / 2219
@@ -367,13 +366,13 @@ class VlmProviderTests(unittest.TestCase):
         # already dropped the excluded row before it reaches the prompt builder.
         rows = [r for r in rows if r[0] != "World Clock"]
 
-        prompt = vlm_provider.build_ferret_prompt("World Clock", rows, 1080, 2219)
+        prompt = ferret.build_ferret_prompt("World Clock", rows, 1080, 2219)
 
         self.assertNotIn("[216,", prompt)
         self.assertIn('"8:30 AM"', prompt)
 
     def test_build_ferret_prompt_preserves_apostrophes_in_target(self):
-        prompt = vlm_provider.build_ferret_prompt("Today's Deals", None, 1080, 2219)
+        prompt = ferret.build_ferret_prompt("Today's Deals", None, 1080, 2219)
         self.assertEqual(
             "Provide the bounding box of the text 'Today's Deals'.",
             prompt,
@@ -381,20 +380,20 @@ class VlmProviderTests(unittest.TestCase):
 
     def test_build_ferret_prompt_sanitizes_image_token_and_newlines(self):
         rows = [("weird <image>\nlabel", [0, 0, 10, 10])]
-        prompt = vlm_provider.build_ferret_prompt("Bluetooth", rows, 1080, 2219)
+        prompt = ferret.build_ferret_prompt("Bluetooth", rows, 1080, 2219)
         self.assertNotIn("<image>", prompt)
         self.assertNotIn("weird \nlabel", prompt)
 
     def test_parse_ferret_bbox_prefers_double_bracket(self):
         self.assertEqual(
             (100.0, 200.0, 300.0, 400.0),
-            vlm_provider._parse_ferret_bbox("The box is [[100, 200, 300, 400]]"),
+            ferret.parse_ferret_bbox("The box is [[100, 200, 300, 400]]"),
         )
 
     def test_parse_ferret_bbox_falls_back_to_single_bracket(self):
         self.assertEqual(
             (10.0, 20.0, 30.5, 40.0),
-            vlm_provider._parse_ferret_bbox("sure, [10, 20, 30.5, 40]"),
+            ferret.parse_ferret_bbox("sure, [10, 20, 30.5, 40]"),
         )
 
     def test_parse_ferret_bbox_prefers_last_single_bracket_match(self):
@@ -403,15 +402,15 @@ class VlmProviderTests(unittest.TestCase):
         # mistaken for its actual answer.
         self.assertEqual(
             (50.0, 60.0, 70.0, 80.0),
-            vlm_provider._parse_ferret_bbox(
+            ferret.parse_ferret_bbox(
                 "context had [1, 2, 3, 4], my answer is [50, 60, 70, 80]"
             ),
         )
 
     def test_parse_ferret_bbox_returns_none_when_unparseable(self):
-        self.assertIsNone(vlm_provider._parse_ferret_bbox("no bounding box here"))
+        self.assertIsNone(ferret.parse_ferret_bbox("no bounding box here"))
 
-    @mock.patch("evaluation.providers.hosted.urllib.request.urlopen")
+    @mock.patch("evaluation.providers.ferret.urllib.request.urlopen")
     def test_call_vlm_ferret_vision_mode_sends_unchanged_prompt(self, urlopen_mock):
         import json as _json
 
@@ -426,7 +425,7 @@ class VlmProviderTests(unittest.TestCase):
             image_path = Path(tmp_dir) / "screen.png"
             image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
 
-            vlm_provider.call_vlm(
+            hosted.call_vlm(
                 "local/ferret-ui-llama8b",
                 image_path,
                 "irrelevant when target_text is provided",
@@ -443,7 +442,7 @@ class VlmProviderTests(unittest.TestCase):
             sent_body["prompt"],
         )
 
-    @mock.patch("evaluation.providers.hosted.urllib.request.urlopen")
+    @mock.patch("evaluation.providers.ferret.urllib.request.urlopen")
     def test_call_vlm_ferret_tree_mode_includes_tree_text(self, urlopen_mock):
         import json as _json
 
@@ -458,7 +457,7 @@ class VlmProviderTests(unittest.TestCase):
             image_path = Path(tmp_dir) / "screen.png"
             image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
 
-            vlm_provider.call_vlm(
+            hosted.call_vlm(
                 "local/ferret-ui-llama8b",
                 image_path,
                 "irrelevant when target_text is provided",
@@ -478,7 +477,7 @@ class VlmProviderTests(unittest.TestCase):
             )
         )
 
-    @mock.patch("evaluation.providers.hosted.urllib.request.urlopen")
+    @mock.patch("evaluation.providers.ferret.urllib.request.urlopen")
     def test_call_vlm_ferret_converts_vocab_scale_response_to_pixel_center(
         self, urlopen_mock
     ):
@@ -495,7 +494,7 @@ class VlmProviderTests(unittest.TestCase):
             image_path = Path(tmp_dir) / "screen.png"
             image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
 
-            result = vlm_provider.call_vlm(
+            result = hosted.call_vlm(
                 "local/ferret-ui-llama8b",
                 image_path,
                 "irrelevant when target_text is provided",
@@ -506,7 +505,7 @@ class VlmProviderTests(unittest.TestCase):
 
         self.assertEqual("[540.0, 1109.5]", result)
 
-    @mock.patch("evaluation.providers.hosted.urllib.request.urlopen")
+    @mock.patch("evaluation.providers.ferret.urllib.request.urlopen")
     def test_call_vlm_ferret_surfaces_server_budget_error(self, urlopen_mock):
         import urllib.error
 
@@ -521,7 +520,7 @@ class VlmProviderTests(unittest.TestCase):
             image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
 
             with self.assertRaisesRegex(RuntimeError, "context window exceeded"):
-                vlm_provider.call_vlm(
+                hosted.call_vlm(
                     "local/ferret-ui-llama8b",
                     image_path,
                     "irrelevant when target_text is provided",
@@ -532,38 +531,38 @@ class VlmProviderTests(unittest.TestCase):
                 )
 
     def test_uses_normalized_coords_matches_native_and_9router_forms(self):
-        self.assertTrue(vlm_provider._uses_normalized_coords("gemini/gemini-2.5-flash"))
-        self.assertTrue(vlm_provider._uses_normalized_coords("9router/ag/gemini-3-flash"))
-        self.assertTrue(vlm_provider._uses_normalized_coords("9router/ag/gemini-pro-agent"))
+        self.assertTrue(config.uses_normalized_coords("gemini/gemini-2.5-flash"))
+        self.assertTrue(config.uses_normalized_coords("9router/ag/gemini-3-flash"))
+        self.assertTrue(config.uses_normalized_coords("9router/ag/gemini-pro-agent"))
 
     def test_uses_normalized_coords_matches_qwen_and_glm_routes(self):
         # The reason the registry is a predicate rather than a Gemini check:
         # these OpenRouter models answer on the same 0-1000 grid and scored
         # ~0% while they were treated as pixel-space.
-        self.assertTrue(vlm_provider._uses_normalized_coords(
+        self.assertTrue(config.uses_normalized_coords(
             "openrouter/qwen/qwen3-vl-235b-a22b-instruct"))
-        self.assertTrue(vlm_provider._uses_normalized_coords(
+        self.assertTrue(config.uses_normalized_coords(
             "openrouter/z-ai/glm-5v-turbo"))
 
     def test_uses_normalized_coords_rejects_other_families(self):
-        self.assertFalse(vlm_provider._uses_normalized_coords("openai/gpt-4o-mini"))
-        self.assertFalse(vlm_provider._uses_normalized_coords("9router/cx/gpt-5.5"))
-        self.assertFalse(vlm_provider._uses_normalized_coords(
+        self.assertFalse(config.uses_normalized_coords("openai/gpt-4o-mini"))
+        self.assertFalse(config.uses_normalized_coords("9router/cx/gpt-5.5"))
+        self.assertFalse(config.uses_normalized_coords(
             "anthropic/claude-3-5-sonnet-latest"))
 
     def test_uses_normalized_coords_excludes_ferret_which_self_converts(self):
         # Ferret-UI also replies on a 1000 scale, but call_vlm's Ferret branch
         # already converts it; matching here would convert a second time.
-        self.assertFalse(vlm_provider._uses_normalized_coords("local/ferret-ui-llama8b"))
+        self.assertFalse(config.uses_normalized_coords("local/ferret-ui-llama8b"))
 
     def test_validate_coord_space_allows_pixel_for_any_model(self):
-        self.assertEqual("pixel", vlm_provider.validate_coord_space(
+        self.assertEqual("pixel", config.validate_coord_space(
             "9router/ag/gemini-3-flash", "pixel"))
-        self.assertEqual("pixel", vlm_provider.validate_coord_space(
+        self.assertEqual("pixel", config.validate_coord_space(
             "openai/gpt-4o-mini", "pixel"))
 
     def test_validate_coord_space_allows_override_for_unregistered_model(self):
-        self.assertEqual("norm1000", vlm_provider.validate_coord_space(
+        self.assertEqual("norm1000", config.validate_coord_space(
             "openrouter/some/new-vlm", "norm1000"))
 
     def test_validate_coord_space_rejects_override_on_self_converting_models(self):
@@ -576,12 +575,12 @@ class VlmProviderTests(unittest.TestCase):
                       "local/ferret-ui-llama8b"):
             with self.subTest(model=model):
                 with self.assertRaises(SystemExit):
-                    vlm_provider.validate_coord_space(model, "norm1000")
+                    config.validate_coord_space(model, "norm1000")
 
     def test_classify_normalized_reply_reports_in_range_as_normalized(self):
         self.assertEqual(
-            vlm_provider.GEMINI_SPACE_NORMALIZED,
-            vlm_provider._classify_normalized_reply("[500, 500]"),
+            coord_prompting.GEMINI_SPACE_NORMALIZED,
+            coord_prompting.classify_normalized_reply("[500, 500]"),
         )
 
     def test_classify_normalized_reply_flags_out_of_range_as_pixel_space(self):
@@ -589,25 +588,25 @@ class VlmProviderTests(unittest.TestCase):
         # AND also be this reply's intended pixel answer at the same time --
         # a value over 1000 is unambiguous pixel-space non-compliance.
         self.assertEqual(
-            vlm_provider.GEMINI_SPACE_PIXEL,
-            vlm_provider._classify_normalized_reply("[166, 1109]"),
+            coord_prompting.GEMINI_SPACE_PIXEL,
+            coord_prompting.classify_normalized_reply("[166, 1109]"),
         )
 
     def test_classify_normalized_reply_flags_unparseable_as_unverified(self):
         self.assertEqual(
-            vlm_provider.GEMINI_SPACE_UNVERIFIED,
-            vlm_provider._classify_normalized_reply("no coordinates here"),
+            coord_prompting.GEMINI_SPACE_UNVERIFIED,
+            coord_prompting.classify_normalized_reply("no coordinates here"),
         )
 
     def test_build_normalized_prompt_states_normalized_scale_and_example(self):
-        prompt = vlm_provider.build_normalized_prompt("Bluetooth", None, 1080, 2219)
+        prompt = coord_prompting.build_normalized_prompt("Bluetooth", None, 1080, 2219)
         self.assertIn("0-1000", prompt)
         self.assertIn("[500, 500]", prompt)
         self.assertIn("'Bluetooth'", prompt)
         self.assertNotIn("Your previous answer", prompt)
 
     def test_build_normalized_prompt_strict_adds_correction(self):
-        prompt = vlm_provider.build_normalized_prompt(
+        prompt = coord_prompting.build_normalized_prompt(
             "Bluetooth", None, 1080, 2219, strict=True)
         self.assertIn("Your previous answer used raw pixel coordinates", prompt)
 
@@ -622,7 +621,7 @@ class VlmProviderTests(unittest.TestCase):
             image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
 
             coord_space_out: dict = {}
-            response_text = vlm_provider.call_vlm(
+            response_text = hosted.call_vlm(
                 "gemini/gemini-2.5-flash",
                 image_path,
                 "irrelevant when target_text is provided",
@@ -636,7 +635,7 @@ class VlmProviderTests(unittest.TestCase):
         # so the model's own answer survives into raw_response and stays
         # re-scorable offline.
         self.assertEqual("[500, 500]", response_text)
-        self.assertEqual(vlm_provider.GEMINI_SPACE_NORMALIZED, coord_space_out["value"])
+        self.assertEqual(coord_prompting.GEMINI_SPACE_NORMALIZED, coord_space_out["value"])
         sent_prompt = completion_mock.call_args.kwargs["messages"][0]["content"][0]["text"]
         self.assertIn("0-1000", sent_prompt)
 
@@ -655,7 +654,7 @@ class VlmProviderTests(unittest.TestCase):
             image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
 
             coord_space_out: dict = {}
-            response_text = vlm_provider.call_vlm(
+            response_text = hosted.call_vlm(
                 "9router/ag/gemini-3-flash",
                 image_path,
                 "irrelevant when target_text is provided",
@@ -667,7 +666,7 @@ class VlmProviderTests(unittest.TestCase):
             )
 
         self.assertEqual("[500, 500]", response_text)
-        self.assertEqual(vlm_provider.GEMINI_SPACE_NORMALIZED, coord_space_out["value"])
+        self.assertEqual(coord_prompting.GEMINI_SPACE_NORMALIZED, coord_space_out["value"])
         self.assertEqual(2, completion_mock.call_count)
         # The retried prompt must be the stricter restatement, not identical.
         second_prompt = completion_mock.call_args_list[1].kwargs["messages"][0]["content"][0]["text"]
@@ -686,7 +685,7 @@ class VlmProviderTests(unittest.TestCase):
             image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
 
             coord_space_out: dict = {}
-            response_text = vlm_provider.call_vlm(
+            response_text = hosted.call_vlm(
                 "gemini/gemini-2.5-flash",
                 image_path,
                 "irrelevant when target_text is provided",
@@ -699,7 +698,7 @@ class VlmProviderTests(unittest.TestCase):
 
         # Not silently coerced: the pixel-looking reply is returned unconverted.
         self.assertEqual("[166, 1109]", response_text)
-        self.assertEqual(vlm_provider.GEMINI_SPACE_PIXEL, coord_space_out["value"])
+        self.assertEqual(coord_prompting.GEMINI_SPACE_PIXEL, coord_space_out["value"])
         self.assertEqual(1, completion_mock.call_count)
 
     @mock.patch("evaluation.providers.hosted._completion")
@@ -713,7 +712,7 @@ class VlmProviderTests(unittest.TestCase):
             image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
 
             coord_space_out: dict = {}
-            response_text = vlm_provider.call_vlm(
+            response_text = hosted.call_vlm(
                 "9router/cx/gpt-5.5",
                 image_path,
                 "Find Bluetooth",
@@ -740,7 +739,7 @@ class VlmProviderTests(unittest.TestCase):
             image_path.write_bytes(b"\x89PNG\r\n\x1a\nfake")
 
             with self.assertRaises(FakeRateLimitError):
-                vlm_provider.call_vlm(
+                hosted.call_vlm(
                     "openai/gpt-4o-mini",
                     image_path,
                     "Find Timer",
@@ -777,7 +776,7 @@ class ReplyBudgetAndThinkingTests(SamplingEnvIsolation, unittest.TestCase):
                 "choices": [{"finish_reason": finish_reason,
                              "message": {"content": "[1, 2]"}}],
             }
-            text = vlm_provider.call_vlm(model, self._png(tmp_dir), "Find Settings")
+            text = hosted.call_vlm(model, self._png(tmp_dir), "Find Settings")
             return text, completion.call_args.kwargs
 
     def test_no_budget_is_sent_by_default(self):
@@ -809,14 +808,14 @@ class ReplyBudgetAndThinkingTests(SamplingEnvIsolation, unittest.TestCase):
             self._call("anthropic/claude-opus-5")
 
     def test_truncated_reply_raises_instead_of_being_scored(self):
-        with self.assertRaises(vlm_provider.TruncatedReplyError):
+        with self.assertRaises(hosted.TruncatedReplyError):
             self._call(finish_reason="length")
 
     def test_truncation_is_not_retried(self):
         """The same budget truncates again; it must surface as an api_error."""
         from evaluation.providers.retry import is_retryable_error
 
-        self.assertFalse(is_retryable_error(vlm_provider.TruncatedReplyError("x")))
+        self.assertFalse(retry.is_retryable_error(hosted.TruncatedReplyError("x")))
 
 
 class ImageCapTests(unittest.TestCase):
@@ -858,7 +857,7 @@ class ImageCapTests(unittest.TestCase):
             # non-decodable payload round-trips byte for byte.
             expected = base64.b64encode(path.read_bytes()).decode("ascii")
             self.assertEqual(f"data:image/png;base64,{expected}",
-                             vlm_provider.image_to_data_url(path, 1.0))
+                             hosted.image_to_data_url(path, 1.0))
 
     def test_a_scaled_image_is_actually_smaller(self):
         from PIL import Image
@@ -867,7 +866,7 @@ class ImageCapTests(unittest.TestCase):
             path = Path(tmp_dir) / "screen.png"
             Image.new("RGB", (1080, 2219), "white").save(path)
 
-            url = vlm_provider.image_to_data_url(path, 1568 / 2219)
+            url = hosted.image_to_data_url(path, 1568 / 2219)
             raw = base64.b64decode(url.split(",", 1)[1])
             with Image.open(io.BytesIO(raw)) as img:
                 self.assertEqual((763, 1568), img.size)
@@ -1040,7 +1039,7 @@ class StructuredCoordinateTests(SamplingEnvIsolation, unittest.TestCase):
                 "choices": [{"finish_reason": "stop",
                              "message": {"content": '{"coordinates": [126, 176]}'}}],
             }
-            vlm_provider.call_vlm(model, path, "Find Settings")
+            hosted.call_vlm(model, path, "Find Settings")
             return completion.call_args.kwargs
 
     def test_off_by_default(self):

@@ -5,7 +5,7 @@ offline-maintenance workflows. Paths are relative to the current working
 directory unless absolute. Run `agb <command> --help` for argparse help.
 
 ```text
-agb {collect,evaluate,analyze,canonicalize,rescore,profile,capture,extract}
+agb {collect,evaluate,analyze,canonicalize,rescore,profile,capture,extract,ui}
 ```
 
 ## `agb collect`
@@ -15,19 +15,21 @@ workflow, see the [Android collection guide](collection.md).
 
 ```text
 agb collect [--dry-run] [--screens SCREEN [SCREEN ...]] [--rebuild-manifest]
+            [--data-dir PATH]
 ```
 
 **Purpose.** Capture the configured screens under each accessibility profile,
-extract labels, and write `collections/experiment/dataset/collection_manifest.json`.
+extract labels, and write the manifest under the selected dataset. For the
+shipped dataset, pass `--data-dir collections/experiment/dataset`.
 
 **Use when.** Run a live collection with an attached emulator, preview the
 planned sequence, or reconstruct a manifest from assets already on disk.
 
 **Inputs and outputs.** Live mode uses the emulator/ADB and writes
-`collections/experiment/dataset/images/{screen}_{profile}.png`,
-`collections/experiment/dataset/raw_xml/{screen}_{profile}.xml`,
-`collections/experiment/dataset/labels/{screen}_{profile}.json`, and
-`collections/experiment/dataset/collection_manifest.json`. `--rebuild-manifest` reads those existing
+`<data-dir>/images/{screen}_{profile}.png`,
+`<data-dir>/raw_xml/{screen}_{profile}.xml`,
+`<data-dir>/labels/{screen}_{profile}.json`, and
+`<data-dir>/collection_manifest.json`. `--rebuild-manifest` reads those existing
 directories and rewrites the manifest without captures. A rebuild with
 `--screens` updates that subset, carries unselected screen records forward,
 and overwrites the manifest file; omit it to rebuild all screens.
@@ -38,24 +40,26 @@ navigates screens, captures assets, and resets profiles after each screen.
 though it may create the required dataset directories. Rebuilding is offline
 but replaces the manifest file.
 
-**Flags.** `--screens` replaces the default complete built-in screen list.
+**Flags.** `--data-dir` selects the dataset and is required unless
+`AGB_DATASET_DIR` is exported in the shell. `--screens` replaces the default
+complete built-in screen list.
 
 ```bash
-agb collect --dry-run
-agb collect --screens settings_main contacts dialer
-agb collect --rebuild-manifest
-agb collect --rebuild-manifest --screens settings_main
+agb collect --data-dir collections/experiment/dataset --dry-run
+agb collect --data-dir collections/experiment/dataset --screens settings_main contacts dialer
+agb collect --data-dir collections/experiment/dataset --rebuild-manifest
+agb collect --data-dir collections/experiment/dataset --rebuild-manifest --screens settings_main
 ```
 
 ## `agb evaluate`
 
 ```text
-agb evaluate [--fresh] [--force-unlock]
+agb evaluate [--fresh] [--force-unlock] [--data-dir PATH]
 ```
 
 **Purpose.** Call the configured VLM APIs for targets in the input captures and
 write one result file per configured model and prompt mode at
-`collections/experiment/outputs/evaluations/<model>_<vision|tree>.csv`.
+the selected dataset's `outputs/evaluations/<model>_<vision|tree>.csv`.
 
 **Use when.** Evaluate new captures or continue an interrupted evaluation.
 
@@ -72,9 +76,9 @@ fails before producing data may leave no result file.
 removes a stale per-CSV `.lock` file before starting.
 
 ```bash
-agb evaluate
-agb evaluate --fresh
-agb evaluate --force-unlock
+agb evaluate --data-dir collections/experiment/dataset
+agb evaluate --data-dir collections/experiment/dataset --fresh
+agb evaluate --data-dir collections/experiment/dataset --force-unlock
 ```
 
 ## `agb analyze`
@@ -95,9 +99,10 @@ reports, and serialize analysis tables.
 vision-only file with a with-tree file.
 
 **Inputs and outputs.** `--csv` selects one result file; otherwise discovery
-uses evaluation results under `collections/experiment/outputs/evaluations/` for `--mode` (`vision` by
-default). Reports are written under `collections/experiment/outputs/analysis/<mode>_<sample>/`.
-Paired comparisons are written under `collections/experiment/outputs/analysis/comparisons/`.
+uses evaluation results under the selected dataset's `outputs/evaluations/` for
+`--mode` (`vision` by default). Reports are written under the selected dataset's
+`outputs/analysis/<mode>_<sample>/`. Paired comparisons are written under
+`outputs/analysis/comparisons/` for that dataset.
 
 **Effects and safety.** Analysis reads and reclassifies data in memory; it
 does not mutate source evaluation CSVs. Report files are rewritten. The
@@ -108,16 +113,16 @@ uses `primary` when `--sample all` is selected.
 `--label-changed` defaults to `unreachable`; `--sample` defaults to `all`.
 
 ```bash
-agb analyze
+agb analyze --data-dir collections/experiment/dataset
 agb analyze --data-dir collections/experiment/archive/experiment_2 --mode vision
-agb analyze --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --sample primary
-agb analyze --compare-a a.csv --compare-b b.csv
+agb analyze --data-dir collections/experiment/dataset --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --sample primary
+agb analyze --data-dir collections/experiment/dataset --compare-a a.csv --compare-b b.csv
 ```
 
 ## `agb canonicalize`
 
 ```text
-agb canonicalize [--csv PATH [PATH ...]]
+agb canonicalize [--data-dir PATH] [--csv PATH [PATH ...]]
 ```
 
 **Purpose.** Repair evaluation CSVs to one canonical row per expected
@@ -129,23 +134,23 @@ mid-run.
 
 **Inputs and outputs.** Offline, it reads baseline labels to derive the
 expected key order, removes stale-target, `api_error`, and duplicate rows,
-sorts canonically, and rewrites each selected CSV. A `.csv.bak` backup is
-created before each rewrite. By default it processes all
-evaluation result files under `collections/experiment/outputs/evaluations/`; `--csv` selects one or more.
+sorts canonically, and rewrites each selected CSV. A timestamped backup is
+kept under the CSV's `.backups/` directory before each rewrite. By default it processes all
+evaluation result files under the selected dataset's `outputs/evaluations/`; `--csv` selects one or more.
 
 **Effects and safety.** No API calls or emulator calls are made. Per-CSV locks
 guard the rewrite; a held lock is reported as a problem. Rewriting replaces
-the CSV, while the `.bak` copy preserves the prior bytes.
+the CSV, while the timestamped copy preserves the prior bytes.
 
 ```bash
-agb canonicalize
-agb canonicalize --csv collections/experiment/outputs/evaluations/MODEL_vision.csv
+agb canonicalize --data-dir collections/experiment/dataset
+agb canonicalize --data-dir collections/experiment/dataset --csv collections/experiment/outputs/evaluations/MODEL_vision.csv
 ```
 
 ## `agb rescore`
 
 ```text
-agb rescore --csv PATH [--coord-space {pixel,norm1000}] [--check]
+agb rescore --data-dir PATH --csv CSV_PATH [--coord-space {pixel,norm1000}] [--check]
 ```
 
 **Purpose.** Recompute stored coordinate predictions and hit scores under a
@@ -154,19 +159,21 @@ coordinate convention.
 **Use when.** Use `--check` to compare conventions first, then use
 `--coord-space` to apply the chosen convention.
 
-**Inputs and outputs.** `--csv` is the required evaluation CSV. `--check`
+**Inputs and outputs.** `--data-dir` selects the dataset used to resolve labels;
+it may be replaced by an exported `AGB_DATASET_DIR`. `--csv` is the required evaluation CSV. `--check`
 prints scored rows, hits, and accuracy for both conventions without writing.
-Applying `--coord-space` rewrites the CSV and creates `PATH.csv.bak`.
+Applying `--coord-space` rewrites the CSV and keeps a timestamped copy under
+`PATH`'s `.backups/` directory.
 
 **Effects and safety.** `--check` is read-only. Apply mode overwrites the CSV
-after making the backup; rerun `agb analyze --csv PATH` afterward.
+after making the backup; rerun `agb analyze --data-dir PATH --csv PATH` afterward.
 
 **Flags.** Either `--check` or `--coord-space` is required; `--coord-space`
 accepts `pixel` or `norm1000`.
 
 ```bash
-agb rescore --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --check
-agb rescore --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --coord-space norm1000
+agb rescore --data-dir collections/experiment/dataset --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --check
+agb rescore --data-dir collections/experiment/dataset --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --coord-space norm1000
 ```
 
 ## `agb profile`
@@ -197,7 +204,7 @@ agb profile reset
 ## `agb capture`
 
 ```text
-agb capture [output_name]
+agb capture [output_name] [--data-dir PATH]
 ```
 
 **Purpose.** Capture one synchronized Android screenshot and UI hierarchy.
@@ -207,14 +214,16 @@ workflow.
 
 **Inputs and outputs.** The optional `output_name` is the file stem. With no
 name, the pipeline uses `capture_YYYYMMDD_HHMMSS` (UTC). It writes
-`outputs/captures/<stem>.png` and `outputs/captures/<stem>.xml` by default.
+`<dataset-output-root>/captures/<stem>.png` and
+`<dataset-output-root>/captures/<stem>.xml`. For the shipped dataset,
+`<dataset-output-root>` is `collections/experiment/outputs`.
 
 **Effects and safety.** Requires ADB and an attached device; captures and pulls
 files, crops system bars, and cleans temporary device files.
 
 ```bash
-agb capture
-agb capture my_capture
+agb capture --data-dir collections/experiment/dataset
+agb capture --data-dir collections/experiment/dataset my_capture
 ```
 
 ## `agb extract`
@@ -242,3 +251,13 @@ ADB. Invalid or missing XML is an error.
 agb extract outputs/captures/my_capture.xml
 agb extract outputs/captures/my_capture.xml --output outputs/captures/my_capture.json --y-offset 0 --bottom-crop 0
 ```
+
+## `agb ui`
+
+```text
+agb ui [--port PORT] [--api-port PORT]
+```
+
+**Purpose.** Launch the local FastAPI API and Vite development server. The
+default ports are 8081 for the API and 8080 for the frontend; both bind to
+localhost.

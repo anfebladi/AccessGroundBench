@@ -28,7 +28,7 @@ The published dataset omits it for that reason, not because it is unsupported.
 Collect it with:
 
 ```bash
-agb collect --screens gmail
+agb collect --data-dir collections/experiment/dataset --screens gmail
 ```
 
 Anything collected this way is tied to that run's inbox state and will not
@@ -58,13 +58,13 @@ Preview the sequence without an emulator, ADB calls, captures, or manifest
 writes. The command may still create the required dataset directories:
 
 ```bash
-agb collect --dry-run
+agb collect --data-dir collections/experiment/dataset --dry-run
 ```
 
 To collect a subset, pass screen names explicitly:
 
 ```bash
-agb collect --screens settings_main contacts dialer
+agb collect --data-dir collections/experiment/dataset --screens settings_main contacts dialer
 ```
 
 ## Artifacts and validation
@@ -96,8 +96,8 @@ container node whose bounds span its children.
 If captures exist but the manifest is missing or stale, reconstruct it offline:
 
 ```bash
-agb collect --rebuild-manifest
-agb collect --rebuild-manifest --screens settings_main
+agb collect --data-dir collections/experiment/dataset --rebuild-manifest
+agb collect --data-dir collections/experiment/dataset --rebuild-manifest --screens settings_main
 ```
 
 Rebuild reads existing images, XML, and labels; it makes no ADB calls and does

@@ -41,14 +41,14 @@ overridden (that would convert twice). For an existing result, compare both
 conventions without API calls first:
 
 ```bash
-agb rescore --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --check
+agb rescore --data-dir collections/experiment/dataset --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --check
 ```
 
 If the check identifies the other convention, repair stored scores (the command
-writes a `.csv.bak` backup) and rerun analysis:
+keeps a timestamped copy under `.backups/`) and rerun analysis:
 
 ```bash
-agb rescore --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --coord-space norm1000
+agb rescore --data-dir collections/experiment/dataset --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --coord-space norm1000
 ```
 
 Use the matching `pixel` command when that is selected. Re-check after changing
@@ -69,8 +69,8 @@ Leave `USE_A11Y_TREE` unset or set it to `false`, then run against existing
 captures:
 
 ```bash
-agb evaluate
-agb analyze --csv collections/experiment/outputs/evaluations/MODEL_vision.csv
+agb evaluate --data-dir collections/experiment/dataset
+agb analyze --data-dir collections/experiment/dataset --csv collections/experiment/outputs/evaluations/MODEL_vision.csv
 ```
 
 Analysis reports are written under `collections/experiment/outputs/analysis/<mode>_<sample>/`.
@@ -80,8 +80,8 @@ Analysis reports are written under `collections/experiment/outputs/analysis/<mod
 Set `USE_A11Y_TREE=true` without changing `VLM_MODEL`, then run:
 
 ```bash
-agb evaluate
-agb analyze --csv collections/experiment/outputs/evaluations/MODEL_tree.csv --mode tree
+agb evaluate --data-dir collections/experiment/dataset
+agb analyze --data-dir collections/experiment/dataset --csv collections/experiment/outputs/evaluations/MODEL_tree.csv --mode tree
 ```
 
 Tree results are a separate path and do not overwrite vision-only results. Run

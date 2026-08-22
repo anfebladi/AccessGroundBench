@@ -4,21 +4,19 @@ import unittest
 from pathlib import Path
 
 from backups import BACKUP_DIR_NAME
+from evaluation.storage.locking import CsvLockError, acquire_lock, release_lock
 from evaluation.storage.results import (
     CSV_COLUMNS,
     PROMPT_MODE_TREE,
     PROMPT_MODE_VISION,
     STATUS_API_ERROR,
     STATUS_CO_PRESENT,
-    CsvLockError,
-    acquire_lock,
     append_result,
     canonicalize_rows,
     finalize_csv,
     init_csv,
     load_completed_keys,
     prepare_csv,
-    release_lock,
 )
 
 

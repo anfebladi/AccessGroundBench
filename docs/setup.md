@@ -41,6 +41,11 @@ Optional provider controls include `VLM_PACE_SECONDS`, `VLM_MAX_RETRIES`,
 `VLM_TRIALS`, and `VLM_TRIALS_MODELS`. `USE_A11Y_TREE=true` selects the
 tree-injected prompt arm; unset or false selects vision-only mode.
 
+Dataset selection is separate from provider configuration. Pass
+`--data-dir collections/experiment/dataset` on each command, or export
+`AGB_DATASET_DIR` in the shell. The CLI does not take `AGB_DATASET_DIR` from
+`.env`, and there is no implicit default dataset.
+
 ## Prepare Android
 
 Install Android Studio, create a Pixel 6 AVD using Android 14 (API 34),
@@ -68,9 +73,10 @@ for a model that already self-describes its coordinates or for Ferret-UI.
 To inspect or repair an existing CSV without API calls:
 
 ```bash
-agb rescore --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --check
-agb rescore --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --coord-space norm1000
+agb rescore --data-dir collections/experiment/dataset --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --check
+agb rescore --data-dir collections/experiment/dataset --csv collections/experiment/outputs/evaluations/MODEL_vision.csv --coord-space norm1000
 ```
 
-Re-scoring writes a `.csv.bak`; run `agb analyze` again afterward. See the
+Re-scoring keeps a timestamped copy under the CSV's `.backups/` directory; run
+`agb analyze --data-dir collections/experiment/dataset` again afterward. See the
 [complete rescore options](cli-reference.md#agb-rescore).

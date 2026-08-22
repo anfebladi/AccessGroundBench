@@ -242,7 +242,3 @@ def retry_delay_seconds(exc: Exception, fallback: float) -> float:
         return max(float(seconds_match.group(1)), 0.0)
 
     return fallback
-
-
-# Legacy private name retained as an identity alias for compatibility.
-_is_retryable_error = is_retryable_error

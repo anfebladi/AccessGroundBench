@@ -28,7 +28,8 @@ python ferret_server.py         # any platform
 ```
 
 The server listens at `http://localhost:8000/` by default. Leave it running and
-wait for `Model loaded successfully!` before starting `agb evaluate`. To choose
+wait for `Model loaded successfully!` before starting `agb evaluate --data-dir
+collections/experiment/dataset`. To choose
 a different Hugging Face model, pass `--model_path` when starting the server;
 the model is loaded during startup. The default is
 `jadechoghari/Ferret-UI-Llama8b`.

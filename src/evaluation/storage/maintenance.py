@@ -34,12 +34,10 @@ from .results import (
     CSV_COLUMNS,
     PROMPT_MODE_TREE,
     PROMPT_MODE_VISION,
-    CsvLockError,
-    acquire_lock,
     finalize_csv,
     prepare_csv,
-    release_lock,
 )
+from .locking import CsvLockError, acquire_lock, release_lock
 from ..grounding.targets import build_expected_keys
 from ..grounding.scoring import get_png_dimensions, hit_test, parse_coordinates, to_pixel_space
 
