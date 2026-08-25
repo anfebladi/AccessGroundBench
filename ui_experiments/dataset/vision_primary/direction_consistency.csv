@@ -1,0 +1,6 @@
+Sample,Profile,Models_Down,Models_Up,Models_Tied,Sign_P_Value
+primary,elder_text_heavy,10,0,1,0.001953
+primary,elder_zoom_heavy,4,4,3,1.000000
+primary,elder_combo_max,8,2,1,0.109375
+primary,elder_combo_mid,9,1,1,0.021484
+primary,colorblind_deuteranomaly,6,4,1,0.753906

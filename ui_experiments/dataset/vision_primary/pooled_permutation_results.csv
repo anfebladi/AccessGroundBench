@@ -1,0 +1,6 @@
+Sample,Profile,Target_Clusters,Observations,Statistic,Broke_It_b,Fluke_Recovery_c,Permutations,P_Value,Holm_Threshold,Significant
+primary,elder_text_heavy,139,1529,32.0,64,32,20000,0.005400,0.010000,Yes
+primary,elder_zoom_heavy,144,1584,-6.0,45,51,20000,0.656167,0.025000,No
+primary,elder_combo_max,111,1221,20.0,64,44,20000,0.185641,0.016667,No
+primary,elder_combo_mid,123,1353,30.0,69,39,20000,0.061797,0.012500,No
+primary,colorblind_deuteranomaly,136,1496,4.0,37,33,20000,0.746063,0.050000,No
