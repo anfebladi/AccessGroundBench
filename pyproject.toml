@@ -40,12 +40,6 @@ ui = [
     "uvicorn>=0.32",
 ]
 
-[project.urls]
-Homepage = "https://github.com/anfebladi/AccessGroundBench"
-Repository = "https://github.com/anfebladi/AccessGroundBench"
-Documentation = "https://github.com/anfebladi/AccessGroundBench/blob/main/docs/methods.md"
-Issues = "https://github.com/anfebladi/AccessGroundBench/issues"
-
 [project.scripts]
 agb = "cli:main"
 orchestrator = "collection.cli:collect_main"
